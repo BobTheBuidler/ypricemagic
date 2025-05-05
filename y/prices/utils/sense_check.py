@@ -36,7 +36,7 @@ acceptable_all_chains: Final[Set[ChecksumAddress]] = {
     wbtc.address,
 }
 
-ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {
+ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operator, assignment]
     Network.Mainnet: {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
@@ -247,7 +247,7 @@ async def sense_check(
     # proceed with sense check
     price_readable = round(price, 4)
     try:
-        symbol = await ERC20(token_address, asynchronous=True).symbol
+        symbol = await ERC20(token_address, asynchronous=True).symbol  # type: ignore [call-overload]
         logger.warning(
             f"unusually high price (${price_readable}) returned for {symbol} {token_address} on {NETWORK_NAME} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
         )
@@ -284,24 +284,24 @@ async def _exit_sense_check(token_address: str) -> bool:
         return True
 
     elif bucket == "curve lp":
-        underlyings = await CurvePool(token_address, asynchronous=True).coins
+        underlyings = await CurvePool(token_address, asynchronous=True).coins  # type: ignore [call-overload]
         if questionable_underlyings := [
             und for und in underlyings if und not in ACCEPTABLE_HIGH_PRICES
         ]:
-            return await a_sync.map(_exit_sense_check, questionable_underlyings).all(
+            return await a_sync.map(_exit_sense_check, questionable_underlyings).all(  # type: ignore [call-overload]
                 sync=False
             )
         return True
 
     elif bucket == "atoken":
-        underlying = await aave.underlying(token_address, sync=False)
+        underlying = await aave.underlying(token_address, sync=False)  # type: ignore [call-overload, var-annotated]
     elif bucket == "compound":
-        underlying = await CToken(token_address, asynchronous=True).underlying
+        underlying = await CToken(token_address, asynchronous=True).underlying  # type: ignore [call-overload]
     elif bucket == "solidex":
         contract = await Contract.coroutine(token_address)
-        underlying = await contract.pool
+        underlying = await contract.pool  # type: ignore [attr-defined]
     elif bucket == "yearn or yearn-like":
-        underlying = await YearnInspiredVault(
+        underlying = await YearnInspiredVault(  # type: ignore [call-overload]
             token_address, asynchronous=True
         ).underlying
     else:

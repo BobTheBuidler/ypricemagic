@@ -65,9 +65,7 @@ async def get_price(
     return UsdPrice(tvl / total_supply)
 
 
-async def get_tokens(
-    pie_address: Address, block: Optional[Block] = None
-) -> List[ERC20]:
+async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> List[ERC20]:
     """
     Get the list of tokens in a PieDAO token.
 
@@ -85,10 +83,7 @@ async def get_tokens(
     Note:
         This function retrieves token addresses using a multicall and then creates :class:`ERC20` instances from those addresses.
     """
-    return [
-        ERC20(t)
-        for t in await Call(pie_address, "getTokens()(address[])", block_id=block)
-    ]
+    return [ERC20(t) for t in await Call(pie_address, "getTokens()(address[])", block_id=block)]
 
 
 async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
@@ -107,9 +102,7 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
         '0xBpoolAddress'
     """
     try:
-        bpool = await raw_call(
-            pie_address, "getBPool()", output="address", block=block, sync=False
-        )
+        bpool = await raw_call(pie_address, "getBPool()", output="address", block=block, sync=False)
         return bpool if bpool != ZERO_ADDRESS else pie_address
     except Exception as e:
         if not call_reverted(e):
@@ -140,17 +133,13 @@ async def get_tvl(
         - :func:`get_tokens`
     """
     tokens: List[ERC20]
-    pool, tokens = await cgather(
-        get_bpool(pie_address, block), get_tokens(pie_address, block)
+    pool, tokens = await cgather(get_bpool(pie_address, block), get_tokens(pie_address, block))
+    return await a_sync.map(get_value, tokens, bpool=pool, block=block, skip_cache=skip_cache).sum(
+        pop=True, sync=False
     )
-    return await a_sync.map(
-        get_value, tokens, bpool=pool, block=block, skip_cache=skip_cache
-    ).sum(pop=True, sync=False)
 
 
-async def get_balance(
-    bpool: Address, token: ERC20, block: Optional[Block] = None
-) -> Decimal:
+async def get_balance(bpool: Address, token: ERC20, block: Optional[Block] = None) -> Decimal:
     """
     Get the balance of a token in a Balancer pool.
 

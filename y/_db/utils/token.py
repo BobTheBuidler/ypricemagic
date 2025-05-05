@@ -429,11 +429,7 @@ def known_buckets() -> Dict[str, str]:
         >>> buckets = known_buckets()
         >>> print(buckets)
     """
-    return dict(
-        select(
-            (t.address, t.bucket) for t in Token if t.chain.id == CHAINID and t.bucket
-        )
-    )
+    return dict(select((t.address, t.bucket) for t in Token if t.chain.id == CHAINID and t.bucket))
 
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
@@ -452,11 +448,7 @@ def known_decimals() -> Dict[Address, int]:
         >>> print(decimals)
     """
     return dict(
-        select(
-            (t.address, t.decimals)
-            for t in Token
-            if t.chain.id == CHAINID and t.decimals
-        )
+        select((t.address, t.decimals) for t in Token if t.chain.id == CHAINID and t.decimals)
     )
 
 
@@ -475,11 +467,7 @@ def known_symbols() -> Dict[Address, str]:
         >>> symbols = known_symbols()
         >>> print(symbols)
     """
-    return dict(
-        select(
-            (t.address, t.symbol) for t in Token if t.chain.id == CHAINID and t.symbol
-        )
-    )
+    return dict(select((t.address, t.symbol) for t in Token if t.chain.id == CHAINID and t.symbol))
 
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
@@ -497,6 +485,4 @@ def known_names() -> Dict[Address, str]:
         >>> names = known_names()
         >>> print(names)
     """
-    return dict(
-        select((t.address, t.name) for t in Token if t.chain.id == CHAINID and t.name)
-    )
+    return dict(select((t.address, t.name) for t in Token if t.chain.id == CHAINID and t.name))

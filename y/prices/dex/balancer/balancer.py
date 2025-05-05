@@ -65,11 +65,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         Examples:
             >>> versions = await multiplexer.versions
         """
-        return [
-            v
-            async for v in a_sync.as_completed([self.__v1__, self.__v2__], aiter=True)
-            if v
-        ]
+        return [v async for v in a_sync.as_completed([self.__v1__, self.__v2__], aiter=True) if v]
 
     __versions__: HiddenMethodDescriptor[Self, List[Union[BalancerV1, BalancerV2]]]
 

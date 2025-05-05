@@ -36,9 +36,7 @@ async def is_mstable_feeder_pool(address: AnyAddressType) -> bool:
     See Also:
         - :func:`y.contracts.has_methods`
     """
-    return await has_methods(
-        address, ("getPrice()((uint,uint))", "mAsset()(address)"), sync=False
-    )
+    return await has_methods(address, ("getPrice()((uint,uint))", "mAsset()(address)"), sync=False)
 
 
 @a_sync.a_sync(default="sync")
@@ -78,7 +76,5 @@ async def get_price(
         ERC20._get_scale_for(address),
     )
     ratio = ratio[0] / scale
-    underlying_price = await magic.get_price(
-        masset, block, skip_cache=skip_cache, sync=False
-    )
+    underlying_price = await magic.get_price(masset, block, skip_cache=skip_cache, sync=False)
     return UsdPrice(underlying_price * ratio)

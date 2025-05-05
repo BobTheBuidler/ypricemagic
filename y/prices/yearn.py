@@ -91,9 +91,7 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
                 any,
                 sync=False,
             ),
-            has_methods(
-                token, ("exchangeRate()(uint)", "underlying()(address)"), sync=False
-            ),
+            has_methods(token, ("exchangeRate()(uint)", "underlying()(address)"), sync=False),
         )
     )
 
@@ -181,14 +179,9 @@ class YearnInspiredVault(ERC20):
         # special cases
         if CHAINID == Network.Arbitrum:
             if self.address == "0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7":
-                underlying = await raw_call(
-                    self.address, "usdl()", output="address", sync=False
-                )
+                underlying = await raw_call(self.address, "usdl()", output="address", sync=False)
                 return ERC20(underlying, asynchronous=self.asynchronous)
-        elif (
-            CONNECTED_TO_MAINNET
-            and self.address == "0x09db87A538BD693E9d08544577d5cCfAA6373A48"
-        ):
+        elif CONNECTED_TO_MAINNET and self.address == "0x09db87A538BD693E9d08544577d5cCfAA6373A48":
             # ynETH yield nest has no method for underlying
             return ERC20(weth, asynchronous=self.asynchronous)
 
@@ -199,9 +192,7 @@ class YearnInspiredVault(ERC20):
             beefy_method = _BEEFY_METHODS.get(await self.__build_name__)
             if beefy_method is None:
                 raise
-            underlying = await raw_call(
-                self.address, beefy_method, output="address", sync=False
-            )
+            underlying = await raw_call(self.address, beefy_method, output="address", sync=False)
 
         if underlying is None:
             # certain reaper vaults
@@ -260,9 +251,7 @@ class YearnInspiredVault(ERC20):
                 share_price = await self._get_share_price.coroutine(block_id=block)
             except Exception as e:
                 logger.debug("exc %s when fetching share price for %s", e, self)
-                share_price = await probe(
-                    self.address, share_price_methods, block=block
-                )
+                share_price = await probe(self.address, share_price_methods, block=block)
         else:
             share_price_method, share_price = await probe(
                 self.address, share_price_methods, block=block, return_method=True

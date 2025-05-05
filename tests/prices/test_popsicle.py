@@ -73,9 +73,7 @@ async def test_popsicle_get_price(token):
         - :func:`popsicle.get_price`
         - :func:`blocks_for_contract`
     """
-    assert await popsicle.is_popsicle_lp(
-        token, sync=False
-    ), "Popsicle LP not recognized."
+    assert await popsicle.is_popsicle_lp(token, sync=False), "Popsicle LP not recognized."
     blocks = blocks_for_contract(token, 25)
     async for block, price in a_sync.map(popsicle.get_price, blocks, token=token):
         assert price, f"Failed to fetch price for {token} at block {block}."

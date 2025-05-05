@@ -23,9 +23,7 @@ try:
 except ImportError:
     from eth_abi import encode_single
 
-    encode_bytes: Callable[[str], bytes] = lambda s: encode_single(
-        "bytes32", s.encode()
-    )
+    encode_bytes: Callable[[str], bytes] = lambda s: encode_single("bytes32", s.encode())
 
 logger = logging.getLogger(__name__)
 
@@ -99,9 +97,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         )
         proxy = await Contract.coroutine(address)
         return (
-            await Contract.coroutine(
-                await proxy.target.coroutine(block_identifier=block)
-            )
+            await Contract.coroutine(await proxy.target.coroutine(block_identifier=block))
             if hasattr(proxy, "target")
             else proxy
         )
@@ -222,9 +218,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             return None
         try:
             return UsdPrice(
-                await rates.rateForCurrency.coroutine(
-                    key, block_identifier=block, decimals=18
-                )
+                await rates.rateForCurrency.coroutine(key, block_identifier=block, decimals=18)
             )
         except Exception as e:
             if not call_reverted(e):

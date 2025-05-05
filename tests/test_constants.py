@@ -24,6 +24,4 @@ def test_stablecoins(token):
     """
     for block in blocks_for_contract(token, 20):
         # NOTE Placeholder.
-        assert (
-            magic.get_price(token, block, skip_cache=True) == 1
-        ), "Stablecoin price not $1"
+        assert magic.get_price(token, block, skip_cache=True) == 1, "Stablecoin price not $1"

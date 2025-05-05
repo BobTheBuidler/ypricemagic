@@ -51,9 +51,7 @@ UNITROLLER_ABI = [
     },
     {
         "anonymous": False,
-        "inputs": [
-            {"indexed": False, "internalType": "bool", "name": "state", "type": "bool"}
-        ],
+        "inputs": [{"indexed": False, "internalType": "bool", "name": "state", "type": "bool"}],
         "name": "ActionProtocolPaused",
         "type": "event",
     },
@@ -711,9 +709,7 @@ UNITROLLER_ABI = [
     },
     {
         "constant": False,
-        "inputs": [
-            {"internalType": "address", "name": "newPauseGuardian", "type": "address"}
-        ],
+        "inputs": [{"internalType": "address", "name": "newPauseGuardian", "type": "address"}],
         "name": "_setPauseGuardian",
         "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
         "payable": False,
@@ -786,9 +782,7 @@ UNITROLLER_ABI = [
     },
     {
         "constant": False,
-        "inputs": [
-            {"internalType": "uint256", "name": "newVAIMintRate", "type": "uint256"}
-        ],
+        "inputs": [{"internalType": "uint256", "name": "newVAIMintRate", "type": "uint256"}],
         "name": "_setVAIMintRate",
         "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
         "payable": False,
@@ -826,9 +820,7 @@ UNITROLLER_ABI = [
     },
     {
         "constant": False,
-        "inputs": [
-            {"internalType": "uint256", "name": "venusVAIRate_", "type": "uint256"}
-        ],
+        "inputs": [{"internalType": "uint256", "name": "venusVAIRate_", "type": "uint256"}],
         "name": "_setVenusVAIRate",
         "outputs": [],
         "payable": False,
@@ -837,9 +829,7 @@ UNITROLLER_ABI = [
     },
     {
         "constant": False,
-        "inputs": [
-            {"internalType": "uint256", "name": "venusVAIVaultRate_", "type": "uint256"}
-        ],
+        "inputs": [{"internalType": "uint256", "name": "venusVAIVaultRate_", "type": "uint256"}],
         "name": "_setVenusVAIVaultRate",
         "outputs": [],
         "payable": False,
@@ -848,9 +838,7 @@ UNITROLLER_ABI = [
     },
     {
         "constant": False,
-        "inputs": [
-            {"internalType": "contract VToken", "name": "vToken", "type": "address"}
-        ],
+        "inputs": [{"internalType": "contract VToken", "name": "vToken", "type": "address"}],
         "name": "_supportMarket",
         "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
         "payable": False,
@@ -1024,9 +1012,7 @@ UNITROLLER_ABI = [
     },
     {
         "constant": False,
-        "inputs": [
-            {"internalType": "address[]", "name": "vTokens", "type": "address[]"}
-        ],
+        "inputs": [{"internalType": "address[]", "name": "vTokens", "type": "address[]"}],
         "name": "enterMarkets",
         "outputs": [{"internalType": "uint256[]", "name": "", "type": "uint256[]"}],
         "payable": False,
@@ -1035,9 +1021,7 @@ UNITROLLER_ABI = [
     },
     {
         "constant": False,
-        "inputs": [
-            {"internalType": "address", "name": "vTokenAddress", "type": "address"}
-        ],
+        "inputs": [{"internalType": "address", "name": "vTokenAddress", "type": "address"}],
         "name": "exitMarket",
         "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
         "payable": False,
@@ -1061,9 +1045,7 @@ UNITROLLER_ABI = [
         "constant": True,
         "inputs": [],
         "name": "getAllMarkets",
-        "outputs": [
-            {"internalType": "contract VToken[]", "name": "", "type": "address[]"}
-        ],
+        "outputs": [{"internalType": "contract VToken[]", "name": "", "type": "address[]"}],
         "payable": False,
         "stateMutability": "view",
         "type": "function",
@@ -1072,9 +1054,7 @@ UNITROLLER_ABI = [
         "constant": True,
         "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
         "name": "getAssetsIn",
-        "outputs": [
-            {"internalType": "contract VToken[]", "name": "", "type": "address[]"}
-        ],
+        "outputs": [{"internalType": "contract VToken[]", "name": "", "type": "address[]"}],
         "payable": False,
         "stateMutability": "view",
         "type": "function",
@@ -1297,9 +1277,7 @@ UNITROLLER_ABI = [
         "constant": True,
         "inputs": [],
         "name": "oracle",
-        "outputs": [
-            {"internalType": "contract PriceOracle", "name": "", "type": "address"}
-        ],
+        "outputs": [{"internalType": "contract PriceOracle", "name": "", "type": "address"}],
         "payable": False,
         "stateMutability": "view",
         "type": "function",

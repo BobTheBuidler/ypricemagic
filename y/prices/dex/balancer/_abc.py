@@ -75,9 +75,7 @@ class BalancerABC(a_sync.ASyncGenericBase, Generic[_B]):
             >>> print(is_pool)
             True
         """
-        return await contracts.has_methods(
-            token_address, self._check_methods, sync=False
-        )
+        return await contracts.has_methods(token_address, self._check_methods, sync=False)
 
     @stuck_coro_debugger
     async def get_pool_price(

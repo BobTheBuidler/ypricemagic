@@ -49,22 +49,16 @@ MULTICALL2_ABI = [
         "type": "function",
     },
     {
-        "inputs": [
-            {"internalType": "uint256", "name": "blockNumber", "type": "uint256"}
-        ],
+        "inputs": [{"internalType": "uint256", "name": "blockNumber", "type": "uint256"}],
         "name": "getBlockHash",
-        "outputs": [
-            {"internalType": "bytes32", "name": "blockHash", "type": "bytes32"}
-        ],
+        "outputs": [{"internalType": "bytes32", "name": "blockHash", "type": "bytes32"}],
         "stateMutability": "view",
         "type": "function",
     },
     {
         "inputs": [],
         "name": "getBlockNumber",
-        "outputs": [
-            {"internalType": "uint256", "name": "blockNumber", "type": "uint256"}
-        ],
+        "outputs": [{"internalType": "uint256", "name": "blockNumber", "type": "uint256"}],
         "stateMutability": "view",
         "type": "function",
     },
@@ -78,9 +72,7 @@ MULTICALL2_ABI = [
     {
         "inputs": [],
         "name": "getCurrentBlockDifficulty",
-        "outputs": [
-            {"internalType": "uint256", "name": "difficulty", "type": "uint256"}
-        ],
+        "outputs": [{"internalType": "uint256", "name": "difficulty", "type": "uint256"}],
         "stateMutability": "view",
         "type": "function",
     },
@@ -94,9 +86,7 @@ MULTICALL2_ABI = [
     {
         "inputs": [],
         "name": "getCurrentBlockTimestamp",
-        "outputs": [
-            {"internalType": "uint256", "name": "timestamp", "type": "uint256"}
-        ],
+        "outputs": [{"internalType": "uint256", "name": "timestamp", "type": "uint256"}],
         "stateMutability": "view",
         "type": "function",
     },
@@ -110,9 +100,7 @@ MULTICALL2_ABI = [
     {
         "inputs": [],
         "name": "getLastBlockHash",
-        "outputs": [
-            {"internalType": "bytes32", "name": "blockHash", "type": "bytes32"}
-        ],
+        "outputs": [{"internalType": "bytes32", "name": "blockHash", "type": "bytes32"}],
         "stateMutability": "view",
         "type": "function",
     },

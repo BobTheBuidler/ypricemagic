@@ -382,21 +382,13 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
             - :meth:`_extend`
         """
         logger.debug("checking to see if %s is cached in local db", self)
-        if cached_thru := await _metadata_read_executor.run(
-            self.cache.is_cached_thru, from_block
-        ):
-            logger.info(
-                "%s is cached thru block %s, loading from db", self, cached_thru
-            )
-            await self._extend(
-                await self.executor.run(self.cache.select, from_block, cached_thru)
-            )
+        if cached_thru := await _metadata_read_executor.run(self.cache.is_cached_thru, from_block):
+            logger.info("%s is cached thru block %s, loading from db", self, cached_thru)
+            await self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
             if self.is_reusable:
                 objs_per_chunk = 50
                 num_checkpoints = len(self._objects) // objs_per_chunk
-                checkpoint_indexes = (
-                    i * objs_per_chunk for i in range(1, num_checkpoints)
-                )
+                checkpoint_indexes = (i * objs_per_chunk for i in range(1, num_checkpoints))
                 get_block_for_obj = self._get_block_for_obj
                 for index in checkpoint_indexes:
                     obj = self._objects[index]
@@ -422,9 +414,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         return None
 
 
-def make_executor(
-    small: int, big: int, name: Optional[str] = None
-) -> PruningThreadPoolExecutor:
+def make_executor(small: int, big: int, name: Optional[str] = None) -> PruningThreadPoolExecutor:
     """
     Creates a thread pool executor that prunes completed tasks.
 
@@ -436,9 +426,7 @@ def make_executor(
     Returns:
         A PruningThreadPoolExecutor instance based on the environment configuration.
     """
-    return PruningThreadPoolExecutor(
-        big if ENVS.DB_PROVIDER == "postgres" else small, name
-    )
+    return PruningThreadPoolExecutor(big if ENVS.DB_PROVIDER == "postgres" else small, name)
 
 
 _E = TypeVar("_E", bound=AsyncThreadPoolExecutor)
@@ -588,9 +576,7 @@ class Filter(_DiskCachedMixin[T, C]):
                 def skip_too_early(objects):
                     nonlocal yielded
                     if checkpoints := self._checkpoints:
-                        start_checkpoint_index = _get_checkpoint_index(
-                            from_block, checkpoints
-                        )
+                        start_checkpoint_index = _get_checkpoint_index(from_block, checkpoints)
                         if start_checkpoint_index is not None:
                             objects = objects[start_checkpoint_index:]
                             yielded += start_checkpoint_index
@@ -782,15 +768,11 @@ class Filter(_DiskCachedMixin[T, C]):
         if debug_logs := logger.isEnabledFor(DEBUG):
             logger._log(DEBUG, "loading new objects for %s", (self,))
 
-        start = (
-            v + 1 if (v := self._lock.value) else start_from_block or self.from_block
-        )
+        start = v + 1 if (v := self._lock.value) else start_from_block or self.from_block
         if to_block:
             end = to_block
             if start > end:
-                raise ValueError(
-                    f"start {start} is bigger than end {end}, can't do that"
-                )
+                raise ValueError(f"start {start} is bigger than end {end}, can't do that")
 
             while end > (current_block := await dank_mids.eth.block_number):
                 logger.warning(
@@ -840,14 +822,10 @@ class Filter(_DiskCachedMixin[T, C]):
         done = {}
         coros = [
             self._fetch_range_wrapped(i, start, end, debug_logs)
-            for i, (start, end) in enumerate(
-                block_ranges(from_block, to_block, self._chunk_size)
-            )
+            for i, (start, end) in enumerate(block_ranges(from_block, to_block, self._chunk_size))
             if self._chunks_per_batch is None or i < self._chunks_per_batch
         ]
-        async for i, end, objs in a_sync.as_completed(
-            coros, aiter=True, tqdm=self._verbose
-        ):
+        async for i, end, objs in a_sync.as_completed(coros, aiter=True, tqdm=self._verbose):
             next_chunk_loaded = False
             done[i] = end, objs
             for i in range(chunks_yielded, len(coros)):
@@ -900,9 +878,7 @@ class Filter(_DiskCachedMixin[T, C]):
         depth = self._depth
         self._depth += 1
 
-        insert_coro = self.__insert_chunk(
-            objs, from_block, done_thru, prev_task, depth, debug_logs
-        )
+        insert_coro = self.__insert_chunk(objs, from_block, done_thru, prev_task, depth, debug_logs)
 
         if debug_logs:
             logger._log(
@@ -962,9 +938,7 @@ class Filter(_DiskCachedMixin[T, C]):
             await self.bulk_insert(objs)
         del objs
 
-        await _metadata_write_executor.run(
-            self.cache.set_metadata, from_block, done_thru
-        )
+        await _metadata_write_executor.run(self.cache.set_metadata, from_block, done_thru)
         if debug_logs:
             logger._log(
                 DEBUG,
@@ -1009,9 +983,7 @@ def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, List[str]]:
     return convert.to_address(addresses)
 
 
-def _get_suitable_checkpoint(
-    target_block: "Block", checkpoints: Checkpoints
-) -> Optional["Block"]:
+def _get_suitable_checkpoint(target_block: "Block", checkpoints: Checkpoints) -> Optional["Block"]:
     """
     Finds a suitable checkpoint block that is less than or equal to a target block.
 
@@ -1026,9 +998,7 @@ def _get_suitable_checkpoint(
     return None if block_lt_checkpoint is True else tuple(group)[-1]
 
 
-def _get_checkpoint_index(
-    target_block: "Block", checkpoints: Checkpoints
-) -> Optional[int]:
+def _get_checkpoint_index(target_block: "Block", checkpoints: Checkpoints) -> Optional[int]:
     """
     Retrieves the index for a checkpoint that is less than or equal to a given block.
 

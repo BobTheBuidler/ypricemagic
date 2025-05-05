@@ -37,9 +37,7 @@ async def is_token_set(token: AnyAddressType) -> bool:
     """
     return any(
         await cgather(
-            has_methods(
-                token, ("getComponents()(address[])", "naturalUnit()(uint)"), sync=False
-            ),
+            has_methods(token, ("getComponents()(address[])", "naturalUnit()(uint)"), sync=False),
             has_methods(
                 token,
                 (
@@ -81,9 +79,7 @@ async def get_price(
     See Also:
         - :class:`TokenSet`
     """
-    return await TokenSet(token, asynchronous=True).get_price(
-        block=block, skip_cache=skip_cache
-    )
+    return await TokenSet(token, asynchronous=True).get_price(block=block, skip_cache=skip_cache)
 
 
 class TokenSet(ERC20):
@@ -125,9 +121,7 @@ class TokenSet(ERC20):
         """
         contract = await Contract.coroutine(self.address)
         components = await contract.getComponents.coroutine(block_identifier=block)
-        return [
-            ERC20(component, asynchronous=self.asynchronous) for component in components
-        ]
+        return [ERC20(component, asynchronous=self.asynchronous) for component in components]
 
     async def balances(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
@@ -202,9 +196,7 @@ class TokenSet(ERC20):
             - :meth:`balances`
             - :meth:`total_supply_readable`
         """
-        total_supply = Decimal(
-            await self.total_supply_readable(block=block, sync=False)
-        )
+        total_supply = Decimal(await self.total_supply_readable(block=block, sync=False))
         if total_supply == 0:
             logger.debug("total supply is 0, forcing price to $0")
             return UsdPrice(0)
@@ -217,17 +209,11 @@ class TokenSet(ERC20):
             logger.debug("balances: %s  values: %s", balances, values)
             tvl = sum(values)
             price = UsdPrice(tvl / total_supply)
-            logger.debug(
-                "total supply: %s  tvl: %s  price: %s", total_supply, tvl, price
-            )
+            logger.debug("total supply: %s  tvl: %s  price: %s", total_supply, tvl, price)
             return price
         elif hasattr(contract, "getTotalComponentRealUnits"):
-            balances_per_token: List[WeiBalance] = await self.balances(
-                block=block, sync=False
-            )
-            price = UsdPrice(
-                await WeiBalance.value_usd.sum(balances_per_token, sync=False)
-            )
+            balances_per_token: List[WeiBalance] = await self.balances(block=block, sync=False)
+            price = UsdPrice(await WeiBalance.value_usd.sum(balances_per_token, sync=False))
             logger.debug("balances per token: %s  price: %s", balances_per_token, price)
             return price
         raise NotImplementedError

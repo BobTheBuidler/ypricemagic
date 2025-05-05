@@ -55,9 +55,7 @@ async def decimals(
         - :func:`y.utils.raw_calls._decimals`
         - :func:`y.utils.multicall.multicall_decimals`
     """
-    func = _choose_appropriate_fn(
-        contract_address_or_addresses, _decimals, multicall_decimals
-    )
+    func = _choose_appropriate_fn(contract_address_or_addresses, _decimals, multicall_decimals)
     return await func(
         contract_address_or_addresses,
         block=block,
@@ -168,9 +166,7 @@ async def totalSupplyReadable(
         supply = token_supplys
         decimal = token_decimals
         return supply / 10**decimal
-    return [
-        supply / 10**decimal for supply, decimal in zip(token_supplys, token_decimals)
-    ]
+    return [supply / 10**decimal for supply, decimal in zip(token_supplys, token_decimals)]
 
 
 def _choose_appropriate_fn(input: Any, singlecall_fn: Callable, multicall_fn: Callable):

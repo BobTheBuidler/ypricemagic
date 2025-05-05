@@ -54,9 +54,7 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
     if iscoroutinefunction(func):
 
         @wraps(func)
-        async def continue_on_revert_wrap(
-            *args: P.args, **kwargs: P.kwargs
-        ) -> Union[T, None]:
+        async def continue_on_revert_wrap(*args: P.args, **kwargs: P.kwargs) -> Union[T, None]:
             try:
                 return await func(*args, **kwargs)
             except Exception as e:
@@ -65,9 +63,7 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
     elif callable(func):
 
         @wraps(func)
-        def continue_on_revert_wrap(
-            *args: P.args, **kwargs: P.kwargs
-        ) -> Union[T, None]:
+        def continue_on_revert_wrap(*args: P.args, **kwargs: P.kwargs) -> Union[T, None]:
             try:
                 return func(*args, **kwargs)
             except Exception as e:

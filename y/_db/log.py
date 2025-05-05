@@ -4,9 +4,7 @@ import evmspec
 
 
 @final
-class Log(
-    evmspec.Log, frozen=True, kw_only=True, array_like=True, forbid_unknown_fields=True
-):
+class Log(evmspec.Log, frozen=True, kw_only=True, array_like=True, forbid_unknown_fields=True):
     """
     Extends :class:`evmspec.Log` with additional configuration for immutability,
     keyword-only arguments, and array-like encoding behavior using :class:`msgspec.Struct`.

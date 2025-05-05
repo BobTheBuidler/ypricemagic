@@ -169,9 +169,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
             if debug_logs_enabled:
                 log_debug("block %s prior to %s deploy block", block, exchange)
             return 0
-        liquidity = await ERC20(token_address, asynchronous=True).balance_of(
-            exchange, block
-        )
+        liquidity = await ERC20(token_address, asynchronous=True).balance_of(exchange, block)
         if debug_logs_enabled:
             log_debug(
                 "Uniswap v1 liquidity for %s %s at %s is %s",

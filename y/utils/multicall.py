@@ -63,8 +63,7 @@ async def multicall_same_func_no_input(
 
     addresses = [await convert.to_address_async(address) for address in addresses]
     results = await igather(
-        Call(address, [method], ((address, apply_func)), block_id=block)
-        for address in addresses
+        Call(address, [method], ((address, apply_func)), block_id=block) for address in addresses
     )
     return [v for call in results for v in call.values()]
 
@@ -82,10 +81,7 @@ async def multicall_same_func_same_contract_different_inputs(
     assert inputs
     address = await convert.to_address_async(address)
     results = await igather(
-        (
-            Call(address, [method, input], [[input, apply_func]], block_id=block)
-            for input in inputs
-        ),
+        (Call(address, [method, input], [[input, apply_func]], block_id=block) for input in inputs),
         return_exceptions=return_None_on_failure,
     )
     if return_None_on_failure:
@@ -106,9 +102,7 @@ async def multicall_decimals(
 
     addresses = tuple(map(str, addresses))
     try:
-        calls = a_sync.map(
-            Call, addresses, function="decimals()(uint256)", block_id=block
-        )
+        calls = a_sync.map(Call, addresses, function="decimals()(uint256)", block_id=block)
         return [decimals async for address, decimals in calls]
     except (CannotHandleRequest, InsufficientDataBytes):
         pass  # TODO investigate these
@@ -146,9 +140,7 @@ async def multicall_totalSupply(
 # yLazyLogger(logger)
 @a_sync.a_sync(default="sync")
 @stuck_coro_debugger
-async def fetch_multicall(
-    *calls: Any, block: Optional[Block] = None
-) -> List[Optional[Any]]:
+async def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional[Any]]:
     # https://github.com/makerdao/multicall
     multicall_input = []
     fn_list = []

@@ -108,9 +108,7 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
             force_setattr(log, "topics", list(log.topics))
 
     try:
-        decoded = _decode_logs(
-            [log.to_dict() for log in logs] if special_treatment else logs
-        )
+        decoded = _decode_logs([log.to_dict() for log in logs] if special_treatment else logs)
     except Exception:
         decoded = []
         for log in logs:
@@ -173,9 +171,7 @@ async def get_logs_asap(
     if from_block is None:
         from y.contracts import contract_creation_block_async
 
-        from_block = (
-            0 if address is None else await contract_creation_block_async(address, True)
-        )
+        from_block = 0 if address is None else await contract_creation_block_async(address, True)
     if to_block is None:
         to_block = await dank_mids.eth.block_number
 
@@ -183,9 +179,7 @@ async def get_logs_asap(
     if verbose > 0:
         logger.info("fetching %d batches", len(ranges))
 
-    batches = await igather(
-        _get_logs_async(address, topics, start, end) for start, end in ranges
-    )
+    batches = await igather(_get_logs_async(address, topics, start, end) for start, end in ranges)
     return list(concat(batches))
 
 
@@ -234,9 +228,7 @@ async def get_logs_asap_generator(
         if address is None:
             from_block = 0
         elif isinstance(address, Iterable) and not isinstance(address, str):
-            from_block = await _lowest_deploy_block(
-                address, when_no_history_return_0=True
-            )
+            from_block = await _lowest_deploy_block(address, when_no_history_return_0=True)
         else:
             from_block = await contract_creation_block_async(address, True)
     if to_block is None:
@@ -255,9 +247,7 @@ async def get_logs_asap_generator(
         if chronological:
             yielded = 0
             done = {}
-            async for i, result in a_sync.as_completed(
-                dict(enumerate(coros)), aiter=True
-            ):
+            async for i, result in a_sync.as_completed(dict(enumerate(coros)), aiter=True):
                 done[i] = result
                 for i in range(len(coros)):
                     if yielded > i:
@@ -381,8 +371,7 @@ get_logs_semaphore = defaultdict(
     lambda: dank_mids.BlockSemaphore(
         int(ENVS.GETLOGS_DOP),
         # We need to do this in case users use the sync api in a multithread context
-        name="y.get_logs"
-        + ("" if current_thread() == main_thread() else f".{current_thread()}"),
+        name="y.get_logs" + ("" if current_thread() == main_thread() else f".{current_thread()}"),
     )
 )
 
@@ -497,13 +486,9 @@ def _get_logs_no_cache(
     logger.debug("fetching logs %s to %s", start, end)
     try:
         if address is None:
-            response = web3.eth.get_logs(
-                {"topics": topics, "fromBlock": start, "toBlock": end}
-            )
+            response = web3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
         elif topics is None:
-            response = web3.eth.get_logs(
-                {"address": address, "fromBlock": start, "toBlock": end}
-            )
+            response = web3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
         else:
             response = web3.eth.get_logs(
                 {
@@ -707,9 +692,7 @@ class LogFilter(Filter[Log, "LogCache"]):
 
             if self.addresses is None:
                 self.from_block = 0
-            elif isinstance(self.addresses, Iterable) and not isinstance(
-                self.addresses, str
-            ):
+            elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
                 self.from_block = await _lowest_deploy_block(
                     self.addresses, when_no_history_return_0=True
                 )

@@ -150,9 +150,7 @@ def setup_getcode_cache_middleware() -> None:
             session = Session()
             session.mount("http://", adapter)
             session.mount("https://", adapter)
-            web3.provider = HTTPProvider(
-                web3.provider.endpoint_uri, {"timeout": 600}, session
-            )
+            web3.provider = HTTPProvider(web3.provider.endpoint_uri, {"timeout": 600}, session)
         except AttributeError as e:
             if "'IPCProvider' object has no attribute 'endpoint_uri'" not in str(e):
                 raise

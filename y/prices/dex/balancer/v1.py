@@ -97,8 +97,7 @@ class BalancerV1Pool(BalancerPool):
         """
         contract = await Contract.coroutine(self.address)
         return [
-            ERC20(token, asynchronous=self.asynchronous)
-            for token in await contract.getFinalTokens
+            ERC20(token, asynchronous=self.asynchronous) for token in await contract.getFinalTokens
         ]
 
     __tokens__: HiddenMethodDescriptor[Self, List[ERC20]]
@@ -149,8 +148,7 @@ class BalancerV1Pool(BalancerPool):
 
         # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
         good_value = sum(
-            balance * Decimal(price)
-            for balance, price in zip(good_balances.values(), prices)
+            balance * Decimal(price) for balance, price in zip(good_balances.values(), prices)
         )
 
         return good_value / len(good_balances) * len(token_balances)
@@ -173,9 +171,7 @@ class BalancerV1Pool(BalancerPool):
         See Also:
             - :class:`~y.classes.common.ERC20`
         """
-        return await a_sync.map(
-            self.get_balance, self.__tokens__, block=block or "latest"
-        )
+        return await a_sync.map(self.get_balance, self.__tokens__, block=block or "latest")
 
     @stuck_coro_debugger
     async def get_balance(self, token: AnyAddressType, block: Block) -> Decimal:
@@ -290,9 +286,7 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
             if output := await self.get_some_output(
                 token_address, block=block, scale=scale, sync=False
             ):
-                return await _calc_out_value(
-                    *output, scale, block=block, skip_cache=skip_cache
-                )
+                return await _calc_out_value(*output, scale, block=block, skip_cache=skip_cache)
 
     @stuck_coro_debugger
     async def check_liquidity_against(
@@ -376,9 +370,7 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
         """
         pools = [pool for pool in pools if pool not in ignore_pools]
         return (
-            await BalancerV1Pool.check_liquidity.max(
-                pools, token=token, block=block, sync=False
-            )
+            await BalancerV1Pool.check_liquidity.max(pools, token=token, block=block, sync=False)
             if pools
             else 0
         )

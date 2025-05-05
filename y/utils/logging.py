@@ -98,9 +98,7 @@ def get_price_logger(
     logger.enabled = logger.isEnabledFor(DEBUG)
 
     if logger.enabled:
-        logger.debug = lambda msg, *args, **kwargs: logger._log(
-            DEBUG, msg, args, **kwargs
-        )
+        logger.debug = lambda msg, *args, **kwargs: logger._log(DEBUG, msg, args, **kwargs)
 
         if start_task:
             # will kill itself when this logger is garbage collected
@@ -136,9 +134,7 @@ async def _debug_tsk(symbol: Optional[str], logger_ref: "weak_ref[Logger]") -> N
         logger.debug(*args)
 
 
-_all_price_loggers: Final["WeakValueDictionary[str, PriceLogger]"] = (
-    WeakValueDictionary()
-)
+_all_price_loggers: Final["WeakValueDictionary[str, PriceLogger]"] = WeakValueDictionary()
 
 
 NETWORK_DESCRIPTOR_FOR_ISSUE_REQ: Final = (
@@ -146,9 +142,7 @@ NETWORK_DESCRIPTOR_FOR_ISSUE_REQ: Final = (
 )
 
 
-def _gh_issue_request(
-    issue_request_details: Union[str, List[str]], _logger=None
-) -> None:
+def _gh_issue_request(issue_request_details: Union[str, List[str]], _logger=None) -> None:
     """
     Log a request for a GitHub issue or pull request.
 

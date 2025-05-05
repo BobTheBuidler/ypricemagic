@@ -86,9 +86,7 @@ def _decode_log(data: bytes) -> Log:
         log = _json_decode_log(data)
         # we just update them to the new format silently
         tx_hash_dbid = _get_hash(hash=log.transactionHash.hex()[2:]).dbid
-        DbLog[CHAINID, log.blockNumber, tx_hash_dbid, log.logIndex].raw = _encode_log(
-            log
-        )
+        DbLog[CHAINID, log.blockNumber, tx_hash_dbid, log.logIndex].raw = _encode_log(log)
         # and you're good to go
         return log
 
@@ -122,8 +120,7 @@ async def _prepare_log(log: Log) -> tuple:
         igather(map(get_topic_dbid, log.topics)),
     )
     topics = {
-        f"topic{i}": topic_dbid
-        for i, topic_dbid in itertools.zip_longest(range(4), topic_dbids)
+        f"topic{i}": topic_dbid for i, topic_dbid in itertools.zip_longest(range(4), topic_dbids)
     }
     params = {
         "block_chain": CHAINID,
@@ -140,9 +137,7 @@ async def _prepare_log(log: Log) -> tuple:
 _check_using_extended_db = lambda: "eth_portfolio" in _get_get_block().__module__
 
 
-async def bulk_insert(
-    logs: List[Log], executor: AsyncExecutor = default_filter_threads
-) -> None:
+async def bulk_insert(logs: List[Log], executor: AsyncExecutor = default_filter_threads) -> None:
     if not logs:
         return
 
@@ -151,12 +146,9 @@ async def bulk_insert(
     # handle a conflict with eth-portfolio's extended db
     if _check_using_extended_db():
         blocks = tuple(
-            (CHAINID, block, "BlockExtended")
-            for block in {log.blockNumber for log in logs}
+            (CHAINID, block, "BlockExtended") for block in {log.blockNumber for log in logs}
         )
-        blocks_fut = submit(
-            _bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks, sync=True
-        )
+        blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks, sync=True)
     else:
         blocks = tuple((CHAINID, block) for block in {log.blockNumber for log in logs})
         blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS, blocks, sync=True)
@@ -164,9 +156,7 @@ async def bulk_insert(
 
     txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
     addresses = {log.address for log in logs}
-    hashes = tuple(
-        (_remove_0x_prefix(hash),) for hash in itertools.chain(txhashes, addresses)
-    )
+    hashes = tuple((_remove_0x_prefix(hash),) for hash in itertools.chain(txhashes, addresses))
     hashes_fut = submit(_bulk_insert, Hashes, ("hash",), hashes, sync=True)
     del txhashes, addresses, hashes
 
@@ -318,9 +308,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             else:
                 infos = [
                     # If we cached all logs for this address...
-                    _get_log_cache_info(
-                        chain=chain, address=addr, topics=_encode_generic(None)
-                    )
+                    _get_log_cache_info(chain=chain, address=addr, topics=_encode_generic(None))
                     # ... or we cached all logs for these specific topics for this address
                     or _get_log_cache_info(
                         chain=chain, address=addr, topics=_encode_generic(self.topics)
@@ -337,9 +325,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
     def _select(self, from_block: int, to_block: int) -> List[Log]:
         logger.info("executing select query for %s", self)
         try:
-            return [
-                _decode_log(log.raw) for log in self._get_query(from_block, to_block)
-            ]
+            return [_decode_log(log.raw) for log in self._get_query(from_block, to_block)]
         except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
@@ -384,9 +370,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             if isinstance(addresses, str):
                 addresses = [addresses]
             for address in addresses:
-                if e := _get_log_cache_info(
-                    chain=chain, address=address, topics=encoded_topics
-                ):
+                if e := _get_log_cache_info(chain=chain, address=address, topics=encoded_topics):
                     if from_block < e.cached_from:
                         e.cached_from = from_block
                         should_commit = True

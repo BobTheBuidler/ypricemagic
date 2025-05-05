@@ -196,9 +196,7 @@ class UniswapV3Pool(ContractBase):
 
     # DEBUG: lets try a semaphore here
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60, semaphore=10000)
-    async def check_liquidity(
-        self, token: AnyAddressType, block: Block
-    ) -> Optional[int]:
+    async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
         """
         Check the liquidity of a token in the pool at a specific block.
 
@@ -230,9 +228,7 @@ class UniswapV3Pool(ContractBase):
 
         if block < await self.deploy_block(sync=False):
             if debug_logs_enabled:
-                logger._log(
-                    DEBUG, "block %s prior to %s deploy block", (block, repr(self))
-                )
+                logger._log(DEBUG, "block %s prior to %s deploy block", (block, repr(self)))
             return 0
 
         try:
@@ -271,9 +267,7 @@ class UniswapV3Pool(ContractBase):
         See Also:
             :func:`check_liquidity`
         """
-        return await self.check_liquidity(
-            self._get_token_out(token_in), block=block, sync=False
-        )
+        return await self.check_liquidity(self._get_token_out(token_in), block=block, sync=False)
 
     @lru_cache
     def _get_token_out(self, token_in: ERC20) -> ERC20:
@@ -449,9 +443,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
 
     __pools__: HiddenMethodDescriptor[Self, "UniV3Pools"]
 
-    async def pools_for_token(
-        self, token: Address, block: Block
-    ) -> AsyncIterator[UniswapV3Pool]:
+    async def pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
         """
         Get the pools for a specific token.
 
@@ -481,9 +473,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
             if deploy_block == block:
                 # we got all for `block` and dont need to bother checking
                 return
-            async for pool in pools.objects(
-                to_block=block, from_block=deploy_block + 1
-            ):
+            async for pool in pools.objects(to_block=block, from_block=deploy_block + 1):
                 if token in pool:
                     cache[pool._deploy_block].append(pool)
                     yield pool
@@ -557,9 +547,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
             logger._log(DEBUG, "paths: %s", (paths,))
 
         amount_in = await ERC20._get_scale_for(token)
-        results = await igather(
-            self._quote_exact_input(path, amount_in, block) for path in paths
-        )
+        results = await igather(self._quote_exact_input(path, amount_in, block) for path in paths)
 
         if debug_logs_enabled:
             logger._log(DEBUG, "results: %s", (results,))
@@ -599,37 +587,27 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 (self, await ERC20(token, asynchronous=True).symbol, token, block),
             )
 
-        if (
-            CONNECTED_TO_MAINNET
-            and token == "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D"
-        ):
+        if CONNECTED_TO_MAINNET and token == "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D":
             # LQTY, TODO refactor this somehow
             return 0
 
         quoter = await self.__quoter__
         if block and block < await contract_creation_block_async(quoter):
             if debug_logs_enabled:
-                logger._log(
-                    DEBUG, "block %s is before %s deploy block", (block, quoter)
-                )
+                logger._log(DEBUG, "block %s is before %s deploy block", (block, quoter))
             return 0
 
         if token == weth.address:
             # NOTE: we need to filter these or else we will be fetching every pool
             #       for now, we only focus on weth/usdc pools
             filter_fn = (
-                lambda pool: pool._get_token_out(token) == usdc.address
-                and pool not in ignore_pools
+                lambda pool: pool._get_token_out(token) == usdc.address and pool not in ignore_pools
             )
         else:
             filter_fn = lambda pool: pool not in ignore_pools
 
-        token_out_tasks = UniswapV3Pool._check_liquidity_token_out.map(
-            token_in=token, block=block
-        )
-        pools_for_token: a_sync.ASyncIterator[UniswapV3Pool] = self.pools_for_token(
-            token, block
-        )
+        token_out_tasks = UniswapV3Pool._check_liquidity_token_out.map(token_in=token, block=block)
+        pools_for_token: a_sync.ASyncIterator[UniswapV3Pool] = self.pools_for_token(token, block)
 
         if debug_logs_enabled:
             async for pool in pools_for_token.filter(filter_fn):
@@ -658,16 +636,13 @@ class UniswapV3(a_sync.ASyncGenericBase):
             async for pool, liquidity in token_out_tasks.map(pop=False):
                 await log_liquidity(pool, token, block, liquidity)
                 token_out_liquidity[pool._get_token_out(token)].append(liquidity)
-            logger._log(
-                DEBUG, "%s token_out_liquidity: %s", (token, token_out_liquidity)
-            )
+            logger._log(DEBUG, "%s token_out_liquidity: %s", (token, token_out_liquidity))
         else:
             async for pool, liquidity in token_out_tasks.map(pop=False):
                 token_out_liquidity[pool._get_token_out(token)].append(liquidity)
 
         token_out_min_liquidity = {
-            token_out: min(liquidities)
-            for token_out, liquidities in token_out_liquidity.items()
+            token_out: min(liquidities) for token_out, liquidities in token_out_liquidity.items()
         }
 
         token_in_tasks = UniswapV3Pool.check_liquidity.map(token=token, block=block)
@@ -686,18 +661,14 @@ class UniswapV3(a_sync.ASyncGenericBase):
             else:
                 token_in_tasks[pool]
 
-        liquidity = (
-            await token_in_tasks.max(pop=True, sync=False) if token_in_tasks else 0
-        )
+        liquidity = await token_in_tasks.max(pop=True, sync=False) if token_in_tasks else 0
         if debug_logs_enabled:
             await log_liquidity(self, token, block, liquidity)
         return liquidity
 
     @stuck_coro_debugger
     @eth_retry.auto_retry
-    async def _quote_exact_input(
-        self, path: Path, amount_in: int, block: int
-    ) -> Optional[Decimal]:
+    async def _quote_exact_input(self, path: Path, amount_in: int, block: int) -> Optional[Decimal]:
         """
         Quote the exact input for a given path and amount.
 
@@ -793,9 +764,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
             :class:`SlipstreamPools`
         """
         self.asynchronous = asynchronous
-        super().__init__(
-            addresses=[factory.address], topics=[factory.topics["PoolCreated"]]
-        )
+        super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]])
         self._pools_by_token_cache = defaultdict(lambda: defaultdict(list))
 
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:

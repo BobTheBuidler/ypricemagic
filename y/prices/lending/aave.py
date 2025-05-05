@@ -210,9 +210,7 @@ class AaveMarketV2(AaveMarketBase):
             ]
             logger.info("loaded %s v2 atokens for %s", len(atokens), repr(self))
             return atokens
-        except (
-            TypeError
-        ) as e:  # TODO figure out what to do about non verified aave markets
+        except TypeError as e:  # TODO figure out what to do about non verified aave markets
             logger.exception(e)
             logger.warning("failed to load tokens for %s", self)
             return []
@@ -242,9 +240,7 @@ class AaveMarketV3(AaveMarketBase):
             ]
             logger.info("loaded %s v3 atokens for %s", len(atokens), repr(self))
             return atokens
-        except (
-            TypeError
-        ) as e:  # TODO figure out what to do about non verified aave markets
+        except TypeError as e:  # TODO figure out what to do about non verified aave markets
             logger.exception(e)
             logger.warning("failed to load tokens for %s", self)
             return []
@@ -284,9 +280,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.cached_property
     async def pools_v1(self) -> List[AaveMarketV1]:
-        pools = [
-            AaveMarketV1(pool, asynchronous=self.asynchronous) for pool in v1_pools
-        ]
+        pools = [AaveMarketV1(pool, asynchronous=self.asynchronous) for pool in v1_pools]
         logger.debug("AaveRegistry v1 pools %s", pools)
         return pools
 
@@ -294,9 +288,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.cached_property
     async def pools_v2(self) -> List[AaveMarketV2]:
-        pools = [
-            AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools
-        ]
+        pools = [AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools]
         logger.debug("AaveRegistry v2 pools %s", pools)
         return pools
 
@@ -304,9 +296,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.cached_property
     async def pools_v3(self) -> List[AaveMarketV3]:
-        pools = [
-            AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools
-        ]
+        pools = [AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools]
         logger.debug("AaveRegistry v3 pools %s", pools)
         return pools
 
@@ -332,8 +322,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         logger = get_price_logger(atoken_address, block=None, extra="aave")
         is_atoken = any(
             await igather(
-                pool.contains(atoken_address, sync=False)
-                for pool in await self.__pools__
+                pool.contains(atoken_address, sync=False) for pool in await self.__pools__
             )
         )
         logger.debug("is_atoken: %s", is_atoken)
@@ -351,8 +340,8 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.a_sync(cache_type="memory")
     async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
-        pool: Union[AaveMarketV1, AaveMarketV2, AaveMarketV3] = (
-            await self.pool_for_atoken(atoken_address, sync=False)
+        pool: Union[AaveMarketV1, AaveMarketV2, AaveMarketV3] = await self.pool_for_atoken(
+            atoken_address, sync=False
         )
         return await pool.underlying(atoken_address, sync=False)
 
@@ -406,9 +395,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
             return None
         price_per_share /= Decimal(scale)
         return price_per_share * Decimal(
-            await ERC20(underlying, asynchronous=True).price(
-                block, skip_cache=skip_cache
-            )
+            await ERC20(underlying, asynchronous=True).price(block, skip_cache=skip_cache)
         )
 
 

@@ -128,9 +128,7 @@ async def test_chainlink_get_feed(token):
     See Also:
         :func:`y.prices.chainlink.chainlink.get_feed`
     """
-    assert (
-        await chainlink.get_feed(token, sync=False) != ZERO_ADDRESS
-    ), "no feed available"
+    assert await chainlink.get_feed(token, sync=False) != ZERO_ADDRESS, "no feed available"
 
 
 @pytest.mark.parametrize("token", FEEDS)
@@ -155,9 +153,7 @@ async def test_chainlink_latest(token):
         if latest_timestamp and latest_timestamp + 24 * 60 * 60 < time.time():
             pytest.skip("feed is stale")
         try:
-            assert (
-                await feed.contract.aggregator == ZERO_ADDRESS
-            ), "no current price available"
+            assert await feed.contract.aggregator == ZERO_ADDRESS, "no current price available"
         except AttributeError as e:
             raise AttributeError(*e.args, feed) from e
 

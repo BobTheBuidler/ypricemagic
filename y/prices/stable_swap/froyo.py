@@ -46,16 +46,11 @@ def is_froyo(token: AnyAddressType) -> bool:
         :func:`~y.convert.to_address`, :class:`~y.networks.Network`
     """
     address = convert.to_address(token)
-    return (
-        CHAINID == Network.Fantom
-        and address == "0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3"
-    )
+    return CHAINID == Network.Fantom and address == "0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3"
 
 
 @a_sync.a_sync(default="sync")
-async def get_price(
-    token: AnyAddressType, block: Optional[Block] = None
-) -> Optional[UsdPrice]:
+async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
     """
     Retrieves the USD price of the Froyo pool token on the Fantom network.
 

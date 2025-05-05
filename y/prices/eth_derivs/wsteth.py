@@ -52,9 +52,7 @@ class wstEth(a_sync.ASyncGenericBase):
         super().__init__()
         self.asynchronous = asynchronous
         try:
-            self.address = {
-                Network.Mainnet: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"
-            }[CHAINID]
+            self.address = {Network.Mainnet: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"}[CHAINID]
             self.wrapped_for_curve = {
                 Network.Mainnet: "0xb82CFa4325568748506dC7cF267857Ff1e3b8d39"
             }[CHAINID]
@@ -89,9 +87,7 @@ class wstEth(a_sync.ASyncGenericBase):
             - :func:`y.prices.magic.get_price`
         """
         share_price, weth_price = await cgather(
-            raw_call(
-                self.address, "stEthPerToken()", output="int", block=block, sync=False
-            ),
+            raw_call(self.address, "stEthPerToken()", output="int", block=block, sync=False),
             magic.get_price(weth, block, skip_cache=skip_cache, sync=False),
         )
         share_price /= Decimal(10**18)

@@ -96,9 +96,7 @@ class SolidlyRouter(SolidlyRouterBase):
 
     @stuck_coro_debugger
     @a_sync_ttl_cache
-    async def pair_for(
-        self, input_token: Address, output_token: Address, stable: bool
-    ) -> Address:
+    async def pair_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
         """
         Get the address of the pool for a given token pair.
 
@@ -146,9 +144,7 @@ class SolidlyRouter(SolidlyRouterBase):
             >>> pool = await router.get_pool("0xTokenA", "0xTokenB", True, 12345678)
             >>> print(pool)
         """
-        pool_address = await self.pair_for(
-            input_token, output_token, stable, sync=False
-        )
+        pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
         if await self.contract.isPair.coroutine(pool_address, block_identifier=block):
             return SolidlyPool(pool_address, asynchronous=self.asynchronous)
 
@@ -217,8 +213,6 @@ class SolidlyRouter(SolidlyRouterBase):
             elif unstable_pool:
                 routes.append([input_token, output_token, False])
             else:
-                raise ValueError(
-                    "Not sure why this function is even running if no pool is found"
-                )
+                raise ValueError("Not sure why this function is even running if no pool is found")
 
         return routes
