@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Iterable
+from typing import Any, Iterable, Sequence
 from pony.orm import Database, DatabaseError, commit
 
 from a_sync import a_sync
@@ -66,8 +66,8 @@ def execute(sql: str, *, db: Database = entities.db) -> None:
 @db_session_retry_locked
 def insert(
     entity_type: entities.db.Entity,
-    columns: Iterable[str],
-    items: Iterable[Iterable[Any]],
+    columns: Sequence[str],
+    items: Sequence[Iterable[Any]],
     *,
     db: Database = entities.db,
 ) -> None:
