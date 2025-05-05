@@ -13,7 +13,7 @@ try:
     from mypyc.build import mypycify
 
     ext_modules = mypycify(
-        ["y/_db/utils/stringify.py", "--strict", "--pretty", "--install-types"]
+        ["y/_db/utils/stringify.py", "y/convert.py", "--strict", "--pretty", "--install-types"]
     )
 except ImportError:
     ext_modules = []
@@ -34,14 +34,6 @@ setup(
     author_email="bobthebuidlerdefi@gmail.com",
     url="https://github.com/BobTheBuidler/ypricemagic",
     license="MIT",
-    install_requires=requirements,
-    setup_requires=[
-        "setuptools_scm",
-    ],
-    package_data={"y": ["py.typed"]},
-    include_package_data=True,
-    ext_modules=ext_modules,
-    zip_safe=False,
     classifiers=[
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
@@ -54,4 +46,10 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries",
     ],
+    setup_requires=["setuptools_scm"],
+    install_requires=requirements,
+    package_data={"y": ["py.typed"]},
+    include_package_data=True,
+    ext_modules=ext_modules,
+    zip_safe=False,
 )
