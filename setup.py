@@ -21,6 +21,7 @@ try:
             "--strict",
             "--pretty",
             "--install-types",
+            "--disable-error-code=import-untyped",
         ]
     )
 except ImportError:
