@@ -96,10 +96,10 @@ def build_query(
 ) -> str:
     data = ",".join(build_row(i, provider_name) for i in items)
     if provider_name == "sqlite":
-        return (
-            f'insert or ignore into {entity_name} ({",".join(columns)}) values {data}'
-        )
+        return f'insert or ignore into {entity_name} ({",".join(columns)}) values {data}'
     elif provider_name == "postgres":
-        return f'insert into {entity_name} ({",".join(columns)}) values {data} on conflict do nothing'
+        return (
+            f'insert into {entity_name} ({",".join(columns)}) values {data} on conflict do nothing'
+        )
     else:
         raise NotImplementedError(provider_name)

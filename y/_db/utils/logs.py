@@ -86,9 +86,7 @@ def _decode_log(data: bytes) -> Log:
         log = _json_decode_log(data)
         # we just update them to the new format silently
         tx_hash_dbid = _get_hash(hash=log.transactionHash.hex()[2:]).dbid
-        DbLog[CHAINID, log.blockNumber, tx_hash_dbid, log.logIndex].raw = _encode_log(
-            log
-        )
+        DbLog[CHAINID, log.blockNumber, tx_hash_dbid, log.logIndex].raw = _encode_log(log)
         # and you're good to go
         return log
 
@@ -310,9 +308,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             else:
                 infos = [
                     # If we cached all logs for this address...
-                    _get_log_cache_info(
-                        chain=chain, address=addr, topics=_encode_generic(None)
-                    )
+                    _get_log_cache_info(chain=chain, address=addr, topics=_encode_generic(None))
                     # ... or we cached all logs for these specific topics for this address
                     or _get_log_cache_info(
                         chain=chain, address=addr, topics=_encode_generic(self.topics)
