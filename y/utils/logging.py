@@ -136,7 +136,9 @@ async def _debug_tsk(symbol: Optional[str], logger_ref: "weak_ref[Logger]") -> N
         logger.debug(*args)
 
 
-_all_price_loggers: Final["WeakValueDictionary[str, PriceLogger]"] = WeakValueDictionary()
+_all_price_loggers: Final["WeakValueDictionary[str, PriceLogger]"] = (
+    WeakValueDictionary()
+)
 
 
 NETWORK_DESCRIPTOR_FOR_ISSUE_REQ: Final = (
