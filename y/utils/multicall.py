@@ -13,7 +13,7 @@ from web3.exceptions import CannotHandleRequest
 from y import convert
 from y._decorators import stuck_coro_debugger
 from y.contracts import Contract, contract_creation_block
-from y.datatypes import Address, AddressOrContract, AnyAddressType, Block
+from y.datatypes import AddressOrContract, AnyAddressType, Block
 from y.exceptions import continue_if_call_reverted
 from y.interfaces.multicall2 import MULTICALL2_ABI
 from y.networks import Network
