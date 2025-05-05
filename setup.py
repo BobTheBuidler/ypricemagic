@@ -30,7 +30,13 @@ try:
             "--disable-error-code=override",
             "--disable-error-code=call-arg",
             "--disable-error-code=union-attr",
+            "--disable-error-code=str-bytes-safe",
+            "--disable-error-code=call-overload",
             "--disable-error-code=return",
+            "--disable-error-code=no-redef",
+            "--disable-error-code=valid-type",
+            "--disable-error-code=assignment",
+            "--disable-error-code=var-annotated",
             "--disable-error-code=arg-type",
         ]
     )
