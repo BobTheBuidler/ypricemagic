@@ -13,6 +13,11 @@ CHAINID = chain.id
 The chainid for the connected rpc.
 """
 
+NETWORK_NAME = Network.name(CHAINID)
+"""
+The name of the connected network.
+"""
+
 EEE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 """
 The address used to represent the native token (e.g., ETH on Ethereum, AVAX on Avalanche, etc.) in various DeFi protocols.
