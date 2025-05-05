@@ -2,12 +2,17 @@
 Utility functions for gathering method results asynchronously.
 """
 
-from typing import Any, Iterable, Optional, Tuple
+from typing import Any, Final, Iterable, Optional, Tuple
 
-from a_sync import igather
-from multicall import Call
+import a_sync
+import multicall
 
 from y._decorators import stuck_coro_debugger
+
+
+Call: Final = multicall.Call
+
+igather: Final = a_sync.igather
 
 
 async def gather_methods(
@@ -16,7 +21,7 @@ async def gather_methods(
     *,
     block: Optional[int] = None,
     return_exceptions: bool = False,
-) -> Tuple[Any]:
+) -> Tuple[Any, ...]:
     """
     Asynchronously gather results from multiple contract methods.
 
@@ -44,20 +49,24 @@ async def gather_methods(
         ('Dai Stablecoin', 'DAI', 18)
     """
     methods = tuple(methods)
-    gather_fn = _gather_methods_raw if "(" in methods[0] else _gather_methods_brownie
-    return await gather_fn(
-        address, methods, block=block, return_exceptions=return_exceptions
-    )
+    if "(" in methods[0]:        
+        return await _gather_methods_raw(
+            address, methods, block=block, return_exceptions=return_exceptions
+        )
+    else:
+        return await _gather_methods_brownie(
+            address, methods, block=block, return_exceptions=return_exceptions
+        )
 
 
 @stuck_coro_debugger
 async def _gather_methods_brownie(
     address: str,
-    methods: Iterable[str],
+    methods: Tuple[str, ...],
     *,
     block: Optional[int] = None,
     return_exceptions: bool = False,
-) -> Tuple[Any]:
+) -> Tuple[Any, ...]:
     """
     Internal function to gather results using Brownie.
 
@@ -95,11 +104,11 @@ async def _gather_methods_brownie(
 @stuck_coro_debugger
 async def _gather_methods_raw(
     address: str,
-    methods: Iterable[str],
+    methods: Tuple[str, ...],
     *,
     block: Optional[int] = None,
     return_exceptions: bool = False,
-) -> Tuple[Any]:
+) -> Tuple[Any, ...]:
     """
     Internal function to gather results using raw calls.
 
