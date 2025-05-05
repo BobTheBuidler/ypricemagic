@@ -1,12 +1,16 @@
 from enum import IntEnum
-from typing import Optional
+from typing import Final, Optional, final
 
 from brownie import chain
 
 
-_CHAINID = chain.id
+CHAINID: Final[int] = chain.id
+"""
+The chainid for the connected rpc.
+"""
 
 
+@final
 class Network(IntEnum):
     """
     A lightweight enum that enables lookup of chain IDs for popular blockchain networks.
@@ -91,8 +95,8 @@ class Network(IntEnum):
         See Also:
             :meth:`Network.name` for getting the full name of the network.
         """
-        if not chain_id:
-            chain_id = _CHAINID
+        if chain_id is None:
+            chain_id = CHAINID
 
         if chain_id == Network.Mainnet:
             return "ETH"
@@ -144,8 +148,8 @@ class Network(IntEnum):
         See Also:
             :meth:`Network.label` for getting the abbreviation of the network.
         """
-        if not chain_id:
-            chain_id = _CHAINID
+        if chain_id is None:
+            chain_id = CHAINID
 
         if chain_id == Network.Mainnet:
             return "Mainnet"
@@ -195,5 +199,8 @@ class Network(IntEnum):
             'chain 9999'
         """
         if chain_id is None:
-            chain_id = _CHAINID
+            chain_id = CHAINID
         return Network.name(chain_id) or f"chain {chain_id}"
+
+
+NETWORK_NAME: Final = Network.name()

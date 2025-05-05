@@ -1,9 +1,10 @@
 import logging
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Final, Optional, final
 
 from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
+from eth_typing import BlockNumber, ChecksumAddress
 from web3.exceptions import ContractLogicError
 
 from y.datatypes import AnyAddressType
@@ -11,11 +12,13 @@ from y.datatypes import AnyAddressType
 if TYPE_CHECKING:
     from y.prices.dex.uniswap.v2 import UniswapV2Pool
 
-logger = logging.getLogger(__name__)
+
+logger: Final = logging.getLogger(__name__)
 
 # General
 
 
+@final
 class yPriceMagicError(ValueError):
     """
     Custom exception for ypricemagic-related errors.
@@ -25,18 +28,24 @@ class yPriceMagicError(ValueError):
     Exceptions while calculating prices.
     """
 
-    def __init__(self, exc: Exception, token_address: str, block: Optional[int], symbol: str):
-        self.token = token_address
+    def __init__(
+        self,
+        exc: Exception,
+        token_address: ChecksumAddress,
+        block: Optional[BlockNumber],
+        symbol: str,
+    ):
+        self.token: Final = token_address
         """
         The token that caused the error.
         """
 
-        self.block = block
+        self.block: Final = block
         """
         The block that was queried when the error occurred.
         """
 
-        self.exception = exc
+        self.exception: Final = exc
         """
         The original :class:`~Exception` that was raised and wrapped with the yPriceMagicError.
         """
@@ -52,6 +61,7 @@ class yPriceMagicError(ValueError):
         )
 
 
+@final
 class PriceError(Exception):
     """
     Raised when a queried price is not found.
@@ -61,22 +71,26 @@ class PriceError(Exception):
         super().__init__(f"No price found for {symbol} {logger.address} at block {logger.block}")
 
 
+@final
 class UnsupportedNetwork(ValueError):
     """
     Raised when an operation is attempted on an unsupported blockchain network.
     """
 
 
+@final
 class NonStandardERC20(Exception):
     """
     Raised when an ERC20 token contract is expected but the provided address is not a standard ERC20 token.
     """
 
 
+@final
 class CantFetchParam(Exception):
     pass
 
 
+@final
 class TokenError(ValueError):
     """Raised when a token contract is not the correct contract type for the desired operation."""
 
@@ -95,13 +109,14 @@ class _ExplorerError(Exception):
     """
 
 
+@final
 class InvalidAPIKeyError(_ExplorerError):
     """
     Raised when the API key for the block explorer has been rejected.
     This typically occurs when making requests to a block explorer API with a missing, incorrect, or banned key.
     """
 
-    _msg = "The block explorer for this network says your API key is invalid."
+    _msg: Final = "The block explorer for this network says your API key is invalid."
 
     def __init__(self, msg: str = ""):
         super().__init__(msg or self._msg)
@@ -110,12 +125,14 @@ class InvalidAPIKeyError(_ExplorerError):
 # Contracts
 
 
+@final
 class ContractNotVerified(_ExplorerError):
     """
     Raised when attempting to fetch the ABI for an unverified contract from a block explorer.
     """
 
 
+@final
 class NoProxyImplementation(Exception):
     """
     Raised when the implementation address of a proxy contract cannot be determined.
@@ -124,13 +141,15 @@ class NoProxyImplementation(Exception):
     """
 
 
+@final
 class MessedUpBrownieContract(Exception):
     """
     Raised when there's an issue initialized a Brownie contract instance,
     typically in the compilation step.
     """
 
-    def __init__(self, address, *args: object) -> None:
+    def __init__(self, address: ChecksumAddress, *args: object) -> None:
+        # sourcery skip: remove-pass-elif
         super().__init__(*args)
         # try to recache the contract
         try:
@@ -157,12 +176,14 @@ def contract_not_verified(e: Exception) -> bool:
         "Contract source code not verified",
         "has not been verified",
     ]
-    return any(trigger in str(e) for trigger in triggers)
+    stre = str(e)
+    return any(trigger in stre for trigger in triggers)
 
 
 # Pool detection
 
 
+@final
 class NotAUniswapV2Pool(Exception):
     """
     Raised when a contract is incorrectly identified as a Uniswap V2 pool.
@@ -178,6 +199,7 @@ class NotAUniswapV2Pool(Exception):
         super().__init__(non_pool.address)
 
 
+@final
 class NotABalancerV2Pool(Exception):
     """
     Raised when a contract is incorrectly identified as a Balancer V2 pool.
@@ -187,10 +209,12 @@ class NotABalancerV2Pool(Exception):
 # Uni
 
 
+@final
 class CantFindSwapPath(Exception):
     pass
 
 
+@final
 class TokenNotFound(ValueError):
     """
     Raised when a specified token cannot be found in a given container.
@@ -205,12 +229,14 @@ class TokenNotFound(ValueError):
 # Calls
 
 
+@final
 class CalldataPreparationError(Exception):
     """
     Raised when there's an error in preparing calldata for a contract interaction.
     """
 
 
+@final
 class CallReverted(Exception):
     """
     Raised when a contract call is reverted.
@@ -245,6 +271,7 @@ def out_of_gas(e: Exception) -> bool:
 # Provider Exceptions:
 
 
+@final
 class NodeNotSynced(Exception):
     pass
 

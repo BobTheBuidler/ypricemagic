@@ -16,7 +16,7 @@ except ImportError:
     from dank_mids._config import GANACHE_FORK
 
 from y.exceptions import NodeNotSynced
-from y.networks import Network
+from y.networks import CHAINID, NETWORK_NAME, Network
 from y.utils.cache import a_sync_ttl_cache, memory
 from y.utils.client import get_ethereum_client, get_ethereum_client_async
 from y.utils.logging import yLazyLogger
@@ -26,12 +26,10 @@ UnixTimestamp = NewType("UnixTimestamp", int)
 Timestamp = Union[UnixTimestamp, datetime.datetime]
 
 
-NETWORK_NAME: Final = Network.name()
-_CHAINID: Final = chain.id
-
-
 logger: Final = logging.getLogger(__name__)
 log_debug: Final = logger.debug
+
+now: Final = time.time
 
 
 @final
@@ -73,7 +71,7 @@ def get_block_timestamp(height: int) -> int:
     if ts := db.get_block_timestamp(height, sync=True):
         return ts
     client = get_ethereum_client()
-    if client in ("tg", "erigon") and _CHAINID not in (Network.Polygon,):
+    if client in ("tg", "erigon") and CHAINID not in (Network.Polygon,):
         # NOTE: polygon erigon does not support this method
         header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
         ts = int(header.timestamp, 16)
@@ -107,7 +105,7 @@ async def get_block_timestamp_async(height: int) -> int:
     if ts := await db.get_block_timestamp(height, sync=False):
         return ts
     client = await get_ethereum_client_async()
-    if client in ("tg", "erigon") and _CHAINID not in (Network.Polygon,):
+    if client in ("tg", "erigon") and CHAINID not in (Network.Polygon,):
         # NOTE: polygon erigon does not support this method
         header = await dank_mids.web3.manager.coro_request(f"{client}_getHeaderByNumber", [height])
         ts = int(header.timestamp, 16)
@@ -345,7 +343,7 @@ def check_node() -> None:
     """
     if GANACHE_FORK:
         return
-    current_time = time.time()
+    current_time = now()
     node_timestamp = web3.eth.get_block("latest").timestamp
     if current_time - node_timestamp > 5 * 60:
         raise NodeNotSynced(
@@ -367,7 +365,7 @@ async def check_node_async() -> None:
     """
     if GANACHE_FORK:
         return
-    current_time = time.time()
+    current_time = now()
     node_timestamp = await dank_mids.eth.get_block_timestamp("latest")
     if current_time - node_timestamp > 5 * 60:
         raise NodeNotSynced(
