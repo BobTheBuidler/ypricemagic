@@ -56,7 +56,6 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._db.brownie import DISCARD_SOURCE_KEYS, sqlite_lock, _get_deployment
 from y._decorators import stuck_coro_debugger
-from y.constants import NETWORK_NAME
 from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import (
     ContractNotVerified,
@@ -75,6 +74,7 @@ from y.utils.gather import gather_methods
 logger = getLogger(__name__)
 logger_debug = logger.debug
 
+NETWORK_NAME = Network.name()
 _CHAINID = chain.id
 
 _brownie_deployments_db_lock = threading.Lock()
