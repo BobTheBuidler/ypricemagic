@@ -87,9 +87,7 @@ def get_block(number: int) -> Block:
     """
     if block := Block.get(chain=CHAINID, number=number):
         return block
-    return insert(type=Block, chain=CHAINID, number=number) or get_block(
-        number, sync=True
-    )
+    return insert(type=Block, chain=CHAINID, number=number) or get_block(number, sync=True)
 
 
 @a_sync(
@@ -149,9 +147,7 @@ def get_block_timestamp(number: int) -> Optional[int]:
         if isinstance(ts, str):
             ts = parser.parse(ts)
         unix = ts.timestamp()
-        _logger_debug(
-            f"got Block[{CHAINID}, %s].timestamp from cache: %s, %s", number, unix, ts
-        )
+        _logger_debug(f"got Block[{CHAINID}, %s].timestamp from cache: %s, %s", number, unix, ts)
         return unix
 
 
@@ -222,9 +218,7 @@ def set_block_timestamp(block: int, timestamp: int) -> None:
     """
 
 
-set_block_timestamp = ProcessingQueue(
-    _set_block_timestamp, num_workers=10, return_data=False
-)
+set_block_timestamp = ProcessingQueue(_set_block_timestamp, num_workers=10, return_data=False)
 
 
 @a_sync(default="async", executor=_timestamp_executor)
@@ -246,9 +240,7 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     _logger_debug("inserted block %s for %s", block, timestamp)
 
 
-set_block_at_timestamp = ProcessingQueue(
-    _set_block_at_timestamp, num_workers=10, return_data=False
-)
+set_block_at_timestamp = ProcessingQueue(_set_block_at_timestamp, num_workers=10, return_data=False)
 
 # startup caches
 
@@ -286,9 +278,7 @@ def known_block_timestamps() -> Dict[int, datetime]:
     See Also:
         - :class:`Block`
     """
-    query = select(
-        (b.number, b.timestamp) for b in Block if b.chain.id == CHAINID and b.timestamp
-    )
+    query = select((b.number, b.timestamp) for b in Block if b.chain.id == CHAINID and b.timestamp)
     page_size = 100_000
     timestamps = {}
     for i in range((query.count() // page_size) + 1):
@@ -312,6 +302,4 @@ def known_blocks_for_timestamps() -> Dict[datetime, int]:
     See Also:
         - :class:`BlockAtTimestamp`
     """
-    return dict(
-        select((x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == CHAINID)
-    )
+    return dict(select((x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == CHAINID))

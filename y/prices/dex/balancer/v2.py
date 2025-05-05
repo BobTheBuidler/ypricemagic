@@ -118,18 +118,14 @@ class BalancerV2Vault(ContractBase):
         self._events = BalancerEvents(
             self,
             addresses=address,
-            topics=[
-                "0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e"
-            ],
+            topics=["0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e"],
         )
         if not self._is_cached:
             # we need the contract cached so we can decode logs correctly
             self.contract
 
     @stuck_coro_debugger
-    async def pools(
-        self, block: Optional[Block] = None
-    ) -> AsyncIterator["BalancerV2Pool"]:
+    async def pools(self, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
         """
         Asynchronously iterate over Balancer V2 pools.
 
@@ -245,9 +241,7 @@ class BalancerV2Vault(ContractBase):
 
         logger = get_price_logger(token_address, block, extra="balancer.v2")
 
-        balance_tasks = BalancerV2Pool.get_balance.map(
-            token_address=token_address, block=block
-        )
+        balance_tasks = BalancerV2Pool.get_balance.map(token_address=token_address, block=block)
         balances_aiterator = balance_tasks.map(
             self.pools_for_token(token_address, block=block), pop=True
         )
@@ -266,9 +260,7 @@ class BalancerV2Vault(ContractBase):
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     __slots__ = ("asynchronous",)
 
-    def __init__(
-        self, vault: BalancerV2Vault, *args, asynchronous: bool = False, **kwargs
-    ):
+    def __init__(self, vault: BalancerV2Vault, *args, asynchronous: bool = False, **kwargs):
         """
         Initialize a BalancerEvents instance.
 
@@ -400,9 +392,7 @@ class BalancerV2Pool(BalancerPool):
         Examples:
             >>> pool = BalancerV2Pool("0xPoolAddress")
         """
-        super().__init__(
-            address, asynchronous=asynchronous, _deploy_block=_deploy_block
-        )
+        super().__init__(address, asynchronous=asynchronous, _deploy_block=_deploy_block)
         if id is not None:
             self.id = id
         if specialization is not None:
@@ -446,9 +436,7 @@ class BalancerV2Pool(BalancerPool):
         # in earlier web3 versions, we would get `None`. More recently, we get ContractLogicError. This handles both
         if CONNECTED_TO_MAINNET and await self.__build_name__ == "CronV1Pool":
             # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi?
-            return BalancerV2Vault(
-                "0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True
-            )
+            return BalancerV2Vault("0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True)
 
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
 
@@ -508,9 +496,7 @@ class BalancerV2Pool(BalancerPool):
         Examples:
             >>> tvl = await pool.get_tvl()
         """
-        if balances := await self.get_balances(
-            block=block, skip_cache=skip_cache, sync=False
-        ):
+        if balances := await self.get_balances(block=block, skip_cache=skip_cache, sync=False):
             # overwrite ref to big obj with ref to little obj
             balances = iter(tuple(balances.values()))
             return UsdValue(await WeiBalance.value_usd.sum(balances, sync=False))
@@ -595,9 +581,7 @@ class BalancerV2Pool(BalancerPool):
         Examples:
             >>> price = await pool.get_token_price("0xTokenAddress")
         """
-        get_balances_coro = self.get_balances(
-            block=block, skip_cache=skip_cache, sync=False
-        )
+        get_balances_coro = self.get_balances(block=block, skip_cache=skip_cache, sync=False)
         if self.__nonweighted:
             # this await will return immediately once cached
             token_balances = await get_balances_coro
@@ -606,9 +590,7 @@ class BalancerV2Pool(BalancerPool):
             token_balances, weights = await cgather(
                 get_balances_coro, self.weights(block=block, sync=False)
             )
-        pool_token_info = list(
-            zip(token_balances.keys(), token_balances.values(), weights)
-        )
+        pool_token_info = list(zip(token_balances.keys(), token_balances.values(), weights))
         for pool_token, token_balance, token_weight in pool_token_info:
             if pool_token == token_address:
                 break
@@ -656,9 +638,7 @@ class BalancerV2Pool(BalancerPool):
         if self._tokens:
             return self._tokens
         tokens = tuple(
-            (
-                await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
-            ).keys()
+            (await self.get_balances(block=block, skip_cache=skip_cache, sync=False)).keys()
         )
         if await self.__pool_type__ in PoolSpecialization.with_immutable_tokens():
             self._tokens = tokens
@@ -713,8 +693,7 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
         super().__init__()
         self.asynchronous = asynchronous
         self.vaults = [
-            BalancerV2Vault(vault, asynchronous=self.asynchronous)
-            for vault in BALANCER_V2_VAULTS
+            BalancerV2Vault(vault, asynchronous=self.asynchronous) for vault in BALANCER_V2_VAULTS
         ]
 
     @stuck_coro_debugger
@@ -738,9 +717,7 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
         Examples:
             >>> price = await balancer.get_token_price("0xTokenAddress")
         """
-        if deepest_pool := await self.deepest_pool_for(
-            token_address, block=block, sync=False
-        ):
+        if deepest_pool := await self.deepest_pool_for(token_address, block=block, sync=False):
             return await deepest_pool.get_token_price(
                 token_address, block, skip_cache=skip_cache, sync=False
             )

@@ -96,9 +96,7 @@ async def get_price(
     tokens, *_ = await basket_handler.getPrimeBasket.coroutine(block_identifier=block)
     tokens = [ERC20(token, asynchronous=True) for token in tokens]
     balances = [
-        WeiBalance(
-            balance, token, block=block, skip_cache=skip_cache, asynchronous=True
-        )
+        WeiBalance(balance, token, block=block, skip_cache=skip_cache, asynchronous=True)
         for token, balance in zip(
             tokens, await basket_handler.quantity.map(tokens, block_identifier=block)
         )

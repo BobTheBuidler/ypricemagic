@@ -56,9 +56,7 @@ def generate_mapping(db: Database) -> None:
         if str(e) != "Mapping was already generated":
             raise
     except DatabaseError as e:
-        if "no such column: " in str(e) or (
-            "column" in str(e) and " does not exist" in str(e)
-        ):
+        if "no such column: " in str(e) or ("column" in str(e) and " does not exist" in str(e)):
             from y._db.exceptions import NewDatabaseSchemaError
 
             raise NewDatabaseSchemaError from e

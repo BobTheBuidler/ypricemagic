@@ -110,12 +110,8 @@ async def get_lp_price(
     sy_token, p_token, y_token = tokens
     sy, rate = await cgather(
         Contract.coroutine(sy_token),
-        PENDLE_ORACLE.getLpToAssetRate.coroutine(
-            token, TWAP_DURATION, block_identifier=block
-        ),
+        PENDLE_ORACLE.getLpToAssetRate.coroutine(token, TWAP_DURATION, block_identifier=block),
     )
     _, asset, decimals = await sy.assetInfo
     rate /= Decimal(10**decimals)
-    return rate * await ERC20(asset, asynchronous=True).price(
-        block=block, skip_cache=skip_cache
-    )
+    return rate * await ERC20(asset, asynchronous=True).price(block=block, skip_cache=skip_cache)

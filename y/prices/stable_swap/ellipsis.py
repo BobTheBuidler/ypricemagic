@@ -76,9 +76,7 @@ async def get_price(
         - :class:`y.classes.common.WeiBalance`
         - :func:`y.utils.raw_calls.raw_call`
     """
-    minter = await raw_call(
-        token_address, "minter()", output="address", block=block, sync=False
-    )
+    minter = await raw_call(token_address, "minter()", output="address", block=block, sync=False)
     minter = await Contract.coroutine(minter)
     balances: List[WeiBalance]
     i, balances = 0, []

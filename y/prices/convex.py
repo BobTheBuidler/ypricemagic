@@ -62,6 +62,4 @@ async def get_price(
     See Also:
         - :func:`y.prices.magic.get_price` for more details on how the price is fetched.
     """
-    return await magic.get_price(
-        MAPPING[token_address], block, skip_cache=skip_cache, sync=False
-    )
+    return await magic.get_price(MAPPING[token_address], block, skip_cache=skip_cache, sync=False)

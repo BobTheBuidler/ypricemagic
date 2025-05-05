@@ -226,9 +226,9 @@ async def _totalSupply(
             # we got a response from the chain but brownie can't find `totalSupply` method,
             # maybe our cached contract definition is messed up. let's repull it
             with suppress(AttributeError):
-                total_supply = brownie.Contract.from_explorer(
-                    contract_address
-                ).totalSupply(block_identifier=block)
+                total_supply = brownie.Contract.from_explorer(contract_address).totalSupply(
+                    block_identifier=block
+                )
 
     if total_supply is not None:
         return total_supply
@@ -277,9 +277,7 @@ async def balanceOf(
                 pass
             else:
                 try:
-                    return await contract.balanceOf.coroutine(
-                        input_address, block_identifier=block
-                    )
+                    return await contract.balanceOf.coroutine(input_address, block_identifier=block)
                 except AttributeError as e:
                     # we got a response from the chain but brownie can't find `balanceOf` method,
                     # maybe our cached contract definition is messed up. let's repull it
@@ -289,9 +287,7 @@ async def balanceOf(
                         pass
                     else:
                         try:
-                            return contract.balanceOf(
-                                input_address, block_identifier=block
-                            )
+                            return contract.balanceOf(input_address, block_identifier=block)
                         except AttributeError:
                             _BALANCEOF_FAILURES.add(call_address)
 
@@ -323,9 +319,7 @@ async def _balanceOfReadable(
             return_None_on_failure=return_None_on_failure,
             sync=False,
         ),
-        _decimals(
-            call_address, block=block, return_None_on_failure=return_None_on_failure
-        ),
+        _decimals(call_address, block=block, return_None_on_failure=return_None_on_failure),
     )
     if balance is not None and decimals is not None:
         return balance / 10**decimals
@@ -413,22 +407,16 @@ async def raw_call(
             return convert.to_string(response).replace("\x00", "").strip()
     except OverflowError as e:
         if "is outside allowable range for uint256" in str(e):
-            raise OverflowError(
-                f"0x{response.hex()} is outside allowable range for uint256"
-            ) from e
+            raise OverflowError(f"0x{response.hex()} is outside allowable range for uint256") from e
         raise
     else:
-        raise TypeError(
-            'Invalid output type, please select from ["str","int","address"]'
-        )
+        raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
 
 # yLazyLogger(logger)
 def prepare_data(
     method,
-    inputs=Union[
-        None, bytes, int, str, Address, EthAddress, brownie.Contract, Contract
-    ],
+    inputs=Union[None, bytes, int, str, Address, EthAddress, brownie.Contract, Contract],
 ) -> str:
     """
     Prepare data for a raw contract call by encoding the method signature and input data.

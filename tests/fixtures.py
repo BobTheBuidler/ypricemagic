@@ -67,9 +67,7 @@ def blocks_for_contract(address: Address, count: int = 5) -> List[Block]:
     address = convert.to_address(address)
     return [
         int(block)
-        for block in np.linspace(
-            contract_creation_block(address) + 10000, chain.height, count
-        )
+        for block in np.linspace(contract_creation_block(address) + 10000, chain.height, count)
     ]
 
 

@@ -219,9 +219,7 @@ class Feed:
         self.start_block = start_block
         # we could make less calls by using latestRoundData but then we have to repeatedly decode a bunch of useless data
         self.latest_answer = Call(self.address, "latestAnswer()(int256)").coroutine
-        self.latest_timestamp = Call(
-            self.address, "latestTimestamp()(uint256)"
-        ).coroutine
+        self.latest_timestamp = Call(self.address, "latestTimestamp()(uint256)").coroutine
         self._stale_thru_block = None
 
     def __repr__(self) -> str:
@@ -355,8 +353,7 @@ class Chainlink(a_sync.ASyncGenericBase):
         super().__init__()
         self.asynchronous = asynchronous
         self._feeds = [
-            Feed(feed, asset, asynchronous=self.asynchronous)
-            for asset, feed in FEEDS.items()
+            Feed(feed, asset, asynchronous=self.asynchronous) for asset, feed in FEEDS.items()
         ]
         if CHAINID in registries:
             self.registry = Contract(registries[CHAINID])
@@ -480,9 +477,7 @@ class Chainlink(a_sync.ASyncGenericBase):
         feed = await self.get_feed(asset, sync=False)
         if feed is None:
             return
-        if block is not None and block < await contract_creation_block_async(
-            feed.address, True
-        ):
+        if block is not None and block < await contract_creation_block_async(feed.address, True):
             return
         try:
             return await feed.get_price(block=block)

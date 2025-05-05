@@ -83,16 +83,12 @@ async def get_pool(token_address: AnyAddressType) -> Address:
             return "0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6"
         elif token_address == "0xF32E91464ca18fc156aB97a697D6f8ae66Cd21a3":
             return "0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2"
-    pool = await has_method(
-        token_address, "swap()(address)", return_response=True, sync=False
-    )
+    pool = await has_method(token_address, "swap()(address)", return_response=True, sync=False)
     return pool or None
 
 
 @a_sync(default="sync")
-async def get_price(
-    token_address: AddressOrContract, block: Optional[Block] = None
-) -> UsdPrice:
+async def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
     """
     Calculate the price of a Saddle LP token in USD.
 
@@ -156,17 +152,12 @@ async def get_tvl(
         magic.get_prices(tokens, block, skip_cache=skip_cache, silent=True, sync=False),
     )
     return UsdValue(
-        sum(
-            balance / scale * price
-            for balance, scale, price in zip(balances, scales, prices)
-        )
+        sum(balance / scale * price for balance, scale, price in zip(balances, scales, prices))
     )
 
 
 @a_sync(default="sync")
-async def get_tokens(
-    token_address: AnyAddressType, block: Optional[Block] = None
-) -> List[ERC20]:
+async def get_tokens(token_address: AnyAddressType, block: Optional[Block] = None) -> List[ERC20]:
     """
     Retrieve the list of tokens in a Saddle LP token pool.
 

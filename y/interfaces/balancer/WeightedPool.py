@@ -57,9 +57,7 @@ WeightedPoolABI = [
     },
     {
         "anonymous": False,
-        "inputs": [
-            {"indexed": False, "internalType": "bool", "name": "paused", "type": "bool"}
-        ],
+        "inputs": [{"indexed": False, "internalType": "bool", "name": "paused", "type": "bool"}],
         "name": "PausedStateChanged",
         "type": "event",
     },
@@ -162,9 +160,7 @@ WeightedPoolABI = [
     {
         "inputs": [],
         "name": "getAuthorizer",
-        "outputs": [
-            {"internalType": "contract IAuthorizer", "name": "", "type": "address"}
-        ],
+        "outputs": [{"internalType": "contract IAuthorizer", "name": "", "type": "address"}],
         "stateMutability": "view",
         "type": "function",
     },
@@ -420,9 +416,7 @@ WeightedPoolABI = [
         "type": "function",
     },
     {
-        "inputs": [
-            {"internalType": "uint256", "name": "swapFeePercentage", "type": "uint256"}
-        ],
+        "inputs": [{"internalType": "uint256", "name": "swapFeePercentage", "type": "uint256"}],
         "name": "setSwapFeePercentage",
         "outputs": [],
         "stateMutability": "nonpayable",

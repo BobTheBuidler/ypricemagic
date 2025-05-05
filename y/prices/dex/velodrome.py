@@ -170,9 +170,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         See Also:
             - :meth:`pool_for`
         """
-        if pool_address := await self.pool_for(
-            input_token, output_token, stable, sync=False
-        ):
+        if pool_address := await self.pool_for(input_token, output_token, stable, sync=False):
             if await contract_creation_block_async(pool_address) <= block:
                 return VelodromePool(pool_address, asynchronous=self.asynchronous)
 
@@ -204,9 +202,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         factory = await Contract.coroutine(self.factory)
         if "PoolCreated" not in factory.topics:
             # the etherscan proxy detection is borked here, need this to decode properly
-            factory = Contract.from_abi(
-                "PoolFactory", self.factory, VELO_V2_FACTORY_ABI
-            )
+            factory = Contract.from_abi("PoolFactory", self.factory, VELO_V2_FACTORY_ABI)
 
         pools = {
             VelodromePool(
@@ -222,9 +218,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
             )
         }
 
-        all_pools_len = await raw_call(
-            self.factory, "allPoolsLength()", output="int", sync=False
-        )
+        all_pools_len = await raw_call(self.factory, "allPoolsLength()", output="int", sync=False)
 
         if len(pools) > all_pools_len:
             raise ValueError("wtf", len(pools), all_pools_len)
@@ -308,8 +302,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
                     #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
                     if (
                         await stable_pool.__token0__ == await unstable_pool.__token0__
-                        and await stable_pool.__token1__
-                        == await unstable_pool.__token1__
+                        and await stable_pool.__token1__ == await unstable_pool.__token1__
                     ):
                         stable_reserve = stable_reserves[0]
                         unstable_reserve = unstable_reserves[0]
@@ -332,9 +325,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
             elif unstable_pool:
                 routes.append([input_token, output_token, False, self.factory])
             else:
-                raise ValueError(
-                    "Not sure why this function is even running if no pool is found"
-                )
+                raise ValueError("Not sure why this function is even running if no pool is found")
 
         return routes
 

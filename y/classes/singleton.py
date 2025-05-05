@@ -127,9 +127,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
             )
         return instance
 
-    def __get_address_lock(
-        self, address: AnyAddressOrContract, is_sync: bool
-    ) -> threading.Lock:
+    def __get_address_lock(self, address: AnyAddressOrContract, is_sync: bool) -> threading.Lock:
         """
         Acquire a lock for the given address to ensure thread safety.
 

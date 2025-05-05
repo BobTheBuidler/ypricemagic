@@ -27,9 +27,7 @@ UNIV3_QUOTER_ABI = [
             {"internalType": "uint256", "name": "amountIn", "type": "uint256"},
         ],
         "name": "quoteExactInput",
-        "outputs": [
-            {"internalType": "uint256", "name": "amountOut", "type": "uint256"}
-        ],
+        "outputs": [{"internalType": "uint256", "name": "amountOut", "type": "uint256"}],
         "stateMutability": "nonpayable",
         "type": "function",
     },
@@ -42,9 +40,7 @@ UNIV3_QUOTER_ABI = [
             {"internalType": "uint160", "name": "sqrtPriceLimitX96", "type": "uint160"},
         ],
         "name": "quoteExactInputSingle",
-        "outputs": [
-            {"internalType": "uint256", "name": "amountOut", "type": "uint256"}
-        ],
+        "outputs": [{"internalType": "uint256", "name": "amountOut", "type": "uint256"}],
         "stateMutability": "nonpayable",
         "type": "function",
     },

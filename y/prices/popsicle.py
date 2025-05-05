@@ -48,10 +48,7 @@ async def is_popsicle_lp(token_address: AnyAddressType) -> bool:
 
 @a_sync.a_sync(default="sync")
 async def get_price(
-    token: AnyAddressType,
-    block: Optional[Block] = None,
-    *,
-    skip_cache: bool = ENVS.SKIP_CACHE
+    token: AnyAddressType, block: Optional[Block] = None, *, skip_cache: bool = ENVS.SKIP_CACHE
 ) -> Optional[UsdPrice]:
     """
     Calculates the price of a Popsicle Finance LP token.
@@ -77,9 +74,7 @@ async def get_price(
     total_val = await get_tvl(address, block, skip_cache=skip_cache, sync=False)
     if total_val is None:
         return None
-    total_supply = await ERC20(address, asynchronous=True).total_supply_readable(
-        block, sync=False
-    )
+    total_supply = await ERC20(address, asynchronous=True).total_supply_readable(block, sync=False)
     return UsdPrice(total_val / total_supply)
 
 

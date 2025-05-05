@@ -69,9 +69,7 @@ async def get_ethereum_client_async() -> str:
     See Also:
         - :func:`get_ethereum_client` for the synchronous version of this function.
     """
-    return _get_ethereum_client(
-        await dank_web3.manager.coro_request(RPC.web3_clientVersion, [])
-    )
+    return _get_ethereum_client(await dank_web3.manager.coro_request(RPC.web3_clientVersion, []))
 
 
 @yLazyLogger(logger)
@@ -98,11 +96,7 @@ def _get_ethereum_client(client: str) -> str:
     """
     logger.debug("client: %s", client)
     return next(
-        (
-            identifier
-            for prefix, identifier in _clients.items()
-            if client.startswith(prefix)
-        ),
+        (identifier for prefix, identifier in _clients.items() if client.startswith(prefix)),
         client,
     )
 

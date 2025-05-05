@@ -1,8 +1,6 @@
 UNIV2_FACTORY_ABI = [
     {
-        "inputs": [
-            {"internalType": "address", "name": "_feeToSetter", "type": "address"}
-        ],
+        "inputs": [{"internalType": "address", "name": "_feeToSetter", "type": "address"}],
         "payable": False,
         "stateMutability": "nonpayable",
         "type": "constructor",
@@ -109,9 +107,7 @@ UNIV2_FACTORY_ABI = [
     },
     {
         "constant": False,
-        "inputs": [
-            {"internalType": "address", "name": "_feeToSetter", "type": "address"}
-        ],
+        "inputs": [{"internalType": "address", "name": "_feeToSetter", "type": "address"}],
         "name": "setFeeToSetter",
         "outputs": [],
         "payable": False,

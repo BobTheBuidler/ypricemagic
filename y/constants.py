@@ -128,9 +128,7 @@ elif CHAINID == Network.Arbitrum:
     """Wrapped Ether (WETH) contract on Arbitrum."""
     # NOTE: for some reason wbtc unverified on arbi
 
-    wbtc = _Contract.from_abi(
-        "wbtc", "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", ERC20ABI
-    )
+    wbtc = _Contract.from_abi("wbtc", "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", ERC20ABI)
     """Wrapped Bitcoin (WBTC) contract on Arbitrum."""
 
     dai = Contract("0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1")

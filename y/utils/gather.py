@@ -93,10 +93,7 @@ async def _gather_methods_brownie(
 
     contract = await Contract.coroutine(address)
     return await igather(
-        (
-            getattr(contract, method).coroutine(block_identifier=block)
-            for method in methods
-        ),
+        (getattr(contract, method).coroutine(block_identifier=block) for method in methods),
         return_exceptions=return_exceptions,
     )
 

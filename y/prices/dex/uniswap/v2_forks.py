@@ -357,13 +357,9 @@ UNISWAPS = {
 }.get(chain.id, {})
 
 # Derived mappings
-FACTORY_TO_ROUTER = {
-    UNISWAPS[name]["factory"]: UNISWAPS[name]["router"] for name in UNISWAPS
-}
+FACTORY_TO_ROUTER = {UNISWAPS[name]["factory"]: UNISWAPS[name]["router"] for name in UNISWAPS}
 
-ROUTER_TO_FACTORY = {
-    UNISWAPS[name]["router"]: UNISWAPS[name]["factory"] for name in UNISWAPS
-}
+ROUTER_TO_FACTORY = {UNISWAPS[name]["router"]: UNISWAPS[name]["factory"] for name in UNISWAPS}
 
 FACTORY_TO_PROTOCOL = {UNISWAPS[name]["factory"]: name for name in UNISWAPS}
 

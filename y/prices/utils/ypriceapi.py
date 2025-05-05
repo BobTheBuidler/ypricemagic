@@ -42,22 +42,18 @@ AUTH_HEADERS_PRESENT = all(AUTH_HEADERS.values())
 # old
 YPRICEAPI_USER = os.environ.get("YPRICEAPI_USER")
 YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
-OLD_AUTH = (
-    BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS)
-    if YPRICEAPI_USER and YPRICEAPI_PASS
-    else None
-)
+OLD_AUTH = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
 
-ONE_MINUTE = 60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
+ONE_MINUTE = (
+    60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
+)
 ONE_HOUR = ONE_MINUTE * 60
 FALLBACK_STR = "Falling back to your node for pricing."
 
 YPRICEAPI_TIMEOUT = ClientTimeout(
     int(os.environ.get("YPRICEAPI_TIMEOUT", 5 * ONE_MINUTE))
 )  # Five minutes is the default timeout from aiohttp.
-YPRICEAPI_SEMAPHORE = dank_mids.BlockSemaphore(
-    int(os.environ.get("YPRICEAPI_SEMAPHORE", 100))
-)
+YPRICEAPI_SEMAPHORE = dank_mids.BlockSemaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
 if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
     for header in AUTH_HEADERS:
@@ -93,9 +89,7 @@ _testimonials = [
     "Wow, so fast!",
 ]
 beta_announcement = "ypriceAPI is now in beta!\n\n"
-beta_announcement += (
-    "Head to ypriceapi-beta.yearn.finance and sign up for access. You get:\n"
-)
+beta_announcement += "Head to ypriceapi-beta.yearn.finance and sign up for access. You get:\n"
 for you_get in _you_get:
     beta_announcement += f" - {you_get}\n"
 beta_announcement += "\nCheck out some testimonials from our close frens:\n"
@@ -360,9 +354,7 @@ def _get_err_reason(response: ClientResponse) -> str:
     """
     if response.reason is None:
         return f"[{response.status}]"
-    ascii_encodable_reason = response.reason.encode("ascii", "backslashreplace").decode(
-        "ascii"
-    )
+    ascii_encodable_reason = response.reason.encode("ascii", "backslashreplace").decode("ascii")
     return f"[{response.status} {ascii_encodable_reason}]"
 
 

@@ -138,9 +138,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> "Contract":
 @memory.cache()
 # yLazyLogger(logger)
 @eth_retry.auto_retry
-def contract_creation_block(
-    address: AnyAddressType, when_no_history_return_0: bool = False
-) -> int:
+def contract_creation_block(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
@@ -265,14 +263,10 @@ async def contract_creation_block_async(
         # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
         try:
             if await get_code(address, mid):
-                logger_debug(
-                    "%s already deployed by block %s, checking lower", address, mid
-                )
+                logger_debug("%s already deployed by block %s, checking lower", address, mid)
                 hi = mid
             else:
-                logger_debug(
-                    "%s not yet deployed by block %s, checking higher", address, mid
-                )
+                logger_debug("%s not yet deployed by block %s, checking higher", address, mid)
                 lo = mid
         except ValueError as e:
             if "missing trie node" in str(e):
@@ -567,9 +561,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                         address,
                     )
                 contract._build = {
-                    "contractName": (
-                        "Non-Verified Contract" if not_verified else "Broken Contract"
-                    )
+                    "contractName": ("Non-Verified Contract" if not_verified else "Broken Contract")
                 }
 
             else:
@@ -658,9 +650,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             )
         return self
 
-    def has_method(
-        self, method: str, return_response: bool = False
-    ) -> Union[bool, Any]:
+    def has_method(self, method: str, return_response: bool = False) -> Union[bool, Any]:
         """
         Check if the contract has a specific method.
 
@@ -673,13 +663,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             >>> contract.has_method("name()")
             True
         """
-        return has_method(
-            self.address, method, return_response=return_response, sync=False
-        )
+        return has_method(self.address, method, return_response=return_response, sync=False)
 
-    async def has_methods(
-        self, methods: List[str], _func: Union[any, all] = all
-    ) -> bool:
+    async def has_methods(self, methods: List[str], _func: Union[any, all] = all) -> bool:
         """
         Check if the contract has all the specified methods.
 
@@ -800,10 +786,7 @@ async def has_method(
         if not return_response and (
             isinstance(e, ContractLogicError)
             or call_reverted(e)
-            or any(
-                err in str(e)
-                for err in ("invalid jump destination", "EVM error: InvalidJump")
-            )
+            or any(err in str(e) for err in ("invalid jump destination", "EVM error: InvalidJump"))
         ):
             return False
         raise
@@ -833,9 +816,7 @@ async def has_methods(
 
     address = await convert.to_address_async(address)
     try:
-        return _func(
-            result is not None for result in await gather_methods(address, methods)
-        )
+        return _func(result is not None for result in await gather_methods(address, methods))
     except Exception as e:
         if not isinstance(e, ContractLogicError) and not call_reverted(e):
             raise  # and not out_of_gas(e): raise
@@ -844,9 +825,7 @@ async def has_methods(
         # If `_func == any` maybe one of the methods will work without "out of gas" error
         if _func is all:
             return False
-        return any(
-            await igather(has_method(address, method, sync=False) for method in methods)
-        )
+        return any(await igather(has_method(address, method, sync=False) for method in methods))
 
 
 # yLazyLogger(logger)
@@ -858,9 +837,7 @@ async def probe(
     return_method: bool = False,
 ) -> Any:
     address = await convert.to_address_async(address)
-    results = await gather_methods(
-        address, methods, block=block, return_exceptions=True
-    )
+    results = await gather_methods(address, methods, block=block, return_exceptions=True)
     logger_debug("probe results: %s", results)
     results = [
         (method, result)
@@ -885,9 +862,7 @@ async def probe(
 
 @a_sync(default="sync")
 @stuck_coro_debugger
-async def build_name(
-    address: AnyAddressType, return_None_on_failure: bool = False
-) -> str:
+async def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
     """
     Get the build name of a contract.
 
@@ -908,9 +883,7 @@ async def build_name(
         return None
 
 
-async def proxy_implementation(
-    address: AnyAddressType, block: Optional[Block]
-) -> Address:
+async def proxy_implementation(address: AnyAddressType, block: Optional[Block]) -> Address:
     """
     Get the implementation address for a proxy contract.
 
@@ -922,9 +895,7 @@ async def proxy_implementation(
         >>> await proxy_implementation("0x6B175474E89094C44Da98b954EedeAC495271d0F")
         '0x1234567890abcdef1234567890abcdef12345678'
     """
-    return await probe(
-        address, ("implementation()(address)", "target()(address)"), block
-    )
+    return await probe(address, ("implementation()(address)", "target()(address)"), block)
 
 
 def _squeeze(contract: Contract) -> Contract:
@@ -995,9 +966,7 @@ def _extract_abi_data(address: Address):
 
     is_verified = bool(data.get("SourceCode"))
     if not is_verified:
-        raise ContractNotVerified(
-            f"Contract source code not verified: {address}"
-        ) from None
+        raise ContractNotVerified(f"Contract source code not verified: {address}") from None
     name = data["ContractName"]
     try:
         abi = _decode_abi(data["ABI"])
@@ -1041,9 +1010,7 @@ def _resolve_proxy(address) -> Tuple[str, List]:
         address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1
     )
     # always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822
-    implementation_eip1822 = web3.eth.get_storage_at(
-        address, web3.keccak(text="PROXIABLE")
-    )
+    implementation_eip1822 = web3.eth.get_storage_at(address, web3.keccak(text="PROXIABLE"))
 
     # Just leave this code where it is for a helpful debugger as needed.
     if address == "":
@@ -1128,9 +1095,7 @@ async def _extract_abi_data_async(address: Address):
     data = response["result"][0]
     is_verified = bool(data.get("SourceCode"))
     if not is_verified:
-        raise ContractNotVerified(
-            f"Contract source code not verified: {address}"
-        ) from None
+        raise ContractNotVerified(f"Contract source code not verified: {address}") from None
     name = data["ContractName"]
     try:
         abi = _decode_abi(data["ABI"])
@@ -1151,10 +1116,7 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
 
     code = (await get_code(address)).hex()[2:]
     # EIP-1167: Minimal Proxy Contract
-    if (
-        code[:20] == "363d3d373d3d3d363d73"
-        and code[60:] == "5af43d82803e903d91602b57fd5bf3"
-    ):
+    if code[:20] == "363d3d373d3d3d363d73" and code[60:] == "5af43d82803e903d91602b57fd5bf3":
         address = _resolve_address(code[20:60])
     # Vyper <0.2.9 `create_forwarder_to`
     elif (

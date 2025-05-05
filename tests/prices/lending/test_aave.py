@@ -130,9 +130,7 @@ def test_AaveRegistry():
     """
     aave = AaveRegistry()
     assert aave.pools, f"Cannot fetch Aave pools on {Network.printable()}"
-    assert (
-        ATOKENS
-    ), f"Please set up `ATOKENS` constant to test Aave on {Network.printable()}"
+    assert ATOKENS, f"Please set up `ATOKENS` constant to test Aave on {Network.printable()}"
     for pool in aave.pools:
         assert pool.atokens, f"Cannot find atokens for Aave pool {pool}"
 

@@ -78,9 +78,7 @@ class AsyncCursor:
         await self.connect
 
         # Convert any dictionaries/lists to JSON strings before inserting
-        values = [
-            dumps(val) if isinstance(val, (dict, list)) else val for val in values
-        ]
+        values = [dumps(val) if isinstance(val, (dict, list)) else val for val in values]
 
         # Prepare the parameter placeholders
         placeholders = ",".join("?" * len(values))
@@ -96,9 +94,7 @@ class AsyncCursor:
             async with self._db.execute(cmd, args) as cursor:
                 if row := await cursor.fetchone():
                     # Convert any JSON-serialized columns back to their original data structures
-                    return tuple(
-                        loads(i) if str(i).startswith(("[", "{")) else i for i in row
-                    )
+                    return tuple(loads(i) if str(i).startswith(("[", "{")) else i for i in row)
 
 
 cur = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
@@ -110,9 +106,7 @@ def _get_select_statement() -> str:
     try:
         return f"SELECT * FROM chain{CONFIG.active_network['chainid']}"
     except KeyError:
-        raise BrownieEnvironmentError(
-            "Functionality not available in local environment"
-        ) from None
+        raise BrownieEnvironmentError("Functionality not available in local environment") from None
 
 
 async def _get_deployment(

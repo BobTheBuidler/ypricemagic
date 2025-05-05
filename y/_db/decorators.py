@@ -66,13 +66,8 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                 time.sleep(sleep)
                 sleep *= 1.5
             except TransactionError as e:
-                logger.debug(
-                    "%s.%s got exc %s", callable.__module__, callable.__name__, e
-                )
-                if (
-                    "An attempt to mix objects belonging to different transactions"
-                    not in str(e)
-                ):
+                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
+                if "An attempt to mix objects belonging to different transactions" not in str(e):
                     raise
 
     return retry_locked_wrap
@@ -80,11 +75,9 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
 
 db_session_retry_locked = lambda func: retry_locked(db_session(retry_locked(func)))
 
-a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
-    lambda fn: a_sync(default="async", executor=ydb_read_threads)(
-        db_session_retry_locked(fn)
-    )
-)
+a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync(
+    default="async", executor=ydb_read_threads
+)(db_session_retry_locked(fn))
 """Decorator for asynchronous read database sessions with retry logic.
 
 This decorator wraps a function with an asynchronous database session for read operations,
@@ -146,12 +139,8 @@ def log_result_count(
         def result_count_wrap(*args: _P.args, **kwargs: _P.kwargs) -> _T:
             results = fn(*args, **kwargs)
             if _result_count_logger.isEnabledFor(logging.DEBUG):
-                arg_values = " ".join(
-                    f"{k} {v}" for k, v in (_CHAIN_INFO, *zip(arg_names, args))
-                )
-                _result_count_logger.debug(
-                    "loaded %s %s for %s", len(results), name, arg_values
-                )
+                arg_values = " ".join(f"{k} {v}" for k, v in (_CHAIN_INFO, *zip(arg_names, args)))
+                _result_count_logger.debug("loaded %s %s for %s", len(results), name, arg_values)
             return results
 
         return result_count_wrap

@@ -109,9 +109,7 @@ async def get_block_timestamp_async(height: int) -> int:
     client = await get_ethereum_client_async()
     if client in ("tg", "erigon") and _CHAINID not in (Network.Polygon,):
         # NOTE: polygon erigon does not support this method
-        header = await dank_mids.web3.manager.coro_request(
-            f"{client}_getHeaderByNumber", [height]
-        )
+        header = await dank_mids.web3.manager.coro_request(f"{client}_getHeaderByNumber", [height])
         ts = int(header.timestamp, 16)
     else:
         ts = await dank_mids.eth.get_block_timestamp(height)
@@ -263,9 +261,7 @@ def closest_block_after_timestamp(
             time.sleep(0.2)
     check_node()
     block = _closest_block_after_timestamp_cached(timestamp)
-    log_debug(
-        "closest %s block after timestamp %s -> %s", NETWORK_NAME, timestamp, block
-    )
+    log_debug("closest %s block after timestamp %s -> %s", NETWORK_NAME, timestamp, block)
     return block
 
 

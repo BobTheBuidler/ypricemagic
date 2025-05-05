@@ -172,9 +172,10 @@ def skip_specific_members(app, what, name, obj, skip, options):
         return True
 
     # Skip the __init__ and __call__ members of any NewType objects we defined.
-    if type(
-        getattr(obj, "__self__", None)
-    ).__qualname__ == "typing.NewType" and name in ["__init__", "__call__"]:
+    if type(getattr(obj, "__self__", None)).__qualname__ == "typing.NewType" and name in [
+        "__init__",
+        "__call__",
+    ]:
         return True
 
     # Skip the __init__, __str__, __getattribute__, args, and with_traceback members of all Exceptions
@@ -188,9 +189,7 @@ def skip_specific_members(app, what, name, obj, skip, options):
         return True
 
     if not skip:
-        logger.info(
-            f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}"
-        )
+        logger.info(f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}")
     return skip
 
 

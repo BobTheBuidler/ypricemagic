@@ -190,9 +190,7 @@ class CToken(ERC20):
             # NOTE: Sometimes this works, not sure why
             contract = await Contract.coroutine(self.address)
             try:
-                exchange_rate = contract.exchangeRateCurrent.call(
-                    block_identifier=block
-                )
+                exchange_rate = contract.exchangeRateCurrent.call(block_identifier=block)
             except Exception as e:
                 if "borrow rate is absurdly high" not in str(e):
                     raise
@@ -268,9 +266,7 @@ class Comptroller(ContractBase):
             >>> comptroller_with_key = Comptroller(key="comp")
         """
         assert address or key, "Must provide either an address or a key"
-        assert not (
-            address and key
-        ), "Must provide either an address or a key, not both"
+        assert not (address and key), "Must provide either an address or a key, not both"
 
         if key:
             address = TROLLERS[key]
@@ -298,9 +294,7 @@ class Comptroller(ContractBase):
             >>> "0x1234567890abcdef1234567890abcdef12345678" in comptroller
         """
         if self.asynchronous:
-            raise RuntimeError(
-                "'self.asynchronous' must be False to use Comptroller.__contains__"
-            )
+            raise RuntimeError("'self.asynchronous' must be False to use Comptroller.__contains__")
         return token_address in self.markets
 
     @a_sync.aka.cached_property
@@ -321,8 +315,7 @@ class Comptroller(ContractBase):
             logger.warning("had trouble loading markets for %s", self)
             response = set()
         markets = tuple(
-            CToken(market, comptroller=self, asynchronous=self.asynchronous)
-            for market in response
+            CToken(market, comptroller=self, asynchronous=self.asynchronous) for market in response
         )
         logger.info("loaded %s markets for %s", len(markets), self)
         return markets
@@ -389,9 +382,7 @@ class Compound(a_sync.ASyncGenericSingleton):
             )
         return self.is_compound_market(token_address)
 
-    async def get_troller(
-        self, token_address: AddressOrContract
-    ) -> Optional[Comptroller]:
+    async def get_troller(self, token_address: AddressOrContract) -> Optional[Comptroller]:
         """
         Get the Comptroller associated with a token address.
 
@@ -405,9 +396,7 @@ class Compound(a_sync.ASyncGenericSingleton):
             >>> troller = await compound.get_troller("0x1234567890abcdef1234567890abcdef12345678")
         """
         if self.trollers:
-            async for troller, markets in Comptroller.markets.map(
-                self.trollers.values()
-            ):
+            async for troller, markets in Comptroller.markets.map(self.trollers.values()):
                 if token_address in markets:
                     return troller
 
@@ -457,13 +446,11 @@ class Compound(a_sync.ASyncGenericSingleton):
             >>> price_at_block = await compound.get_price("0x1234567890abcdef1234567890abcdef12345678", block=12345678)
         """
         troller = await self.get_troller(token_address)
-        return await CToken(
-            token_address, comptroller=troller, asynchronous=True
-        ).get_price(block=block, skip_cache=skip_cache)
+        return await CToken(token_address, comptroller=troller, asynchronous=True).get_price(
+            block=block, skip_cache=skip_cache
+        )
 
-    async def __notify_if_unknown_comptroller(
-        self, token_address: AddressOrContract
-    ) -> None:
+    async def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
         """
         Notify if a Comptroller is unknown to ypricemagic.
 
@@ -473,13 +460,9 @@ class Compound(a_sync.ASyncGenericSingleton):
         Examples:
             >>> await compound.__notify_if_unknown_comptroller("0x1234567890abcdef1234567890abcdef12345678")
         """
-        comptroller = await raw_call(
-            token_address, "comptroller()", output="address", sync=False
-        )
+        comptroller = await raw_call(token_address, "comptroller()", output="address", sync=False)
         if comptroller not in self.trollers.values():
-            _gh_issue_request(
-                f"Comptroller {comptroller} is unknown to ypricemagic.", logger
-            )
+            _gh_issue_request(f"Comptroller {comptroller} is unknown to ypricemagic.", logger)
 
 
 compound: Compound = Compound(asynchronous=True)

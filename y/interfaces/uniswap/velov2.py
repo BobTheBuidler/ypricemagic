@@ -1,8 +1,6 @@
 VELO_V2_FACTORY_ABI = [
     {
-        "inputs": [
-            {"internalType": "address", "name": "_implementation", "type": "address"}
-        ],
+        "inputs": [{"internalType": "address", "name": "_implementation", "type": "address"}],
         "stateMutability": "nonpayable",
         "type": "constructor",
     },
@@ -83,9 +81,7 @@ VELO_V2_FACTORY_ABI = [
     },
     {
         "anonymous": False,
-        "inputs": [
-            {"indexed": False, "internalType": "bool", "name": "state", "type": "bool"}
-        ],
+        "inputs": [{"indexed": False, "internalType": "bool", "name": "state", "type": "bool"}],
         "name": "SetPauseState",
         "type": "event",
     },
@@ -289,9 +285,7 @@ VELO_V2_FACTORY_ABI = [
         "type": "function",
     },
     {
-        "inputs": [
-            {"internalType": "address", "name": "_feeManager", "type": "address"}
-        ],
+        "inputs": [{"internalType": "address", "name": "_feeManager", "type": "address"}],
         "name": "setFeeManager",
         "outputs": [],
         "stateMutability": "nonpayable",

@@ -117,12 +117,8 @@ class Address(DbEntity, _AsyncEntityMixin):
 class Contract(Address):
     """Represents a contract entity in the database."""
 
-    deployer = Optional(
-        Address, reverse="contracts_deployed", lazy=True, cascade_delete=False
-    )
-    deploy_block = Optional(
-        Block, reverse="contracts_deployed", lazy=True, cascade_delete=False
-    )
+    deployer = Optional(Address, reverse="contracts_deployed", lazy=True, cascade_delete=False)
+    deploy_block = Optional(Block, reverse="contracts_deployed", lazy=True, cascade_delete=False)
 
 
 class Token(Contract):

@@ -74,9 +74,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             except ValueError as e:  # TODO do this better
                 if not contract_not_verified(e):
                     raise
-        self.v1 = (
-            UniswapV1(asynchronous=self.asynchronous) if CONNECTED_TO_MAINNET else None
-        )
+        self.v1 = UniswapV1(asynchronous=self.asynchronous) if CONNECTED_TO_MAINNET else None
         self.v3 = (
             UniswapV3(
                 uniswap_v3._factory,
@@ -203,16 +201,12 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         """
         token_in = await convert.to_address_async(token_in)
         liquidity = await igather(
-            uniswap.check_liquidity(
-                token_in, block, ignore_pools=ignore_pools, sync=False
-            )
+            uniswap.check_liquidity(token_in, block, ignore_pools=ignore_pools, sync=False)
             for uniswap in self.uniswaps
         )
         depth_to_router = dict(zip(liquidity, self.uniswaps))
         return [
-            depth_to_router[balance]
-            for balance in sorted(depth_to_router, reverse=True)
-            if balance
+            depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True) if balance
         ]
 
     @a_sync.Semaphore(100)  # some arbitrary number to keep the loop unclogged
@@ -245,9 +239,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         """
         return max(
             await igather(
-                uniswap.check_liquidity(
-                    token, block, ignore_pools=ignore_pools, sync=False
-                )
+                uniswap.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False)
                 for uniswap in self.uniswaps
             )
         )

@@ -111,9 +111,7 @@ async def check_bucket(token: AnyAddressType) -> str:
         except TypeError:
             raise
         except Exception as e:
-            logger.warning(
-                "%s when checking %s. This will probably not impact your run.", e, fut
-            )
+            logger.warning("%s when checking %s. This will probably not impact your run.", e, fut)
             logger.warning(e, exc_info=True)
             continue
 
@@ -168,8 +166,7 @@ async def check_bucket(token: AnyAddressType) -> str:
 
 # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
 string_matchers = {
-    "wrapped gas coin": lambda address: address
-    == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    "wrapped gas coin": lambda address: address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     "stable usd": lambda address: address in STABLECOINS,
     "one to one": one_to_one.is_one_to_one_token,
     "wsteth": wsteth.is_wsteth,
@@ -217,9 +214,7 @@ async def _chainlink_and_band(token_address) -> bool:
         - :func:`y.prices.chainlink.has_feed`
     """
     return (
-        chainlink
-        and await chainlink.has_feed(token_address, sync=False)
-        and token_address in band
+        chainlink and await chainlink.has_feed(token_address, sync=False) and token_address in band
     )
 
 

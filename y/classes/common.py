@@ -173,9 +173,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
 
     deploy_block: ASyncBoundMethod[Self, Any, int]
 
-    async def has_method(
-        self, method: str, return_response: bool = False
-    ) -> Union[bool, Any]:
+    async def has_method(self, method: str, return_response: bool = False) -> Union[bool, Any]:
         """
         Check if the contract has a specific method.
 
@@ -194,9 +192,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         See Also:
             - :func:`has_method`
         """
-        return await has_method(
-            self.address, method, return_response=return_response, sync=False
-        )
+        return await has_method(self.address, method, return_response=return_response, sync=False)
 
 
 class ERC20(ContractBase):
@@ -378,9 +374,7 @@ class ERC20(ContractBase):
         )
         return total_supply / scale
 
-    async def balance_of(
-        self, address: AnyAddressType, block: Optional[Block] = None
-    ) -> int:
+    async def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
         """
         Query the balance of the token for a given address at a specific block.
 
@@ -503,9 +497,7 @@ class ERC20(ContractBase):
             >>> await token._name()
             'TokenName'
         """
-        name = await probe(
-            self.address, ("name()(string)", "NAME()(string)", "getName()(string)")
-        )
+        name = await probe(self.address, ("name()(string)", "NAME()(string)", "getName()(string)"))
         if name is None:
             # Sometimes the above will fail if the name method returns bytes32, as with MKR. Let's try this.
             name = await probe(self.address, ("name()(bytes32)",))
@@ -618,14 +610,10 @@ class WeiBalance(a_sync.ASyncGenericBase):
         return str(self.balance)
 
     def __repr__(self) -> str:
-        return (
-            f"<WeiBalance token={self.token} balance={self.balance} block={self.block}>"
-        )
+        return f"<WeiBalance token={self.token} balance={self.balance} block={self.block}>"
 
     def __hash__(self) -> int:
-        return hash(
-            (self.balance, self.token, self.block, self._skip_cache, self._ignore_pools)
-        )
+        return hash((self.balance, self.token, self.block, self._skip_cache, self._ignore_pools))
 
     def __bool__(self) -> bool:
         """

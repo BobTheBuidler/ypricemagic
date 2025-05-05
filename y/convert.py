@@ -134,9 +134,7 @@ def __get_checksum_from_cache(address: AnyAddressType) -> Optional[ChecksumAddre
         return None
 
 
-def __cache_if_is_checksummed(
-    address: HexAddress, checksummed: ChecksumAddress
-) -> None:
+def __cache_if_is_checksummed(address: HexAddress, checksummed: ChecksumAddress) -> None:
     """Cache the address based on whether it is checksummed.
 
     This function adds the address to the `_is_checksummed` set if it is already

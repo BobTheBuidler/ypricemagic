@@ -89,12 +89,8 @@ class GenericAmm(a_sync.ASyncGenericBase):
             - :meth:`ERC20.total_supply_readable`
         """
         tvl, total_supply = await cgather(
-            self.get_tvl(
-                lp_token_address, block=block, skip_cache=skip_cache, sync=False
-            ),
-            ERC20(lp_token_address, asynchronous=True).total_supply_readable(
-                block=block
-            ),
+            self.get_tvl(lp_token_address, block=block, skip_cache=skip_cache, sync=False),
+            ERC20(lp_token_address, asynchronous=True).total_supply_readable(block=block),
         )
         if total_supply is None:
             return None

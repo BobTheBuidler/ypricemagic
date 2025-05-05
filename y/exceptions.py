@@ -25,9 +25,7 @@ class yPriceMagicError(ValueError):
     Exceptions while calculating prices.
     """
 
-    def __init__(
-        self, exc: Exception, token_address: str, block: Optional[int], symbol: str
-    ):
+    def __init__(self, exc: Exception, token_address: str, block: Optional[int], symbol: str):
         self.token = token_address
         """
         The token that caused the error.
@@ -60,9 +58,7 @@ class PriceError(Exception):
     """
 
     def __init__(self, logger: logging.Logger, symbol: str):
-        super().__init__(
-            f"No price found for {symbol} {logger.address} at block {logger.block}"
-        )
+        super().__init__(f"No price found for {symbol} {logger.address} at block {logger.block}")
 
 
 class UnsupportedNetwork(ValueError):
@@ -84,9 +80,7 @@ class CantFetchParam(Exception):
 class TokenError(ValueError):
     """Raised when a token contract is not the correct contract type for the desired operation."""
 
-    def __init__(
-        self, token: AnyAddressType, desired_type: str, *optional_extra_args: Any
-    ):
+    def __init__(self, token: AnyAddressType, desired_type: str, *optional_extra_args: Any):
         super().__init__(f"{token} is not a {desired_type}", *optional_extra_args)
 
 
@@ -179,12 +173,8 @@ class NotAUniswapV2Pool(Exception):
     def __init__(self, non_pool: "UniswapV2Pool"):
         from y.prices.dex.uniswap.v2 import UniswapV2Pool
 
-        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[True].pop(
-            non_pool.address, None
-        )
-        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[False].pop(
-            non_pool.address, None
-        )
+        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[True].pop(non_pool.address, None)
+        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[False].pop(non_pool.address, None)
         super().__init__(non_pool.address)
 
 

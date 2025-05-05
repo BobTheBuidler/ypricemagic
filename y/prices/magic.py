@@ -342,9 +342,7 @@ async def _get_price(
     except NonStandardERC20:
         symbol = None
 
-    logger = get_price_logger(
-        token, block, symbol=symbol, extra="magic", start_task=True
-    )
+    logger = get_price_logger(token, block, symbol=symbol, extra="magic", start_task=True)
     logger.debug("fetching price for %s", symbol)
     try:
         price = await _get_price_from_api(token, block, logger)
@@ -357,9 +355,7 @@ async def _get_price(
                 logger=logger,
             )
         if price is None:
-            price = await _get_price_from_dexes(
-                token, block, ignore_pools, skip_cache, logger
-            )
+            price = await _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
         if price:
             await utils.sense_check(token, block, price)
         else:
@@ -400,9 +396,7 @@ async def _exit_early_for_known_tokens(
     price = None
 
     if bucket == "atoken":
-        price = await aave.get_price(
-            token_address, block=block, skip_cache=skip_cache, sync=False
-        )
+        price = await aave.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "balancer pool":
         price = await balancer_multiplexer.get_price(
@@ -410,17 +404,15 @@ async def _exit_early_for_known_tokens(
         )
 
     elif bucket == "basketdao":
-        price = await basketdao.get_price(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await basketdao.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "belt lp":
         price = await belt.get_price(token_address, block, sync=False)
 
     elif bucket == "chainlink and band":
-        price = await chainlink.get_price(
+        price = await chainlink.get_price(token_address, block, sync=False) or await band.get_price(
             token_address, block, sync=False
-        ) or await band.get_price(token_address, block, sync=False)
+        )
 
     elif bucket == "chainlink feed":
         price = await chainlink.get_price(token_address, block, sync=False)
@@ -431,19 +423,13 @@ async def _exit_early_for_known_tokens(
         )
 
     elif bucket == "convex":
-        price = await convex.get_price(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await convex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "creth":
-        price = await creth.get_price_creth(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await creth.get_price_creth(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "curve lp":
-        price = await curve.get_price(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await curve.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "ellipsis lp":
         price = await ellipsis.get_price(
@@ -469,9 +455,7 @@ async def _exit_early_for_known_tokens(
         )
 
     elif bucket == "ib token":
-        price = await ib.get_price(
-            token_address, block=block, skip_cache=skip_cache, sync=False
-        )
+        price = await ib.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "mooniswap lp":
         price = await mooniswap.get_pool_price(
@@ -484,14 +468,10 @@ async def _exit_early_for_known_tokens(
         )
 
     elif bucket == "one to one":
-        price = await one_to_one.get_price(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await one_to_one.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "pendle lp":
-        price = await pendle.get_lp_price(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await pendle.get_lp_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "piedao lp":
         price = await piedao.get_price(
@@ -509,19 +489,13 @@ async def _exit_early_for_known_tokens(
         )
 
     elif bucket == "rkp3r":
-        price = await rkp3r.get_price(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await rkp3r.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "saddle":
-        price = await saddle.get_price(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await saddle.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "solidex":
-        price = await solidex.get_price(
-            token_address, block, skip_cache=skip_cache, sync=False
-        )
+        price = await solidex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "stable usd":
         price = 1
@@ -626,14 +600,11 @@ async def _get_price_from_dexes(
     #     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)
     # )
     liquidity = await igather(
-        dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False)
-        for dex in dexes
+        dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes
     )
     depth_to_dex: Dict[int, object] = dict(zip(liquidity, dexes))
     dexes_by_depth: Dict[int, object] = {
-        depth: depth_to_dex[depth]
-        for depth in sorted(depth_to_dex, reverse=True)
-        if depth
+        depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True) if depth
     }
     if debug_logs_enabled := logger.isEnabledFor(DEBUG):
         log_debug = lambda msg, *args: logger._log(DEBUG, msg, args)
