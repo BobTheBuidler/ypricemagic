@@ -5,6 +5,9 @@ from typing import Any, Final, Iterable
 
 UTC: Final = timezone.utc
 
+astimezone: Final = datetime.astimezone
+isoformat: Final = datetime.isoformat
+
 
 def stringify_column_value(value: Any, provider: str) -> str:
     """
@@ -56,7 +59,7 @@ def stringify_column_value(value: Any, provider: str) -> str:
     elif isinstance(value, (int, Decimal)):
         return str(value)
     elif isinstance(value, datetime):
-        return f"'{value.astimezone(UTC).isoformat()}'"
+        return f"'{isoformat(astimezone(value, UTC))}'"
     else:
         raise NotImplementedError(type(value), value)
 
