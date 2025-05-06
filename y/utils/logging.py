@@ -41,7 +41,7 @@ def enable_debug_logging(logger: str = "y") -> None:
         logger.addHandler(StreamHandler())
 
 
-_pop_logger = Logger.manager.loggerDict.pop
+_pop_logger: Final = Logger.manager.loggerDict.pop
 
 
 @final
