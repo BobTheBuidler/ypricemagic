@@ -65,7 +65,7 @@ def execute(sql: str, *, db: Database = entities.db) -> None:
 @a_sync(default="async", executor=_bulk_executor)
 @db_session_retry_locked
 def insert(
-    entity_type: entities.db.Entity,
+    entity_type: entities.db.Entity,  # type: ignore [name-defined]
     columns: Sequence[str],
     items: Sequence[Iterable[Any]],
     *,
