@@ -7,6 +7,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Awaitable,
+    Final,
     Generator,
     Literal,
     NoReturn,
@@ -559,7 +560,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
     def __init__(
         self,
-        balance: int,
+        balance: Union[int, Decimal],
         token: AnyAddressType,
         block: Optional[Block] = None,
         *,
@@ -585,8 +586,8 @@ class WeiBalance(a_sync.ASyncGenericBase):
         """
         if asynchronous != self.asynchronous:
             self.asynchronous = asynchronous
-        self.balance = Decimal(balance)
-        self.token = ERC20(str(token), asynchronous=self.asynchronous)
+        self.balance: Final = Decimal(balance)
+        self.token: Final = ERC20(str(token), asynchronous=self.asynchronous)
         if block != self.block:
             self.block = block
         super().__init__()
