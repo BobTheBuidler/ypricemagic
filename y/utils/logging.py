@@ -6,6 +6,7 @@ from weakref import WeakValueDictionary, ref as weak_ref
 
 import a_sync
 from brownie import chain
+from eth_typing import BlockNumber, ChecksumAddress
 from lazy_logging import LazyLoggerFactory
 from typing_extensions import ParamSpec
 
@@ -40,11 +41,14 @@ def enable_debug_logging(logger: str = "y") -> None:
         logger.addHandler(StreamHandler())
 
 
+_pop_logger: Final = Logger.manager.loggerDict.pop
+
+
 @final
 class PriceLogger(Logger):
     enabled: bool
-    address: str
-    block: int
+    address: ChecksumAddress
+    block: BlockNumber
     key: Tuple[AnyAddressType, Block, Optional[str], str]
     debug_task: Optional["Task[None]"]
 
@@ -52,7 +56,7 @@ class PriceLogger(Logger):
         # since we make a lot of these we don't want logging module to cache them
         self.debug("closing %s", logger)
         with _lock:
-            Logger.manager.loggerDict.pop(self.name, None)
+            _pop_logger(self.name, None)
 
 
 def get_price_logger(
