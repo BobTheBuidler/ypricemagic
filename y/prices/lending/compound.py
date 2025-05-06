@@ -31,6 +31,7 @@ TROLLERS = {
         "inverse": "0x4dCf7407AE5C07f8681e1659f626E114A7667339",
         "unfederalreserve": "0x3105D328c66d8d55092358cF595d54608178E9B5",
         "flux": "0x95Af143a021DF745bc78e845b54591C53a8B3A51",
+        "venus": "0x687a01ecF6d3907658f7A7c714749fAC32336D1B",
     },
     Network.BinanceSmartChain: {
         "venus": "0xfD36E2c2a6789Db23113685031d7F16329158384",
