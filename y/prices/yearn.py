@@ -196,16 +196,20 @@ class YearnInspiredVault(ERC20):
 
         if underlying is None:
             # certain reaper vaults
-            lend_platform = await self.has_method(
-                "lendPlatform()(address)", return_response=True, sync=False
-            )
-            if lend_platform:
-                underlying = await has_method(
-                    lend_platform,
-                    "underlying()(address)",
-                    return_response=True,
-                    sync=False,
+            try:
+                lend_platform = await self.has_method(
+                    "lendPlatform()(address)", return_response=True, sync=False
                 )
+            except ContractLogicError:
+                pass
+            else:
+                if lend_platform:
+                    underlying = await has_method(
+                        lend_platform,
+                        "underlying()(address)",
+                        return_response=True,
+                        sync=False,
+                    )
 
         if underlying is not None:
             underlying = ERC20(underlying, asynchronous=self.asynchronous)
