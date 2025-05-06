@@ -1399,10 +1399,44 @@ fake token addresses represented as strings.</p>
 </section>
 <section id="module-y.utils.gather">
 <span id="y-utils-gather-module"></span><h2>y.utils.gather module<a class="headerlink" href="#module-y.utils.gather" title="Link to this heading"></a></h2>
+<p>Utility functions for gathering method results asynchronously.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.utils.gather.gather_methods">
-<span class="sig-prename descclassname"><span class="pre">y.utils.gather.</span></span><span class="sig-name descname"><span class="pre">gather_methods</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.gather.gather_methods" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.utils.gather.</span></span><span class="sig-name descname"><span class="pre">gather_methods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/gather.html#gather_methods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.gather.gather_methods" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously gather results from multiple contract methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The contract address.</p></li>
+<li><p><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><em>Iterable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – An iterable of method names or encoded method calls.</p></li>
+<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The block number to query. Defaults to None.</p></li>
+<li><p><strong>return_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to return exceptions or raise them. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the results of the method calls.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils</span> <span class="kn">import</span> <span class="n">gather_methods</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">address</span> <span class="o">=</span> <span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span>  <span class="c1"># DAI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name()&quot;</span><span class="p">,</span> <span class="s2">&quot;symbol()&quot;</span><span class="p">,</span> <span class="s2">&quot;decimals()&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">methods</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="go">(&#39;Dai Stablecoin&#39;, &#39;DAI&#39;, 18)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using raw method calls</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;symbol()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;decimals()(uint8)&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">methods</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="go">(&#39;Dai Stablecoin&#39;, &#39;DAI&#39;, 18)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </section>
 <section id="module-y.utils.logging">

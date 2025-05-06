@@ -130,6 +130,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.networks">y.networks module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#y.networks.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.networks.CHAINID"><code class="docutils literal notranslate"><span class="pre">CHAINID</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.time">y.time module</a><ul>
@@ -1813,18 +1814,99 @@ _func: The function to use for combining the results (either <a class="reference
 <span id="y-convert-module"></span><h2>y.convert module<a class="headerlink" href="#module-y.convert" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.convert.checksum">
-<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">checksum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.convert.checksum" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/convert.html#checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.convert.checksum" title="Link to this definition"></a></dt>
+<dd><p>Convert an address to its checksummed format.</p>
+<p>This function uses the <cite>to_checksum_address</cite> function to convert an Ethereum address
+to its checksummed format. If the address is invalid, a <cite>ValueError</cite> is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a>) – The Ethereum address to be checksummed.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the provided address is not a valid Ethereum address.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The checksummed Ethereum address.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.2)"><em>ChecksumAddress</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">checksum</span><span class="p">(</span><span class="s2">&quot;0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&quot;</span><span class="p">)</span>
+<span class="go">&#39;0xDe0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&#39;</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">to_checksum_address()</span></code> for the underlying implementation.</p></li>
+</ul>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.convert.to_address">
-<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.convert.to_address" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/convert.html#to_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.convert.to_address" title="Link to this definition"></a></dt>
+<dd><p>Convert an address to a checksummed address, with caching.</p>
+<p>This function normalizes the input address to a string, checks if it is already
+checksummed and cached, and if not, computes the checksummed address and caches it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The Ethereum address to be converted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The checksummed Ethereum address.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.2)"><em>ChecksumAddress</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">to_address</span><span class="p">(</span><span class="s2">&quot;0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&quot;</span><span class="p">)</span>
+<span class="go">&#39;0xDe0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&#39;</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.convert.checksum" title="y.convert.checksum"><code class="xref py py-func docutils literal notranslate"><span class="pre">checksum()</span></code></a> for the checksumming process.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">__normalize_input_to_string()</span></code> for input normalization.</p></li>
+</ul>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.convert.to_address_async">
-<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address_async</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.convert.to_address_async" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/convert.html#to_address_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.convert.to_address_async" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously convert an address to a checksummed address, with caching.</p>
+<p>This function normalizes the input address to a string, checks if it is already
+checksummed and cached, and if not, computes the checksummed address asynchronously
+and caches it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The Ethereum address to be converted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The checksummed Ethereum address.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.2)"><em>ChecksumAddress</em></a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">to_address_async</span><span class="p">(</span><span class="s2">&quot;0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&quot;</span><span class="p">)</span>
+<span class="go">&#39;0xDe0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&#39;</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.convert.checksum" title="y.convert.checksum"><code class="xref py py-func docutils literal notranslate"><span class="pre">checksum()</span></code></a> for the checksumming process.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">__normalize_input_to_string()</span></code> for input normalization.</p></li>
+</ul>
+</div>
+</dd></dl>
 
 </section>
 <section id="module-y.datatypes">
@@ -2173,300 +2255,292 @@ This can be an <a class="reference internal" href="#y.datatypes.Address" title="
 <span id="y-exceptions-module"></span><h2>y.exceptions module<a class="headerlink" href="#module-y.exceptions" title="Link to this heading"></a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.CallReverted">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">CallReverted</span></span><a class="headerlink" href="#y.exceptions.CallReverted" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">CallReverted</span></span><a class="reference internal" href="../_modules/y/exceptions.html#CallReverted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.CallReverted" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.CallReverted.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.CallReverted.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.CallReverted.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.CallReverted.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<p>Raised when a contract call is reverted.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.CalldataPreparationError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">CalldataPreparationError</span></span><a class="headerlink" href="#y.exceptions.CalldataPreparationError" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">CalldataPreparationError</span></span><a class="reference internal" href="../_modules/y/exceptions.html#CalldataPreparationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.CalldataPreparationError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.CalldataPreparationError.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.CalldataPreparationError.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.CalldataPreparationError.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.CalldataPreparationError.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<p>Raised when there’s an error in preparing calldata for a contract interaction.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.CantFetchParam">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">CantFetchParam</span></span><a class="headerlink" href="#y.exceptions.CantFetchParam" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">CantFetchParam</span></span><a class="reference internal" href="../_modules/y/exceptions.html#CantFetchParam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.CantFetchParam" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.CantFetchParam.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.CantFetchParam.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.CantFetchParam.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.CantFetchParam.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.CantFindSwapPath">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">CantFindSwapPath</span></span><a class="headerlink" href="#y.exceptions.CantFindSwapPath" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">CantFindSwapPath</span></span><a class="reference internal" href="../_modules/y/exceptions.html#CantFindSwapPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.CantFindSwapPath" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.CantFindSwapPath.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.CantFindSwapPath.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.CantFindSwapPath.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.CantFindSwapPath.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.ContractNotVerified">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">ContractNotVerified</span></span><a class="headerlink" href="#y.exceptions.ContractNotVerified" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">ContractNotVerified</span></span><a class="reference internal" href="../_modules/y/exceptions.html#ContractNotVerified"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.ContractNotVerified" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ExplorerError</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.ContractNotVerified.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.ContractNotVerified.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.ContractNotVerified.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.ContractNotVerified.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<p>Raised when attempting to fetch the ABI for an unverified contract from a block explorer.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.InvalidAPIKeyError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">InvalidAPIKeyError</span></span><a class="headerlink" href="#y.exceptions.InvalidAPIKeyError" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">InvalidAPIKeyError</span></span><a class="reference internal" href="../_modules/y/exceptions.html#InvalidAPIKeyError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.InvalidAPIKeyError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ExplorerError</span></code></p>
+<p>Raised when the API key for the block explorer has been rejected.
+This typically occurs when making requests to a block explorer API with a missing, incorrect, or banned key.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.InvalidAPIKeyError.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.InvalidAPIKeyError.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.InvalidAPIKeyError.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.InvalidAPIKeyError.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="y.exceptions.InvalidAPIKeyError.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#InvalidAPIKeyError.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.InvalidAPIKeyError.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.MessedUpBrownieContract">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">MessedUpBrownieContract</span></span><a class="headerlink" href="#y.exceptions.MessedUpBrownieContract" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">MessedUpBrownieContract</span></span><a class="reference internal" href="../_modules/y/exceptions.html#MessedUpBrownieContract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.MessedUpBrownieContract" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Raised when there’s an issue initialized a Brownie contract instance,
+typically in the compilation step.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.MessedUpBrownieContract.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.MessedUpBrownieContract.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.MessedUpBrownieContract.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.MessedUpBrownieContract.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="y.exceptions.MessedUpBrownieContract.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#MessedUpBrownieContract.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.MessedUpBrownieContract.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.2)"><em>ChecksumAddress</em></a>)</p></li>
+<li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.NoProxyImplementation">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoProxyImplementation</span></span><a class="headerlink" href="#y.exceptions.NoProxyImplementation" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoProxyImplementation</span></span><a class="reference internal" href="../_modules/y/exceptions.html#NoProxyImplementation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.NoProxyImplementation" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.NoProxyImplementation.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.NoProxyImplementation.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.NoProxyImplementation.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.NoProxyImplementation.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<p>Raised when the implementation address of a proxy contract cannot be determined.</p>
+<p>This may occur when trying to interact with proxy contracts that don’t follow standard patterns.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.NodeNotSynced">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NodeNotSynced</span></span><a class="headerlink" href="#y.exceptions.NodeNotSynced" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NodeNotSynced</span></span><a class="reference internal" href="../_modules/y/exceptions.html#NodeNotSynced"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.NodeNotSynced" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.NodeNotSynced.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.NodeNotSynced.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.NodeNotSynced.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.NodeNotSynced.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.NonStandardERC20">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NonStandardERC20</span></span><a class="headerlink" href="#y.exceptions.NonStandardERC20" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NonStandardERC20</span></span><a class="reference internal" href="../_modules/y/exceptions.html#NonStandardERC20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.NonStandardERC20" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.NonStandardERC20.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.NonStandardERC20.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.NonStandardERC20.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.NonStandardERC20.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<p>Raised when an ERC20 token contract is expected but the provided address is not a standard ERC20 token.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.NotABalancerV2Pool">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotABalancerV2Pool</span></span><a class="headerlink" href="#y.exceptions.NotABalancerV2Pool" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotABalancerV2Pool</span></span><a class="reference internal" href="../_modules/y/exceptions.html#NotABalancerV2Pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.NotABalancerV2Pool" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.NotABalancerV2Pool.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.NotABalancerV2Pool.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.NotABalancerV2Pool.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.NotABalancerV2Pool.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<p>Raised when a contract is incorrectly identified as a Balancer V2 pool.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.NotAUniswapV2Pool">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotAUniswapV2Pool</span></span><a class="headerlink" href="#y.exceptions.NotAUniswapV2Pool" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">NotAUniswapV2Pool</span></span><a class="reference internal" href="../_modules/y/exceptions.html#NotAUniswapV2Pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.NotAUniswapV2Pool" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Raised when a contract is incorrectly identified as a Uniswap V2 pool.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.NotAUniswapV2Pool.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.NotAUniswapV2Pool.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.NotAUniswapV2Pool.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.NotAUniswapV2Pool.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="y.exceptions.NotAUniswapV2Pool.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">non_pool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#NotAUniswapV2Pool.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.NotAUniswapV2Pool.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>non_pool</strong> (<a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.PriceError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">PriceError</span></span><a class="headerlink" href="#y.exceptions.PriceError" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">PriceError</span></span><a class="reference internal" href="../_modules/y/exceptions.html#PriceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.PriceError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Raised when a queried price is not found.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.PriceError.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.PriceError.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.PriceError.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.PriceError.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="y.exceptions.PriceError.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#PriceError.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.PriceError.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.13)"><em>Logger</em></a>)</p></li>
+<li><p><strong>symbol</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.TokenError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">TokenError</span></span><a class="headerlink" href="#y.exceptions.TokenError" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">TokenError</span></span><a class="reference internal" href="../_modules/y/exceptions.html#TokenError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.TokenError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Raised when a token contract is not the correct contract type for the desired operation.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.TokenError.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.TokenError.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.TokenError.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.TokenError.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="y.exceptions.TokenError.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">optional_extra_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#TokenError.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.TokenError.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
+<li><p><strong>desired_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>optional_extra_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.TokenNotFound">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">TokenNotFound</span></span><a class="headerlink" href="#y.exceptions.TokenNotFound" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">TokenNotFound</span></span><a class="reference internal" href="../_modules/y/exceptions.html#TokenNotFound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.TokenNotFound" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Raised when a specified token cannot be found in a given container.</p>
+<p>This is usually used when searching for a token in a liquidity pool.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.TokenNotFound.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.TokenNotFound.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.TokenNotFound.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.TokenNotFound.__mypyc_attrs__" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="y.exceptions.TokenNotFound.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#TokenNotFound.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.TokenNotFound.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.UnsupportedNetwork">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">UnsupportedNetwork</span></span><a class="headerlink" href="#y.exceptions.UnsupportedNetwork" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">UnsupportedNetwork</span></span><a class="reference internal" href="../_modules/y/exceptions.html#UnsupportedNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.UnsupportedNetwork" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.UnsupportedNetwork.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.UnsupportedNetwork.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.UnsupportedNetwork.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.UnsupportedNetwork.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<p>Raised when an operation is attempted on an unsupported blockchain network.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="y.exceptions.yPriceMagicError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">yPriceMagicError</span></span><a class="headerlink" href="#y.exceptions.yPriceMagicError" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">yPriceMagicError</span></span><a class="reference internal" href="../_modules/y/exceptions.html#yPriceMagicError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.yPriceMagicError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>Custom exception for ypricemagic-related errors.</p>
+<p>This exception is raised when any error occurs inside of ypricemagic.
+For example, if a price fails to fetch or if there are unexpected
+Exceptions while calculating prices.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.exceptions.yPriceMagicError.__getstate__">
-<span class="sig-name descname"><span class="pre">__getstate__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.yPriceMagicError.__getstate__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="y.exceptions.yPriceMagicError.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#yPriceMagicError.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.yPriceMagicError.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exc</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><em>Exception</em></a>)</p></li>
+<li><p><strong>token_address</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.2)"><em>ChecksumAddress</em></a>)</p></li>
+<li><p><strong>block</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>symbol</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="y.exceptions.yPriceMagicError.__mypyc_attrs__">
-<span class="sig-name descname"><span class="pre">__mypyc_attrs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('__dict__',)</span></em><a class="headerlink" href="#y.exceptions.yPriceMagicError.__mypyc_attrs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="y.exceptions.yPriceMagicError.block">
+<span class="sig-name descname"><span class="pre">block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Final" title="(in Python v3.13)"><span class="pre">Final</span></a></em><a class="headerlink" href="#y.exceptions.yPriceMagicError.block" title="Link to this definition"></a></dt>
+<dd><p>The block that was queried when the error occurred.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.exceptions.yPriceMagicError.exception">
+<span class="sig-name descname"><span class="pre">exception</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Final" title="(in Python v3.13)"><span class="pre">Final</span></a></em><a class="headerlink" href="#y.exceptions.yPriceMagicError.exception" title="Link to this definition"></a></dt>
+<dd><p>The original <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a> that was raised and wrapped with the yPriceMagicError.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.exceptions.yPriceMagicError.token">
+<span class="sig-name descname"><span class="pre">token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Final" title="(in Python v3.13)"><span class="pre">Final</span></a></em><a class="headerlink" href="#y.exceptions.yPriceMagicError.token" title="Link to this definition"></a></dt>
+<dd><p>The token that caused the error.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.exceptions.call_reverted">
-<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">call_reverted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.call_reverted" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">call_reverted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#call_reverted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.call_reverted" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><em>Exception</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.exceptions.continue_if_call_reverted">
-<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">continue_if_call_reverted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.continue_if_call_reverted" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">continue_if_call_reverted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#continue_if_call_reverted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.continue_if_call_reverted" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><em>Exception</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.exceptions.contract_not_verified">
-<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">contract_not_verified</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.contract_not_verified" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">contract_not_verified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#contract_not_verified"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.contract_not_verified" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><em>Exception</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.exceptions.out_of_gas">
-<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">out_of_gas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.out_of_gas" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">out_of_gas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#out_of_gas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.out_of_gas" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><em>Exception</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.exceptions.reraise_excs_with_extra_context">
-<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">reraise_excs_with_extra_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.exceptions.reraise_excs_with_extra_context" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">reraise_excs_with_extra_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">extra_context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#reraise_excs_with_extra_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.reraise_excs_with_extra_context" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra_context</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
+<li><p><strong>after</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-y.monkey_patches">
@@ -2491,9 +2565,17 @@ by utilizing caching and optimized checksumming.</p>
 <span id="y-networks-module"></span><h2>y.networks module<a class="headerlink" href="#module-y.networks" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="y.networks.Network">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.networks.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><a class="headerlink" href="#y.networks.Network" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.networks.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><a class="reference internal" href="../_modules/y/networks.html#Network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.networks.Network" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
-<p>mypyc filler docstring</p>
+<p>A lightweight enum that enables lookup of chain IDs for popular blockchain networks.</p>
+<p>Each network is associated with its unique integer Chain ID.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
+<span class="go">&lt;Network.Mainnet: 1&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="o">.</span><span class="n">value</span>
+<span class="go">1</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__add__">
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__add__" title="Link to this definition"></a></dt>
@@ -2678,6 +2760,80 @@ byte array.  To request the native byte order of the host system, use
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="y.networks.Network.label">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.networks.Network.label" title="Link to this definition"></a></dt>
+<dd><p>Get the label (abbreviation) for a given chain ID.</p>
+<p>If no chain ID is provided, it defaults to the current active chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
+<span class="go">&#39;ETH&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
+<span class="go">&#39;ETH&#39;  # Assuming the current active chain is Mainnet</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.networks.Network.name" title="y.networks.Network.name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Network.name()</span></code></a> for getting the full name of the network.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.networks.Network.name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.networks.Network.name" title="Link to this definition"></a></dt>
+<dd><p>Get the full name of a network for a given chain ID.</p>
+<p>If no chain ID is provided, it defaults to the current active chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
+<span class="go">&#39;Mainnet&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+<span class="go">&#39;Mainnet&#39;  # Assuming the current active chain is Mainnet</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.networks.Network.label" title="y.networks.Network.label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Network.label()</span></code></a> for getting the abbreviation of the network.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.networks.Network.printable">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">printable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.printable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.networks.Network.printable" title="Link to this definition"></a></dt>
+<dd><p>Get a printable string that identifies the network.</p>
+<p>If the network is not supported, it returns a generic string with the chain ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
+<span class="go">&#39;Mainnet&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">(</span><span class="mi">9999</span><span class="p">)</span>
+<span class="go">&#39;chain 9999&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.to_bytes" title="Link to this definition"></a></dt>
 <dd><p>Return an array of bytes representing an integer.</p>
@@ -2700,78 +2856,93 @@ is raised.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Arbitrum">
-<span class="sig-name descname"><span class="pre">Arbitrum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42161</span></em><a class="headerlink" href="#y.networks.Network.Arbitrum" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Arbitrum</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42161</span></em><a class="headerlink" href="#y.networks.Network.Arbitrum" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Arbitrum One</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Aurora">
-<span class="sig-name descname"><span class="pre">Aurora</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1313161554</span></em><a class="headerlink" href="#y.networks.Network.Aurora" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Aurora</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1313161554</span></em><a class="headerlink" href="#y.networks.Network.Aurora" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Aurora</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Avalanche">
-<span class="sig-name descname"><span class="pre">Avalanche</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">43114</span></em><a class="headerlink" href="#y.networks.Network.Avalanche" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Avalanche</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">43114</span></em><a class="headerlink" href="#y.networks.Network.Avalanche" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Avalanche C-Chain</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Base">
-<span class="sig-name descname"><span class="pre">Base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8453</span></em><a class="headerlink" href="#y.networks.Network.Base" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Base</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8453</span></em><a class="headerlink" href="#y.networks.Network.Base" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Base</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.BinanceSmartChain">
-<span class="sig-name descname"><span class="pre">BinanceSmartChain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="headerlink" href="#y.networks.Network.BinanceSmartChain" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">BinanceSmartChain</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="headerlink" href="#y.networks.Network.BinanceSmartChain" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Binance Smart Chain</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Cronos">
-<span class="sig-name descname"><span class="pre">Cronos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#y.networks.Network.Cronos" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Cronos</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#y.networks.Network.Cronos" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Cronos Mainnet</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Fantom">
-<span class="sig-name descname"><span class="pre">Fantom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#y.networks.Network.Fantom" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Fantom</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#y.networks.Network.Fantom" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Fantom Opera Network</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Gnosis">
-<span class="sig-name descname"><span class="pre">Gnosis</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.networks.Network.Gnosis" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Gnosis</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.networks.Network.Gnosis" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for xDai Chain (now Gnosis Chain)</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Harmony">
-<span class="sig-name descname"><span class="pre">Harmony</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1666600000</span></em><a class="headerlink" href="#y.networks.Network.Harmony" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Harmony</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1666600000</span></em><a class="headerlink" href="#y.networks.Network.Harmony" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Harmony Mainnet Shard 0</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Heco">
-<span class="sig-name descname"><span class="pre">Heco</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#y.networks.Network.Heco" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Heco</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#y.networks.Network.Heco" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Heco</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Mainnet">
-<span class="sig-name descname"><span class="pre">Mainnet</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.networks.Network.Mainnet" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Mainnet</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.networks.Network.Mainnet" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Ethereum Mainnet</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Moonriver">
-<span class="sig-name descname"><span class="pre">Moonriver</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1285</span></em><a class="headerlink" href="#y.networks.Network.Moonriver" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Moonriver</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1285</span></em><a class="headerlink" href="#y.networks.Network.Moonriver" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Moonriver Network</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.OKEx">
-<span class="sig-name descname"><span class="pre">OKEx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="headerlink" href="#y.networks.Network.OKEx" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">OKEx</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="headerlink" href="#y.networks.Network.OKEx" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for OKEx Chain</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Optimism">
-<span class="sig-name descname"><span class="pre">Optimism</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#y.networks.Network.Optimism" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Optimism</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#y.networks.Network.Optimism" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Optimism</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Polygon">
-<span class="sig-name descname"><span class="pre">Polygon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">137</span></em><a class="headerlink" href="#y.networks.Network.Polygon" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Polygon</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">137</span></em><a class="headerlink" href="#y.networks.Network.Polygon" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Polygon (formerly Matic) Network</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.denominator">
@@ -2780,31 +2951,23 @@ is raised.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="y.networks.Network.label">
-<span class="sig-name descname"><span class="pre">label</span></span><a class="headerlink" href="#y.networks.Network.label" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.networks.Network.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#y.networks.Network.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.numerator">
 <span class="sig-name descname"><span class="pre">numerator</span></span><a class="headerlink" href="#y.networks.Network.numerator" title="Link to this definition"></a></dt>
 <dd><p>the numerator of a rational number in lowest terms</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="y.networks.Network.printable">
-<span class="sig-name descname"><span class="pre">printable</span></span><a class="headerlink" href="#y.networks.Network.printable" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.xDai">
-<span class="sig-name descname"><span class="pre">xDai</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.networks.Network.xDai" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">xDai</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.networks.Network.xDai" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for xDai Chain (now Gnosis Chain)</p>
+</dd></dl>
 
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="y.networks.CHAINID">
+<span class="sig-prename descclassname"><span class="pre">y.networks.</span></span><span class="sig-name descname"><span class="pre">CHAINID</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Final" title="(in Python v3.13)"><span class="pre">Final</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.networks.CHAINID" title="Link to this definition"></a></dt>
+<dd><p>The chainid for the connected rpc.</p>
 </dd></dl>
 
 </section>
@@ -4662,9 +4825,17 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py class">
 <dt class="sig sig-object py" id="y.Network">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><a class="headerlink" href="#y.Network" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><a class="reference internal" href="../_modules/y/networks.html#Network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Network" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
-<p>mypyc filler docstring</p>
+<p>A lightweight enum that enables lookup of chain IDs for popular blockchain networks.</p>
+<p>Each network is associated with its unique integer Chain ID.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
+<span class="go">&lt;Network.Mainnet: 1&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="o">.</span><span class="n">value</span>
+<span class="go">1</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__add__">
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__add__" title="Link to this definition"></a></dt>
@@ -4849,6 +5020,80 @@ byte array.  To request the native byte order of the host system, use
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="y.Network.label">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Network.label" title="Link to this definition"></a></dt>
+<dd><p>Get the label (abbreviation) for a given chain ID.</p>
+<p>If no chain ID is provided, it defaults to the current active chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
+<span class="go">&#39;ETH&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
+<span class="go">&#39;ETH&#39;  # Assuming the current active chain is Mainnet</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.Network.name" title="y.Network.name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Network.name()</span></code></a> for getting the full name of the network.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.Network.name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Network.name" title="Link to this definition"></a></dt>
+<dd><p>Get the full name of a network for a given chain ID.</p>
+<p>If no chain ID is provided, it defaults to the current active chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
+<span class="go">&#39;Mainnet&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+<span class="go">&#39;Mainnet&#39;  # Assuming the current active chain is Mainnet</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.Network.label" title="y.Network.label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Network.label()</span></code></a> for getting the abbreviation of the network.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.Network.printable">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">printable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.printable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Network.printable" title="Link to this definition"></a></dt>
+<dd><p>Get a printable string that identifies the network.</p>
+<p>If the network is not supported, it returns a generic string with the chain ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
+<span class="go">&#39;Mainnet&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">(</span><span class="mi">9999</span><span class="p">)</span>
+<span class="go">&#39;chain 9999&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.to_bytes" title="Link to this definition"></a></dt>
 <dd><p>Return an array of bytes representing an integer.</p>
@@ -4871,78 +5116,93 @@ is raised.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Arbitrum">
-<span class="sig-name descname"><span class="pre">Arbitrum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42161</span></em><a class="headerlink" href="#y.Network.Arbitrum" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Arbitrum</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42161</span></em><a class="headerlink" href="#y.Network.Arbitrum" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Arbitrum One</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Aurora">
-<span class="sig-name descname"><span class="pre">Aurora</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1313161554</span></em><a class="headerlink" href="#y.Network.Aurora" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Aurora</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1313161554</span></em><a class="headerlink" href="#y.Network.Aurora" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Aurora</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Avalanche">
-<span class="sig-name descname"><span class="pre">Avalanche</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">43114</span></em><a class="headerlink" href="#y.Network.Avalanche" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Avalanche</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">43114</span></em><a class="headerlink" href="#y.Network.Avalanche" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Avalanche C-Chain</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Base">
-<span class="sig-name descname"><span class="pre">Base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8453</span></em><a class="headerlink" href="#y.Network.Base" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Base</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8453</span></em><a class="headerlink" href="#y.Network.Base" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Base</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.BinanceSmartChain">
-<span class="sig-name descname"><span class="pre">BinanceSmartChain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="headerlink" href="#y.Network.BinanceSmartChain" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">BinanceSmartChain</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="headerlink" href="#y.Network.BinanceSmartChain" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Binance Smart Chain</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Cronos">
-<span class="sig-name descname"><span class="pre">Cronos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#y.Network.Cronos" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Cronos</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#y.Network.Cronos" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Cronos Mainnet</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Fantom">
-<span class="sig-name descname"><span class="pre">Fantom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#y.Network.Fantom" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Fantom</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#y.Network.Fantom" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Fantom Opera Network</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Gnosis">
-<span class="sig-name descname"><span class="pre">Gnosis</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.Network.Gnosis" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Gnosis</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.Network.Gnosis" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for xDai Chain (now Gnosis Chain)</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Harmony">
-<span class="sig-name descname"><span class="pre">Harmony</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1666600000</span></em><a class="headerlink" href="#y.Network.Harmony" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Harmony</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1666600000</span></em><a class="headerlink" href="#y.Network.Harmony" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Harmony Mainnet Shard 0</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Heco">
-<span class="sig-name descname"><span class="pre">Heco</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#y.Network.Heco" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Heco</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#y.Network.Heco" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Heco</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Mainnet">
-<span class="sig-name descname"><span class="pre">Mainnet</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.Network.Mainnet" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Mainnet</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.Network.Mainnet" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Ethereum Mainnet</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Moonriver">
-<span class="sig-name descname"><span class="pre">Moonriver</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1285</span></em><a class="headerlink" href="#y.Network.Moonriver" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Moonriver</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1285</span></em><a class="headerlink" href="#y.Network.Moonriver" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Moonriver Network</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.OKEx">
-<span class="sig-name descname"><span class="pre">OKEx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="headerlink" href="#y.Network.OKEx" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">OKEx</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="headerlink" href="#y.Network.OKEx" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for OKEx Chain</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Optimism">
-<span class="sig-name descname"><span class="pre">Optimism</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#y.Network.Optimism" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Optimism</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#y.Network.Optimism" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Optimism</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Polygon">
-<span class="sig-name descname"><span class="pre">Polygon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">137</span></em><a class="headerlink" href="#y.Network.Polygon" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">Polygon</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">137</span></em><a class="headerlink" href="#y.Network.Polygon" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for Polygon (formerly Matic) Network</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.denominator">
@@ -4951,30 +5211,16 @@ is raised.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="y.Network.label">
-<span class="sig-name descname"><span class="pre">label</span></span><a class="headerlink" href="#y.Network.label" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.Network.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#y.Network.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.numerator">
 <span class="sig-name descname"><span class="pre">numerator</span></span><a class="headerlink" href="#y.Network.numerator" title="Link to this definition"></a></dt>
 <dd><p>the numerator of a rational number in lowest terms</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="y.Network.printable">
-<span class="sig-name descname"><span class="pre">printable</span></span><a class="headerlink" href="#y.Network.printable" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.xDai">
-<span class="sig-name descname"><span class="pre">xDai</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.Network.xDai" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">xDai</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.Network.xDai" title="Link to this definition"></a></dt>
+<dd><p>The Chain ID for xDai Chain (now Gnosis Chain)</p>
+</dd></dl>
 
 </dd></dl>
 
