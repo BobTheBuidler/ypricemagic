@@ -203,12 +203,13 @@ class YearnInspiredVault(ERC20):
             except ContractLogicError:
                 pass
             else:
-                underlying = await has_method(
-                    lend_platform,
-                    "underlying()(address)",
-                    return_response=True,
-                    sync=False,
-                )
+                if lend_platform:
+                    underlying = await has_method(
+                        lend_platform,
+                        "underlying()(address)",
+                        return_response=True,
+                        sync=False,
+                    )
 
         if underlying is not None:
             underlying = ERC20(underlying, asynchronous=self.asynchronous)
