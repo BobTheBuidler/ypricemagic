@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from asyncio import Task, create_task, get_event_loop, sleep
-from copy import deepcopy
+from copy import copy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
 from typing import (
@@ -441,6 +441,7 @@ class Filter(_DiskCachedMixin[T, C]):
     _chunk_size = BATCH_SIZE
     _chunks_per_batch = None
     _exc = None
+    _tb = None
     _db_task = None
     _sleep_fut = None
     _sleep_time = 60
@@ -618,7 +619,7 @@ class Filter(_DiskCachedMixin[T, C]):
                 await self._lock.wait_for(done_thru + 1)
             if self._exc is not None:
                 # raise a copy of it so multiple waiters don't destroy the traceback
-                raise deepcopy(self._exc).with_traceback(self._exc.__traceback__)
+                raise self._exc.with_traceback(self._tb) from self._exc.__cause__
             if to_yield := self._objects[yielded - self._pruned :]:
                 if from_block and not reached_from_block:
                     objs = skip_too_early(to_yield)
@@ -694,6 +695,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
             logger.exception(e)
             self._exc = e
+            self._tb = e.__traceback__
             # no need to hold vars in memory
             self._lock.set(_MAX_LONG_LONG)
             raise
@@ -908,7 +910,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._task._log_destroy_pending = False
         if self._task.done() and (e := self._task.exception()):
             # copy the exc so the traceback doesn't get destroyed by other waiters
-            raise deepcopy(e).with_traceback(e.__traceback__)
+            raise copy(e).with_traceback(e.__traceback__) from e.__cause__
 
     async def __insert_chunk(
         self,
