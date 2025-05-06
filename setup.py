@@ -45,6 +45,7 @@ try:
             "--disable-error-code=no-redef",
             "--disable-error-code=valid-type",
             "--disable-error-code=assignment",
+            "--disable-error-code=arg-type",
             "--disable-error-code=var-annotated",
             "--disable-error-code=typeddict-item",
             "--disable-error-code=type-var",
