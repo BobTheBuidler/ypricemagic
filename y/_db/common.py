@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from asyncio import Task, create_task, get_event_loop, sleep
-from copy import deepcopy
+from copy import copy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
 from typing import (
@@ -910,7 +910,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._task._log_destroy_pending = False
         if self._task.done() and (e := self._task.exception()):
             # copy the exc so the traceback doesn't get destroyed by other waiters
-            raise deepcopy(e).with_traceback(e.__traceback__)
+            raise copy(e).with_traceback(e.__traceback__) from e.__cause__
 
     async def __insert_chunk(
         self,
