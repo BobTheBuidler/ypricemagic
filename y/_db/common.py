@@ -441,6 +441,7 @@ class Filter(_DiskCachedMixin[T, C]):
     _chunk_size = BATCH_SIZE
     _chunks_per_batch = None
     _exc = None
+    _tb = None
     _db_task = None
     _sleep_fut = None
     _sleep_time = 60
@@ -618,7 +619,7 @@ class Filter(_DiskCachedMixin[T, C]):
                 await self._lock.wait_for(done_thru + 1)
             if self._exc is not None:
                 # raise a copy of it so multiple waiters don't destroy the traceback
-                raise deepcopy(self._exc).with_traceback(self._exc.__traceback__)
+                raise self._exc.with_traceback(self._tb) from self._exc.__cause__
             if to_yield := self._objects[yielded - self._pruned :]:
                 if from_block and not reached_from_block:
                     objs = skip_too_early(to_yield)
@@ -694,6 +695,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
             logger.exception(e)
             self._exc = e
+            self._tb = e.__traceback__
             # no need to hold vars in memory
             self._lock.set(_MAX_LONG_LONG)
             raise
