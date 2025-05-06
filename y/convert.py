@@ -68,7 +68,7 @@ def to_address(address: AnyAddressType) -> ChecksumAddress:
     if checksummed := __get_checksum_from_cache(address):
         return checksummed
     checksummed = checksum(address)
-    __cache_if_is_checksummed(address, checksummed)  # type: ignore [arg-type]
+    __cache_if_is_checksummed(address, checksummed)
     return checksummed  # type: ignore [return-value]
 
 
@@ -96,19 +96,19 @@ async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
         - :func:`checksum` for the checksumming process.
         - :func:`__normalize_input_to_string` for input normalization.
     """
-    address = __normalize_input_to_string(address)
-    if checksummed := __get_checksum_from_cache(address):
+    normalized = __normalize_input_to_string(address)
+    if checksummed := __get_checksum_from_cache(normalized):
         return checksummed
-    checksummed = await _checksum_thread.run(checksum, address)
-    __cache_if_is_checksummed(address, checksummed)  # type: ignore [arg-type]
-    return checksummed  # type: ignore [return-value]
+    checksummed = await _checksum_thread.run(checksum, normalized)
+    __cache_if_is_checksummed(normalized, checksummed)
+    return checksummed
 
 
 _is_checksummed: Final[Set[HexAddress]] = set()
 _is_not_checksummed: Final[Set[HexAddress]] = set()
 
 
-def __get_checksum_from_cache(address: AnyAddressType) -> Optional[ChecksumAddress]:
+def __get_checksum_from_cache(address: HexAddress) -> Optional[ChecksumAddress]:
     """Retrieve a checksummed address from the cache if available.
 
     This function checks if the given address is already known to be checksummed,
