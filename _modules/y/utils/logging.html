@@ -77,6 +77,7 @@
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">BlockNumber</span><span class="p">,</span> <span class="n">ChecksumAddress</span>
 <span class="kn">from</span> <span class="nn">lazy_logging</span> <span class="kn">import</span> <span class="n">LazyLoggerFactory</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">ParamSpec</span>
 
@@ -114,13 +115,16 @@
 
 
 
+<span class="n">_pop_logger</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">Logger</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">loggerDict</span><span class="o">.</span><span class="n">pop</span>
+
+
 <div class="viewcode-block" id="PriceLogger">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.logging.PriceLogger">[docs]</a>
 <span class="nd">@final</span>
 <span class="k">class</span> <span class="nc">PriceLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span>
-    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">block</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockNumber</span>
     <span class="n">key</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span>
     <span class="n">debug_task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Task[None]&quot;</span><span class="p">]</span>
 
@@ -130,7 +134,7 @@
         <span class="c1"># since we make a lot of these we don&#39;t want logging module to cache them</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;closing </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
-            <span class="n">Logger</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">loggerDict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+            <span class="n">_pop_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 </div>
 
 
