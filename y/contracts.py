@@ -639,7 +639,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             'Dai Stablecoin'
         """
         _ContractBase.__init__(self, None, build, {})  # type: ignore
-        _DeployedContractBase.__init__(self, build["address"], owner, None)
+        _DeployedContractBase.__init__(self, build["address"], owner, None)  # type: ignore [type-var]
         if persist:
             _add_deployment(self)
         try:
