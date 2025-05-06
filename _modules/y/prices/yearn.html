@@ -277,16 +277,20 @@
 
         <span class="k">if</span> <span class="n">underlying</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># certain reaper vaults</span>
-            <span class="n">lend_platform</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_method</span><span class="p">(</span>
-                <span class="s2">&quot;lendPlatform()(address)&quot;</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">lend_platform</span><span class="p">:</span>
-                <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">has_method</span><span class="p">(</span>
-                    <span class="n">lend_platform</span><span class="p">,</span>
-                    <span class="s2">&quot;underlying()(address)&quot;</span><span class="p">,</span>
-                    <span class="n">return_response</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">lend_platform</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_method</span><span class="p">(</span>
+                    <span class="s2">&quot;lendPlatform()(address)&quot;</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
                 <span class="p">)</span>
+            <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">lend_platform</span><span class="p">:</span>
+                    <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">has_method</span><span class="p">(</span>
+                        <span class="n">lend_platform</span><span class="p">,</span>
+                        <span class="s2">&quot;underlying()(address)&quot;</span><span class="p">,</span>
+                        <span class="n">return_response</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">underlying</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">underlying</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">underlying</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
