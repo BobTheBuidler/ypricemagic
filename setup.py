@@ -19,7 +19,7 @@ try:
             "y/convert.py",
             # "y/exceptions.py",
             "y/networks.py",
-            # "y/prices/utils/sense_check.py",
+            "y/prices/utils/sense_check.py",
             "y/utils/gather.py",
             "--pretty",
             "--install-types",
