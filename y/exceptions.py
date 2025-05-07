@@ -172,12 +172,15 @@ class MessedUpBrownieContract(Exception):
 
 
 def contract_not_verified(e: Exception) -> bool:
-    triggers = [
+    triggers = (
         "Contract source code not verified",
         "has not been verified",
-    ]
+    )
     stre = str(e)
-    return any(trigger in stre for trigger in triggers)
+    for trigger in triggers:
+        if trigger in stre:
+            return True
+    return False
 
 
 # Pool detection
@@ -246,15 +249,19 @@ class CallReverted(Exception):
 def call_reverted(e: Exception) -> bool:
     if isinstance(e, ContractLogicError):
         return True
-    triggers = [
+    triggers = (
         "execution reverted",
         "No data was returned - the call likely reverted",
         "invalid opcode: opcode 0xfe not defined",
         "Tried to read 32 bytes.  Only got 0 bytes",
         "error processing call Revert",
         "invalid opcode: INVALID",
-    ]
-    return any(trigger in str(e) for trigger in triggers)
+    )
+    stre = str(e)
+    for trigger in triggers:
+        if trigger in stre:
+            return True
+    return False
 
 
 def continue_if_call_reverted(e: Exception) -> None:
