@@ -258,7 +258,7 @@ async def sense_check(
 
 
 # yLazyLogger(logger)
-async def _exit_sense_check(token_address: str) -> bool:
+async def _exit_sense_check(token_address: ChecksumAddress) -> bool:
     """
     For some token types, its normal to have a crazy high nominal price.
     We can skip the sense check for those.
@@ -286,7 +286,7 @@ async def _exit_sense_check(token_address: str) -> bool:
     elif bucket == "curve lp":
         underlyings = await CurvePool(token_address, asynchronous=True).coins  # type: ignore [call-overload]
         if questionable_underlyings := [
-            und for und in underlyings if und not in ACCEPTABLE_HIGH_PRICES
+            und.address for und in underlyings if und.address not in ACCEPTABLE_HIGH_PRICES
         ]:
             return await a_sync.map(_exit_sense_check, questionable_underlyings).all(  # type: ignore [call-overload]
                 sync=False
@@ -307,4 +307,5 @@ async def _exit_sense_check(token_address: str) -> bool:
     else:
         return False
 
-    return underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying)
+    underlying_addr = underlying.address
+    return underlying_addr in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying_addr)
