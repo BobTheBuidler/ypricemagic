@@ -89,6 +89,7 @@
 <span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">igather</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">ContractNotFound</span>
+<span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">BlockNumber</span><span class="p">,</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexAddress</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">ParamSpec</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
@@ -357,8 +358,8 @@
 
     <span class="nd">@wraps</span><span class="p">(</span><span class="n">get_price</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">cache_wrap</span><span class="p">(</span>
-        <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
-        <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
+        <span class="n">token</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">:</span> <span class="n">BlockNumber</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">fail_to_None</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
@@ -388,8 +389,8 @@
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;async&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
 <span class="nd">@__cache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_price</span><span class="p">(</span>
-    <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
-    <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockNumber</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">fail_to_None</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
@@ -449,8 +450,8 @@
 
 <span class="nd">@stuck_coro_debugger</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_exit_early_for_known_tokens</span><span class="p">(</span>
-    <span class="n">token_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
+    <span class="n">token_address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockNumber</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
@@ -626,8 +627,8 @@
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_price_from_api</span><span class="p">(</span>
-    <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
-    <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">HexAddress</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockNumber</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -648,8 +649,8 @@
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_price_from_dexes</span><span class="p">(</span>
-    <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
-    <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockNumber</span><span class="p">,</span>
     <span class="n">ignore_pools</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
