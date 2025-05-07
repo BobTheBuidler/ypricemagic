@@ -177,7 +177,10 @@ def contract_not_verified(e: Exception) -> bool:
         "has not been verified",
     ]
     stre = str(e)
-    return any(trigger in stre for trigger in triggers)
+    for trigger in triggers:
+        if trigger in stre:
+            return True
+    return False
 
 
 # Pool detection
