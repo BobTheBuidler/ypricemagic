@@ -18,6 +18,7 @@ import dank_mids
 from a_sync import igather
 from brownie import ZERO_ADDRESS
 from brownie.exceptions import ContractNotFound
+from eth_typing import BlockNumber, ChecksumAddress, HexAddress
 from typing_extensions import ParamSpec
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -277,8 +278,8 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
 
     @wraps(get_price)
     async def cache_wrap(
-        token: AnyAddressType,
-        block: Block,
+        token: ChecksumAddress,
+        block: BlockNumber,
         *,
         fail_to_None: bool = False,
         skip_cache: bool = ENVS.SKIP_CACHE,
@@ -308,8 +309,8 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
 @a_sync.a_sync(default="async", cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
 @__cache
 async def _get_price(
-    token: AnyAddressType,
-    block: Block,
+    token: ChecksumAddress,
+    block: BlockNumber,
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
@@ -369,8 +370,8 @@ async def _get_price(
 
 @stuck_coro_debugger
 async def _exit_early_for_known_tokens(
-    token_address: str,
-    block: Block,
+    token_address: ChecksumAddress,
+    block: BlockNumber,
     logger: Logger,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
@@ -546,8 +547,8 @@ async def _exit_early_for_known_tokens(
 
 
 async def _get_price_from_api(
-    token: AnyAddressType,
-    block: Block,
+    token: HexAddress,
+    block: BlockNumber,
     logger: Logger,
 ):
     """
@@ -568,8 +569,8 @@ async def _get_price_from_api(
 
 
 async def _get_price_from_dexes(
-    token: AnyAddressType,
-    block: Block,
+    token: ChecksumAddress,
+    block: BlockNumber,
     ignore_pools,
     skip_cache: bool,
     logger: Logger,
