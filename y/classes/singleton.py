@@ -51,7 +51,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
         super().__init__(name, bases, namespace)
 
         cls.__instances: Dict[bool, ChecksumAddressDict[T]] = {
-            True: ChecksumAddressDict(), 
+            True: ChecksumAddressDict(),
             False: ChecksumAddressDict(),
         }
         """A dictionary to store singleton instances, keyed by their synchronous or asynchronous context."""
