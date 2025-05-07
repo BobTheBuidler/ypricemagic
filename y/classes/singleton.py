@@ -1,6 +1,6 @@
 import threading
 from collections import defaultdict
-from typing import DefaultDict, Generic, TypeVar
+from typing import Dict, Generic, TypeVar
 
 from a_sync.a_sync._meta import ASyncMeta
 from checksum_dict import ChecksumAddressDict
@@ -19,8 +19,8 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
 
     The differentiation between synchronous and asynchronous contexts is achieved by using the
     `__a_sync_instance_will_be_sync__` method to determine the context during instance creation.
-    Instances are stored in `cls.__instances`, which is a `DefaultDict` of `ChecksumAddressDict`
-    keyed by the context (synchronous or asynchronous). This ensures that separate instances are created
+    Instances are stored in `cls.__instances`, which is a dict of `ChecksumAddressDict` keyed by
+    the context (synchronous or asynchronous). This ensures that separate instances are created
     for each context.
 
     Examples:
@@ -50,12 +50,16 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
 
         super().__init__(name, bases, namespace)
 
-        cls.__instances: DefaultDict[bool, ChecksumAddressDict[T]] = defaultdict(
-            ChecksumAddressDict
-        )
+        cls.__instances: Dict[bool, ChecksumAddressDict[T]] = {
+            True: ChecksumAddressDict(), 
+            False: ChecksumAddressDict(),
+        }
         """A dictionary to store singleton instances, keyed by their synchronous or asynchronous context."""
 
-        cls.__locks = defaultdict(lambda: defaultdict(threading.Lock))
+        cls.__locks = {
+            True: defaultdict(threading.Lock),
+            False: defaultdict(threading.Lock),
+        }
         """A dictionary to store locks for each address to ensure thread-safe instance creation."""
 
         cls.__locks_lock: threading.Lock = threading.Lock()
@@ -109,16 +113,17 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
         """
         address = str(address)
         is_sync = cls.__a_sync_instance_will_be_sync__(args, kwargs)
+        instances = instance = cls.__instances[is_sync]
         try:
-            instance = cls.__instances[is_sync][address]
+            instance = instances[address]
         except KeyError:
             with cls.__get_address_lock(address, is_sync):
-                # Try to get the instance again, in case it was added while waiting for the lock
                 try:
-                    instance = cls.__instances[is_sync][address]
+                    # Try to get the instance again, in case it was added while waiting for the lock
+                    instance = instances[address]
                 except KeyError:
-                    instance = super().__call__(address, *args, **kwargs)
-                    cls.__instances[is_sync][address] = instance
+                    # We failed to get the instance, create it and store it
+                    instance = instances[address] = super().__call__(address, *args, **kwargs)
             cls.__delete_address_lock(address, is_sync)
         if instance.asynchronous is is_sync:
             raise RuntimeError(
