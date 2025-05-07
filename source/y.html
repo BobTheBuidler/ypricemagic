@@ -1813,99 +1813,18 @@ _func: The function to use for combining the results (either <a class="reference
 <span id="y-convert-module"></span><h2>y.convert module<a class="headerlink" href="#module-y.convert" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.convert.checksum">
-<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/convert.html#checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.convert.checksum" title="Link to this definition"></a></dt>
-<dd><p>Convert an address to its checksummed format.</p>
-<p>This function uses the <cite>to_checksum_address</cite> function to convert an Ethereum address
-to its checksummed format. If the address is invalid, a <cite>ValueError</cite> is raised.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a>) – The Ethereum address to be checksummed.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the provided address is not a valid Ethereum address.</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The checksummed Ethereum address.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.2)"><em>ChecksumAddress</em></a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">checksum</span><span class="p">(</span><span class="s2">&quot;0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&quot;</span><span class="p">)</span>
-<span class="go">&#39;0xDe0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&#39;</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">to_checksum_address()</span></code> for the underlying implementation.</p></li>
-</ul>
-</div>
-</dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">checksum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.convert.checksum" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.convert.to_address">
-<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/convert.html#to_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.convert.to_address" title="Link to this definition"></a></dt>
-<dd><p>Convert an address to a checksummed address, with caching.</p>
-<p>This function normalizes the input address to a string, checks if it is already
-checksummed and cached, and if not, computes the checksummed address and caches it.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The Ethereum address to be converted.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The checksummed Ethereum address.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.2)"><em>ChecksumAddress</em></a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">to_address</span><span class="p">(</span><span class="s2">&quot;0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&quot;</span><span class="p">)</span>
-<span class="go">&#39;0xDe0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&#39;</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#y.convert.checksum" title="y.convert.checksum"><code class="xref py py-func docutils literal notranslate"><span class="pre">checksum()</span></code></a> for the checksumming process.</p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">__normalize_input_to_string()</span></code> for input normalization.</p></li>
-</ul>
-</div>
-</dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.convert.to_address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.convert.to_address_async">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/convert.html#to_address_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.convert.to_address_async" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously convert an address to a checksummed address, with caching.</p>
-<p>This function normalizes the input address to a string, checks if it is already
-checksummed and cached, and if not, computes the checksummed address asynchronously
-and caches it.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The Ethereum address to be converted.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The checksummed Ethereum address.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.2)"><em>ChecksumAddress</em></a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">to_address_async</span><span class="p">(</span><span class="s2">&quot;0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&quot;</span><span class="p">)</span>
-<span class="go">&#39;0xDe0B295669a9FD93d5F28D9Ec85E40f4cb697BAe&#39;</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#y.convert.checksum" title="y.convert.checksum"><code class="xref py py-func docutils literal notranslate"><span class="pre">checksum()</span></code></a> for the checksumming process.</p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">__normalize_input_to_string()</span></code> for input normalization.</p></li>
-</ul>
-</div>
-</dd></dl>
+<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address_async</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.convert.to_address_async" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-y.datatypes">
