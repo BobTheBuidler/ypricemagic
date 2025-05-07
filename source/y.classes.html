@@ -1316,8 +1316,8 @@ is created for each synchronous or asynchronous context, with the added function
 Ethereum addresses using <code class="xref py py-class docutils literal notranslate"><span class="pre">ChecksumAddressDict</span></code>.</p>
 <p>The differentiation between synchronous and asynchronous contexts is achieved by using the
 <cite>__a_sync_instance_will_be_sync__</cite> method to determine the context during instance creation.
-Instances are stored in <cite>cls.__instances</cite>, which is a <cite>DefaultDict</cite> of <cite>ChecksumAddressDict</cite>
-keyed by the context (synchronous or asynchronous). This ensures that separate instances are created
+Instances are stored in <cite>cls.__instances</cite>, which is a dict of <cite>ChecksumAddressDict</cite> keyed by
+the context (synchronous or asynchronous). This ensures that separate instances are created
 for each context.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>

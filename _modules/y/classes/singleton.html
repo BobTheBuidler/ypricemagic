@@ -71,7 +71,7 @@
   <h1>Source code for y.classes.singleton</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">from</span> <span class="nn">a_sync.a_sync._meta</span> <span class="kn">import</span> <span class="n">ASyncMeta</span>
 <span class="kn">from</span> <span class="nn">checksum_dict</span> <span class="kn">import</span> <span class="n">ChecksumAddressDict</span>
@@ -92,8 +92,8 @@
 
 <span class="sd">    The differentiation between synchronous and asynchronous contexts is achieved by using the</span>
 <span class="sd">    `__a_sync_instance_will_be_sync__` method to determine the context during instance creation.</span>
-<span class="sd">    Instances are stored in `cls.__instances`, which is a `DefaultDict` of `ChecksumAddressDict`</span>
-<span class="sd">    keyed by the context (synchronous or asynchronous). This ensures that separate instances are created</span>
+<span class="sd">    Instances are stored in `cls.__instances`, which is a dict of `ChecksumAddressDict` keyed by</span>
+<span class="sd">    the context (synchronous or asynchronous). This ensures that separate instances are created</span>
 <span class="sd">    for each context.</span>
 
 <span class="sd">    Examples:</span>
@@ -125,12 +125,16 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">namespace</span><span class="p">)</span>
 
-        <span class="bp">cls</span><span class="o">.</span><span class="n">__instances</span><span class="p">:</span> <span class="n">DefaultDict</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">ChecksumAddressDict</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
-            <span class="n">ChecksumAddressDict</span>
-        <span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__instances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">ChecksumAddressDict</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="kc">True</span><span class="p">:</span> <span class="n">ChecksumAddressDict</span><span class="p">(),</span>
+            <span class="kc">False</span><span class="p">:</span> <span class="n">ChecksumAddressDict</span><span class="p">(),</span>
+        <span class="p">}</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A dictionary to store singleton instances, keyed by their synchronous or asynchronous context.&quot;&quot;&quot;</span>
 
-        <span class="bp">cls</span><span class="o">.</span><span class="n">__locks</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">))</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__locks</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="kc">True</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">),</span>
+            <span class="kc">False</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">),</span>
+        <span class="p">}</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A dictionary to store locks for each address to ensure thread-safe instance creation.&quot;&quot;&quot;</span>
 
         <span class="bp">cls</span><span class="o">.</span><span class="n">__locks_lock</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
@@ -187,16 +191,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="n">is_sync</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__a_sync_instance_will_be_sync__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">instances</span> <span class="o">=</span> <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__instances</span><span class="p">[</span><span class="n">is_sync</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__instances</span><span class="p">[</span><span class="n">is_sync</span><span class="p">][</span><span class="n">address</span><span class="p">]</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="n">instances</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__get_address_lock</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">is_sync</span><span class="p">):</span>
-                <span class="c1"># Try to get the instance again, in case it was added while waiting for the lock</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__instances</span><span class="p">[</span><span class="n">is_sync</span><span class="p">][</span><span class="n">address</span><span class="p">]</span>
+                    <span class="c1"># Try to get the instance again, in case it was added while waiting for the lock</span>
+                    <span class="n">instance</span> <span class="o">=</span> <span class="n">instances</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                    <span class="bp">cls</span><span class="o">.</span><span class="n">__instances</span><span class="p">[</span><span class="n">is_sync</span><span class="p">][</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+                    <span class="c1"># We failed to get the instance, create it and store it</span>
+                    <span class="n">instance</span> <span class="o">=</span> <span class="n">instances</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">__delete_address_lock</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">is_sync</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">asynchronous</span> <span class="ow">is</span> <span class="n">is_sync</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
