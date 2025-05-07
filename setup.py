@@ -16,7 +16,7 @@ try:
         [
             "y/_db/utils/stringify.py",
             "y/ENVIRONMENT_VARIABLES.py",
-            # "y/convert.py",
+            "y/convert.py",
             # "y/exceptions.py",
             "y/networks.py",
             # "y/prices/utils/sense_check.py",
