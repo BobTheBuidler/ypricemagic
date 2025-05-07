@@ -130,7 +130,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.networks">y.networks module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#y.networks.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.networks.CHAINID"><code class="docutils literal notranslate"><span class="pre">CHAINID</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.time">y.time module</a><ul>
@@ -2565,17 +2564,9 @@ by utilizing caching and optimized checksumming.</p>
 <span id="y-networks-module"></span><h2>y.networks module<a class="headerlink" href="#module-y.networks" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="y.networks.Network">
-<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.networks.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><a class="reference internal" href="../_modules/y/networks.html#Network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.networks.Network" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.networks.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><a class="headerlink" href="#y.networks.Network" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
-<p>A lightweight enum that enables lookup of chain IDs for popular blockchain networks.</p>
-<p>Each network is associated with its unique integer Chain ID.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
-<span class="go">&lt;Network.Mainnet: 1&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="o">.</span><span class="n">value</span>
-<span class="go">1</span>
-</pre></div>
-</div>
+<p>mypyc filler docstring</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__add__">
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__add__" title="Link to this definition"></a></dt>
@@ -2760,80 +2751,6 @@ byte array.  To request the native byte order of the host system, use
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.label">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.networks.Network.label" title="Link to this definition"></a></dt>
-<dd><p>Get the label (abbreviation) for a given chain ID.</p>
-<p>If no chain ID is provided, it defaults to the current active chain.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
-<span class="go">&#39;ETH&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
-<span class="go">&#39;ETH&#39;  # Assuming the current active chain is Mainnet</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#y.networks.Network.name" title="y.networks.Network.name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Network.name()</span></code></a> for getting the full name of the network.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.name">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.networks.Network.name" title="Link to this definition"></a></dt>
-<dd><p>Get the full name of a network for a given chain ID.</p>
-<p>If no chain ID is provided, it defaults to the current active chain.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
-<span class="go">&#39;Mainnet&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
-<span class="go">&#39;Mainnet&#39;  # Assuming the current active chain is Mainnet</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#y.networks.Network.label" title="y.networks.Network.label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Network.label()</span></code></a> for getting the abbreviation of the network.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.printable">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">printable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.printable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.networks.Network.printable" title="Link to this definition"></a></dt>
-<dd><p>Get a printable string that identifies the network.</p>
-<p>If the network is not supported, it returns a generic string with the chain ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
-<span class="go">&#39;Mainnet&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">(</span><span class="mi">9999</span><span class="p">)</span>
-<span class="go">&#39;chain 9999&#39;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.to_bytes" title="Link to this definition"></a></dt>
 <dd><p>Return an array of bytes representing an integer.</p>
@@ -2856,93 +2773,78 @@ is raised.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Arbitrum">
-<span class="sig-name descname"><span class="pre">Arbitrum</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42161</span></em><a class="headerlink" href="#y.networks.Network.Arbitrum" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Arbitrum One</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Arbitrum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42161</span></em><a class="headerlink" href="#y.networks.Network.Arbitrum" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Aurora">
-<span class="sig-name descname"><span class="pre">Aurora</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1313161554</span></em><a class="headerlink" href="#y.networks.Network.Aurora" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Aurora</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Aurora</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1313161554</span></em><a class="headerlink" href="#y.networks.Network.Aurora" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Avalanche">
-<span class="sig-name descname"><span class="pre">Avalanche</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">43114</span></em><a class="headerlink" href="#y.networks.Network.Avalanche" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Avalanche C-Chain</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Avalanche</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">43114</span></em><a class="headerlink" href="#y.networks.Network.Avalanche" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Base">
-<span class="sig-name descname"><span class="pre">Base</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8453</span></em><a class="headerlink" href="#y.networks.Network.Base" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Base</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8453</span></em><a class="headerlink" href="#y.networks.Network.Base" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.BinanceSmartChain">
-<span class="sig-name descname"><span class="pre">BinanceSmartChain</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="headerlink" href="#y.networks.Network.BinanceSmartChain" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Binance Smart Chain</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">BinanceSmartChain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="headerlink" href="#y.networks.Network.BinanceSmartChain" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Cronos">
-<span class="sig-name descname"><span class="pre">Cronos</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#y.networks.Network.Cronos" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Cronos Mainnet</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Cronos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#y.networks.Network.Cronos" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Fantom">
-<span class="sig-name descname"><span class="pre">Fantom</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#y.networks.Network.Fantom" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Fantom Opera Network</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Fantom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#y.networks.Network.Fantom" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Gnosis">
-<span class="sig-name descname"><span class="pre">Gnosis</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.networks.Network.Gnosis" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for xDai Chain (now Gnosis Chain)</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Gnosis</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.networks.Network.Gnosis" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Harmony">
-<span class="sig-name descname"><span class="pre">Harmony</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1666600000</span></em><a class="headerlink" href="#y.networks.Network.Harmony" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Harmony Mainnet Shard 0</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Harmony</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1666600000</span></em><a class="headerlink" href="#y.networks.Network.Harmony" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Heco">
-<span class="sig-name descname"><span class="pre">Heco</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#y.networks.Network.Heco" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Heco</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Heco</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#y.networks.Network.Heco" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Mainnet">
-<span class="sig-name descname"><span class="pre">Mainnet</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.networks.Network.Mainnet" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Ethereum Mainnet</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Mainnet</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.networks.Network.Mainnet" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Moonriver">
-<span class="sig-name descname"><span class="pre">Moonriver</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1285</span></em><a class="headerlink" href="#y.networks.Network.Moonriver" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Moonriver Network</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Moonriver</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1285</span></em><a class="headerlink" href="#y.networks.Network.Moonriver" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.OKEx">
-<span class="sig-name descname"><span class="pre">OKEx</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="headerlink" href="#y.networks.Network.OKEx" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for OKEx Chain</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">OKEx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="headerlink" href="#y.networks.Network.OKEx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Optimism">
-<span class="sig-name descname"><span class="pre">Optimism</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#y.networks.Network.Optimism" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Optimism</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Optimism</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#y.networks.Network.Optimism" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.Polygon">
-<span class="sig-name descname"><span class="pre">Polygon</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">137</span></em><a class="headerlink" href="#y.networks.Network.Polygon" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Polygon (formerly Matic) Network</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Polygon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">137</span></em><a class="headerlink" href="#y.networks.Network.Polygon" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.denominator">
@@ -2951,23 +2853,31 @@ is raised.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="y.networks.Network.label">
+<span class="sig-name descname"><span class="pre">label</span></span><a class="headerlink" href="#y.networks.Network.label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.networks.Network.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#y.networks.Network.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.numerator">
 <span class="sig-name descname"><span class="pre">numerator</span></span><a class="headerlink" href="#y.networks.Network.numerator" title="Link to this definition"></a></dt>
 <dd><p>the numerator of a rational number in lowest terms</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="y.networks.Network.printable">
+<span class="sig-name descname"><span class="pre">printable</span></span><a class="headerlink" href="#y.networks.Network.printable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="y.networks.Network.xDai">
-<span class="sig-name descname"><span class="pre">xDai</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.networks.Network.xDai" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for xDai Chain (now Gnosis Chain)</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">xDai</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.networks.Network.xDai" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.networks.CHAINID">
-<span class="sig-prename descclassname"><span class="pre">y.networks.</span></span><span class="sig-name descname"><span class="pre">CHAINID</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Final" title="(in Python v3.13)"><span class="pre">Final</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.networks.CHAINID" title="Link to this definition"></a></dt>
-<dd><p>The chainid for the connected rpc.</p>
 </dd></dl>
 
 </section>
@@ -4825,17 +4735,9 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py class">
 <dt class="sig sig-object py" id="y.Network">
-<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><a class="reference internal" href="../_modules/y/networks.html#Network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Network" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><a class="headerlink" href="#y.Network" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
-<p>A lightweight enum that enables lookup of chain IDs for popular blockchain networks.</p>
-<p>Each network is associated with its unique integer Chain ID.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
-<span class="go">&lt;Network.Mainnet: 1&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="o">.</span><span class="n">value</span>
-<span class="go">1</span>
-</pre></div>
-</div>
+<p>mypyc filler docstring</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__add__">
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__add__" title="Link to this definition"></a></dt>
@@ -5020,80 +4922,6 @@ byte array.  To request the native byte order of the host system, use
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.label">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Network.label" title="Link to this definition"></a></dt>
-<dd><p>Get the label (abbreviation) for a given chain ID.</p>
-<p>If no chain ID is provided, it defaults to the current active chain.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
-<span class="go">&#39;ETH&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
-<span class="go">&#39;ETH&#39;  # Assuming the current active chain is Mainnet</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#y.Network.name" title="y.Network.name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Network.name()</span></code></a> for getting the full name of the network.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.name">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Network.name" title="Link to this definition"></a></dt>
-<dd><p>Get the full name of a network for a given chain ID.</p>
-<p>If no chain ID is provided, it defaults to the current active chain.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
-<span class="go">&#39;Mainnet&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
-<span class="go">&#39;Mainnet&#39;  # Assuming the current active chain is Mainnet</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#y.Network.label" title="y.Network.label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Network.label()</span></code></a> for getting the abbreviation of the network.</p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.printable">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">printable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/networks.html#Network.printable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Network.printable" title="Link to this definition"></a></dt>
-<dd><p>Get a printable string that identifies the network.</p>
-<p>If the network is not supported, it returns a generic string with the chain ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chain_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The chain ID of the network.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">)</span>
-<span class="go">&#39;Mainnet&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">(</span><span class="mi">9999</span><span class="p">)</span>
-<span class="go">&#39;chain 9999&#39;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.to_bytes">
 <span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byteorder</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.to_bytes" title="Link to this definition"></a></dt>
 <dd><p>Return an array of bytes representing an integer.</p>
@@ -5116,93 +4944,78 @@ is raised.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Arbitrum">
-<span class="sig-name descname"><span class="pre">Arbitrum</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42161</span></em><a class="headerlink" href="#y.Network.Arbitrum" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Arbitrum One</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Arbitrum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">42161</span></em><a class="headerlink" href="#y.Network.Arbitrum" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Aurora">
-<span class="sig-name descname"><span class="pre">Aurora</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1313161554</span></em><a class="headerlink" href="#y.Network.Aurora" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Aurora</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Aurora</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1313161554</span></em><a class="headerlink" href="#y.Network.Aurora" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Avalanche">
-<span class="sig-name descname"><span class="pre">Avalanche</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">43114</span></em><a class="headerlink" href="#y.Network.Avalanche" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Avalanche C-Chain</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Avalanche</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">43114</span></em><a class="headerlink" href="#y.Network.Avalanche" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Base">
-<span class="sig-name descname"><span class="pre">Base</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8453</span></em><a class="headerlink" href="#y.Network.Base" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Base</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8453</span></em><a class="headerlink" href="#y.Network.Base" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.BinanceSmartChain">
-<span class="sig-name descname"><span class="pre">BinanceSmartChain</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="headerlink" href="#y.Network.BinanceSmartChain" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Binance Smart Chain</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">BinanceSmartChain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">56</span></em><a class="headerlink" href="#y.Network.BinanceSmartChain" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Cronos">
-<span class="sig-name descname"><span class="pre">Cronos</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#y.Network.Cronos" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Cronos Mainnet</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Cronos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#y.Network.Cronos" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Fantom">
-<span class="sig-name descname"><span class="pre">Fantom</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#y.Network.Fantom" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Fantom Opera Network</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Fantom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">250</span></em><a class="headerlink" href="#y.Network.Fantom" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Gnosis">
-<span class="sig-name descname"><span class="pre">Gnosis</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.Network.Gnosis" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for xDai Chain (now Gnosis Chain)</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Gnosis</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.Network.Gnosis" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Harmony">
-<span class="sig-name descname"><span class="pre">Harmony</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1666600000</span></em><a class="headerlink" href="#y.Network.Harmony" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Harmony Mainnet Shard 0</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Harmony</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1666600000</span></em><a class="headerlink" href="#y.Network.Harmony" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Heco">
-<span class="sig-name descname"><span class="pre">Heco</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#y.Network.Heco" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Heco</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Heco</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#y.Network.Heco" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Mainnet">
-<span class="sig-name descname"><span class="pre">Mainnet</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.Network.Mainnet" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Ethereum Mainnet</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Mainnet</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#y.Network.Mainnet" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Moonriver">
-<span class="sig-name descname"><span class="pre">Moonriver</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1285</span></em><a class="headerlink" href="#y.Network.Moonriver" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Moonriver Network</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Moonriver</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1285</span></em><a class="headerlink" href="#y.Network.Moonriver" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.OKEx">
-<span class="sig-name descname"><span class="pre">OKEx</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="headerlink" href="#y.Network.OKEx" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for OKEx Chain</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">OKEx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">66</span></em><a class="headerlink" href="#y.Network.OKEx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Optimism">
-<span class="sig-name descname"><span class="pre">Optimism</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#y.Network.Optimism" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Optimism</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Optimism</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#y.Network.Optimism" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.Polygon">
-<span class="sig-name descname"><span class="pre">Polygon</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">137</span></em><a class="headerlink" href="#y.Network.Polygon" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for Polygon (formerly Matic) Network</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">Polygon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">137</span></em><a class="headerlink" href="#y.Network.Polygon" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.denominator">
@@ -5211,16 +5024,30 @@ is raised.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="y.Network.label">
+<span class="sig-name descname"><span class="pre">label</span></span><a class="headerlink" href="#y.Network.label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.Network.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#y.Network.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.numerator">
 <span class="sig-name descname"><span class="pre">numerator</span></span><a class="headerlink" href="#y.Network.numerator" title="Link to this definition"></a></dt>
 <dd><p>the numerator of a rational number in lowest terms</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="y.Network.printable">
+<span class="sig-name descname"><span class="pre">printable</span></span><a class="headerlink" href="#y.Network.printable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="y.Network.xDai">
-<span class="sig-name descname"><span class="pre">xDai</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.Network.xDai" title="Link to this definition"></a></dt>
-<dd><p>The Chain ID for xDai Chain (now Gnosis Chain)</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">xDai</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#y.Network.xDai" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
