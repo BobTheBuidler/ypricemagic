@@ -87,6 +87,7 @@ def _decode_log(data: bytes) -> Log:
         # we just update them to the new format silently
         tx_hash_dbid = _get_hash(hash=log.transactionHash.hex()[2:]).dbid
         DbLog[CHAINID, log.blockNumber, tx_hash_dbid, log.logIndex].raw = _encode_log(log)
+        commit()
         # and you're good to go
         return log
 
