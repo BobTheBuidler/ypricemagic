@@ -309,6 +309,7 @@ class ERC20(ContractBase):
 
     async def _decimals(self, block: Optional[Block] = None) -> int:
         """used to fetch decimals at specific block"""
+        # TODO: deprecate and remove
         if self.address == EEE_ADDRESS:
             return 18
         try:
@@ -334,6 +335,7 @@ class ERC20(ContractBase):
         return 10 ** await self.__decimals__
 
     async def _scale(self, block: Optional[Block] = None) -> int:
+        # TODO: deprecate and remove
         return 10 ** await self._decimals(block)
 
     async def total_supply(self, block: Optional[Block] = None) -> int:
