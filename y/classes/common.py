@@ -304,12 +304,12 @@ class ERC20(ContractBase):
             if str(e).endswith(
                 "of attr Token.decimals is greater than the maximum allowed value 2147483647"
             ):
-                return await self._decimals(sync=False)
+                return await self._decimals()
             raise
 
-    @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _decimals(self, block: Optional[Block] = None) -> int:
         """used to fetch decimals at specific block"""
+        # TODO: deprecate and remove
         if self.address == EEE_ADDRESS:
             return 18
         try:
@@ -334,9 +334,9 @@ class ERC20(ContractBase):
         """
         return 10 ** await self.__decimals__
 
-    @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _scale(self, block: Optional[Block] = None) -> int:
-        return 10 ** await self._decimals(block, sync=False)
+        # TODO: deprecate and remove
+        return 10 ** await self._decimals(block)
 
     async def total_supply(self, block: Optional[Block] = None) -> int:
         """
