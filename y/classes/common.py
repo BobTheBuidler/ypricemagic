@@ -333,7 +333,6 @@ class ERC20(ContractBase):
         """
         return 10 ** await self.__decimals__
 
-    @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _scale(self, block: Optional[Block] = None) -> int:
         return 10 ** await self._decimals(block)
 
