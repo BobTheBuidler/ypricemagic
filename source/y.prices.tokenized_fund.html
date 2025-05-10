@@ -562,35 +562,6 @@ be determined due to a remote call failure (i.e. a <a class="reference external"
 <p>A TokenSet is a specialized ERC20 token that can contain multiple components,
 each with its own balance. This class provides methods to interact with and
 retrieve information about TokenSets.</p>
-<dl class="py a_sync_function">
-<dt class="sig sig-object py" id="y.prices.tokenized_fund.tokensets.TokenSet._decimals">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-name descname"><span class="pre">_decimals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><span class="pre">eth_typing.evm.BlockNumber</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoneType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#y.prices.tokenized_fund.tokensets.TokenSet._decimals" title="Link to this definition"></a></dt>
-<dd><p>used to fetch decimals at specific block</p>
-<p>Since <cite>_decimals</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py a_sync_function">
-<dt class="sig sig-object py" id="y.prices.tokenized_fund.tokensets.TokenSet._scale">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-name descname"><span class="pre">_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><span class="pre">eth_typing.evm.BlockNumber</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoneType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#y.prices.tokenized_fund.tokensets.TokenSet._scale" title="Link to this definition"></a></dt>
-<dd><p>Since <cite>_scale</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.tokenized_fund.tokensets.TokenSet.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_ContractBase__o</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.tokenized_fund.tokensets.TokenSet.__eq__" title="Link to this definition"></a></dt>
