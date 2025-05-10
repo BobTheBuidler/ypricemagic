@@ -304,7 +304,9 @@ class ERC20(ContractBase):
             if str(e).endswith(
                 "of attr Token.decimals is greater than the maximum allowed value 2147483647"
             ):
-                return await self._decimals(sync=False)
+                # TODO: fix this in ez-a-sync
+                # return await self._decimals(sync=False)
+                return await ERC20._decimals(self, sync=False)
             raise
 
     @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
