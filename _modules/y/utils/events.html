@@ -130,13 +130,6 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="c1"># not really sure why this breaks things</span>
-<span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">version</span><span class="p">(</span><span class="s2">&quot;eth-event&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="p">(</span>
-    <span class="mi">1</span><span class="p">,</span>
-    <span class="mi">2</span><span class="p">,</span>
-    <span class="mi">4</span><span class="p">,</span>
-<span class="p">)</span>
-
 
 <div class="viewcode-block" id="decode_logs">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.decode_logs">[docs]</a>
@@ -170,10 +163,7 @@
         <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_deployment_topics</span><span class="p">:</span>
             <span class="n">_add_deployment_topics</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">Contract</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span>
 
-    <span class="c1"># for some reason &lt; 1.2.4 can decode them just fine but &gt;= cannot</span>
-    <span class="n">special_treatment</span> <span class="o">=</span> <span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="ow">and</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Log</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">is_struct</span> <span class="o">:=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Log</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">logs_are_structs</span> <span class="o">:=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Log</span><span class="p">):</span>
         <span class="c1"># save these for later</span>
         <span class="n">orig_topics</span> <span class="o">=</span> <span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">topics</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
@@ -181,16 +171,16 @@
             <span class="n">force_setattr</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="s2">&quot;topics&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">topics</span><span class="p">))</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">decoded</span> <span class="o">=</span> <span class="n">_decode_logs</span><span class="p">([</span><span class="n">log</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">]</span> <span class="k">if</span> <span class="n">special_treatment</span> <span class="k">else</span> <span class="n">logs</span><span class="p">)</span>
+        <span class="n">decoded</span> <span class="o">=</span> <span class="n">_decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="c1"># let&#39;s find the specific log that caused our exception</span>
         <span class="n">decoded</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">reraise_excs_with_extra_context</span><span class="p">(</span><span class="n">log</span><span class="p">):</span>
-                <span class="c1"># get some help for debugging</span>
-                <span class="n">decoded</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_decode_logs</span><span class="p">([</span><span class="n">log</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">special_treatment</span> <span class="k">else</span> <span class="n">log</span><span class="p">]))</span>
+                <span class="n">decoded</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_decode_logs</span><span class="p">([</span><span class="n">log</span><span class="p">]))</span>
 
     <span class="k">with</span> <span class="n">reraise_excs_with_extra_context</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">logs</span><span class="p">),</span> <span class="n">decoded</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">is_struct</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">logs_are_structs</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">orig_topics</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">logs</span><span class="p">,</span> <span class="n">orig_topics</span><span class="p">)):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;block_number&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">blockNumber</span><span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;transaction_hash&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">transactionHash</span><span class="p">)</span>
