@@ -41,7 +41,7 @@ async def get_price(
     pie: AnyAddressType,
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
-) -> UsdPrice:
+) -> Optional[UsdPrice]:
     """
     Get the price of a PieDAO token in USD.
 
@@ -62,10 +62,12 @@ async def get_price(
         get_tvl(pie, block, skip_cache=skip_cache),
         ERC20(pie, asynchronous=True).total_supply_readable(block),
     )
+    if tvl is None:
+        return None
     return UsdPrice(tvl / total_supply)
 
 
-async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> List[ERC20]:
+async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> Optional[List[ERC20]]:
     """
     Get the list of tokens in a PieDAO token.
 
@@ -83,7 +85,8 @@ async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> Lis
     Note:
         This function retrieves token addresses using a multicall and then creates :class:`ERC20` instances from those addresses.
     """
-    return [ERC20(t) for t in await Call(pie_address, "getTokens()(address[])", block_id=block)]
+    tokens = await Call(pie_address, "getTokens()(address[])", block_id=block)
+    return None if tokens is None else list(map(ERC20, tokens))
 
 
 async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
@@ -114,7 +117,7 @@ async def get_tvl(
     pie_address: Address,
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
-) -> UsdValue:
+) -> Optional[UsdValue]:
     """
     Get the total value locked (TVL) in a PieDAO token in USD.
 
@@ -134,6 +137,8 @@ async def get_tvl(
     """
     tokens: List[ERC20]
     pool, tokens = await cgather(get_bpool(pie_address, block), get_tokens(pie_address, block))
+    if tokens is None:
+        return None
     return await a_sync.map(get_value, tokens, bpool=pool, block=block, skip_cache=skip_cache).sum(
         pop=True, sync=False
     )
