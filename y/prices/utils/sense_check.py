@@ -77,6 +77,7 @@ ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operato
         "0x09db87A538BD693E9d08544577d5cCfAA6373A48",  # ynETH
         "0x35Ec69A77B79c255e5d47D5A3BdbEFEfE342630c",  # ynLSDe
         "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",  # ezETH
+        "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0",  # rswETH
         # btc and btc-like
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D",  # renbtc
         "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6",  # sbtc
