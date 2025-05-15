@@ -114,7 +114,7 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
         for log in logs:
             with reraise_excs_with_extra_context(log):
                 # get some help for debugging
-                decoded.extend(_decode_logs([log]))
+                decoded.extend(_decode_logs([log.to_dict() if special_treatment else log]))
 
     with reraise_excs_with_extra_context(len(logs), decoded):
         if is_struct:
