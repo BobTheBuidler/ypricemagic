@@ -59,13 +59,6 @@ T = TypeVar("T")
 
 logger = getLogger(__name__)
 
-# not really sure why this breaks things
-ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split(".")) >= (
-    1,
-    2,
-    4,
-)
-
 
 def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
     # NOTE: we want to ensure backward-compatability with LogReceipt
@@ -97,10 +90,7 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
         if log.address not in _deployment_topics:
             _add_deployment_topics(log.address, Contract(log.address).abi)
 
-    # for some reason < 1.2.4 can decode them just fine but >= cannot
-    special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], Log)
-
-    if is_struct := isinstance(logs[0], Log):
+    if logs_are_structs := isinstance(logs[0], Log):
         # save these for later
         orig_topics = [log.topics for log in logs]
         for log in logs:
@@ -108,16 +98,16 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
             force_setattr(log, "topics", list(log.topics))
 
     try:
-        decoded = _decode_logs([log.to_dict() for log in logs] if special_treatment else logs)
+        decoded = _decode_logs(logs)
     except Exception:
+        # let's find the specific log that caused our exception
         decoded = []
         for log in logs:
             with reraise_excs_with_extra_context(log):
-                # get some help for debugging
-                decoded.extend(_decode_logs([log.to_dict() if special_treatment else log]))
+                decoded.extend(_decode_logs([log]))
 
     with reraise_excs_with_extra_context(len(logs), decoded):
-        if is_struct:
+        if logs_are_structs:
             for i, (log, orig_topics) in enumerate(zip(logs, orig_topics)):
                 setattr(decoded[i], "block_number", log.blockNumber)
                 setattr(decoded[i], "transaction_hash", log.transactionHash)
