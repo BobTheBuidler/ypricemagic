@@ -187,7 +187,7 @@
         <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">reraise_excs_with_extra_context</span><span class="p">(</span><span class="n">log</span><span class="p">):</span>
                 <span class="c1"># get some help for debugging</span>
-                <span class="n">decoded</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_decode_logs</span><span class="p">([</span><span class="n">log</span><span class="p">]))</span>
+                <span class="n">decoded</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_decode_logs</span><span class="p">([</span><span class="n">log</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">special_treatment</span> <span class="k">else</span> <span class="n">log</span><span class="p">]))</span>
 
     <span class="k">with</span> <span class="n">reraise_excs_with_extra_context</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">logs</span><span class="p">),</span> <span class="n">decoded</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">is_struct</span><span class="p">:</span>
