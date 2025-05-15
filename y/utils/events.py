@@ -108,17 +108,13 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
             force_setattr(log, "topics", list(log.topics))
 
     try:
-        decoded = _decode_logs(
-            logs
-        )  # [dict(log.items()) for log in logs] if special_treatment else logs)
+        decoded = _decode_logs(logs)
     except Exception:
+        # let's find the specific log that caused our exception
         decoded = []
         for log in logs:
             with reraise_excs_with_extra_context(log):
-                # get some help for debugging
-                decoded.extend(
-                    _decode_logs([log])
-                )  # dict(log.items()) if special_treatment else log]))
+                decoded.extend(_decode_logs([log]))
 
     with reraise_excs_with_extra_context(len(logs), decoded):
         if is_struct:
