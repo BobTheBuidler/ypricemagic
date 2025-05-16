@@ -617,7 +617,10 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         tvl = await pool.get_tvl(block=block, skip_cache=skip_cache, sync=False)
         if tvl is None:
             return None
-        return tvl / await ERC20(token, asynchronous=True).total_supply_readable(block)
+        try:
+            return tvl / await ERC20(token, asynchronous=True).total_supply_readable(block)
+        except ZeroDivisionError:
+            return None
 
     @a_sync.a_sync(cache_type="memory")
     async def get_pool(self, token: AnyAddressType) -> CurvePool:
