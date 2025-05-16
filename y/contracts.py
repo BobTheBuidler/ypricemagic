@@ -1106,9 +1106,7 @@ async def _extract_abi_data_async(address: Address):
 
 @eth_retry.auto_retry
 async def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> Dict:
-    url = CONFIG.active_network.get("explorer")
-    if url is None:
-        raise ValueError("Explorer API not set for this network")
+    url = "https://api.etherscan.io/v2/api"
 
     if address in _unverified_addresses:
         raise ValueError(f"Source for {address} has not been verified")
@@ -1131,7 +1129,7 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
     ):
         address = _resolve_address(code[120:160])
 
-    params = {"module": "contract", "action": action, "address": address}
+    params = {"module": "contract", "action": action, "address": address, "chainid": _CHAINID}
     return await _fetch_explorer_data(url, silent=silent, params=params)
 
 
