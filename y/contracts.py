@@ -36,7 +36,6 @@ from brownie.network.contract import (
     _add_deployment,
     _ContractBase,
     _DeployedContractBase,
-    _explorer_tokens,
     _fetch_from_explorer,
     _resolve_address,
     _unverified_addresses,
@@ -1138,12 +1137,7 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
 
 @lru_cache(maxsize=None)
 def _get_explorer_api_key(url, silent) -> Tuple[str, str]:
-    explorer, env_key = next(
-        ((k, v) for k, v in _explorer_tokens.items() if k in url), (None, None)
-    )
-    if env_key is None:
-        return None
-    if api_key := getenv(env_key):
+    if api_key := getenv("ETHERSCAN_TOKEN"):
         return api_key
     if not silent:
         warnings.warn(
