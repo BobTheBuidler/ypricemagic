@@ -1143,7 +1143,7 @@ def _get_explorer_api_key(url, silent) -> Tuple[str, str]:
         warnings.warn(
             f"No {explorer} API token set. You may experience issues with rate limiting. "
             f"Visit https://{explorer}.io/register to obtain a token, and then store it "
-            f"as the environment variable ${env_key}",
+            f"as the environment variable $ETHERSCAN_TOKEN",
             BrownieEnvironmentWarning,
         )
     return None
