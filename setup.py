@@ -70,7 +70,7 @@ setup(
     author_email="bobthebuidlerdefi@gmail.com",
     url="https://github.com/BobTheBuidler/ypricemagic",
     license="MIT",
-    python_requires=">=3.8,<3.13"
+    python_requires=">=3.8,<3.13",
     classifiers=[
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
