@@ -19,7 +19,7 @@ jobs:
           # ----------------------------------------------------
           - os: ubuntu-latest
             build_type: manylinux-x64
-            cibw_build: "cp3[8-9]-*manylinux* cp31[0-3]-*manylinux*"
+            cibw_build: "*manylinux*"
             cibw_archs_linux: x86_64
             artifact_name: "wheels-ubuntu-latest-manylinux-x64"
 
@@ -28,7 +28,7 @@ jobs:
           # ----------------------------------------------------
           - os: ubuntu-latest
             build_type: manylinux-x86
-            cibw_build: "cp3[8-9]-*manylinux* cp31[0-3]-*manylinux*"
+            cibw_build: "*manylinux*"
             cibw_archs_linux: i686
             artifact_name: "wheels-ubuntu-latest-manylinux-x86"
 
@@ -37,7 +37,7 @@ jobs:
           # ----------------------------------------------------
           - os: ubuntu-latest
             build_type: musllinux-x64
-            cibw_build: "cp3[8-9]-*musllinux* cp31[0-3]-*musllinux*"
+            cibw_build: "*musllinux*"
             cibw_archs_linux: x86_64
             artifact_name: "wheels-ubuntu-latest-musllinux-x64"
 
@@ -46,7 +46,7 @@ jobs:
           # ----------------------------------------------------
           - os: ubuntu-latest
             build_type: musllinux-x86
-            cibw_build: "cp3[8-9]-*musllinux* cp31[0-3]-*musllinux*"
+            cibw_build: "*musllinux*"
             cibw_archs_linux: i686
             artifact_name: "wheels-ubuntu-latest-musllinux-x86"
 
