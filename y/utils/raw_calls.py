@@ -409,7 +409,9 @@ async def raw_call(
     except OverflowError as e:
         if "is outside allowable range for uint256" in str(e):
             # NOTE: we use removeprefix here to support both hexbytes<1 and hexbytes>=1
-            raise OverflowError(f"0x{response.hex().removeprefix("0x")} is outside allowable range for uint256") from e
+            raise OverflowError(
+                f"0x{response.hex().removeprefix("0x")} is outside allowable range for uint256"
+            ) from e
         raise
     else:
         raise TypeError('Invalid output type, please select from ["str","int","address"]')
