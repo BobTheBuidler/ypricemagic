@@ -402,7 +402,7 @@ async def raw_call(
             return ZERO_ADDRESS
         elif output == "address":
             return await to_address_async(f"0x{response.hex()[-40:]}")
-        elif output in [int, "int", "uint", "uint256"]:
+        elif output is int or output in {"int", "uint", "uint256"}:
             return convert.to_int(response)
         elif output in [str, "str"]:
             return convert.to_string(response).replace("\x00", "").strip()
