@@ -397,7 +397,8 @@ async def raw_call(
     try:
         if output is None:
             return response
-        elif output == "address" and response.hex() == "0x":
+        # NOTE: we use removeprefix here to support both hexbytes<1 and hexbytes>=1
+        elif output == "address" and not response.hex().removeprefix("0x"):
             return ZERO_ADDRESS
         elif output == "address":
             return await to_address_async(f"0x{response.hex()[-40:]}")
