@@ -3,6 +3,19 @@ from contextlib import suppress
 
 from brownie import chain, network
 
+try:
+    # leaving this in here for backward compatability with older brownie versions
+    # TODO: remove me when eetherscan disables v1 api
+    from brownie.network.contract import _explorer_tokens
+except ImportError:
+    pass
+else:
+    # this helps ensure backwards compatability with older versions of brownie
+    if "base" not in _explorer_tokens:
+        _explorer_tokens["base"] = "BASESCAN_TOKEN"
+    if "optimistic" not in _explorer_tokens:
+        _explorer_tokens["optimistic"] = "OPTIMISMSCAN_TOKEN"
+
 
 class NetworkNotSpecified(Exception):
     pass
