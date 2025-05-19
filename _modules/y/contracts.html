@@ -107,7 +107,6 @@
     <span class="n">_add_deployment</span><span class="p">,</span>
     <span class="n">_ContractBase</span><span class="p">,</span>
     <span class="n">_DeployedContractBase</span><span class="p">,</span>
-    <span class="n">_explorer_tokens</span><span class="p">,</span>
     <span class="n">_fetch_from_explorer</span><span class="p">,</span>
     <span class="n">_resolve_address</span><span class="p">,</span>
     <span class="n">_unverified_addresses</span><span class="p">,</span>
@@ -1241,9 +1240,7 @@
 
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_from_explorer_async</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">CONFIG</span><span class="o">.</span><span class="n">active_network</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;explorer&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Explorer API not set for this network&quot;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://api.etherscan.io/v2/api&quot;</span>
 
     <span class="k">if</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">_unverified_addresses</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source for </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> has not been verified&quot;</span><span class="p">)</span>
@@ -1266,24 +1263,19 @@
     <span class="p">):</span>
         <span class="n">address</span> <span class="o">=</span> <span class="n">_resolve_address</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">120</span><span class="p">:</span><span class="mi">160</span><span class="p">])</span>
 
-    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">}</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;chainid&quot;</span><span class="p">:</span> <span class="n">_CHAINID</span><span class="p">}</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">_fetch_explorer_data</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="n">silent</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
 
 
 <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">_get_explorer_api_key</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="n">explorer</span><span class="p">,</span> <span class="n">env_key</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-        <span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_explorer_tokens</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">url</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">env_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">api_key</span> <span class="o">:=</span> <span class="n">getenv</span><span class="p">(</span><span class="n">env_key</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">api_key</span> <span class="o">:=</span> <span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ETHERSCAN_TOKEN&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">api_key</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">explorer</span><span class="si">}</span><span class="s2"> API token set. You may experience issues with rate limiting. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Visit https://</span><span class="si">{</span><span class="n">explorer</span><span class="si">}</span><span class="s2">.io/register to obtain a token, and then store it &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;as the environment variable $</span><span class="si">{</span><span class="n">env_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;No etherscan API token set. You may experience issues with rate limiting. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Visit https://etherscan.io/register to obtain a token, and then store it &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;as the environment variable $ETHERSCAN_TOKEN&quot;</span><span class="p">,</span>
             <span class="n">BrownieEnvironmentWarning</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span>
