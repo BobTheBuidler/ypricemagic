@@ -485,7 +485,8 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">response</span>
-        <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;address&quot;</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;0x&quot;</span><span class="p">:</span>
+        <span class="c1"># NOTE: we use removeprefix here to support both hexbytes&lt;1 and hexbytes&gt;=1</span>
+        <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;address&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">ZERO_ADDRESS</span>
         <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;address&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">to_address_async</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">hex</span><span class="p">()[</span><span class="o">-</span><span class="mi">40</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
