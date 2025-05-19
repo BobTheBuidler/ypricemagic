@@ -36,7 +36,6 @@ from brownie.network.contract import (
     _add_deployment,
     _ContractBase,
     _DeployedContractBase,
-    _explorer_tokens,
     _fetch_from_explorer,
     _resolve_address,
     _unverified_addresses,
@@ -1107,9 +1106,7 @@ async def _extract_abi_data_async(address: Address):
 
 @eth_retry.auto_retry
 async def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> Dict:
-    url = CONFIG.active_network.get("explorer")
-    if url is None:
-        raise ValueError("Explorer API not set for this network")
+    url = "https://api.etherscan.io/v2/api"
 
     if address in _unverified_addresses:
         raise ValueError(f"Source for {address} has not been verified")
@@ -1132,24 +1129,19 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
     ):
         address = _resolve_address(code[120:160])
 
-    params = {"module": "contract", "action": action, "address": address}
+    params = {"module": "contract", "action": action, "address": address, "chainid": _CHAINID}
     return await _fetch_explorer_data(url, silent=silent, params=params)
 
 
 @lru_cache(maxsize=None)
 def _get_explorer_api_key(url, silent) -> Tuple[str, str]:
-    explorer, env_key = next(
-        ((k, v) for k, v in _explorer_tokens.items() if k in url), (None, None)
-    )
-    if env_key is None:
-        return None
-    if api_key := getenv(env_key):
+    if api_key := getenv("ETHERSCAN_TOKEN"):
         return api_key
     if not silent:
         warnings.warn(
-            f"No {explorer} API token set. You may experience issues with rate limiting. "
-            f"Visit https://{explorer}.io/register to obtain a token, and then store it "
-            f"as the environment variable ${env_key}",
+            f"No etherscan API token set. You may experience issues with rate limiting. "
+            f"Visit https://etherscan.io/register to obtain a token, and then store it "
+            f"as the environment variable $ETHERSCAN_TOKEN",
             BrownieEnvironmentWarning,
         )
     return None
