@@ -410,7 +410,7 @@ async def raw_call(
         if "is outside allowable range for uint256" in str(e):
             # NOTE: we use removeprefix here to support both hexbytes<1 and hexbytes>=1
             raise OverflowError(
-                f"0x{response.hex().removeprefix("0x")} is outside allowable range for uint256"
+                f"0x{response.hex().removeprefix('0x')} is outside allowable range for uint256"
             ) from e
         raise
     else:
