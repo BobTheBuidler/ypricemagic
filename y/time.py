@@ -9,6 +9,7 @@ import eth_retry
 from async_lru import alru_cache
 from brownie import chain, web3
 from cachetools.func import ttl_cache
+from eth_typing import BlockNumber
 
 try:
     from dank_mids.ENVIRONMENT_VARIABLES import GANACHE_FORK
@@ -117,7 +118,7 @@ async def get_block_timestamp_async(height: int) -> int:
 
 # TODO: deprecate
 @memory.cache()
-def last_block_on_date(date: Union[str, datetime.date]) -> int:
+def last_block_on_date(date: Union[str, datetime.date]) -> BlockNumber:
     """
     Returns the last block on a given date. You can pass either a `datetime.date` object or a date string formatted as 'YYYY-MM-DD'.
 
@@ -168,7 +169,7 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
 
 
 @a_sync_ttl_cache
-async def get_block_at_timestamp(timestamp: datetime.datetime) -> int:
+async def get_block_at_timestamp(timestamp: datetime.datetime) -> BlockNumber:
     """
     Get the block number just before a specific timestamp.
 
@@ -229,7 +230,7 @@ def _parse_timestamp(timestamp: Timestamp) -> UnixTimestamp:
 # yLazyLogger(logger)
 def closest_block_after_timestamp(
     timestamp: Timestamp, wait_for_block_if_needed: bool = False
-) -> int:
+) -> BlockNumber:
     """
     Get the closest block after a given timestamp.
 
@@ -266,7 +267,7 @@ def closest_block_after_timestamp(
 @a_sync_ttl_cache
 async def closest_block_after_timestamp_async(
     timestamp: Timestamp, wait_for_block_if_needed: bool = False
-) -> int:
+) -> BlockNumber:
     """
     Asynchronously get the closest block after a given timestamp.
 
@@ -315,7 +316,7 @@ async def closest_block_after_timestamp_async(
 
 
 @memory.cache()
-def _closest_block_after_timestamp_cached(timestamp: int) -> int:
+def _closest_block_after_timestamp_cached(timestamp: int) -> BlockNumber:
     height = chain.height
     lo, hi = 0, height
     while hi - lo > 1:
