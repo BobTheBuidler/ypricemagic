@@ -80,7 +80,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">async_lru</span><span class="w"> </span><span class="kn">import</span> <span class="n">alru_cache</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">web3</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cachetools.func</span><span class="w"> </span><span class="kn">import</span> <span class="n">ttl_cache</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockNumber</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.ENVIRONMENT_VARIABLES</span><span class="w"> </span><span class="kn">import</span> <span class="n">GANACHE_FORK</span>
@@ -198,7 +197,7 @@
 
 <span class="c1"># TODO: deprecate</span>
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">last_block_on_date</span><span class="p">(</span><span class="n">date</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BlockNumber</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">last_block_on_date</span><span class="p">(</span><span class="n">date</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the last block on a given date. You can pass either a `datetime.date` object or a date string formatted as &#39;YYYY-MM-DD&#39;.</span>
 
@@ -251,7 +250,7 @@
 <div class="viewcode-block" id="get_block_at_timestamp">
 <a class="viewcode-back" href="../../source/y.html#y.get_block_at_timestamp">[docs]</a>
 <span class="nd">@a_sync_ttl_cache</span>
-<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_block_at_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockNumber</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_block_at_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the block number just before a specific timestamp.</span>
 
@@ -315,7 +314,7 @@
 <a class="viewcode-back" href="../../source/y.html#y.closest_block_after_timestamp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">closest_block_after_timestamp</span><span class="p">(</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockNumber</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the closest block after a given timestamp.</span>
 
@@ -355,7 +354,7 @@
 <span class="nd">@a_sync_ttl_cache</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">closest_block_after_timestamp_async</span><span class="p">(</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockNumber</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Asynchronously get the closest block after a given timestamp.</span>
 
@@ -405,7 +404,7 @@
 
 
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_closest_block_after_timestamp_cached</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockNumber</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_closest_block_after_timestamp_cached</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="n">height</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">height</span>
     <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span>
     <span class="k">while</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
