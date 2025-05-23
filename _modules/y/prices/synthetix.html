@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.synthetix &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,30 +69,30 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.synthetix</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexStr</span>
-<span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexStr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multicall</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_method</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">UnsupportedNetwork</span><span class="p">,</span> <span class="n">call_reverted</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.utils</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CHAINID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnsupportedNetwork</span><span class="p">,</span> <span class="n">call_reverted</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">eth_abi</span> <span class="kn">import</span> <span class="n">encode</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">eth_abi</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode</span>
 
     <span class="n">encode_bytes</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">encode</span><span class="p">([</span><span class="s2">&quot;bytes32&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">()])</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">eth_abi</span> <span class="kn">import</span> <span class="n">encode_single</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">eth_abi</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_single</span>
 
     <span class="n">encode_bytes</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">encode_single</span><span class="p">(</span><span class="s2">&quot;bytes32&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
 
@@ -106,7 +106,7 @@
 
 <div class="viewcode-block" id="Synthetix">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix">[docs]</a>
-<span class="k">class</span> <span class="nc">Synthetix</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Synthetix</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class to interact with the Synthetix protocol.</span>
 
 <span class="sd">    This class provides methods to interact with the Synthetix protocol,</span>
@@ -124,7 +124,7 @@
 
 <div class="viewcode-block" id="Synthetix.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">CHAINID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;synthetix is not supported on this network&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
@@ -134,7 +134,7 @@
 <div class="viewcode-block" id="Synthetix.address_resolver">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix.address_resolver">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">address_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">address_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the address resolver contract.</span>
 
 <span class="sd">        Returns:</span>
@@ -153,7 +153,7 @@
 <div class="viewcode-block" id="Synthetix.get_address">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix.get_address">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get contract from Synthetix registry.</span>
 
 <span class="sd">        Args:</span>
@@ -187,7 +187,7 @@
 <div class="viewcode-block" id="Synthetix.synths">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix.synths">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">synths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ChecksumAddress</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">synths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ChecksumAddress</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get target addresses of all synths.</span>
 
 <span class="sd">        Returns:</span>
@@ -211,7 +211,7 @@
 
 <div class="viewcode-block" id="Synthetix.is_synth">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix.is_synth">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_synth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_synth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a token is a synth.</span>
 
 <span class="sd">        Args:</span>
@@ -251,7 +251,7 @@
 <div class="viewcode-block" id="Synthetix.get_currency_key">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix.get_currency_key">[docs]</a>
     <span class="nd">@a_sync_ttl_cache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_currency_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HexStr</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_currency_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HexStr</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the currency key for a given token.</span>
 
 <span class="sd">        Args:</span>
@@ -279,7 +279,7 @@
 
 <div class="viewcode-block" id="Synthetix.get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix.get_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the price of a synth in dollars.</span>

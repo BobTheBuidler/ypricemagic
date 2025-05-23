@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.dex.uniswap.v1 &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,39 +69,39 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.uniswap.v1</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">usdc</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">UsdPrice</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y._decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">usdc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">UsdPrice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ContractNotVerified</span><span class="p">,</span>
     <span class="n">UnsupportedNetwork</span><span class="p">,</span>
     <span class="n">continue_if_call_reverted</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">_decimals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.raw_calls</span><span class="w"> </span><span class="kn">import</span> <span class="n">_decimals</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="UniswapV1">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v1.UniswapV1">[docs]</a>
-<span class="k">class</span> <span class="nc">UniswapV1</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UniswapV1</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
     <span class="n">factory</span> <span class="o">=</span> <span class="s2">&quot;0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95&quot;</span>
 
 <div class="viewcode-block" id="UniswapV1.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v1.UniswapV1.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the UniswapV1 class.</span>
 
@@ -126,7 +126,7 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v1.UniswapV1.get_exchange">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Contract</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Contract</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the exchange contract for a given token address.</span>
 
@@ -155,7 +155,7 @@
 <div class="viewcode-block" id="UniswapV1.get_price">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v1.UniswapV1.get_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">],</span>
@@ -213,7 +213,7 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v1.UniswapV1.check_liquidity">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_liquidity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -269,7 +269,7 @@
 
 <div class="viewcode-block" id="log_debug">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v1.log_debug">[docs]</a>
-<span class="k">def</span> <span class="nf">log_debug</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_debug</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">__logger_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
 
 

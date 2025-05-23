@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.tokenized_fund.tokensets &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,19 +69,19 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.tokenized_fund.tokensets</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multicall</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_methods</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
-<span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">optional_async_diskcache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_methods</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">optional_async_diskcache</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -90,7 +90,7 @@
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.is_token_set">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="nd">@optional_async_diskcache</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">is_token_set</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_token_set</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a given token is a TokenSet.</span>
 
 <span class="sd">    A TokenSet is identified by the presence of specific methods in its contract.</span>
@@ -128,7 +128,7 @@
 <div class="viewcode-block" id="get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.get_price">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
     <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
@@ -161,7 +161,7 @@
 
 <div class="viewcode-block" id="TokenSet">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.TokenSet">[docs]</a>
-<span class="k">class</span> <span class="nc">TokenSet</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TokenSet</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a TokenSet, a type of ERC20 token with additional functionality.</span>
 
 <span class="sd">    A TokenSet is a specialized ERC20 token that can contain multiple components,</span>
@@ -171,7 +171,7 @@
 
 <div class="viewcode-block" id="TokenSet.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.TokenSet.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a TokenSet instance.</span>
 
 <span class="sd">        Args:</span>
@@ -190,7 +190,7 @@
 <div class="viewcode-block" id="TokenSet.components">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.TokenSet.components">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the components of the TokenSet.</span>
 
 <span class="sd">        Args:</span>
@@ -210,7 +210,7 @@
 
 <div class="viewcode-block" id="TokenSet.balances">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.TokenSet.balances">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">balances</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">balances</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the balances of the components in the TokenSet.</span>
@@ -258,7 +258,7 @@
 
 <div class="viewcode-block" id="TokenSet.get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.TokenSet.get_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the USD price of the TokenSet.</span>

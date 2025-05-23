@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.band &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,20 +69,20 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.band</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">VirtualMachineError</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">VirtualMachineError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">Contract</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">Block</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">UnsupportedNetwork</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CHAINID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">Block</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnsupportedNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
 
 <span class="n">addresses</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># https://docs.fantom.foundation/tutorials/band-protocol-standard-dataset</span>
@@ -116,7 +116,7 @@
 
 <div class="viewcode-block" id="Band">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band">[docs]</a>
-<span class="k">class</span> <span class="nc">Band</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Band</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class to interact with the Band Protocol oracle on supported networks.</span>
 
 <span class="sd">    This class provides methods to check asset support and fetch prices using the Band Protocol oracle.</span>
@@ -135,7 +135,7 @@
 
 <div class="viewcode-block" id="Band.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the Band class.</span>
 
@@ -157,7 +157,7 @@
 
 <div class="viewcode-block" id="Band.__contains__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if an asset is supported by the Band Protocol on the current network.</span>
 
@@ -175,7 +175,7 @@
 <div class="viewcode-block" id="Band.oracle">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band.oracle">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Band Protocol oracle contract for the current network.</span>
 
@@ -190,7 +190,7 @@
 
 <div class="viewcode-block" id="Band.get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band.get_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the price of an asset in terms of USDC using the Band Protocol oracle.</span>
 

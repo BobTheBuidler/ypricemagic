@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y._db.common &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,12 +69,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y._db.common</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">get_event_loop</span><span class="p">,</span> <span class="n">sleep</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">dropwhile</span><span class="p">,</span> <span class="n">groupby</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">get_event_loop</span><span class="p">,</span> <span class="n">sleep</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">dropwhile</span><span class="p">,</span> <span class="n">groupby</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TYPE_CHECKING</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">AsyncIterator</span><span class="p">,</span>
@@ -91,35 +91,35 @@
     <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">import</span> <span class="nn">dank_mids</span>
-<span class="kn">import</span> <span class="nn">eth_retry</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dank_mids</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">eth_retry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ASyncIterable</span><span class="p">,</span>
     <span class="n">ASyncIterator</span><span class="p">,</span>
     <span class="n">AsyncThreadPoolExecutor</span><span class="p">,</span>
     <span class="n">CounterLock</span><span class="p">,</span>
     <span class="n">PruningThreadPoolExecutor</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">async_property</span> <span class="kn">import</span> <span class="n">async_property</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
-<span class="kn">from</span> <span class="nn">dank_mids</span> <span class="kn">import</span> <span class="n">BlockSemaphore</span>
-<span class="kn">from</span> <span class="nn">evmspec.data</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">HexBytes32</span>
-<span class="kn">from</span> <span class="nn">hexbytes</span> <span class="kn">import</span> <span class="n">HexBytes</span>
-<span class="kn">from</span> <span class="nn">pony.orm</span> <span class="kn">import</span> <span class="n">OptimisticCheckError</span><span class="p">,</span> <span class="n">TransactionIntegrityError</span><span class="p">,</span> <span class="n">db_session</span>
-<span class="kn">from</span> <span class="nn">web3.datastructures</span> <span class="kn">import</span> <span class="n">AttributeDict</span>
-<span class="kn">from</span> <span class="nn">web3.middleware.filter</span> <span class="kn">import</span> <span class="n">block_ranges</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">async_property</span><span class="w"> </span><span class="kn">import</span> <span class="n">async_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockSemaphore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evmspec.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">HexBytes32</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hexbytes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HexBytes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pony.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptimisticCheckError</span><span class="p">,</span> <span class="n">TransactionIntegrityError</span><span class="p">,</span> <span class="n">db_session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3.middleware.filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_ranges</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y._db.decorators</span> <span class="kn">import</span> <span class="n">retry_locked</span>
-<span class="kn">from</span> <span class="nn">y._db.exceptions</span> <span class="kn">import</span> <span class="n">CacheNotPopulatedError</span>
-<span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">reraise_excs_with_extra_context</span>
-<span class="kn">from</span> <span class="nn">y.utils.middleware</span> <span class="kn">import</span> <span class="n">BATCH_SIZE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y._db.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry_locked</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y._db.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">CacheNotPopulatedError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y._decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">reraise_excs_with_extra_context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.middleware</span><span class="w"> </span><span class="kn">import</span> <span class="n">BATCH_SIZE</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">Block</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">Block</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 <span class="n">S</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">)</span>
@@ -134,7 +134,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">enc_hook</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enc_hook</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Encode hook for JSON serialization of special types.</span>
 
@@ -177,7 +177,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span>
 
 
-<span class="k">def</span> <span class="nf">dec_hook</span><span class="p">(</span><span class="n">typ</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dec_hook</span><span class="p">(</span><span class="n">typ</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decode hook for JSON deserialization of special types.</span>
 
@@ -204,9 +204,9 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2"> is not a valid type for decoding&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">DiskCache</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">S</span><span class="p">,</span> <span class="n">M</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiskCache</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">S</span><span class="p">,</span> <span class="n">M</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update cache metadata to indicate that the cache is populated from block `from_block` to block `done_thru`.</span>
 
@@ -222,7 +222,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_is_cached_thru</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_cached_thru</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns max cached block for this cache or 0 if not cached.</span>
 
@@ -234,7 +234,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects all cached objects from block `from_block` to block `to_block`.</span>
 
@@ -247,7 +247,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@retry_locked</span>
-    <span class="k">def</span> <span class="nf">set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update cache metadata to indicate that the cache is populated from block `from_block` to block `done_thru`.</span>
 
@@ -274,7 +274,7 @@
 
     <span class="nd">@db_session</span>
     <span class="nd">@retry_locked</span>
-    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects all cached objects from block `from_block` to block `to_block`.</span>
 
@@ -289,7 +289,7 @@
 
     <span class="nd">@db_session</span>
     <span class="nd">@retry_locked</span>
-    <span class="k">def</span> <span class="nf">is_cached_thru</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_cached_thru</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns max cached block for this cache or 0 if not cached.</span>
 
@@ -303,7 +303,7 @@
 
     <span class="nd">@db_session</span>
     <span class="nd">@retry_locked</span>
-    <span class="k">def</span> <span class="nf">check_and_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_and_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects all cached objects within a specified block range.</span>
 
@@ -337,7 +337,7 @@
 <span class="n">C</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">DiskCache</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">_DiskCachedMixin</span><span class="p">(</span><span class="n">ASyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_DiskCachedMixin</span><span class="p">(</span><span class="n">ASyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin that provides asynchronous features for data caches stored on disk.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -345,7 +345,7 @@
     <span class="n">_checkpoints</span><span class="p">:</span> <span class="n">Checkpoints</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;is_reusable&quot;</span><span class="p">,</span> <span class="s2">&quot;_cache&quot;</span><span class="p">,</span> <span class="s2">&quot;_executor&quot;</span><span class="p">,</span> <span class="s2">&quot;_objects&quot;</span><span class="p">,</span> <span class="s2">&quot;_pruned&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncThreadPoolExecutor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_reusable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -365,13 +365,13 @@
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">C</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">C</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the associated cache object, which must be defined in subclasses.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the executor used for disk operations, creating one if necessary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -380,7 +380,7 @@
             <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">executor</span>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shutdown the executor on deletion.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -390,9 +390,9 @@
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">insert_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">insert_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span> <span class="o">...</span>
 
-    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to bulk insert a list of objects into the database.</span>
 
@@ -413,7 +413,7 @@
 <span class="sd">            - :meth:`_load_cache`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">:</span> <span class="n">Container</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">:</span> <span class="n">Container</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override this to pre-process objects before storing.</span>
 
@@ -432,7 +432,7 @@
                 <span class="n">block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoints</span><span class="p">[</span><span class="n">block</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_load_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads cached logs from disk.</span>
 
@@ -485,7 +485,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">make_executor</span><span class="p">(</span><span class="n">small</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">big</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_executor</span><span class="p">(</span><span class="n">small</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">big</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a thread pool executor that prunes completed tasks.</span>
 
@@ -507,7 +507,7 @@
 <span class="n">_metadata_write_executor</span> <span class="o">=</span> <span class="n">make_executor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;ypricemagic Filter write metadata&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">Filter</span><span class="p">(</span><span class="n">_DiskCachedMixin</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">C</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Filter</span><span class="p">(</span><span class="n">_DiskCachedMixin</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">C</span><span class="p">]):</span>
     <span class="c1"># defaults are stored as class vars to keep instance dicts smaller</span>
     <span class="n">_chunk_size</span> <span class="o">=</span> <span class="n">BATCH_SIZE</span>
     <span class="n">_chunks_per_batch</span> <span class="o">=</span> <span class="kc">None</span>
@@ -528,7 +528,7 @@
         <span class="s2">&quot;_lock&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -568,13 +568,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoints</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">executor</span><span class="o">=</span><span class="n">executor</span><span class="p">,</span> <span class="n">is_reusable</span><span class="o">=</span><span class="n">is_reusable</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an async iterator over the stored objects, yielding new ones as they are fetched.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="fm">__aiter__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cancels any pending fetch task upon deletion.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -582,7 +582,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetches data for a given range of blocks from an on-chain or remote provider.</span>
 
@@ -595,12 +595,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">semaphore</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockSemaphore</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">semaphore</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockSemaphore</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semaphore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_semaphore</span> <span class="o">=</span> <span class="n">BlockSemaphore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chunks_per_batch</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semaphore</span>
 
-    <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override this as needed for different object types.</span>
 
@@ -616,7 +616,7 @@
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">blockNumber</span>
 
     <span class="nd">@ASyncIterator</span><span class="o">.</span><span class="n">wrap</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_objects_thru</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_objects_thru</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">],</span> <span class="n">from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -638,14 +638,14 @@
             <span class="k">if</span> <span class="n">from_block</span><span class="p">:</span>
                 <span class="n">reached_from_block</span> <span class="o">=</span> <span class="kc">False</span>
 
-                <span class="k">def</span> <span class="nf">obj_out_of_range</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">obj_out_of_range</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">from_block</span><span class="p">:</span>
                         <span class="k">return</span> <span class="kc">True</span>
                     <span class="k">nonlocal</span> <span class="n">reached_from_block</span>
                     <span class="n">reached_from_block</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">return</span> <span class="kc">False</span>
 
-                <span class="k">def</span> <span class="nf">skip_too_early</span><span class="p">(</span><span class="n">objects</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">skip_too_early</span><span class="p">(</span><span class="n">objects</span><span class="p">):</span>
                     <span class="k">nonlocal</span> <span class="n">yielded</span>
                     <span class="k">if</span> <span class="n">checkpoints</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoints</span><span class="p">:</span>
                         <span class="n">start_checkpoint_index</span> <span class="o">=</span> <span class="n">_get_checkpoint_index</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">)</span>
@@ -690,7 +690,7 @@
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">done_thru</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># raise a copy of it so multiple waiters don&#39;t destroy the traceback</span>
-                <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">self._exc.__cause__</span>
+                <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">self._exc.__cause__</span>
             <span class="k">if</span> <span class="n">to_yield</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[</span><span class="n">yielded</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span> <span class="p">:]:</span>
                 <span class="k">if</span> <span class="n">from_block</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">reached_from_block</span><span class="p">:</span>
                     <span class="n">objs</span> <span class="o">=</span> <span class="n">skip_too_early</span><span class="p">(</span><span class="n">to_yield</span><span class="p">)</span>
@@ -741,7 +741,7 @@
                 <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sleep_time</span><span class="p">)</span>
 
     <span class="nd">@async_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Puts the Filter into a sleep state until `_wakeup` is called. No new requests will be made.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -749,20 +749,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="o">=</span> <span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span>
 
-    <span class="k">def</span> <span class="nf">_wakeup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wakeup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Wake up the Filter to query logs from blocks not yet loaded into memory.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">__fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">__fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main coroutine that continuously runs the internal fetch loop.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">traceback</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="n">e</span>
@@ -771,7 +771,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">_MAX_LONG_LONG</span><span class="p">)</span>
             <span class="k">raise</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Defines the main logic for populating the Filter with data. Subclasses can override if needed.</span>
 
@@ -784,7 +784,7 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">from_block</span><span class="p">)</span>
 
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range_wrapped</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_range_wrapped</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">range_start</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">range_end</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -808,7 +808,7 @@
                 <span class="p">)</span>
             <span class="k">return</span> <span class="n">i</span><span class="p">,</span> <span class="n">range_end</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_range</span><span class="p">(</span><span class="n">range_start</span><span class="p">,</span> <span class="n">range_end</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Work loop that continually fetches new data, loads from cache if available, then sleeps.</span>
 
@@ -824,7 +824,7 @@
 
     <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_new_objects</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_load_new_objects</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">to_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">start_from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -881,7 +881,7 @@
                 <span class="k">raise</span>
 
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_load_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a particular block range in chunks, respecting concurrency limits.</span>
 
@@ -915,7 +915,7 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded thru block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
 
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_set_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_set_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module.</span>
 
@@ -930,7 +930,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_insert_chunk</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_insert_chunk</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -969,7 +969,7 @@
         <span class="n">task</span><span class="o">.</span><span class="n">_depth</span> <span class="o">=</span> <span class="n">depth</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_db_task</span> <span class="o">=</span> <span class="n">task</span>
 
-    <span class="k">def</span> <span class="nf">_ensure_task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures there is a main fetch task running in the background. If not, creates it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -981,9 +981,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">_log_destroy_pending</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">done</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">e</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">exception</span><span class="p">()):</span>
             <span class="c1"># copy the exc so the traceback doesn&#39;t get destroyed by other waiters</span>
-            <span class="k">raise</span> <span class="n">copy</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e.__cause__</span>
+            <span class="k">raise</span> <span class="n">copy</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e.__cause__</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">__insert_chunk</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">__insert_chunk</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">objs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
         <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span>
@@ -1019,7 +1019,7 @@
                 <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">),</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes a specified number of objects from the beginning of the in-memory list.</span>
 
@@ -1030,7 +1030,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span> <span class="o">+=</span> <span class="n">count</span>
 
 
-<span class="k">def</span> <span class="nf">_clean_addresses</span><span class="p">(</span><span class="n">addresses</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_clean_addresses</span><span class="p">(</span><span class="n">addresses</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts addresses into a standardized format, raising an error if the zero address is encountered.</span>
 
@@ -1056,7 +1056,7 @@
     <span class="k">return</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">addresses</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_suitable_checkpoint</span><span class="p">(</span><span class="n">target_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">:</span> <span class="n">Checkpoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_suitable_checkpoint</span><span class="p">(</span><span class="n">target_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">:</span> <span class="n">Checkpoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds a suitable checkpoint block that is less than or equal to a target block.</span>
 
@@ -1071,7 +1071,7 @@
     <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">block_lt_checkpoint</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">group</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_get_checkpoint_index</span><span class="p">(</span><span class="n">target_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">:</span> <span class="n">Checkpoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_checkpoint_index</span><span class="p">(</span><span class="n">target_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">:</span> <span class="n">Checkpoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieves the index for a checkpoint that is less than or equal to a given block.</span>
 

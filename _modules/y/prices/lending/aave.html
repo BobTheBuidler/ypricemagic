@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.lending.aave &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,28 +69,28 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.lending.aave</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span><span class="p">,</span> <span class="n">igather</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
-<span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
-<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span><span class="p">,</span> <span class="n">igather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multicall</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractLogicError</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">ContractBase</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.utils</span> <span class="kn">import</span> <span class="n">hasall</span>
-<span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">get_price_logger</span>
-<span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">raw_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">ContractBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">hasall</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_price_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.raw_calls</span><span class="w"> </span><span class="kn">import</span> <span class="n">raw_call</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -123,7 +123,7 @@
 
 <div class="viewcode-block" id="AaveMarketBase">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketBase">[docs]</a>
-<span class="k">class</span> <span class="nc">AaveMarketBase</span><span class="p">(</span><span class="n">ContractBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AaveMarketBase</span><span class="p">(</span><span class="n">ContractBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for Aave markets.</span>
 
@@ -138,7 +138,7 @@
 
 <div class="viewcode-block" id="AaveMarketBase.__contains__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketBase.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if `token` is an aToken from this market.</span>
 
@@ -170,7 +170,7 @@
 
 <div class="viewcode-block" id="AaveMarketBase.contains">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketBase.contains">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if `token` is an aToken from this market.</span>
 
@@ -195,19 +195,19 @@
 
 <div class="viewcode-block" id="AaveMarketBase.get_reserves">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketBase.get_reserves">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_reserves</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Address</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_reserves</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Address</span><span class="p">]:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_reserves_method</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="AaveMarketBase.get_reserve_data">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketBase.get_reserve_data">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_reserve_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reserve</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_reserve_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reserve</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">getReserveData</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">reserve</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the aTokens of the market.</span>
 
@@ -228,7 +228,7 @@
 <div class="viewcode-block" id="AaveMarketBase.underlying">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketBase.underlying">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the underlying asset of the given aToken address.</span>
 
@@ -250,7 +250,7 @@
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_get_reserves_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_reserves_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The method that must be called to get the reserves list.</span>
 
@@ -266,11 +266,11 @@
 
 <div class="viewcode-block" id="AaveMarketV1">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV1">[docs]</a>
-<span class="k">class</span> <span class="nc">AaveMarketV1</span><span class="p">(</span><span class="n">AaveMarketBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AaveMarketV1</span><span class="p">(</span><span class="n">AaveMarketBase</span><span class="p">):</span>
 <div class="viewcode-block" id="AaveMarketV1.atokens">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV1.atokens">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
         <span class="n">reserves_data</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_reserve_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_reserves</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="n">atokens</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">ERC20</span><span class="p">(</span><span class="n">reserve_data</span><span class="p">[</span><span class="s2">&quot;aTokenAddress&quot;</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
@@ -283,7 +283,7 @@
 <div class="viewcode-block" id="AaveMarketV1.underlying">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV1.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
         <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
             <span class="n">atoken_address</span><span class="p">,</span> <span class="s2">&quot;underlyingAssetAddress()&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -299,11 +299,11 @@
 
 <div class="viewcode-block" id="AaveMarketV2">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV2">[docs]</a>
-<span class="k">class</span> <span class="nc">AaveMarketV2</span><span class="p">(</span><span class="n">AaveMarketBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AaveMarketV2</span><span class="p">(</span><span class="n">AaveMarketBase</span><span class="p">):</span>
 <div class="viewcode-block" id="AaveMarketV2.atokens">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV2.atokens">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
         <span class="n">reserves_data</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_reserve_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_reserves</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">atokens</span> <span class="o">=</span> <span class="p">[</span>
@@ -320,14 +320,14 @@
 
 <div class="viewcode-block" id="AaveMarketV2.get_reserve_data">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV2.get_reserve_data">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_reserve_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reserve</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_reserve_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reserve</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="n">_V2_RESERVE_DATA_METHOD</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">reserve</span><span class="p">)])</span></div>
 
 
 <div class="viewcode-block" id="AaveMarketV2.underlying">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV2.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
         <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
             <span class="n">atoken_address</span><span class="p">,</span> <span class="s2">&quot;UNDERLYING_ASSET_ADDRESS()&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -341,11 +341,11 @@
 
 <div class="viewcode-block" id="AaveMarketV3">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV3">[docs]</a>
-<span class="k">class</span> <span class="nc">AaveMarketV3</span><span class="p">(</span><span class="n">AaveMarketBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AaveMarketV3</span><span class="p">(</span><span class="n">AaveMarketBase</span><span class="p">):</span>
 <div class="viewcode-block" id="AaveMarketV3.atokens">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV3.atokens">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
         <span class="n">reserves_data</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_reserve_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_reserves</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">atokens</span> <span class="o">=</span> <span class="p">[</span>
@@ -363,7 +363,7 @@
 <div class="viewcode-block" id="AaveMarketV3.underlying">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveMarketV3.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
         <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
             <span class="n">atoken_address</span><span class="p">,</span> <span class="s2">&quot;UNDERLYING_ASSET_ADDRESS()&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -383,10 +383,10 @@
 
 <div class="viewcode-block" id="AaveRegistry">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry">[docs]</a>
-<span class="k">class</span> <span class="nc">AaveRegistry</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AaveRegistry</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
 <div class="viewcode-block" id="AaveRegistry.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
@@ -394,7 +394,7 @@
 <div class="viewcode-block" id="AaveRegistry.pools">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.pools">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AaveMarket</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AaveMarket</span><span class="p">]:</span>
         <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__pools_v1__</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__pools_v2__</span><span class="p">,</span>
@@ -408,7 +408,7 @@
 <div class="viewcode-block" id="AaveRegistry.pools_v1">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.pools_v1">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pools_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AaveMarketV1</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pools_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AaveMarketV1</span><span class="p">]:</span>
         <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span><span class="n">AaveMarketV1</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">v1_pools</span><span class="p">]</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;AaveRegistry v1 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pools</span></div>
@@ -419,7 +419,7 @@
 <div class="viewcode-block" id="AaveRegistry.pools_v2">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.pools_v2">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pools_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AaveMarketV2</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pools_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AaveMarketV2</span><span class="p">]:</span>
         <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span><span class="n">AaveMarketV2</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">v2_pools</span><span class="p">]</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;AaveRegistry v2 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pools</span></div>
@@ -430,7 +430,7 @@
 <div class="viewcode-block" id="AaveRegistry.pools_v3">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.pools_v3">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pools_v3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AaveMarketV3</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pools_v3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AaveMarketV3</span><span class="p">]:</span>
         <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span><span class="n">AaveMarketV3</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">v3_pools</span><span class="p">]</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;AaveRegistry v3 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pools</span></div>
@@ -440,7 +440,7 @@
 
 <div class="viewcode-block" id="AaveRegistry.pool_for_atoken">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.pool_for_atoken">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pool_for_atoken</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pool_for_atoken</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AnyAddressType</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">AaveMarketV1</span><span class="p">,</span> <span class="n">AaveMarketV2</span><span class="p">,</span> <span class="n">AaveMarketV3</span><span class="p">]]:</span>
         <span class="n">pools</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pools__</span>
@@ -451,7 +451,7 @@
 
 <div class="viewcode-block" id="AaveRegistry.__contains__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__o</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__o</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;&#39;self.asynchronous&#39; must be False to use AaveRegistry.__contains__.</span><span class="se">\n</span><span class="s2">You may wish to use AaveRegistry.is_atoken instead.&quot;</span>
@@ -462,7 +462,7 @@
 <div class="viewcode-block" id="AaveRegistry.is_atoken">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.is_atoken">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_atoken</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_atoken</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="n">atoken_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;aave&quot;</span><span class="p">)</span>
         <span class="n">is_atoken</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
             <span class="k">await</span> <span class="n">igather</span><span class="p">(</span>
@@ -475,7 +475,7 @@
 
 <div class="viewcode-block" id="AaveRegistry.is_wrapped_atoken_v2">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v2">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_wrapped_atoken_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_wrapped_atoken_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="c1"># NOTE: Not sure if this wrapped version is actually related to aave but this works for pricing purposes.</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">atoken_address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">contract</span><span class="o">.</span><span class="n">verified</span> <span class="ow">and</span> <span class="n">hasall</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">_WRAPPED_V2_METHODS</span><span class="p">)</span></div>
@@ -483,7 +483,7 @@
 
 <div class="viewcode-block" id="AaveRegistry.is_wrapped_atoken_v3">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v3">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_wrapped_atoken_v3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_wrapped_atoken_v3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="c1"># NOTE: Not sure if this wrapped version is actually related to aave but this works for pricing purposes.</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">atoken_address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">contract</span><span class="o">.</span><span class="n">verified</span> <span class="ow">and</span> <span class="n">hasall</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">_WRAPPED_V3_METHODS</span><span class="p">)</span></div>
@@ -492,7 +492,7 @@
 <div class="viewcode-block" id="AaveRegistry.underlying">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
         <span class="n">pool</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">AaveMarketV1</span><span class="p">,</span> <span class="n">AaveMarketV2</span><span class="p">,</span> <span class="n">AaveMarketV3</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_for_atoken</span><span class="p">(</span>
             <span class="n">atoken_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -501,7 +501,7 @@
 
 <div class="viewcode-block" id="AaveRegistry.get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.get_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -513,7 +513,7 @@
 
 <div class="viewcode-block" id="AaveRegistry.get_price_wrapped_v2">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.get_price_wrapped_v2">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price_wrapped_v2</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price_wrapped_v2</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -526,7 +526,7 @@
 
 <div class="viewcode-block" id="AaveRegistry.get_price_wrapped_v3">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.get_price_wrapped_v3">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price_wrapped_v3</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price_wrapped_v3</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -537,7 +537,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_price_wrapped</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_price_wrapped</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
         <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

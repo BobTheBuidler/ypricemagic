@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.chainlink &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,29 +69,29 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.chainlink</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">import</span> <span class="nn">dank_mids</span>
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">time</span>
-<span class="kn">from</span> <span class="nn">async_lru</span> <span class="kn">import</span> <span class="n">alru_cache</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
-<span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span>
-<span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
-<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dank_mids</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">async_lru</span><span class="w"> </span><span class="kn">import</span> <span class="n">alru_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.network.event</span><span class="w"> </span><span class="kn">import</span> <span class="n">_EventItem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multicall</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractLogicError</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
-<span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">UnsupportedNetwork</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
-<span class="kn">from</span> <span class="nn">y.utils.events</span> <span class="kn">import</span> <span class="n">ProcessedEvents</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y._decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CHAINID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnsupportedNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessedEvents</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -253,7 +253,7 @@
 
 <div class="viewcode-block" id="Feed">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed">[docs]</a>
-<span class="k">class</span> <span class="nc">Feed</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Feed</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a Chainlink price feed for a specific asset.</span>
 
@@ -281,7 +281,7 @@
 
 <div class="viewcode-block" id="Feed.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
         <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
@@ -298,17 +298,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> address=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2"> asset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">asset</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">contract</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contract</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Contract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
 
     <span class="c1"># @a_sync.future</span>
 <div class="viewcode-block" id="Feed.decimals">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed.decimals">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">decimals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">decimals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;decimals()(uint)&quot;</span><span class="p">)</span></div>
 
 
@@ -316,7 +316,7 @@
 <div class="viewcode-block" id="Feed.scale">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed.scale">[docs]</a>
     <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncFuture</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">()))</span></div>
 
 
@@ -324,7 +324,7 @@
 <div class="viewcode-block" id="Feed.get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed.get_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the price of the asset at a specific block.</span>
 
 <span class="sd">        If the feed is stale, returns None.</span>
@@ -379,18 +379,18 @@
 
 <div class="viewcode-block" id="FeedsFromEvents">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.FeedsFromEvents">[docs]</a>
-<span class="k">class</span> <span class="nc">FeedsFromEvents</span><span class="p">(</span><span class="n">ProcessedEvents</span><span class="p">[</span><span class="n">Feed</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FeedsFromEvents</span><span class="p">(</span><span class="n">ProcessedEvents</span><span class="p">[</span><span class="n">Feed</span><span class="p">]):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;asynchronous&quot;</span><span class="p">,)</span>
 
 <div class="viewcode-block" id="FeedsFromEvents.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.FeedsFromEvents.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addresses</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addresses</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="n">addresses</span><span class="p">,</span> <span class="n">topics</span><span class="o">=</span><span class="n">topics</span><span class="p">)</span></div>
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_include_event</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_include_event</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine whether to include a given event in this container.</span>
 
@@ -409,7 +409,7 @@
             <span class="ow">and</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;latestAggregator&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_process_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Feed</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Feed</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Feed</span><span class="p">(</span>
             <span class="n">event</span><span class="p">[</span><span class="s2">&quot;latestAggregator&quot;</span><span class="p">],</span>
             <span class="n">event</span><span class="p">[</span><span class="s2">&quot;asset&quot;</span><span class="p">],</span>
@@ -417,17 +417,17 @@
             <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Feed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Feed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">start_block</span></div>
 
 
 
 <div class="viewcode-block" id="Chainlink">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink">[docs]</a>
-<span class="k">class</span> <span class="nc">Chainlink</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Chainlink</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
 <div class="viewcode-block" id="Chainlink.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Chainlink class.</span>
 
 <span class="sd">        The Chainlink class aggregates Chainlink price feeds for various tokens.</span>
@@ -465,7 +465,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_feeds_from_events</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_feeds_thru_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Feed</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_feeds_thru_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Feed</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Yield feeds up to a specific block.</span>
 
 <span class="sd">        Args:</span>
@@ -484,7 +484,7 @@
 <div class="viewcode-block" id="Chainlink.get_feed">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink.get_feed">[docs]</a>
     <span class="nd">@a_sync_ttl_cache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Feed</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Feed</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the feed for a specific asset.</span>
 
 <span class="sd">        The method converts the supplied asset address to an instance of :class:`~y.classes.common.ERC20`</span>
@@ -515,7 +515,7 @@
 
 <div class="viewcode-block" id="Chainlink.has_feed">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink.has_feed">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">has_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">has_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a feed exists for a specific asset.</span>
 
 <span class="sd">        The supplied asset address is converted internally to an :class:`~y.classes.common.ERC20` instance</span>
@@ -543,7 +543,7 @@
 <div class="viewcode-block" id="Chainlink.get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink.get_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the price of an asset at a specific block.</span>
@@ -575,7 +575,7 @@
 
 
     <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
         <span class="n">asset</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">asset</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">asset</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>

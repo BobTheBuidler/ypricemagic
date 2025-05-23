@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to ypricemagic’s documentation! &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -99,7 +99,7 @@ silent: If True, suppress error logging. Defaults to False.</p>
 For example, you can use <code class="samp docutils literal notranslate"><span class="pre">y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)</span></code> to save keystrokes
 while testing in an interactive console.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">get_price</span>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_price</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e&quot;</span><span class="p">,</span> <span class="mi">12345678</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
 </pre></div>
@@ -142,7 +142,7 @@ while testing in an interactive console.</p>
 <dd class="field-odd"><p><strong>timestamp</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><em>datetime</em></a>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -166,7 +166,7 @@ silent (optional): If True, suppress error logging and any progress indicators. 
 </dd>
 <dt>Returns:</dt><dd><p>A list of token prices in USD, in the same order as the input <code class="samp docutils literal notranslate"><span class="pre">token_addresses</span></code>.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">get_prices</span>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_prices</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prices</span> <span class="o">=</span> <span class="n">get_prices</span><span class="p">([</span><span class="s2">&quot;0x123...&quot;</span><span class="p">,</span> <span class="s2">&quot;0x456...&quot;</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
 </pre></div>
@@ -200,7 +200,7 @@ silent (optional): If True, suppress error logging and any progress indicators. 
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">map_prices</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">map_prices</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">task_map</span> <span class="o">=</span> <span class="n">map_prices</span><span class="p">([</span><span class="s2">&quot;0xabc...&quot;</span><span class="p">,</span> <span class="s2">&quot;0xdef...&quot;</span><span class="p">],</span> <span class="mi">12345678</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">task_map</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>

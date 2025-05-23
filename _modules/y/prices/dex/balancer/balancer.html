@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.dex.balancer.balancer &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,23 +69,23 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.balancer.balancer</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync.property</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">exceptions</span>
-<span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span><span class="p">,</span> <span class="n">CONNECTED_TO_MAINNET</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex.balancer._abc</span> <span class="kn">import</span> <span class="n">BalancerABC</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex.balancer.v1</span> <span class="kn">import</span> <span class="n">BalancerV1</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex.balancer.v2</span> <span class="kn">import</span> <span class="n">BalancerV2</span>
-<span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">optional_async_diskcache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">exceptions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y._decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CHAINID</span><span class="p">,</span> <span class="n">CONNECTED_TO_MAINNET</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex.balancer._abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex.balancer.v1</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerV1</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex.balancer.v2</span><span class="w"> </span><span class="kn">import</span> <span class="n">BalancerV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">optional_async_diskcache</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -93,7 +93,7 @@
 
 <div class="viewcode-block" id="BalancerMultiplexer">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer">[docs]</a>
-<span class="k">class</span> <span class="nc">BalancerMultiplexer</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BalancerMultiplexer</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A multiplexer for interacting with different versions of Balancer pools.</span>
 
 <span class="sd">    This class provides methods to determine if a token is a Balancer pool,</span>
@@ -119,7 +119,7 @@
 
 <div class="viewcode-block" id="BalancerMultiplexer.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the BalancerMultiplexer.</span>
 
@@ -133,7 +133,7 @@
 <div class="viewcode-block" id="BalancerMultiplexer.versions">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer.versions">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">versions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BalancerV1</span><span class="p">,</span> <span class="n">BalancerV2</span><span class="p">]]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">versions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BalancerV1</span><span class="p">,</span> <span class="n">BalancerV2</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the available Balancer versions.</span>
 
@@ -151,7 +151,7 @@
 <div class="viewcode-block" id="BalancerMultiplexer.v1">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer.v1">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">v1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV1</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">v1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV1</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Balancer V1 instance.</span>
 
@@ -172,7 +172,7 @@
 <div class="viewcode-block" id="BalancerMultiplexer.v2">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer.v2">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">v2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV2</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">v2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV2</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Balancer V2 instance.</span>
 
@@ -194,7 +194,7 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer.is_balancer_pool">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@optional_async_diskcache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_balancer_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_balancer_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a given token address is a Balancer pool.</span>
 
@@ -217,7 +217,7 @@
 <div class="viewcode-block" id="BalancerMultiplexer.get_pool_price">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer.get_pool_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_pool_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -249,7 +249,7 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer.get_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -301,7 +301,7 @@
 <div class="viewcode-block" id="BalancerMultiplexer.get_version">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.balancer.BalancerMultiplexer.get_version">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BalancerABC</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BalancerABC</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine the Balancer version for a given token address.</span>
 

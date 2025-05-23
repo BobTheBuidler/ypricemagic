@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.monkey_patches &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,23 +69,23 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.monkey_patches</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">brownie.convert</span>
-<span class="kn">import</span> <span class="nn">checksum_dict._utils</span>
-<span class="kn">import</span> <span class="nn">dank_mids.brownie_patch.call</span>
-<span class="kn">import</span> <span class="nn">eth_event.main</span>
-<span class="kn">import</span> <span class="nn">eth_utils</span>
-<span class="kn">import</span> <span class="nn">evmspec.data._main</span>
-<span class="kn">import</span> <span class="nn">multicall.call</span>
-<span class="kn">import</span> <span class="nn">web3._utils</span> <span class="k">as</span> <span class="nn">web3_utils</span>
-<span class="kn">import</span> <span class="nn">web3.main</span> <span class="k">as</span> <span class="nn">web3_main</span>
-<span class="kn">import</span> <span class="nn">web3.middleware</span> <span class="k">as</span> <span class="nn">web3_middleware</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">brownie.convert</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">checksum_dict._utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dank_mids.brownie_patch.call</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">eth_event.main</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">eth_utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">evmspec.data._main</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">multicall.call</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">web3._utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">web3_utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">web3.main</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">web3_main</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">web3.middleware</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">web3_middleware</span>
 
-<span class="kn">import</span> <span class="nn">y.convert</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">y.convert</span>
 
 
 <div class="viewcode-block" id="monkey_patch_checksum_cache">
 <a class="viewcode-back" href="../../source/y.html#y.monkey_patches.monkey_patch_checksum_cache">[docs]</a>
-<span class="k">def</span> <span class="nf">monkey_patch_checksum_cache</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">monkey_patch_checksum_cache</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Monkey patch dependency checksums with faster versions.</span>
 
@@ -128,7 +128,7 @@
     <span class="n">web3_middleware</span><span class="o">.</span><span class="n">signing</span><span class="o">.</span><span class="n">to_checksum_address</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">convert</span><span class="o">.</span><span class="n">to_address</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">web3.utils.address</span> <span class="k">as</span> <span class="nn">web3_address</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">web3.utils.address</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">web3_address</span>
 
         <span class="n">web3_address</span><span class="o">.</span><span class="n">to_checksum_address</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">convert</span><span class="o">.</span><span class="n">to_address</span>
     <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
@@ -136,7 +136,7 @@
         <span class="k">pass</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">ens.ens</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">ens.ens</span>
 
         <span class="n">ens</span><span class="o">.</span><span class="n">ens</span><span class="o">.</span><span class="n">to_checksum_address</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">convert</span><span class="o">.</span><span class="n">to_address</span>
     <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
@@ -144,7 +144,7 @@
         <span class="k">pass</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">ens.async_ens</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">ens.async_ens</span>
 
         <span class="n">ens</span><span class="o">.</span><span class="n">async_ens</span><span class="o">.</span><span class="n">to_checksum_address</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">convert</span><span class="o">.</span><span class="n">to_address</span>
     <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>

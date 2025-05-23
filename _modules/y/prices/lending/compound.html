@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.lending.compound &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,26 +69,26 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.lending.compound</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">,</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
-<span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">VirtualMachineError</span>
-<span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">,</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">VirtualMachineError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multicall</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">ContractBase</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">EEE_ADDRESS</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_methods</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">call_reverted</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">_gh_issue_request</span>
-<span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">raw_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">ContractBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EEE_ADDRESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_methods</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_reverted</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">_gh_issue_request</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.raw_calls</span><span class="w"> </span><span class="kn">import</span> <span class="n">raw_call</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">())</span>
@@ -138,10 +138,10 @@
 
 <div class="viewcode-block" id="CToken">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken">[docs]</a>
-<span class="k">class</span> <span class="nc">CToken</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CToken</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
 <div class="viewcode-block" id="CToken.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
         <span class="n">comptroller</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Comptroller&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -167,7 +167,7 @@
 
 <div class="viewcode-block" id="CToken.get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.get_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -202,7 +202,7 @@
 <div class="viewcode-block" id="CToken.underlying">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the underlying ERC20 token for this CToken.</span>
 
@@ -226,7 +226,7 @@
 
 <div class="viewcode-block" id="CToken.underlying_per_ctoken">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.underlying_per_ctoken">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying_per_ctoken</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">underlying_per_ctoken</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the exchange rate of the CToken, adjusted for decimals.</span>
 
@@ -256,7 +256,7 @@
     <span class="c1"># yLazyLogger(logger)</span>
 <div class="viewcode-block" id="CToken.exchange_rate">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.exchange_rate">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">exchange_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exchange_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the current exchange rate of the CToken.</span>
 
@@ -289,7 +289,7 @@
 
 <div class="viewcode-block" id="CToken.get_underlying_price">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.get_underlying_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_underlying_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_underlying_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -338,10 +338,10 @@
 
 <div class="viewcode-block" id="Comptroller">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Comptroller">[docs]</a>
-<span class="k">class</span> <span class="nc">Comptroller</span><span class="p">(</span><span class="n">ContractBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Comptroller</span><span class="p">(</span><span class="n">ContractBase</span><span class="p">):</span>
 <div class="viewcode-block" id="Comptroller.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Comptroller.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -374,13 +374,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Comptroller </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">&#39;&gt;&quot;</span>
 
     <span class="c1"># yLazyLogger(logger)</span>
 <div class="viewcode-block" id="Comptroller.__contains__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Comptroller.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a token address is contained within the Comptroller&#39;s markets.</span>
 
@@ -401,7 +401,7 @@
 <div class="viewcode-block" id="Comptroller.markets">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Comptroller.markets">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">markets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">CToken</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">markets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">CToken</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the markets associated with this Comptroller.</span>
 
@@ -428,7 +428,7 @@
 
 <div class="viewcode-block" id="Comptroller.oracle">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Comptroller.oracle">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the oracle contract associated with this Comptroller.</span>
 
@@ -454,10 +454,10 @@
 
 <div class="viewcode-block" id="Compound">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound">[docs]</a>
-<span class="k">class</span> <span class="nc">Compound</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Compound</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
 <div class="viewcode-block" id="Compound.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a Compound instance.</span>
 
@@ -478,7 +478,7 @@
 
 <div class="viewcode-block" id="Compound.__contains__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.__contains__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a token address is a Compound market.</span>
 
@@ -500,7 +500,7 @@
 
 <div class="viewcode-block" id="Compound.get_troller">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.get_troller">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_troller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Comptroller</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_troller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Comptroller</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Comptroller associated with a token address.</span>
 
@@ -522,7 +522,7 @@
 <div class="viewcode-block" id="Compound.is_compound_market">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.is_compound_market">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_compound_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_compound_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if a token address is a Compound market.</span>
 
@@ -551,7 +551,7 @@
 
 <div class="viewcode-block" id="Compound.get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.get_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -575,7 +575,7 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">__notify_if_unknown_comptroller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">__notify_if_unknown_comptroller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Notify if a Comptroller is unknown to ypricemagic.</span>
 

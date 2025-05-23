@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.dex.balancer package &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -1145,8 +1145,8 @@ by the total supply of the pool tokens.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyLiquidityPool</span><span class="p">(</span><span class="n">LiquidityPool</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyLiquidityPool</span><span class="p">(</span><span class="n">LiquidityPool</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="mi">1000000</span><span class="p">)</span>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pool</span> <span class="o">=</span> <span class="n">MyLiquidityPool</span><span class="p">(</span><span class="s2">&quot;0xAddress&quot;</span><span class="p">)</span>
@@ -2416,8 +2416,8 @@ by the total supply of the pool tokens.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyLiquidityPool</span><span class="p">(</span><span class="n">LiquidityPool</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyLiquidityPool</span><span class="p">(</span><span class="n">LiquidityPool</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="mi">1000000</span><span class="p">)</span>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pool</span> <span class="o">=</span> <span class="n">MyLiquidityPool</span><span class="p">(</span><span class="s2">&quot;0xAddress&quot;</span><span class="p">)</span>

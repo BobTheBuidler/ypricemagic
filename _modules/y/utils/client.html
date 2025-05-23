@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.utils.client &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -73,15 +73,15 @@
 <span class="sd">Utility functions for retrieving Ethereum client information.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">async_lru</span> <span class="kn">import</span> <span class="n">alru_cache</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">web3</span>
-<span class="kn">from</span> <span class="nn">cachetools.func</span> <span class="kn">import</span> <span class="n">lru_cache</span>
-<span class="kn">from</span> <span class="nn">dank_mids</span> <span class="kn">import</span> <span class="n">dank_web3</span>
-<span class="kn">from</span> <span class="nn">web3._utils.rpc_abi</span> <span class="kn">import</span> <span class="n">RPC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">async_lru</span><span class="w"> </span><span class="kn">import</span> <span class="n">alru_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">web3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cachetools.func</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids</span><span class="w"> </span><span class="kn">import</span> <span class="n">dank_web3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3._utils.rpc_abi</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPC</span>
 
-<span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">yLazyLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">yLazyLogger</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -90,7 +90,7 @@
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.client.get_ethereum_client">[docs]</a>
 <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="nd">@yLazyLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">get_ethereum_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ethereum_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the Ethereum client type for the current connection.</span>
 
@@ -124,7 +124,7 @@
 <div class="viewcode-block" id="get_ethereum_client_async">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.client.get_ethereum_client_async">[docs]</a>
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_ethereum_client_async</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_ethereum_client_async</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Asynchronously get the Ethereum client type for the current connection.</span>
 
@@ -150,7 +150,7 @@
 
 
 <span class="nd">@yLazyLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">_get_ethereum_client</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_ethereum_client</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the Ethereum client type based on the client version string.</span>
 

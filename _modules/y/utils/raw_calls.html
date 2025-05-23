@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.utils.raw_calls &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,32 +69,32 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.utils.raw_calls</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">import</span> <span class="nn">brownie</span>
-<span class="kn">import</span> <span class="nn">dank_mids</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">convert</span>
-<span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
-<span class="kn">from</span> <span class="nn">dank_mids._eth_utils</span> <span class="kn">import</span> <span class="n">encode_hex</span>
-<span class="kn">from</span> <span class="nn">dank_mids.helpers</span> <span class="kn">import</span> <span class="n">lru_cache_lite_nonull</span>
-<span class="kn">from</span> <span class="nn">eth_utils</span> <span class="kn">import</span> <span class="n">function_signature_to_4byte_selector</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">brownie</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dank_mids</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">convert</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.convert.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">EthAddress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids._eth_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_hex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache_lite_nonull</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eth_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">function_signature_to_4byte_selector</span>
 
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">proxy_implementation</span>
-<span class="kn">from</span> <span class="nn">y.convert</span> <span class="kn">import</span> <span class="n">to_address</span><span class="p">,</span> <span class="n">to_address_async</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">Block</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">proxy_implementation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.convert</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_address</span><span class="p">,</span> <span class="n">to_address_async</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">Block</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CalldataPreparationError</span><span class="p">,</span>
     <span class="n">ContractNotVerified</span><span class="p">,</span>
     <span class="n">NonStandardERC20</span><span class="p">,</span>
     <span class="n">NoProxyImplementation</span><span class="p">,</span>
     <span class="n">call_reverted</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">yLazyLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">yLazyLogger</span>
 
 
 <span class="n">logger</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -111,7 +111,7 @@
 <div class="viewcode-block" id="_cached_call_fn">
 <a class="viewcode-back" href="../../../source/y.utils.html#y._cached_call_fn">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_cached_call_fn</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_cached_call_fn</span><span class="p">(</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
     <span class="n">contract_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="c1"># Only supports one required arg besides contract_address for now</span>
@@ -128,7 +128,7 @@
 <div class="viewcode-block" id="decimals">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.decimals">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">decimals</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">decimals</span><span class="p">(</span>
     <span class="n">contract_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_None_on_failure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -145,7 +145,7 @@
 <div class="viewcode-block" id="_decimals">
 <a class="viewcode-back" href="../../../source/y.utils.html#y._decimals">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_decimals</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_decimals</span><span class="p">(</span>
     <span class="n">contract_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_None_on_failure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -276,7 +276,7 @@
 <div class="viewcode-block" id="_totalSupply">
 <a class="viewcode-back" href="../../../source/y.utils.html#y._totalSupply">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_totalSupply</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_totalSupply</span><span class="p">(</span>
     <span class="n">contract_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_None_on_failure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -333,7 +333,7 @@
 <div class="viewcode-block" id="balanceOf">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.balanceOf">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">balanceOf</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">balanceOf</span><span class="p">(</span>
     <span class="n">call_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">input_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -390,7 +390,7 @@
 
 
 <span class="c1"># yLazyLogger(logger)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_balanceOfReadable</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_balanceOfReadable</span><span class="p">(</span>
     <span class="n">call_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">input_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -427,7 +427,7 @@
 <div class="viewcode-block" id="raw_call">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.raw_call">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">raw_call</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">raw_call</span><span class="p">(</span>
     <span class="n">contract_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -499,7 +499,7 @@
             <span class="c1"># NOTE: we use removeprefix here to support both hexbytes&lt;1 and hexbytes&gt;=1</span>
             <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s1">&#39;0x&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is outside allowable range for uint256&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">raise</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid output type, please select from [&quot;str&quot;,&quot;int&quot;,&quot;address&quot;]&#39;</span><span class="p">)</span></div>
@@ -509,7 +509,7 @@
 <span class="c1"># yLazyLogger(logger)</span>
 <div class="viewcode-block" id="prepare_data">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.prepare_data">[docs]</a>
-<span class="k">def</span> <span class="nf">prepare_data</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_data</span><span class="p">(</span>
     <span class="n">method</span><span class="p">,</span>
     <span class="n">inputs</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Address</span><span class="p">,</span> <span class="n">EthAddress</span><span class="p">,</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">,</span> <span class="n">Contract</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -587,7 +587,7 @@
 <span class="c1"># yLazyLogger(logger)</span>
 <div class="viewcode-block" id="prepare_input">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.prepare_input">[docs]</a>
-<span class="k">def</span> <span class="nf">prepare_input</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_input</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="nb">bytes</span><span class="p">,</span>  <span class="c1"># for bytes input</span>
         <span class="nb">int</span><span class="p">,</span>  <span class="c1"># for int input</span>

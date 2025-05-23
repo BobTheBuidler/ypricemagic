@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dank_mids.brownie_patch.contract &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,27 +69,27 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dank_mids.brownie_patch.contract</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
-<span class="kn">import</span> <span class="nn">brownie</span>
-<span class="kn">from</span> <span class="nn">brownie.network.contract</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">brownie</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.network.contract</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ContractCall</span><span class="p">,</span>
     <span class="n">ContractTx</span><span class="p">,</span>
     <span class="n">OverloadedMethod</span><span class="p">,</span>
     <span class="n">build_function_signature</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">brownie.typing</span> <span class="kn">import</span> <span class="n">AccountsType</span>
-<span class="kn">from</span> <span class="nn">eth_retry</span> <span class="kn">import</span> <span class="n">auto_retry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountsType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eth_retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">auto_retry</span>
 
-<span class="kn">from</span> <span class="nn">dank_mids.brownie_patch.call</span> <span class="kn">import</span> <span class="n">_patch_call</span>
-<span class="kn">from</span> <span class="nn">dank_mids.brownie_patch.overloaded</span> <span class="kn">import</span> <span class="n">_patch_overloaded_method</span>
-<span class="kn">from</span> <span class="nn">dank_mids.brownie_patch.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.brownie_patch.call</span><span class="w"> </span><span class="kn">import</span> <span class="n">_patch_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.brownie_patch.overloaded</span><span class="w"> </span><span class="kn">import</span> <span class="n">_patch_overloaded_method</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.brownie_patch.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ContractMethod</span><span class="p">,</span>
     <span class="n">DankContractMethod</span><span class="p">,</span>
     <span class="n">DankOverloadedMethod</span><span class="p">,</span>
     <span class="n">_get_method_object</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dank_mids.helpers._helpers</span> <span class="kn">import</span> <span class="n">DankWeb3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.helpers._helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">DankWeb3</span>
 
 
 <span class="n">EventName</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;EventName&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
@@ -121,7 +121,7 @@
 <span class="sd">&quot;&quot;&quot;A wrapper that retries failed calls to the Etherscan API.&quot;&quot;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">Contract</span><span class="p">(</span><span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Contract</span><span class="p">(</span><span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An extended version of brownie.Contract with additional functionality for Dank Mids.</span>
 
@@ -131,7 +131,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="nd">@retry_etherscan</span>
-    <span class="k">def</span> <span class="nf">from_abi</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_abi</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -163,7 +163,7 @@
 <a class="viewcode-back" href="../../../source/y.html#y.contracts.Contract.from_ethpm">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="nd">@retry_etherscan</span>
-    <span class="k">def</span> <span class="nf">from_ethpm</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_ethpm</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">manifest_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -197,7 +197,7 @@
 <a class="viewcode-back" href="../../../source/y.html#y.contracts.Contract.from_explorer">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="nd">@retry_etherscan</span>
-    <span class="k">def</span> <span class="nf">from_explorer</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_explorer</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">as_proxy_for</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -234,7 +234,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A dictionary mapping method names to their corresponding signatures.&quot;&quot;&quot;</span>
 
     <span class="nd">@retry_etherscan</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the Contract instance.</span>
 
@@ -243,7 +243,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get rid of the contract call objects so we can materialize them on a JIT basis.</span>
 
@@ -256,7 +256,7 @@
 
 <div class="viewcode-block" id="Contract.__getattribute__">
 <a class="viewcode-back" href="../../../source/y.html#y.contracts.Contract.__getattribute__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DankContractMethod</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DankContractMethod</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a contract method attribute.</span>
 
@@ -274,7 +274,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Contract &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e.__cause__</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e.__cause__</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="n">_ContractMethodPlaceholder</span><span class="p">:</span>
             <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_method_object__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
@@ -282,11 +282,11 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">__method_names__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__method_names__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of method names defined in the contract ABI.&quot;&quot;&quot;</span>
         <span class="k">yield from</span> <span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="n">_is_function_abi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">__get_method_object__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DankContractMethod</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__get_method_object__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DankContractMethod</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a method object for the given method name.</span>
 
@@ -299,7 +299,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            The initialized contract method object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">dank_mids</span> <span class="kn">import</span> <span class="n">web3</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids</span><span class="w"> </span><span class="kn">import</span> <span class="n">web3</span>
 
         <span class="n">overloaded</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__method_names__</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
@@ -326,17 +326,17 @@
         <span class="k">return</span> <span class="n">overloaded</span>  <span class="c1"># type: ignore [return-value]</span>
 
 
-<span class="k">def</span> <span class="nf">_is_function_abi</span><span class="p">(</span><span class="n">abi</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_function_abi</span><span class="p">(</span><span class="n">abi</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
 
 
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">patch_contract</span><span class="p">(</span><span class="n">contract</span><span class="p">:</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">w3</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DankWeb3</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">patch_contract</span><span class="p">(</span><span class="n">contract</span><span class="p">:</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">w3</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DankWeb3</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span> <span class="o">...</span>
 <span class="nd">@overload</span>
-<span class="k">def</span> <span class="nf">patch_contract</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">patch_contract</span><span class="p">(</span>
     <span class="n">contract</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">w3</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DankWeb3</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">:</span> <span class="o">...</span>
-<span class="k">def</span> <span class="nf">patch_contract</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">patch_contract</span><span class="p">(</span>
     <span class="n">contract</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Contract</span><span class="p">,</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">w3</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DankWeb3</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Contract</span><span class="p">,</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -352,7 +352,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">):</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">(</span><span class="n">contract</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">w3</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">brownie</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
-        <span class="kn">from</span> <span class="nn">dank_mids</span> <span class="kn">import</span> <span class="n">dank_web3</span> <span class="k">as</span> <span class="n">w3</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids</span><span class="w"> </span><span class="kn">import</span> <span class="n">dank_web3</span> <span class="k">as</span> <span class="n">w3</span>
     <span class="k">if</span> <span class="n">w3</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="s2">&quot;You must make sure either brownie is connected or you pass in a Web3 instance.&quot;</span>
@@ -362,7 +362,7 @@
     <span class="k">return</span> <span class="n">contract</span>
 
 
-<span class="k">def</span> <span class="nf">_patch_if_method</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">ContractMethod</span><span class="p">,</span> <span class="n">w3</span><span class="p">:</span> <span class="n">DankWeb3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_patch_if_method</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">ContractMethod</span><span class="p">,</span> <span class="n">w3</span><span class="p">:</span> <span class="n">DankWeb3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Patch a contract method if it&#39;s a ContractCall, ContractTx, or OverloadedMethod.</span>
 
@@ -376,7 +376,7 @@
         <span class="n">_patch_overloaded_method</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">w3</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">_ContractMethodPlaceholder</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_ContractMethodPlaceholder</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A sentinel object that indicates a Contract has a member by a specific name.</span>
 
@@ -385,7 +385,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_check_persist</span><span class="p">(</span><span class="n">persist</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_persist</span><span class="p">(</span><span class="n">persist</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if persistence is enabled and raise an error if it&#39;s not.</span>
 

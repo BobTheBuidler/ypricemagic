@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.utils.cache &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,24 +69,24 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.utils.cache</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">iscoroutinefunction</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">iscoroutinefunction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">import</span> <span class="nn">eth_retry</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">eth_retry</span>
 
-<span class="kn">from</span> <span class="nn">a_sync._typing</span> <span class="kn">import</span> <span class="n">AnyFn</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync.function</span> <span class="kn">import</span> <span class="n">ASyncDecorator</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
-<span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Memory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync._typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyFn</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync.function</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASyncDecorator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">joblib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Memory</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 
 
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
-<span class="k">def</span> <span class="nf">_memory</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_memory</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create and return a :class:`Memory` object for caching values for the currently connected blockchain.</span>
 
@@ -106,14 +106,14 @@
 
 <span class="k">try</span><span class="p">:</span>
 
-    <span class="kn">import</span> <span class="nn">toolcache</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">toolcache</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User has toolcache, this diskcache decorator will work.&quot;&quot;&quot;</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
     <span class="n">cache_base_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;./cache/</span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
 
-    <span class="k">def</span> <span class="nf">optional_async_diskcache</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">optional_async_diskcache</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decorator to optionally apply disk caching to asynchronous functions.</span>
 
@@ -158,7 +158,7 @@
 
             <span class="nd">@toolcache</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="s2">&quot;disk&quot;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_path_for_fn</span><span class="p">)</span>
             <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">diskcache_wrap_with_debug_logs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">diskcache_wrap_with_debug_logs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;fetching </span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__qualname__</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">)))</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -168,7 +168,7 @@
 
             <span class="nd">@toolcache</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="s2">&quot;disk&quot;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_path_for_fn</span><span class="p">)</span>
             <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">diskcache_wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">diskcache_wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">diskcache_wrap</span>
@@ -179,7 +179,7 @@
 
 <div class="viewcode-block" id="optional_async_diskcache">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.cache.optional_async_diskcache">[docs]</a>
-    <span class="k">def</span> <span class="nf">optional_async_diskcache</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">optional_async_diskcache</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decorator to optionally apply disk caching to asynchronous functions.</span>
 

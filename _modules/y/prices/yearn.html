@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.yearn &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,35 +69,35 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.yearn</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">dank_mids.exceptions</span> <span class="kn">import</span> <span class="n">Revert</span>
-<span class="kn">from</span> <span class="nn">multicall.call</span> <span class="kn">import</span> <span class="n">Call</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
-<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Revert</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multicall.call</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractLogicError</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span><span class="p">,</span> <span class="n">CONNECTED_TO_MAINNET</span><span class="p">,</span> <span class="n">weth</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_method</span><span class="p">,</span> <span class="n">has_methods</span><span class="p">,</span> <span class="n">probe</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">UsdPrice</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y._decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CHAINID</span><span class="p">,</span> <span class="n">CONNECTED_TO_MAINNET</span><span class="p">,</span> <span class="n">weth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_method</span><span class="p">,</span> <span class="n">has_methods</span><span class="p">,</span> <span class="n">probe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">UsdPrice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CantFetchParam</span><span class="p">,</span>
     <span class="n">ContractNotVerified</span><span class="p">,</span>
     <span class="n">MessedUpBrownieContract</span><span class="p">,</span>
     <span class="n">PriceError</span><span class="p">,</span>
     <span class="n">yPriceMagicError</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">optional_async_diskcache</span>
-<span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">get_price_logger</span>
-<span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">raw_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">optional_async_diskcache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_price_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.raw_calls</span><span class="w"> </span><span class="kn">import</span> <span class="n">raw_call</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -146,7 +146,7 @@
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="nd">@stuck_coro_debugger</span>
 <span class="nd">@optional_async_diskcache</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">is_yearn_vault</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_yearn_vault</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="ow">in</span> <span class="n">force_false</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">()):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
@@ -190,7 +190,7 @@
 <div class="viewcode-block" id="get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.yearn.get_price">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span>
     <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
@@ -210,7 +210,7 @@
 
 <div class="viewcode-block" id="YearnInspiredVault">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.yearn.YearnInspiredVault">[docs]</a>
-<span class="k">class</span> <span class="nc">YearnInspiredVault</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">YearnInspiredVault</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a vault token from Yearn or a similar protocol.</span>
 
@@ -233,7 +233,7 @@
 <div class="viewcode-block" id="YearnInspiredVault.underlying">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.yearn.YearnInspiredVault.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetches the underlying asset of the vault.</span>
 
@@ -315,7 +315,7 @@
 
 <div class="viewcode-block" id="YearnInspiredVault.share_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.yearn.YearnInspiredVault.share_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">share_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">share_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the share price of the vault.</span>
 
@@ -359,12 +359,12 @@
 
                         <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scale__</span>
 
-                        <span class="k">class</span> <span class="nc">call</span><span class="p">:</span>
+                        <span class="k">class</span><span class="w"> </span><span class="nc">call</span><span class="p">:</span>
                             <span class="c1"># a hacky way we can cache this weird case and save calls</span>
                             <span class="n">function</span> <span class="o">=</span> <span class="n">method</span>
 
                             <span class="nd">@staticmethod</span>
-                            <span class="k">async</span> <span class="k">def</span> <span class="nf">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+                            <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
                                 <span class="k">return</span> <span class="k">await</span> <span class="n">contract_call</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
                                     <span class="n">scale</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block_id</span>
                                 <span class="p">)</span>
@@ -407,7 +407,7 @@
 
 <div class="viewcode-block" id="YearnInspiredVault.price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.yearn.YearnInspiredVault.price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">price</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>

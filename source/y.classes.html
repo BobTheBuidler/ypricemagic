@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.classes package &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -1291,8 +1291,8 @@ Instances are stored in <cite>cls.__instances</cite>, which is a dict of <cite>C
 the context (synchronous or asynchronous). This ensures that separate instances are created
 for each context.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
 <span class="gp">...</span>
@@ -1342,8 +1342,8 @@ TODO: Make it work with positional args.</p>
 </dl>
 <p class="rubric">Examples</p>
 <dl>
-<dt>Correct usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<dt>Correct usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
 <span class="gp">...</span>
@@ -1353,8 +1353,8 @@ TODO: Make it work with positional args.</p>
 </pre></div>
 </div>
 </dd>
-<dt>Incorrect initialization:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<dt>Incorrect initialization:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
 <span class="gp">...</span>

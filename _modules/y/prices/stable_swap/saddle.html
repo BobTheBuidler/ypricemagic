@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.stable_swap.saddle &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,18 +69,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.stable_swap.saddle</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">a_sync</span><span class="p">,</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">web3.middleware.validation</span> <span class="kn">import</span> <span class="n">is_not_null</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_sync</span><span class="p">,</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3.middleware.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_not_null</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CONNECTED_TO_MAINNET</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">has_method</span><span class="p">,</span> <span class="n">has_methods</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CONNECTED_TO_MAINNET</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">has_method</span><span class="p">,</span> <span class="n">has_methods</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Address</span><span class="p">,</span>
     <span class="n">AddressOrContract</span><span class="p">,</span>
     <span class="n">AnyAddressType</span><span class="p">,</span>
@@ -88,8 +88,8 @@
     <span class="n">UsdPrice</span><span class="p">,</span>
     <span class="n">UsdValue</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">y.prices</span> <span class="kn">import</span> <span class="n">magic</span>
-<span class="kn">from</span> <span class="nn">y.utils.multicall</span> <span class="kn">import</span> <span class="n">multicall_same_func_same_contract_different_inputs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices</span><span class="w"> </span><span class="kn">import</span> <span class="n">magic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.multicall</span><span class="w"> </span><span class="kn">import</span> <span class="n">multicall_same_func_same_contract_different_inputs</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -99,7 +99,7 @@
 <div class="viewcode-block" id="is_saddle_lp">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.saddle.is_saddle_lp">[docs]</a>
 <span class="nd">@a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">is_saddle_lp</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_saddle_lp</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine if a given token is a Saddle LP token.</span>
 
@@ -130,7 +130,7 @@
 <div class="viewcode-block" id="get_pool">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.saddle.get_pool">[docs]</a>
 <span class="nd">@a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve the pool address for a given Saddle LP token.</span>
 
@@ -167,7 +167,7 @@
 <div class="viewcode-block" id="get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.saddle.get_price">[docs]</a>
 <span class="nd">@a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_price</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the price of a Saddle LP token in USD.</span>
 
@@ -195,7 +195,7 @@
 <div class="viewcode-block" id="get_tvl">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.saddle.get_tvl">[docs]</a>
 <span class="nd">@a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tvl</span><span class="p">(</span>
     <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
@@ -242,7 +242,7 @@
 <div class="viewcode-block" id="get_tokens">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.saddle.get_tokens">[docs]</a>
 <span class="nd">@a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_tokens</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tokens</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve the list of tokens in a Saddle LP token pool.</span>
 

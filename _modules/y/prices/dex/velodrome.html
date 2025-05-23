@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.dex.velodrome &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,29 +69,29 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.velodrome</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">import</span> <span class="nn">dank_mids</span>
-<span class="kn">import</span> <span class="nn">eth_retry</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync.property</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
-<span class="kn">from</span> <span class="nn">multicall.call</span> <span class="kn">import</span> <span class="n">Call</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
-<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dank_mids</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">eth_retry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync.property</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multicall.call</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractLogicError</span>
 
-<span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span>
-<span class="kn">from</span> <span class="nn">y.interfaces.uniswap.velov2</span> <span class="kn">import</span> <span class="n">VELO_V2_FACTORY_ABI</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex.solidly</span> <span class="kn">import</span> <span class="n">SolidlyRouterBase</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v2</span> <span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">UniswapV2Pool</span>
-<span class="kn">from</span> <span class="nn">y.utils</span> <span class="kn">import</span> <span class="n">gather_methods</span>
-<span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
-<span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">raw_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y._decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.interfaces.uniswap.velov2</span><span class="w"> </span><span class="kn">import</span> <span class="n">VELO_V2_FACTORY_ABI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex.solidly</span><span class="w"> </span><span class="kn">import</span> <span class="n">SolidlyRouterBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex.uniswap.v2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">UniswapV2Pool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">gather_methods</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.raw_calls</span><span class="w"> </span><span class="kn">import</span> <span class="n">raw_call</span>
 
 <span class="n">_INIT_METHODS</span> <span class="o">=</span> <span class="s2">&quot;token0()(address)&quot;</span><span class="p">,</span> <span class="s2">&quot;token1()(address)&quot;</span><span class="p">,</span> <span class="s2">&quot;stable()(bool)&quot;</span>
 
@@ -100,7 +100,7 @@
 
 <div class="viewcode-block" id="NoReservesError">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.NoReservesError">[docs]</a>
-<span class="k">class</span> <span class="nc">NoReservesError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NoReservesError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
@@ -113,12 +113,12 @@
 
 <div class="viewcode-block" id="VelodromePool">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromePool">[docs]</a>
-<span class="k">class</span> <span class="nc">VelodromePool</span><span class="p">(</span><span class="n">UniswapV2Pool</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VelodromePool</span><span class="p">(</span><span class="n">UniswapV2Pool</span><span class="p">):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;is_stable&quot;</span><span class="p">,)</span>
 
 <div class="viewcode-block" id="VelodromePool.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromePool.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
         <span class="n">token0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -162,12 +162,12 @@
 
 <div class="viewcode-block" id="VelodromeRouterV2">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2">[docs]</a>
-<span class="k">class</span> <span class="nc">VelodromeRouterV2</span><span class="p">(</span><span class="n">SolidlyRouterBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VelodromeRouterV2</span><span class="p">(</span><span class="n">SolidlyRouterBase</span><span class="p">):</span>
     <span class="n">_supports_uniswap_helper</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="VelodromeRouterV2.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a :class:`VelodromeRouterV2` instance.</span>
 
@@ -199,7 +199,7 @@
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.pool_for">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync_ttl_cache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pool_for</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pool_for</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Address</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -236,7 +236,7 @@
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync_ttl_cache</span>
     <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_pool</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VelodromePool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -269,7 +269,7 @@
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.pools">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">VelodromePool</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">VelodromePool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch all Velodrome pools.</span>
 
@@ -348,7 +348,7 @@
 <div class="viewcode-block" id="VelodromeRouterV2.get_routes_from_path">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.get_routes_from_path">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_routes_from_path</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_routes_from_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="n">Address</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -427,7 +427,7 @@
 
 
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_init_pool_from_poolid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poolid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VelodromePool</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_init_pool_from_poolid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poolid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VelodromePool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a :class:`VelodromePool` from a pool ID.</span>
 
@@ -473,7 +473,7 @@
 
 <div class="viewcode-block" id="is_contract">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.is_contract">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">is_contract</span><span class="p">(</span><span class="n">pool_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_contract</span><span class="p">(</span><span class="n">pool_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a given address is a contract.</span>
 

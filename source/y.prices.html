@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices package &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -2092,7 +2092,7 @@ owner: The owner class of the property.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.prices.gearbox</span> <span class="kn">import</span> <span class="n">Gearbox</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.gearbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gearbox</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gearbox</span> <span class="o">=</span> <span class="n">Gearbox</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># This will raise an UnsupportedNetwork exception if not on Mainnet</span>
 </pre></div>
@@ -2228,7 +2228,7 @@ silent: If True, suppress error logging. Defaults to False.</p>
 For example, you can use <code class="samp docutils literal notranslate"><span class="pre">y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)</span></code> to save keystrokes
 while testing in an interactive console.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">get_price</span>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_price</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e&quot;</span><span class="p">,</span> <span class="mi">12345678</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
 </pre></div>
@@ -2259,7 +2259,7 @@ silent (optional): If True, suppress error logging and any progress indicators. 
 </dd>
 <dt>Returns:</dt><dd><p>A list of token prices in USD, in the same order as the input <code class="samp docutils literal notranslate"><span class="pre">token_addresses</span></code>.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">get_prices</span>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_prices</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prices</span> <span class="o">=</span> <span class="n">get_prices</span><span class="p">([</span><span class="s2">&quot;0x123...&quot;</span><span class="p">,</span> <span class="s2">&quot;0x456...&quot;</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
 </pre></div>
@@ -2293,7 +2293,7 @@ silent (optional): If True, suppress error logging and any progress indicators. 
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">map_prices</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">map_prices</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">task_map</span> <span class="o">=</span> <span class="n">map_prices</span><span class="p">([</span><span class="s2">&quot;0xabc...&quot;</span><span class="p">,</span> <span class="s2">&quot;0xdef...&quot;</span><span class="p">],</span> <span class="mi">12345678</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">task_map</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>

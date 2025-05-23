@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.utils package &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -118,7 +118,7 @@ as is, without any caching applied.</p>
 </dl>
 <p class="rubric">Examples</p>
 <p>Using the decorator with an asynchronous function:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">fetch_data</span><span class="p">():</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_data</span><span class="p">():</span>
 <span class="gp">... </span>    <span class="k">return</span> <span class="s2">&quot;data&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fetch_data</span> <span class="o">=</span> <span class="n">optional_async_diskcache</span><span class="p">(</span><span class="n">fetch_data</span><span class="p">)</span>
 </pre></div>
@@ -154,7 +154,7 @@ as is, without any caching applied.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">TestClass</span><span class="p">:</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">TestClass</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">attr1</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="gp">... </span>    <span class="n">attr2</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">test_obj</span> <span class="o">=</span> <span class="n">TestClass</span><span class="p">()</span>
@@ -183,7 +183,7 @@ as is, without any caching applied.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.client</span> <span class="kn">import</span> <span class="n">get_ethereum_client</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ethereum_client</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">get_ethereum_client</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 <span class="go">&#39;geth&#39;</span>
@@ -216,7 +216,7 @@ as is, without any caching applied.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.client</span> <span class="kn">import</span> <span class="n">get_ethereum_client_async</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ethereum_client_async</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_ethereum_client_async</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 <span class="go">&#39;erigon&#39;</span>
@@ -1378,7 +1378,7 @@ to decode them if needed.</p>
 The keys are network identifiers from the <a class="reference internal" href="y.html#y.networks.Network" title="y.networks.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a> enum, and the values are lists of
 fake token addresses represented as strings.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.fakes</span> <span class="kn">import</span> <span class="n">FAKE_TOKENS</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.fakes</span><span class="w"> </span><span class="kn">import</span> <span class="n">FAKE_TOKENS</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">FAKE_TOKENS</span><span class="p">[</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">]</span>
 <span class="go">[&#39;0xB1D75F4Fb67c7e93f05890f5eEAC2F3884991FF9&#39;, &#39;0xcD545222eBf01143c1188bF712ee5e89c4278Afa&#39;, ...]</span>
 </pre></div>
@@ -1720,7 +1720,7 @@ If a logger is enabled for DEBUG, it will start a debug task if specified.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">web3</span> <span class="kn">import</span> <span class="n">Web3</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">web3</span><span class="w"> </span><span class="kn">import</span> <span class="n">Web3</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w3</span> <span class="o">=</span> <span class="n">Web3</span><span class="p">(</span><span class="n">Web3</span><span class="o">.</span><span class="n">HTTPProvider</span><span class="p">(</span><span class="s1">&#39;http://localhost:8545&#39;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">middleware</span> <span class="o">=</span> <span class="n">getcode_cache_middleware</span><span class="p">(</span><span class="n">w3</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">request_blocking</span><span class="p">,</span> <span class="n">w3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span>
@@ -2173,16 +2173,16 @@ TypeError: If an invalid output type is specified.</p>
 </dl>
 <p class="rubric">Examples</p>
 <dl>
-<dt>Using the caching utility:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
+<dt>Using the caching utility:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nd">@a_sync_ttl_cache</span>
-<span class="gp">... </span><span class="k">def</span> <span class="nf">expensive_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span><span class="k">def</span><span class="w"> </span><span class="nf">expensive_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">expensive_function</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>
-<dt>Checking for attributes:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.checks</span> <span class="kn">import</span> <span class="n">hasall</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">:</span>
+<dt>Checking for attributes:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">hasall</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">attr1</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="gp">... </span>    <span class="n">attr2</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
@@ -2191,7 +2191,7 @@ TypeError: If an invalid output type is specified.</p>
 </pre></div>
 </div>
 </dd>
-<dt>Gathering contract method results:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.gather</span> <span class="kn">import</span> <span class="n">gather_methods</span>
+<dt>Gathering contract method results:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.gather</span><span class="w"> </span><span class="kn">import</span> <span class="n">gather_methods</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">contract_address</span> <span class="o">=</span> <span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span>  <span class="c1"># Example contract address</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name()&quot;</span><span class="p">,</span> <span class="s2">&quot;symbol()&quot;</span><span class="p">,</span> <span class="s2">&quot;decimals()&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">contract_address</span><span class="p">,</span> <span class="n">methods</span><span class="p">)</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y.prices.utils.buckets &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -69,33 +69,33 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.utils.buckets</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">as_completed</span><span class="p">,</span> <span class="n">ensure_future</span><span class="p">,</span> <span class="n">iscoroutine</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_completed</span><span class="p">,</span> <span class="n">ensure_future</span><span class="p">,</span> <span class="n">iscoroutine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
 
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
-<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">STABLECOINS</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span>
-<span class="kn">from</span> <span class="nn">y.prices</span> <span class="kn">import</span> <span class="n">convex</span><span class="p">,</span> <span class="n">one_to_one</span><span class="p">,</span> <span class="n">pendle</span><span class="p">,</span> <span class="n">popsicle</span><span class="p">,</span> <span class="n">rkp3r</span><span class="p">,</span> <span class="n">solidex</span><span class="p">,</span> <span class="n">yearn</span>
-<span class="kn">from</span> <span class="nn">y.prices.band</span> <span class="kn">import</span> <span class="n">band</span>
-<span class="kn">from</span> <span class="nn">y.prices.chainlink</span> <span class="kn">import</span> <span class="n">chainlink</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex</span> <span class="kn">import</span> <span class="n">mooniswap</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex.balancer</span> <span class="kn">import</span> <span class="n">balancer_multiplexer</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex.genericamm</span> <span class="kn">import</span> <span class="n">is_generic_amm</span>
-<span class="kn">from</span> <span class="nn">y.prices.dex.uniswap</span> <span class="kn">import</span> <span class="n">uniswap_multiplexer</span>
-<span class="kn">from</span> <span class="nn">y.prices.eth_derivs</span> <span class="kn">import</span> <span class="n">creth</span><span class="p">,</span> <span class="n">wsteth</span>
-<span class="kn">from</span> <span class="nn">y.prices.gearbox</span> <span class="kn">import</span> <span class="n">gearbox</span>
-<span class="kn">from</span> <span class="nn">y.prices.lending</span> <span class="kn">import</span> <span class="n">ib</span>
-<span class="kn">from</span> <span class="nn">y.prices.lending.aave</span> <span class="kn">import</span> <span class="n">aave</span>
-<span class="kn">from</span> <span class="nn">y.prices.lending.compound</span> <span class="kn">import</span> <span class="n">compound</span>
-<span class="kn">from</span> <span class="nn">y.prices.stable_swap</span> <span class="kn">import</span> <span class="n">belt</span><span class="p">,</span> <span class="n">ellipsis</span><span class="p">,</span> <span class="n">froyo</span><span class="p">,</span> <span class="n">mstablefeederpool</span><span class="p">,</span> <span class="n">saddle</span>
-<span class="kn">from</span> <span class="nn">y.prices.stable_swap.curve</span> <span class="kn">import</span> <span class="n">curve</span>
-<span class="kn">from</span> <span class="nn">y.prices.synthetix</span> <span class="kn">import</span> <span class="n">synthetix</span>
-<span class="kn">from</span> <span class="nn">y.prices.tokenized_fund</span> <span class="kn">import</span> <span class="n">basketdao</span><span class="p">,</span> <span class="n">gelato</span><span class="p">,</span> <span class="n">piedao</span><span class="p">,</span> <span class="n">reserve</span><span class="p">,</span> <span class="n">tokensets</span>
-<span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">get_price_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.classes.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ERC20</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">STABLECOINS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices</span><span class="w"> </span><span class="kn">import</span> <span class="n">convex</span><span class="p">,</span> <span class="n">one_to_one</span><span class="p">,</span> <span class="n">pendle</span><span class="p">,</span> <span class="n">popsicle</span><span class="p">,</span> <span class="n">rkp3r</span><span class="p">,</span> <span class="n">solidex</span><span class="p">,</span> <span class="n">yearn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.band</span><span class="w"> </span><span class="kn">import</span> <span class="n">band</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.chainlink</span><span class="w"> </span><span class="kn">import</span> <span class="n">chainlink</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex</span><span class="w"> </span><span class="kn">import</span> <span class="n">mooniswap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex.balancer</span><span class="w"> </span><span class="kn">import</span> <span class="n">balancer_multiplexer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex.genericamm</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_generic_amm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.dex.uniswap</span><span class="w"> </span><span class="kn">import</span> <span class="n">uniswap_multiplexer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.eth_derivs</span><span class="w"> </span><span class="kn">import</span> <span class="n">creth</span><span class="p">,</span> <span class="n">wsteth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.gearbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">gearbox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.lending</span><span class="w"> </span><span class="kn">import</span> <span class="n">ib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.lending.aave</span><span class="w"> </span><span class="kn">import</span> <span class="n">aave</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.lending.compound</span><span class="w"> </span><span class="kn">import</span> <span class="n">compound</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.stable_swap</span><span class="w"> </span><span class="kn">import</span> <span class="n">belt</span><span class="p">,</span> <span class="n">ellipsis</span><span class="p">,</span> <span class="n">froyo</span><span class="p">,</span> <span class="n">mstablefeederpool</span><span class="p">,</span> <span class="n">saddle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.stable_swap.curve</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.synthetix</span><span class="w"> </span><span class="kn">import</span> <span class="n">synthetix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.prices.tokenized_fund</span><span class="w"> </span><span class="kn">import</span> <span class="n">basketdao</span><span class="p">,</span> <span class="n">gelato</span><span class="p">,</span> <span class="n">piedao</span><span class="p">,</span> <span class="n">reserve</span><span class="p">,</span> <span class="n">tokensets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_price_logger</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -103,7 +103,7 @@
 <div class="viewcode-block" id="check_bucket">
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.check_bucket">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">check_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine and return the category or &quot;bucket&quot; of a given token.</span>
 
 <span class="sd">    This function classifies a token by performing a set of tests in the following order:</span>
@@ -154,7 +154,7 @@
     <span class="n">token_address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;buckets&quot;</span><span class="p">)</span>
 
-    <span class="kn">import</span> <span class="nn">y._db.utils.token</span> <span class="k">as</span> <span class="nn">db</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">y._db.utils.token</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">db</span>
 
     <span class="n">bucket</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bucket</span><span class="p">:</span>
@@ -269,7 +269,7 @@
 <span class="p">}</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_chainlink_and_band</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_chainlink_and_band</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a token is supported by both Chainlink and Band oracles.</span>
 
@@ -292,7 +292,7 @@
     <span class="p">)</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_check_bucket_helper</span><span class="p">(</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_check_bucket_helper</span><span class="p">(</span>
     <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">check</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Address</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]],</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -332,12 +332,12 @@
     <span class="k">return</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">result</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">__log_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">__log_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">):</span>
     <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> bucket is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">__log_not_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">__log_not_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">):</span>
     <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> bucket is not </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
 </pre></div>
