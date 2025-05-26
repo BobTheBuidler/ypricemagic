@@ -1,24 +1,25 @@
-from typing import Optional
+from typing import Dict, Final, Optional
 
 from brownie import Contract as _Contract
 from brownie import chain
+from eth_typing import ChecksumAddress
 
 from y.contracts import Contract
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 
 
-CHAINID = chain.id
+CHAINID: Final[Network] = chain.id
 """
 The chainid for the connected rpc.
 """
 
-NETWORK_NAME = Network.name(CHAINID)
+NETWORK_NAME: Final = Network.name(CHAINID)
 """
 The name of the connected network.
 """
 
-EEE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+EEE_ADDRESS: Final[ChecksumAddress] = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"  # type: ignore [assignment]
 """
 The address used to represent the native token (e.g., ETH on Ethereum, AVAX on Avalanche, etc.) in various DeFi protocols.
 """
@@ -284,7 +285,7 @@ elif CHAINID == Network.Base:
 else:
     weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
-STABLECOINS = {
+_STABLECOINS: Final[Dict[Network, Dict[ChecksumAddress, str]]] = {
     Network.Mainnet: {
         "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": "usdc",
         "0x0000000000085d4780B73119b644AE5ecd22b376": "tusd",
@@ -352,7 +353,9 @@ STABLECOINS = {
         "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA": "usdbc",
         "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913": "usdc",
     },
-}.get(CHAINID, {})
+}
+
+STABLECOINS: Final[Dict[ChecksumAddress, str]] = _STABLECOINS.get(CHAINID, {})
 """
 A dictionary mapping network IDs to stablecoin contract addresses and their corresponding symbols.
 
@@ -366,7 +369,7 @@ See Also:
     - :class:`~y.networks.Network` for network ID definitions.
 """
 
-WRAPPED_GAS_COIN = {
+WRAPPED_GAS_COINS: Final[Dict[Network, ChecksumAddress]] = {
     Network.Mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
     Network.BinanceSmartChain: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     Network.Polygon: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
@@ -378,7 +381,9 @@ WRAPPED_GAS_COIN = {
     Network.Cronos: "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
     Network.Optimism: "0x4200000000000000000000000000000000000006",
     Network.Base: "0x4200000000000000000000000000000000000006",
-}.get(CHAINID)
+}
+
+WRAPPED_GAS_COIN: Final[ChecksumAddress] = WRAPPED_GAS_COINS[CHAINID]
 """
 The address of the wrapped version of the native token on the active network.
 
