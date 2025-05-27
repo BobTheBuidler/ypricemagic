@@ -1,3 +1,4 @@
+# mypy: disable-error-code="dict-item"
 from typing import Dict, Final, Optional
 
 from brownie import Contract as _Contract
@@ -9,7 +10,7 @@ from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 
 
-CHAINID: Final[Network] = chain.id
+CHAINID: Final[int] = chain.id
 """
 The chainid for the connected rpc.
 """
