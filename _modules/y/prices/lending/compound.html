@@ -162,7 +162,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">troller</span> <span class="o">=</span> <span class="n">comptroller</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate_current</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;exchangeRateCurrent()(uint)&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate_current</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;exchangeRateCurrent()(uint)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coroutine</span></div>
 
 
 <div class="viewcode-block" id="CToken.get_price">
@@ -268,7 +268,7 @@
 <span class="sd">            &gt;&gt;&gt; rate_at_block = await ctoken.exchange_rate(block=12345678)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">exchange_rate</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate_current</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+            <span class="n">exchange_rate</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate_current</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">raise</span>
