@@ -62,7 +62,7 @@ async def multicall_same_func_no_input(
 ) -> List[Any]:
 
     addresses = [await convert.to_address_async(address) for address in addresses]
-    results = await igather(
+    results: List[dict] = await igather(
         Call(address, [method], ((address, apply_func)), block_id=block) for address in addresses
     )
     return [v for call in results for v in call.values()]
@@ -80,8 +80,8 @@ async def multicall_same_func_same_contract_different_inputs(
 ) -> List[Any]:
     assert inputs
     address = await convert.to_address_async(address)
-    results = await igather(
-        (Call(address, [method, input], [[input, apply_func]], block_id=block) for input in inputs),
+    results: List[dict] = await igather(
+        (Call(address, [method, input], [(input, apply_func)], block_id=block) for input in inputs),
         return_exceptions=return_None_on_failure,
     )
     if return_None_on_failure:

@@ -87,7 +87,7 @@ class CToken(ERC20):
         """
         self.troller = comptroller
         super().__init__(address, asynchronous=asynchronous)
-        self.exchange_rate_current = Call(self.address, "exchangeRateCurrent()(uint)")
+        self.exchange_rate_current = Call(self.address, "exchangeRateCurrent()(uint)").coroutine
 
     async def get_price(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
@@ -181,7 +181,7 @@ class CToken(ERC20):
             >>> rate_at_block = await ctoken.exchange_rate(block=12345678)
         """
         try:
-            exchange_rate = await self.exchange_rate_current.coroutine(block_id=block)
+            exchange_rate = await self.exchange_rate_current(block_id=block)
         except Exception as e:
             if not call_reverted(e):
                 raise
