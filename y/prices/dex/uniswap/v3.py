@@ -33,6 +33,7 @@ from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
     ContractNotVerified,
+    NonStandardERC20,
     TokenNotFound,
     call_reverted,
 )
@@ -233,18 +234,18 @@ class UniswapV3Pool(ContractBase):
 
         try:
             liquidity = await self[token].balance_of(self.address, block, sync=False)
+        except NonStandardERC20:
+            log_msg = "%s is not a standard ERC20 token, we cannot fetch its balance. returning 0."
         except ContractNotVerified:
+            log_msg = "%s is not verified and we cannot fetch balance the usual way. returning 0."
+        else:
             if debug_logs_enabled:
-                logger._log(
-                    DEBUG,
-                    "%s is not verified and we cannot fetch balance the usual way. returning 0.",
-                    (token,),
-                )
-            return 0
-
+                await log_liquidity(self, token, block, liquidity)
+            return liquidity
+            
         if debug_logs_enabled:
-            await log_liquidity(self, token, block, liquidity)
-        return liquidity
+            logger._log(DEBUG, log_msg, (token,))
+        return 0
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
     async def _check_liquidity_token_out(
