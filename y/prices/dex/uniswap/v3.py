@@ -242,7 +242,7 @@ class UniswapV3Pool(ContractBase):
             if debug_logs_enabled:
                 await log_liquidity(self, token, block, liquidity)
             return liquidity
-            
+
         if debug_logs_enabled:
             logger._log(DEBUG, log_msg, (token,))
         return 0
