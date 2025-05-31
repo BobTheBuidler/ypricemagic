@@ -118,8 +118,10 @@
 <span class="sd">    See Also:</span>
 <span class="sd">        :func:`~y.convert.to_address`, :class:`~y.networks.Network`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Fantom</span> <span class="ow">and</span> <span class="n">address</span> <span class="o">==</span> <span class="s2">&quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot;</span></div>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Fantom</span>
+        <span class="ow">and</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot;</span>
+    <span class="p">)</span></div>
 
 
 
