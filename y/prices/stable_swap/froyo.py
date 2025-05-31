@@ -45,8 +45,10 @@ def is_froyo(token: AnyAddressType) -> bool:
     See Also:
         :func:`~y.convert.to_address`, :class:`~y.networks.Network`
     """
-    address = convert.to_address(token)
-    return CHAINID == Network.Fantom and address == "0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3"
+    return (
+        CHAINID == Network.Fantom
+        and convert.to_address(token) == "0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3"
+    )
 
 
 @a_sync.a_sync(default="sync")
