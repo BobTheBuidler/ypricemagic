@@ -10,7 +10,7 @@ from brownie import ZERO_ADDRESS, convert
 from brownie.convert.datatypes import EthAddress
 from dank_mids._eth_utils import encode_hex
 from dank_mids.helpers import lru_cache_lite_nonull
-from eth_utils import function_signature_to_4byte_selector
+from faster_eth_utils import function_signature_to_4byte_selector
 
 from y.contracts import Contract, proxy_implementation
 from y.convert import to_address, to_address_async
