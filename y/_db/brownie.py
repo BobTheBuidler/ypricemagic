@@ -2,7 +2,7 @@ from asyncio import Lock
 from hashlib import sha1
 from json import dumps, loads
 from pathlib import Path
-from typing import Any, Container, Dict, Literal, Optional, Tuple
+from typing import Any, Container, Dict, Final, Literal, Optional, Tuple, final
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
@@ -41,7 +41,7 @@ BuildJson = Dict[str, Any]
 Sources = Dict[SourceKey, Any]
 
 
-SOURCE_KEYS: Tuple[SourceKey, ...] = SourceKey.__args__
+SOURCE_KEYS: Final[Tuple[SourceKey, ...]] = SourceKey.__args__
 
 DISCARD_SOURCE_KEYS: Tuple[SourceKey, ...] = (
     "ast",
@@ -60,22 +60,29 @@ These keys will not be included in y.Contract object build data. If you need the
 """
 
 
-sqlite_lock = Lock()
+sqlite_lock: Final = Lock()
 
 
+@final
 class AsyncCursor:
-    def __init__(self, filename):
-        self._filename = filename
+    def __init__(self, filename: Path):
+        self._filename: Path = filename
+        self._db: Any = None
+        self._connected: bool = False
+        self._execute: Any = None
 
-    @async_cached_property
     async def connect(self):
         """Establish an async connection to the SQLite database"""
+        if self._db is not None:
+            raise RuntimeError("already connected")
         async with sqlite_lock:
             self._db = await aiosqlite.connect(self._filename, isolation_level=None)
+            self._execute = self._db.execute
 
     async def insert(self, table, *values):
         raise NotImplementedError
-        await self.connect
+        if self._db is None:
+            await self.connect()
 
         # Convert any dictionaries/lists to JSON strings before inserting
         values = [dumps(val) if isinstance(val, (dict, list)) else val for val in values]
@@ -85,20 +92,21 @@ class AsyncCursor:
         query = f"INSERT OR REPLACE INTO {table} VALUES ({placeholders})"
 
         # Execute the query and commit the changes
-        async with self._db.execute(query, values):
+        async with self._execute(query, values):
             await self._db.commit()
 
     async def fetchone(self, cmd: str, *args) -> Optional[Tuple]:
-        await self.connect
+        if self._db is None:
+            await self.connect()
         async with sqlite_lock:
-            async with self._db.execute(cmd, args) as cursor:
+            async with self._execute(cmd, args) as cursor:
                 if row := await cursor.fetchone():
                     # Convert any JSON-serialized columns back to their original data structures
                     return tuple(loads(i) if str(i).startswith(("[", "{")) else i for i in row)
 
 
-cur = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
-fetchone = SmartProcessingQueue(cur.fetchone, num_workers=32)
+cur: Final = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
+fetchone: Final = SmartProcessingQueue(cur.fetchone, num_workers=32)
 
 
 @lru_cache(maxsize=None)
