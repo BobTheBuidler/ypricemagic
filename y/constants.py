@@ -25,6 +25,8 @@ EEE_ADDRESS: Final[ChecksumAddress] = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEe
 The address used to represent the native token (e.g., ETH on Ethereum, AVAX on Avalanche, etc.) in various DeFi protocols.
 """
 
+weth: Contract
+
 sushi: Optional[Contract] = None
 """
 A placeholder for the Sushi token contract, which may be set depending on the network.
