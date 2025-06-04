@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Union
 
+import evmspec.data
 from brownie import Contract
 from brownie.convert.datatypes import EthAddress, HexBytes
 from eth_typing import AnyAddress, BlockNumber
@@ -9,7 +10,7 @@ if TYPE_CHECKING:
     from y.prices.stable_swap.curve import CurvePool
 
 
-Address = Union[str, HexBytes, AnyAddress, EthAddress]
+Address = Union[str, HexBytes, AnyAddress, evmspec.data.Address, EthAddress]
 """
 A union of types used to represent Ethereum addresses.
 
