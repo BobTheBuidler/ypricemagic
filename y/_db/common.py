@@ -802,7 +802,7 @@ class Filter(_DiskCachedMixin[T, C]):
             await self._load_range(start, end)
         except ValueError as e:
             stre = str(e)
-            # we shouldn't experience these errors since we validate our blocks before attempting to load, 
+            # we shouldn't experience these errors since we validate our blocks before attempting to load,
             # but some provider load balance between nodes and they might not all be in perfect sync
             retry_on = (
                 "One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found.",
