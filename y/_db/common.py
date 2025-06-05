@@ -801,11 +801,15 @@ class Filter(_DiskCachedMixin[T, C]):
         try:
             await self._load_range(start, end)
         except ValueError as e:
-            if (
-                "One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found."
-                in str(e)
-            ):
-                logger.warning("Your rpc might be out of sync, trying again...")
+            stre = str(e)
+            # we shouldn't experience these errors since we validate our blocks before attempting to load,
+            # but some provider load balance between nodes and they might not all be in perfect sync
+            retry_on = (
+                "One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found.",
+                "from block is greater than latest block",
+            )
+            if any(err in stre for err in retry_on):
+                logger.debug("Your rpc might be out of sync, trying again...")
             else:
                 raise
 
