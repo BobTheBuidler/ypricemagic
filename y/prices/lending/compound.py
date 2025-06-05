@@ -14,7 +14,7 @@ from y.classes.common import ERC20, ContractBase
 from y.constants import EEE_ADDRESS
 from y.contracts import Contract, has_methods
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
-from y.exceptions import call_reverted
+from y.exceptions import ContractNotVerified, call_reverted
 from y.networks import Network
 from y.utils.logging import _gh_issue_request
 from y.utils.raw_calls import raw_call
@@ -342,7 +342,12 @@ class Comptroller(ContractBase):
             if not call_reverted(e):
                 raise
             oracle = contract.oracle(block_identifier=block)
-        return await Contract.coroutine(oracle)
+        try:
+            return await Contract.coroutine(oracle)
+        except ContractNotVerified:
+            raise ContractNotVerified(
+                f"{self} oracle {oracle} at block {block} is not verified"
+            ) from None
 
 
 class Compound(a_sync.ASyncGenericSingleton):
