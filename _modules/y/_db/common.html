@@ -872,11 +872,15 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="s2">&quot;One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found.&quot;</span>
-                <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Your rpc might be out of sync, trying again...&quot;</span><span class="p">)</span>
+            <span class="n">stre</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="c1"># we shouldn&#39;t experience these errors since we validate our blocks before attempting to load,</span>
+            <span class="c1"># but some provider load balance between nodes and they might not all be in perfect sync</span>
+            <span class="n">retry_on</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;from block is greater than latest block&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">err</span> <span class="ow">in</span> <span class="n">stre</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">retry_on</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Your rpc might be out of sync, trying again...&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span>
 
