@@ -342,7 +342,12 @@ class Comptroller(ContractBase):
             if not call_reverted(e):
                 raise
             oracle = contract.oracle(block_identifier=block)
-        return await Contract.coroutine(oracle)
+        try:
+            return await Contract.coroutine(oracle)
+        except ContractNotVerified:
+            raise ContractNotVerified(
+                f"{self} oracle {oracle} at block {block} is not verified"
+            ) from None
 
 
 class Compound(a_sync.ASyncGenericSingleton):
