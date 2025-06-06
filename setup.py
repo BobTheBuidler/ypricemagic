@@ -1,13 +1,11 @@
 from pathlib import Path
 from setuptools import find_packages, setup
 
-
-with open("requirements.txt", "r") as f:
-    requirements = list(map(str.strip, f.read().split("\n")))[:-1]
-
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
+with open("requirements.txt", "r") as f:
+    requirements = [line.strip() for line in f.read().splitlines() if line.strip()]
 
 try:
     from mypyc.build import mypycify
@@ -87,6 +85,7 @@ setup(
     install_requires=requirements,
     package_data={"y": ["py.typed"]},
     include_package_data=True,
+    entry_points={"console_scripts": ["ypricemagic=y.cli:main"]},
     ext_modules=ext_modules,
     zip_safe=False,
 )
