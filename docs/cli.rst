@@ -48,3 +48,12 @@ Database Management
           ypricemagic db nuke
       Without confirmation:
           ypricemagic db nuke --force
+
+- **db select**
+  Description:
+      Selects a token from the database matching the specified token address or token symbol, and displays detailed information about the token.
+  Usage:
+      ypricemagic db select <target>
+      (Replace <target> with the token address or symbol, for example:
+          ypricemagic db select 0x123abc... or
+          ypricemagic db select MOON)
