@@ -3,7 +3,7 @@ A Python CLI tool for managing the database.
 This module includes database operations that can be used both via the CLI and imported into other client libraries.
 """
 
-__all__ = ['db_nuke', 'db_clear', 'db_info', 'db_vacuum', 'db_select', 'main']
+__all__ = ["db_nuke", "db_clear", "db_info", "db_vacuum", "db_select", "main"]
 
 import argparse
 import sys
@@ -233,7 +233,7 @@ def main() -> None:
         For PostgreSQL:
 
         VACUUM marks dead row versions for reuse, freeing up space and often improving query performance. Use VACUUM FULL for a more thorough operation, but note that it locks tables during processing.
-        """
+        """,
     )
 
     # db clear command
@@ -255,9 +255,11 @@ def main() -> None:
     nuke_parser.add_argument("--force", action="store_true", help="Skip confirmation prompt")
 
     # db select command
-    select_parser = db_subparsers.add_parser('select', help="Select a token from the database and display its details")
-    select_parser.add_argument('target', type=str, help="Token symbol or token address")
-    
+    select_parser = db_subparsers.add_parser(
+        "select", help="Select a token from the database and display its details"
+    )
+    select_parser.add_argument("target", type=str, help="Token symbol or token address")
+
     args = parser.parse_args()
 
     # Dispatch database commands
@@ -270,7 +272,7 @@ def main() -> None:
             db_info()
         elif args.db_command == "vacuum":
             db_vacuum()
-        elif args.db_command == 'select':
+        elif args.db_command == "select":
             db_select(args.target)
         else:
             print("Unknown db command.")
