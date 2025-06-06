@@ -313,7 +313,7 @@ def main() -> None:
         else:
             print("Unknown debug command.")
             sys.exit(1)
-            
+
         subprocess.run(["brownie", "run", script, "--network", network], env=env)
 
     else:
