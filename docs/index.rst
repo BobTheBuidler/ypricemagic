@@ -41,6 +41,7 @@ To learn about the rest of ypricemagic's capabilities, navigate the library stru
    :maxdepth: 2
    :caption: Contents:
 
+   cli
    source/modules.rst
 
 Indices and tables
