@@ -1,10 +1,15 @@
-yPriceMagic CLI
-===============
+CLI Tools
+=========
 
-The y/cli.py module provides a command-line tool for database management.
+The y/cli.py module provides command-line tools for debugging and database management.
 
-Commands
---------
+Debugging
+---------
+
+# TODO: coming soon
+
+Database Management
+-------------------
 
 - **db info**
   Description:
@@ -27,8 +32,10 @@ Commands
       - --block: Block number.
 
   Usage:
-      To clear by token:
+      To clear by token address:
           ypricemagic db clear --token 0xABCdef
+      To clear by token symbol:
+          ypricemagic db clear --token MOON
       To clear by block:
           ypricemagic db clear --block 1000000
 
