@@ -41,6 +41,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">yPriceMagic CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">y</a></li>
 </ul>
 
@@ -74,7 +75,7 @@
 <span class="sd">This module includes database operations that can be used both via the CLI and imported into other client libraries.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;db_nuke&#39;</span><span class="p">,</span> <span class="s1">&#39;db_clear&#39;</span><span class="p">,</span> <span class="s1">&#39;db_info&#39;</span><span class="p">,</span> <span class="s1">&#39;db_vacuum&#39;</span><span class="p">,</span> <span class="s1">&#39;main&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_nuke&quot;</span><span class="p">,</span> <span class="s2">&quot;db_clear&quot;</span><span class="p">,</span> <span class="s2">&quot;db_info&quot;</span><span class="p">,</span> <span class="s2">&quot;db_vacuum&quot;</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">]</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -126,7 +127,7 @@
             <span class="n">size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">db_file</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------------------------&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Total Size </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
-        
+
     <span class="k">try</span><span class="p">:</span>
         <span class="n">print_info</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -139,7 +140,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">db_vacuum</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Executes the vacuum operation on the database.</span>
-<span class="sd">    </span>
+
 <span class="sd">    For SQLite, this performs a VACUUM.</span>
 <span class="sd">    For PostgreSQL, ensure appropriate permissions; this issues a VACUUM command.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -150,6 +151,7 @@
         <span class="n">provider</span> <span class="o">=</span> <span class="n">connection_settings</span><span class="p">[</span><span class="s2">&quot;provider&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;sqlite&quot;</span><span class="p">:</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+
             <span class="n">db_file</span> <span class="o">=</span> <span class="n">connection_settings</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_file</span><span class="p">)</span>
             <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;VACUUM;&quot;</span><span class="p">)</span>
@@ -173,11 +175,15 @@
 <span class="sd">        force (bool): If True, skip confirmation prompt.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-        <span class="n">confirm</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Are you sure you want to drop all tables in the database? [y/N]: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">confirm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">):</span>
+        <span class="n">confirm</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Are you sure you want to drop all tables in the database? [y/N]: &quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">confirm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Operation cancelled.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-    
+
     <span class="kn">import</span><span class="w"> </span><span class="nn">y._db.utils</span>  <span class="c1"># do not remove</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">y._db.entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">db</span>
 
@@ -206,7 +212,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Exactly one option required: either --token or --block.&quot;</span><span class="p">)</span>
-    
+
     <span class="kn">import</span><span class="w"> </span><span class="nn">y._db.utils</span>  <span class="c1"># do not remove</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">y._db.entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">Price</span><span class="p">,</span> <span class="n">Token</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CHAINID</span>
@@ -256,21 +262,23 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The main entry point for the CLI.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A CLI tool for managing the database.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;command&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;A CLI tool for managing the database.&quot;</span><span class="p">)</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;command&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># db command parser</span>
-    <span class="n">db_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;db&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Perform maintenance operations on ypricemagic&#39;s database&quot;</span><span class="p">)</span>
-    <span class="n">db_subparsers</span> <span class="o">=</span> <span class="n">db_parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;db_command&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">db_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;db&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Perform maintenance operations on ypricemagic&#39;s database&quot;</span>
+    <span class="p">)</span>
+    <span class="n">db_subparsers</span> <span class="o">=</span> <span class="n">db_parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;db_command&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># db info command</span>
-    <span class="n">info_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Display each table&#39;s row count and total storage size&quot;</span><span class="p">)</span>
+    <span class="n">info_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Display each table&#39;s row count and total storage size&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># db vacuum command</span>
     <span class="n">vacuum_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">&#39;vacuum&#39;</span><span class="p">,</span> 
+        <span class="s2">&quot;vacuum&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Run VACUUM operation to reclaim unused space and optimize the database.&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Run a VACUUM operation to reclaim unused space and improve performance.</span>
 
@@ -284,26 +292,34 @@
     <span class="p">)</span>
 
     <span class="c1"># db clear command</span>
-    <span class="n">clear_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;clear&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Clear cached price data by token or block&quot;</span><span class="p">)</span>
+    <span class="n">clear_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;clear&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Clear cached price data by token or block&quot;</span>
+    <span class="p">)</span>
     <span class="n">group</span> <span class="o">=</span> <span class="n">clear_parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--token&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify a token address or symbol to clear cached price data for.&quot;</span><span class="p">)</span>
-    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--block&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify a block number to clear cached price data for.&quot;</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--token&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify a token address or symbol to clear cached price data for.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--block&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify a block number to clear cached price data for.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># db nuke command</span>
-    <span class="n">nuke_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;nuke&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Drop all tables in the database&quot;</span><span class="p">)</span>
-    <span class="n">nuke_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--force&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Skip confirmation prompt&#39;</span><span class="p">)</span>
+    <span class="n">nuke_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;nuke&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Drop all tables in the database&quot;</span><span class="p">)</span>
+    <span class="n">nuke_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--force&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Skip confirmation prompt&quot;</span><span class="p">)</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="c1"># Dispatch database commands</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;db&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s1">&#39;nuke&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s2">&quot;nuke&quot;</span><span class="p">:</span>
             <span class="n">db_nuke</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s1">&#39;clear&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s2">&quot;clear&quot;</span><span class="p">:</span>
             <span class="n">db_clear</span><span class="p">(</span><span class="n">token</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">block</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s1">&#39;info&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s2">&quot;info&quot;</span><span class="p">:</span>
             <span class="n">db_info</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s1">&#39;vacuum&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
             <span class="n">db_vacuum</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown db command.&quot;</span><span class="p">)</span>
@@ -314,7 +330,7 @@
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 
