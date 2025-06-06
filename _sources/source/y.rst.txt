@@ -23,6 +23,14 @@ y.ENVIRONMENT\_VARIABLES module
    :undoc-members:
    :show-inheritance:
 
+y.cli module
+------------
+
+.. automodule:: y.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 y.constants module
 ------------------
 

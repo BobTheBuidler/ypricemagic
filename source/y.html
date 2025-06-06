@@ -55,6 +55,14 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.cli">y.cli module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.cli.db_clear"><code class="docutils literal notranslate"><span class="pre">db_clear()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.cli.db_info"><code class="docutils literal notranslate"><span class="pre">db_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.cli.db_nuke"><code class="docutils literal notranslate"><span class="pre">db_nuke()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.cli.db_vacuum"><code class="docutils literal notranslate"><span class="pre">db_vacuum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.constants">y.constants module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#y.constants.CHAINID"><code class="docutils literal notranslate"><span class="pre">CHAINID</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#y.constants.EEE_ADDRESS"><code class="docutils literal notranslate"><span class="pre">EEE_ADDRESS</span></code></a></li>
@@ -813,6 +821,79 @@
 </section>
 <section id="module-y.ENVIRONMENT_VARIABLES">
 <span id="y-environment-variables-module"></span><h2>y.ENVIRONMENT_VARIABLES module<a class="headerlink" href="#module-y.ENVIRONMENT_VARIABLES" title="Link to this heading"></a></h2>
+</section>
+<section id="module-y.cli">
+<span id="y-cli-module"></span><h2>y.cli module<a class="headerlink" href="#module-y.cli" title="Link to this heading"></a></h2>
+<p>A Python CLI tool for managing the database.
+This module includes database operations that can be used both via the CLI and imported into other client libraries.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="y.cli.db_clear">
+<span class="sig-prename descclassname"><span class="pre">y.cli.</span></span><span class="sig-name descname"><span class="pre">db_clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/cli.html#db_clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.cli.db_clear" title="Link to this definition"></a></dt>
+<dd><p>Clears the ‘Price’ table rows based on token or block criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Token address or symbol to clear the DB for.</p></li>
+<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Block number (as string) to clear the DB for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Exactly one parameter must be provided.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="y.cli.db_info">
+<span class="sig-prename descclassname"><span class="pre">y.cli.</span></span><span class="sig-name descname"><span class="pre">db_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/cli.html#db_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.cli.db_info" title="Link to this definition"></a></dt>
+<dd><p>Displays basic information about the database.
+Lists each entity (table) with its row count and storage size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="y.cli.db_nuke">
+<span class="sig-prename descclassname"><span class="pre">y.cli.</span></span><span class="sig-name descname"><span class="pre">db_nuke</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/cli.html#db_nuke"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.cli.db_nuke" title="Link to this definition"></a></dt>
+<dd><p>Drops all tables in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, skip confirmation prompt.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="y.cli.db_vacuum">
+<span class="sig-prename descclassname"><span class="pre">y.cli.</span></span><span class="sig-name descname"><span class="pre">db_vacuum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/cli.html#db_vacuum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.cli.db_vacuum" title="Link to this definition"></a></dt>
+<dd><p>Executes the vacuum operation on the database.</p>
+<p>For SQLite, this performs a VACUUM.
+For PostgreSQL, ensure appropriate permissions; this issues a VACUUM command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="y.cli.main">
+<span class="sig-prename descclassname"><span class="pre">y.cli.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/cli.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.cli.main" title="Link to this definition"></a></dt>
+<dd><p>The main entry point for the CLI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-y.constants">
 <span id="y-constants-module"></span><h2>y.constants module<a class="headerlink" href="#module-y.constants" title="Link to this heading"></a></h2>
