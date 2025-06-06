@@ -10,21 +10,21 @@ The CLI includes two debugging commands that leverage Brownie's run command to e
 
 - **debug price**
   - Description:
-      Debug token price retrieval. This command runs the Brownie script "debug-price" using the specified token address and, optionally, a block number. The token is passed via the --token flag and the block number via --block. Additionally, the network to run on is specified with the --network flag.
+      Debug token price retrieval. This command runs the Brownie script "debug-price" using the specified token address and, optionally, a block number. The token is passed via the --token flag and the block number via --block.
   - Usage:
-      ypricemagic debug price --token <token_address> [--block <block_number>] [--network <network>]
+      ypricemagic debug price --token <token_address> [--block <block_number>]
       
   - Example:
-      ypricemagic debug price --token 0xABCdef... --block 1234567 --network mainnet
+      ypricemagic debug price --token 0xABCdef... --block 1234567
 
 - **debug curve**
   - Description:
       Debug Curve pool operations by running the Brownie script "debug-curve". This command requires a pool token address provided through the --token flag. An optional --block flag sets the block number for evaluation and --network specifies the Brownie network.
   - Usage:
-      ypricemagic debug curve --token <pool_address> [--block <block_number>] [--network <network>]
+      ypricemagic debug curve --token <pool_address> [--block <block_number>]
       
   - Example:
-      ypricemagic debug curve --token 0x123456... --network development
+      ypricemagic debug curve --token 0x123456...
 
 Database Management
 -------------------
