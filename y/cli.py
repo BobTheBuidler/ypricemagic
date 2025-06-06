@@ -1,6 +1,5 @@
 """
-A Python CLI tool for managing the database.
-This module includes database operations that can be used both via the CLI and imported into other client libraries.
+A Python CLI tool for managing the database and debugging price retrieval.
 """
 
 __all__ = ["db_nuke", "db_clear", "db_info", "db_vacuum", "db_select", "main"]
@@ -8,6 +7,7 @@ __all__ = ["db_nuke", "db_clear", "db_info", "db_vacuum", "db_select", "main"]
 import argparse
 import sys
 import os
+import subprocess
 from pprint import pprint
 
 from cchecksum import to_checksum_address
@@ -207,7 +207,9 @@ def main() -> None:
     """
     The main entry point for the CLI.
     """
-    parser = argparse.ArgumentParser(description="A CLI tool for managing the database.")
+    parser = argparse.ArgumentParser(
+        description="A CLI tool for managing the database and debugging operations."
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # db command parser
@@ -217,22 +219,21 @@ def main() -> None:
     db_subparsers = db_parser.add_subparsers(dest="db_command", required=True)
 
     # db info command
-    info_parser = db_subparsers.add_parser(
-        "info", help="Display each table's row count and total storage size"
-    )
+    db_subparsers.add_parser("info", help="Display each table's row count and total storage size")
 
     # db vacuum command
-    vacuum_parser = db_subparsers.add_parser(
+    db_subparsers.add_parser(
         "vacuum",
         help="Run VACUUM operation to reclaim unused space and optimize the database.",
         description="""Run a VACUUM operation to reclaim unused space and improve performance.
 
         For SQLite:
 
-        VACUUM rebuilds the entire database file, eliminating fragmentation and ensuring that unused space is reclaimed. It can also reduce the file size substantially after many deletes or updates.
+        VACUUM rebuilds the entire database file, eliminating fragmentation and ensuring that unused space is reclaimed.
+
         For PostgreSQL:
 
-        VACUUM marks dead row versions for reuse, freeing up space and often improving query performance. Use VACUUM FULL for a more thorough operation, but note that it locks tables during processing.
+        VACUUM marks dead row versions for reuse, freeing up space and often improving query performance.
         """,
     )
 
@@ -260,9 +261,29 @@ def main() -> None:
     )
     select_parser.add_argument("target", type=str, help="Token symbol or token address")
 
+    # debug command parser
+    debug_parser = subparsers.add_parser("debug", help="Debug pricing functionality")
+    debug_subparsers = debug_parser.add_subparsers(dest="debug_command", required=True)
+
+    # debug price command
+    price_parser = debug_subparsers.add_parser("price", help="Debug token price retrieval")
+    price_parser.add_argument("--token", type=str, required=True, help="Token address to debug")
+    price_parser.add_argument(
+        "--block", type=str, help="Block number at which to retrieve the price"
+    )
+
+    # debug curve command
+    curve_parser = debug_subparsers.add_parser("curve", help="Debug Curve pool operations")
+    curve_parser.add_argument(
+        "--token", type=str, required=True, help="Token address (pool address) to debug"
+    )
+    curve_parser.add_argument(
+        "--block", type=str, help="Block number at which to evaluate the pool"
+    )
+
     args = parser.parse_args()
 
-    # Dispatch database commands
+    # Dispatch commands
     if args.command == "db":
         if args.db_command == "nuke":
             db_nuke(force=args.force)
@@ -277,6 +298,24 @@ def main() -> None:
         else:
             print("Unknown db command.")
             sys.exit(1)
+    elif args.command == "debug":
+        # Set up environment variables for the debug scripts
+        env = os.environ.copy()
+        env["BAD"] = args.token
+        if args.block:
+            env["BLOCK"] = args.block
+
+        network = env["BROWNIE_NETWORK_ID"]
+        if args.debug_command == "price":
+            script = "debug-price"
+        elif args.debug_command == "curve":
+            script = "debug-curve"
+        else:
+            print("Unknown debug command.")
+            sys.exit(1)
+
+        subprocess.run(["brownie", "run", script, "--network", network], env=env)
+
     else:
         print("Unknown command.")
         sys.exit(1)
