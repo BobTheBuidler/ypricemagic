@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yPriceMagic CLI &mdash; ypricemagic  documentation</title>
+  <title>CLI Tools &mdash; ypricemagic  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -19,8 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="y" href="source/modules.html" />
-    <link rel="prev" title="Welcome to ypricemagic’s documentation!" href="index.html" /> 
+    <link rel="prev" title="y.utils package" href="source/y.utils.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,11 +43,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">yPriceMagic CLI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/modules.html">y</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CLI Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#database-management">Database Management</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="source/modules.html">y</a></li>
 </ul>
 
         </div>
@@ -65,7 +65,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">yPriceMagic CLI</li>
+      <li class="breadcrumb-item active">CLI Tools</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/cli.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -75,11 +75,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="ypricemagic-cli">
-<h1>yPriceMagic CLI<a class="headerlink" href="#ypricemagic-cli" title="Link to this heading"></a></h1>
-<p>The y/cli.py module provides a command-line tool for database management.</p>
-<section id="commands">
-<h2>Commands<a class="headerlink" href="#commands" title="Link to this heading"></a></h2>
+  <section id="cli-tools">
+<h1>CLI Tools<a class="headerlink" href="#cli-tools" title="Link to this heading"></a></h1>
+<p>The y/cli.py module provides command-line tools for debugging and database management.</p>
+<section id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading"></a></h2>
+<p># TODO: coming soon</p>
+</section>
+<section id="database-management">
+<h2>Database Management<a class="headerlink" href="#database-management" title="Link to this heading"></a></h2>
 <ul>
 <li><p><strong>db info</strong>
 Description:</p>
@@ -110,7 +114,9 @@ Description:</p>
 </div></blockquote>
 <dl class="simple">
 <dt>Usage:</dt><dd><dl class="simple">
-<dt>To clear by token:</dt><dd><p>ypricemagic db clear –token 0xABCdef</p>
+<dt>To clear by token address:</dt><dd><p>ypricemagic db clear –token 0xABCdef</p>
+</dd>
+<dt>To clear by token symbol:</dt><dd><p>ypricemagic db clear –token MOON</p>
 </dd>
 <dt>To clear by block:</dt><dd><p>ypricemagic db clear –block 1000000</p>
 </dd>
@@ -141,8 +147,7 @@ Description:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to ypricemagic’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="source/modules.html" class="btn btn-neutral float-right" title="y" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="source/y.utils.html" class="btn btn-neutral float-left" title="y.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
