@@ -45,8 +45,19 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="source/modules.html">y</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">CLI Tools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#database-management">Database Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#debug-price">debug price</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-curve">debug curve</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#database-management">Database Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#db-info">db info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#db-vacuum">db vacuum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#db-clear">db clear</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#db-nuke">db nuke</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#db-select">db select</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -81,83 +92,60 @@
 <section id="debugging">
 <h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading"></a></h2>
 <p>The CLI includes two debugging commands that leverage Brownie’s run command to execute dedicated debugging scripts. They are designed to simplify the process of investigating price retrieval and Curve pool operations without manually setting environment variables.</p>
-<ul>
-<li><p><strong>debug price</strong>
-- Description:</p>
-<blockquote>
-<div><p>Debug token price retrieval. This command runs the Brownie script “debug-price” using the specified token address and, optionally, a block number. The token is passed via the –token flag and the block number via –block.</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
+<section id="debug-price">
+<h3>debug price<a class="headerlink" href="#debug-price" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Debug token price retrieval. This command runs the Brownie script “debug-price” using the specified token address and, optionally, a block number. The token is passed via the –token flag and the block number via –block.</p>
+</dd>
 <dt>Usage:</dt><dd><p>ypricemagic debug price –token &lt;token_address&gt; [–block &lt;block_number&gt;]</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
 <dt>Example:</dt><dd><p>ypricemagic debug price –token 0xABCdef… –block 1234567</p>
 </dd>
 </dl>
-</li>
-</ul>
-</li>
-<li><p><strong>debug curve</strong>
-- Description:</p>
-<blockquote>
-<div><p>Debug Curve pool operations by running the Brownie script “debug-curve”. This command requires a pool token address provided through the –token flag. An optional –block flag sets the block number for evaluation and –network specifies the Brownie network.</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
+</section>
+<section id="debug-curve">
+<h3>debug curve<a class="headerlink" href="#debug-curve" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Debug Curve pool operations by running the Brownie script “debug-curve”. This command requires a pool token address provided through the –token flag. An optional –block flag sets the block number for evaluation.</p>
+</dd>
 <dt>Usage:</dt><dd><p>ypricemagic debug curve –token &lt;pool_address&gt; [–block &lt;block_number&gt;]</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
 <dt>Example:</dt><dd><p>ypricemagic debug curve –token 0x123456…</p>
 </dd>
 </dl>
-</li>
-</ul>
-</li>
-</ul>
+</section>
 </section>
 <section id="database-management">
 <h2>Database Management<a class="headerlink" href="#database-management" title="Link to this heading"></a></h2>
-<ul>
-<li><p><strong>db info</strong>
-- Description:</p>
-<blockquote>
-<div><p>Displays database information including table row counts and, for PostgreSQL, the storage size using pg_total_relation_size. For SQLite, it shows the file size along with row counts.</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
+<section id="db-info">
+<h3>db info<a class="headerlink" href="#db-info" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Displays database information including table row counts and, for PostgreSQL, the storage size using pg_total_relation_size. For SQLite, it shows the file size along with row counts.</p>
+</dd>
 <dt>Usage:</dt><dd><p>ypricemagic db info</p>
 </dd>
 </dl>
-</li>
-</ul>
-</li>
-<li><p><strong>db vacuum</strong>
-- Description:</p>
-<blockquote>
-<div><p>Reclaims unused space by running a VACUUM operation. In SQLite, the database file is rebuilt; in PostgreSQL, space is reclaimed to improve performance.</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
+</section>
+<section id="db-vacuum">
+<h3>db vacuum<a class="headerlink" href="#db-vacuum" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Reclaims unused space by running a VACUUM operation. In SQLite, the database file is rebuilt; in PostgreSQL, space is reclaimed to improve performance.</p>
+</dd>
 <dt>Usage:</dt><dd><p>ypricemagic db vacuum</p>
 </dd>
 </dl>
-</li>
+</section>
+<section id="db-clear">
+<h3>db clear<a class="headerlink" href="#db-clear" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>Description:</dt><dd><dl class="simple">
+<dt>Clears cached price data from the database. You must supply exactly one of the following options:</dt><dd><ul class="simple">
+<li><p>–token: Token address or symbol.</p></li>
+<li><p>–block: Block number.</p></li>
 </ul>
-</li>
-<li><p><strong>db clear</strong>
-- Description:</p>
-<blockquote>
-<div><p>Clears cached price data from the database. You must supply exactly one of the following options:
-- –token: Token address or symbol.
-- –block: Block number.</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
+</dd>
+</dl>
+</dd>
 <dt>Usage:</dt><dd><dl class="simple">
 <dt>To clear by token address:</dt><dd><p>ypricemagic db clear –token 0xABCdef</p>
 </dd>
@@ -168,16 +156,12 @@
 </dl>
 </dd>
 </dl>
-</li>
-</ul>
-</li>
-<li><p><strong>db nuke</strong>
-- Description:</p>
-<blockquote>
-<div><p>Drops all tables in the database, effectively clearing all stored data. A confirmation prompt is shown unless the –force flag is used to bypass it.</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
+</section>
+<section id="db-nuke">
+<h3>db nuke<a class="headerlink" href="#db-nuke" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>Description:</dt><dd><p>Drops all tables in the database, effectively clearing all stored data. A confirmation prompt is shown unless the –force flag is used to bypass it.</p>
+</dd>
 <dt>Usage:</dt><dd><dl class="simple">
 <dt>With confirmation:</dt><dd><p>ypricemagic db nuke</p>
 </dd>
@@ -186,16 +170,12 @@
 </dl>
 </dd>
 </dl>
-</li>
-</ul>
-</li>
-<li><p><strong>db select</strong>
-- Description:</p>
-<blockquote>
-<div><p>Selects a token from the database matching the specified token address or token symbol, and displays detailed information about the token.</p>
-</div></blockquote>
-<ul>
-<li><dl>
+</section>
+<section id="db-select">
+<h3>db select<a class="headerlink" href="#db-select" title="Link to this heading"></a></h3>
+<dl>
+<dt>Description:</dt><dd><p>Selects a token from the database matching the specified token address or token symbol, and displays detailed information about the token.</p>
+</dd>
 <dt>Usage:</dt><dd><p>ypricemagic db select &lt;target&gt;
 (Replace &lt;target&gt; with the token address or symbol, for example:</p>
 <blockquote>
@@ -204,10 +184,7 @@ ypricemagic db select MOON)</p>
 </div></blockquote>
 </dd>
 </dl>
-</li>
-</ul>
-</li>
-</ul>
+</section>
 </section>
 </section>
 
