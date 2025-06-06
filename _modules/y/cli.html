@@ -71,8 +71,7 @@
              
   <h1>Source code for y.cli</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">A Python CLI tool for managing the database.</span>
-<span class="sd">This module includes database operations that can be used both via the CLI and imported into other client libraries.</span>
+<span class="sd">A Python CLI tool for managing the database and debugging price retrieval.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_nuke&quot;</span><span class="p">,</span> <span class="s2">&quot;db_clear&quot;</span><span class="p">,</span> <span class="s2">&quot;db_info&quot;</span><span class="p">,</span> <span class="s2">&quot;db_vacuum&quot;</span><span class="p">,</span> <span class="s2">&quot;db_select&quot;</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">]</span>
@@ -80,6 +79,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">cchecksum</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_checksum_address</span>
@@ -296,7 +296,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The main entry point for the CLI.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;A CLI tool for managing the database.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A CLI tool for managing the database and debugging operations.&quot;</span>
+    <span class="p">)</span>
     <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;command&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># db command parser</span>
@@ -306,22 +308,21 @@
     <span class="n">db_subparsers</span> <span class="o">=</span> <span class="n">db_parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;db_command&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># db info command</span>
-    <span class="n">info_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Display each table&#39;s row count and total storage size&quot;</span>
-    <span class="p">)</span>
+    <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Display each table&#39;s row count and total storage size&quot;</span><span class="p">)</span>
 
     <span class="c1"># db vacuum command</span>
-    <span class="n">vacuum_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+    <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s2">&quot;vacuum&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Run VACUUM operation to reclaim unused space and optimize the database.&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Run a VACUUM operation to reclaim unused space and improve performance.</span>
 
 <span class="s2">        For SQLite:</span>
 
-<span class="s2">        VACUUM rebuilds the entire database file, eliminating fragmentation and ensuring that unused space is reclaimed. It can also reduce the file size substantially after many deletes or updates.</span>
+<span class="s2">        VACUUM rebuilds the entire database file, eliminating fragmentation and ensuring that unused space is reclaimed.</span>
+
 <span class="s2">        For PostgreSQL:</span>
 
-<span class="s2">        VACUUM marks dead row versions for reuse, freeing up space and often improving query performance. Use VACUUM FULL for a more thorough operation, but note that it locks tables during processing.</span>
+<span class="s2">        VACUUM marks dead row versions for reuse, freeing up space and often improving query performance.</span>
 <span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -349,9 +350,29 @@
     <span class="p">)</span>
     <span class="n">select_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Token symbol or token address&quot;</span><span class="p">)</span>
 
+    <span class="c1"># debug command parser</span>
+    <span class="n">debug_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;debug&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Debug pricing functionality&quot;</span><span class="p">)</span>
+    <span class="n">debug_subparsers</span> <span class="o">=</span> <span class="n">debug_parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s2">&quot;debug_command&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># debug price command</span>
+    <span class="n">price_parser</span> <span class="o">=</span> <span class="n">debug_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Debug token price retrieval&quot;</span><span class="p">)</span>
+    <span class="n">price_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--token&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Token address to debug&quot;</span><span class="p">)</span>
+    <span class="n">price_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--block&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Block number at which to retrieve the price&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># debug curve command</span>
+    <span class="n">curve_parser</span> <span class="o">=</span> <span class="n">debug_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;curve&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Debug Curve pool operations&quot;</span><span class="p">)</span>
+    <span class="n">curve_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--token&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Token address (pool address) to debug&quot;</span>
+    <span class="p">)</span>
+    <span class="n">curve_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--block&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Block number at which to evaluate the pool&quot;</span>
+    <span class="p">)</span>
+
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
-    <span class="c1"># Dispatch database commands</span>
+    <span class="c1"># Dispatch commands</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s2">&quot;nuke&quot;</span><span class="p">:</span>
             <span class="n">db_nuke</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">)</span>
@@ -366,6 +387,24 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown db command.&quot;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;debug&quot;</span><span class="p">:</span>
+        <span class="c1"># Set up environment variables for the debug scripts</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">env</span><span class="p">[</span><span class="s2">&quot;BAD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">token</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">block</span><span class="p">:</span>
+            <span class="n">env</span><span class="p">[</span><span class="s2">&quot;BLOCK&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">block</span>
+
+        <span class="n">network</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;BROWNIE_NETWORK_ID&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">debug_command</span> <span class="o">==</span> <span class="s2">&quot;price&quot;</span><span class="p">:</span>
+            <span class="n">script</span> <span class="o">=</span> <span class="s2">&quot;debug-price&quot;</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">debug_command</span> <span class="o">==</span> <span class="s2">&quot;curve&quot;</span><span class="p">:</span>
+            <span class="n">script</span> <span class="o">=</span> <span class="s2">&quot;debug-curve&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown debug command.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;brownie&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="s2">&quot;--network&quot;</span><span class="p">,</span> <span class="n">network</span><span class="p">],</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown command.&quot;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
