@@ -3,12 +3,14 @@ A Python CLI tool for managing the database.
 This module includes database operations that can be used both via the CLI and imported into other client libraries.
 """
 
-__all__ = ["db_nuke", "db_clear", "db_info", "db_vacuum", "main"]
+__all__ = ["db_nuke", "db_clear", "db_info", "db_vacuum", "db_select", "main"]
 
 import argparse
 import sys
 import os
+from pprint import pprint
 
+from cchecksum import to_checksum_address
 from faster_eth_utils import is_address
 from pony.orm import db_session, commit, delete, count, select
 
@@ -140,10 +142,10 @@ def db_clear(token: str = None, block: str = None) -> None:
             print(f"Deleting prices for {token}")
             deleted = 0
             if is_address(token):
-                deleted = delete(t for t in Token if t.address == token)
-                for t in select(t for t in Token if t.chain.id == CHAINID and t.address):
+                token = to_checksum_address(token)
+                for t in select(t for t in Token if t.chain.id == CHAINID and t.address == token):
                     for p in select(p for p in Price if p.token == t and p.block):
-                        print(f"Deleting block {p.block.number} price {p.price}")
+                        print(f"Deleting {t.symbol} block {p.block.number} price {p.price}")
                         p.delete()
                         deleted += 1
                         commit()
@@ -153,7 +155,7 @@ def db_clear(token: str = None, block: str = None) -> None:
                 for t in select(t for t in Token if t.chain.id == CHAINID and t.address):
                     if t.symbol and t.symbol.lower() == token.lower():
                         for p in select(p for p in Price if p.token == t and p.block):
-                            print(f"Deleting block {p.block.number} price {p.price}")
+                            print(f"Deleting {t.symbol} block {p.block.number} price {p.price}")
                             p.delete()
                             deleted += 1
                             commit()
@@ -170,6 +172,35 @@ def db_clear(token: str = None, block: str = None) -> None:
 
     total_deleted = clear_prices()
     print(f"Cleared {total_deleted} rows from Price table based on the specified criteria.")
+
+
+def db_select(target: str) -> None:
+    """
+    Selects a token from the database matching the given token symbol or token address,
+    and prints a formatted output of the token details.
+    """
+    import y._db.utils  # do not remove
+    from y._db.entities import Token
+    from y.constants import CHAINID
+
+    with db_session:
+        if is_address(target):
+            target = to_checksum_address(target)
+            token = Token.get(chain=CHAINID, address=target)
+        else:
+            token = Token.get(chain=CHAINID, symbol=target)
+        if token is None:
+            print("Token not found.")
+        else:
+            details = {}
+            # Extract token details from the entity's columns
+            for col in token.__class__._columns_:
+                try:
+                    details[col] = getattr(token, col)
+                except AttributeError:
+                    pass
+            print("Token found:")
+            pprint(details)
 
 
 def main() -> None:
@@ -223,6 +254,12 @@ def main() -> None:
     nuke_parser = db_subparsers.add_parser("nuke", help="Drop all tables in the database")
     nuke_parser.add_argument("--force", action="store_true", help="Skip confirmation prompt")
 
+    # db select command
+    select_parser = db_subparsers.add_parser(
+        "select", help="Select a token from the database and display its details"
+    )
+    select_parser.add_argument("target", type=str, help="Token symbol or token address")
+
     args = parser.parse_args()
 
     # Dispatch database commands
@@ -235,6 +272,8 @@ def main() -> None:
             db_info()
         elif args.db_command == "vacuum":
             db_vacuum()
+        elif args.db_command == "select":
+            db_select(args.target)
         else:
             print("Unknown db command.")
             sys.exit(1)
