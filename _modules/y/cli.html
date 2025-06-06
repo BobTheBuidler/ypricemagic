@@ -75,12 +75,14 @@
 <span class="sd">This module includes database operations that can be used both via the CLI and imported into other client libraries.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_nuke&quot;</span><span class="p">,</span> <span class="s2">&quot;db_clear&quot;</span><span class="p">,</span> <span class="s2">&quot;db_info&quot;</span><span class="p">,</span> <span class="s2">&quot;db_vacuum&quot;</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;db_nuke&quot;</span><span class="p">,</span> <span class="s2">&quot;db_clear&quot;</span><span class="p">,</span> <span class="s2">&quot;db_info&quot;</span><span class="p">,</span> <span class="s2">&quot;db_vacuum&quot;</span><span class="p">,</span> <span class="s2">&quot;db_select&quot;</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">]</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">cchecksum</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_checksum_address</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_address</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pony.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">db_session</span><span class="p">,</span> <span class="n">commit</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">select</span>
 
@@ -223,10 +225,10 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting prices for </span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">deleted</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">if</span> <span class="n">is_address</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
-                <span class="n">deleted</span> <span class="o">=</span> <span class="n">delete</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">Token</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">token</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">select</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">Token</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">CHAINID</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">address</span><span class="p">):</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="n">to_checksum_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">select</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">Token</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">CHAINID</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">token</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">select</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">Price</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">token</span> <span class="o">==</span> <span class="n">t</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">block</span><span class="p">):</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting block </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> price </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">price</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> block </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> price </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">price</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                         <span class="n">p</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
                         <span class="n">deleted</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="n">commit</span><span class="p">()</span>
@@ -236,7 +238,7 @@
                 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">select</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">Token</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">CHAINID</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">address</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">symbol</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">symbol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">select</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">Price</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">token</span> <span class="o">==</span> <span class="n">t</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">block</span><span class="p">):</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting block </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> price </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">price</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> block </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> price </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">price</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                             <span class="n">p</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
                             <span class="n">deleted</span> <span class="o">+=</span> <span class="mi">1</span>
                             <span class="n">commit</span><span class="p">()</span>
@@ -253,6 +255,38 @@
 
     <span class="n">total_deleted</span> <span class="o">=</span> <span class="n">clear_prices</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cleared </span><span class="si">{</span><span class="n">total_deleted</span><span class="si">}</span><span class="s2"> rows from Price table based on the specified criteria.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="db_select">
+<a class="viewcode-back" href="../../source/y.html#y.cli.db_select">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">db_select</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Selects a token from the database matching the given token symbol or token address,</span>
+<span class="sd">    and prints a formatted output of the token details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">y._db.utils</span>  <span class="c1"># do not remove</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">y._db.entities</span><span class="w"> </span><span class="kn">import</span> <span class="n">Token</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">y.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">CHAINID</span>
+
+    <span class="k">with</span> <span class="n">db_session</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_address</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">to_checksum_address</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">Token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">=</span><span class="n">CHAINID</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">Token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">=</span><span class="n">CHAINID</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Token not found.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># Extract token details from the entity&#39;s columns</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">token</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_columns_</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">details</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Token found:&quot;</span><span class="p">)</span>
+            <span class="n">pprint</span><span class="p">(</span><span class="n">details</span><span class="p">)</span></div>
 
 
 
@@ -309,6 +343,12 @@
     <span class="n">nuke_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;nuke&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Drop all tables in the database&quot;</span><span class="p">)</span>
     <span class="n">nuke_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--force&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Skip confirmation prompt&quot;</span><span class="p">)</span>
 
+    <span class="c1"># db select command</span>
+    <span class="n">select_parser</span> <span class="o">=</span> <span class="n">db_subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;select&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Select a token from the database and display its details&quot;</span>
+    <span class="p">)</span>
+    <span class="n">select_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Token symbol or token address&quot;</span><span class="p">)</span>
+
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="c1"># Dispatch database commands</span>
@@ -321,6 +361,8 @@
             <span class="n">db_info</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
             <span class="n">db_vacuum</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">db_command</span> <span class="o">==</span> <span class="s2">&quot;select&quot;</span><span class="p">:</span>
+            <span class="n">db_select</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown db command.&quot;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
