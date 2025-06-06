@@ -3,7 +3,7 @@ A Python CLI tool for managing the database.
 This module includes database operations that can be used both via the CLI and imported into other client libraries.
 """
 
-__all__ = ['db_nuke', 'db_clear', 'db_info', 'db_vacuum', 'main']
+__all__ = ["db_nuke", "db_clear", "db_info", "db_vacuum", "main"]
 
 import argparse
 import sys
@@ -53,7 +53,7 @@ def db_info() -> None:
             size = os.path.getsize(db_file)
             print("-------------------------")
             print(f"  Total Size {size} bytes")
-        
+
     try:
         print_info()
     except Exception as e:
@@ -63,7 +63,7 @@ def db_info() -> None:
 def db_vacuum() -> None:
     """
     Executes the vacuum operation on the database.
-    
+
     For SQLite, this performs a VACUUM.
     For PostgreSQL, ensure appropriate permissions; this issues a VACUUM command.
     """
@@ -74,6 +74,7 @@ def db_vacuum() -> None:
         provider = connection_settings["provider"]
         if provider == "sqlite":
             import sqlite3
+
             db_file = connection_settings["filename"]
             conn = sqlite3.connect(db_file)
             conn.execute("VACUUM;")
@@ -94,11 +95,15 @@ def db_nuke(force: bool = False) -> None:
         force (bool): If True, skip confirmation prompt.
     """
     if not force:
-        confirm = input("Are you sure you want to drop all tables in the database? [y/N]: ").strip().lower()
-        if confirm.lower() not in ('y', 'yes'):
+        confirm = (
+            input("Are you sure you want to drop all tables in the database? [y/N]: ")
+            .strip()
+            .lower()
+        )
+        if confirm.lower() not in ("y", "yes"):
             print("Operation cancelled.")
             return
-    
+
     import y._db.utils  # do not remove
     from y._db.entities import db
 
@@ -124,7 +129,7 @@ def db_clear(token: str = None, block: str = None) -> None:
     """
     if (token is None and block is None) or (token is not None and block is not None):
         raise ValueError("Exactly one option required: either --token or --block.")
-    
+
     import y._db.utils  # do not remove
     from y._db.entities import Price, Token
     from y.constants import CHAINID
@@ -171,21 +176,23 @@ def main() -> None:
     """
     The main entry point for the CLI.
     """
-    parser = argparse.ArgumentParser(
-        description="A CLI tool for managing the database."
-    )
-    subparsers = parser.add_subparsers(dest='command', required=True)
+    parser = argparse.ArgumentParser(description="A CLI tool for managing the database.")
+    subparsers = parser.add_subparsers(dest="command", required=True)
 
     # db command parser
-    db_parser = subparsers.add_parser('db', help="Perform maintenance operations on ypricemagic's database")
-    db_subparsers = db_parser.add_subparsers(dest='db_command', required=True)
+    db_parser = subparsers.add_parser(
+        "db", help="Perform maintenance operations on ypricemagic's database"
+    )
+    db_subparsers = db_parser.add_subparsers(dest="db_command", required=True)
 
     # db info command
-    info_parser = db_subparsers.add_parser('info', help="Display each table's row count and total storage size")
+    info_parser = db_subparsers.add_parser(
+        "info", help="Display each table's row count and total storage size"
+    )
 
     # db vacuum command
     vacuum_parser = db_subparsers.add_parser(
-        'vacuum', 
+        "vacuum",
         help="Run VACUUM operation to reclaim unused space and optimize the database.",
         description="""Run a VACUUM operation to reclaim unused space and improve performance.
 
@@ -199,26 +206,34 @@ def main() -> None:
     )
 
     # db clear command
-    clear_parser = db_subparsers.add_parser('clear', help="Clear cached price data by token or block")
+    clear_parser = db_subparsers.add_parser(
+        "clear", help="Clear cached price data by token or block"
+    )
     group = clear_parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--token', type=str, help="Specify a token address or symbol to clear cached price data for.")
-    group.add_argument('--block', type=str, help="Specify a block number to clear cached price data for.")
+    group.add_argument(
+        "--token",
+        type=str,
+        help="Specify a token address or symbol to clear cached price data for.",
+    )
+    group.add_argument(
+        "--block", type=str, help="Specify a block number to clear cached price data for."
+    )
 
     # db nuke command
-    nuke_parser = db_subparsers.add_parser('nuke', help="Drop all tables in the database")
-    nuke_parser.add_argument('--force', action='store_true', help='Skip confirmation prompt')
+    nuke_parser = db_subparsers.add_parser("nuke", help="Drop all tables in the database")
+    nuke_parser.add_argument("--force", action="store_true", help="Skip confirmation prompt")
 
     args = parser.parse_args()
 
     # Dispatch database commands
-    if args.command == 'db':
-        if args.db_command == 'nuke':
+    if args.command == "db":
+        if args.db_command == "nuke":
             db_nuke(force=args.force)
-        elif args.db_command == 'clear':
+        elif args.db_command == "clear":
             db_clear(token=args.token, block=args.block)
-        elif args.db_command == 'info':
+        elif args.db_command == "info":
             db_info()
-        elif args.db_command == 'vacuum':
+        elif args.db_command == "vacuum":
             db_vacuum()
         else:
             print("Unknown db command.")
@@ -228,5 +243,5 @@ def main() -> None:
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
