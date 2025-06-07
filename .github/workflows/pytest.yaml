@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        pyversion: [ "3.8", "3.9", "3.10" ]
+        pyversion: [ "3.9", "3.10" ]
         network: [ mainnet, bsc-main, polygon-main, ftm-main, arbitrum-main, optimism-main ]
         include:
         - os: ubuntu-latest
