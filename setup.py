@@ -12,6 +12,7 @@ try:
 
     ext_modules = mypycify(
         [
+            "y/_db/brownie.py",
             "y/_db/utils/stringify.py",
             "y/ENVIRONMENT_VARIABLES.py",
             "y/convert.py",
