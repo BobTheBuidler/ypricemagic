@@ -51,7 +51,7 @@ class VelodromePool(UniswapV2Pool):
         asynchronous: bool = False,
     ):
         """
-        Initialize a :class:`VelodromePool` instance.
+        Initialize a VelodromePool instance.
 
         Args:
             address: The address of the pool.
@@ -67,7 +67,7 @@ class VelodromePool(UniswapV2Pool):
             True
 
         See Also:
-            - :class:`UniswapV2Pool`
+            :class:`UniswapV2Pool`
         """
         super().__init__(
             address,
@@ -85,23 +85,20 @@ class VelodromeRouterV2(SolidlyRouterBase):
 
     def __init__(self, *args, **kwargs) -> None:
         """
-        Initialize a :class:`VelodromeRouterV2` instance.
-
-        This class is a specialized router for Velodrome V2, inheriting from :class:`SolidlyRouterBase`.
+        Initialize a VelodromeRouterV2 instance.
 
         Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
 
         Examples:
-            >>> router = VelodromeRouterV2()
+            >>> router = VelodromeRouterV2("0xRouterAddress")
             >>> print(router.default_factory)
             0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a
 
         See Also:
-            - :class:`SolidlyRouterBase`
+            :class:`SolidlyRouterBase`
         """
-
         super().__init__(*args, **kwargs)
 
         self.default_factory = default_factory[chain.id]
@@ -124,16 +121,16 @@ class VelodromeRouterV2(SolidlyRouterBase):
             stable: Indicates if a stable pool is preferred.
 
         Returns:
-            The address of the pool if it exists, otherwise None.
+            The address of the pool if it exists and is a contract, else None.
 
         Examples:
-            >>> router = VelodromeRouterV2()
+            >>> router = VelodromeRouterV2("0xRouterAddress")
             >>> pool_address = await router.pool_for("0xTokenA", "0xTokenB", True)
             >>> print(pool_address)
             0xPoolAddress
 
         See Also:
-            - :meth:`get_pool`
+            :meth:`get_pool`
         """
         pool_address = str(
             await self.contract.poolFor.coroutine(
@@ -150,7 +147,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         self, input_token: Address, output_token: Address, stable: bool, block: Block
     ) -> Optional[VelodromePool]:
         """
-        Get the :class:`VelodromePool` instance for a given pair of tokens and stability preference.
+        Get the VelodromePool instance for a given pair of tokens and stability preference.
 
         Args:
             input_token: The address of the input token.
@@ -159,16 +156,16 @@ class VelodromeRouterV2(SolidlyRouterBase):
             block: The block number to consider.
 
         Returns:
-            A :class:`VelodromePool` instance if the pool exists and the address is a contract, otherwise None.
+            A VelodromePool instance if the pool exists and its deploy block is less than or equal to the specified block; else None.
 
         Examples:
-            >>> router = VelodromeRouterV2()
+            >>> router = VelodromeRouterV2("0xRouterAddress")
             >>> pool = await router.get_pool("0xTokenA", "0xTokenB", True, 12345678)
             >>> print(pool)
             <VelodromePool instance>
 
         See Also:
-            - :meth:`pool_for`
+            :meth:`pool_for`
         """
         if pool_address := await self.pool_for(input_token, output_token, stable, sync=False):
             if await contract_creation_block_async(pool_address) <= block:
@@ -183,16 +180,16 @@ class VelodromeRouterV2(SolidlyRouterBase):
         This method retrieves all pools for the Velodrome protocol on the current network.
 
         Returns:
-            A set of :class:`VelodromePool` instances.
+            A set of VelodromePool instances.
 
         Examples:
-            >>> router = VelodromeRouterV2()
+            >>> router = VelodromeRouterV2("0xRouterAddress")
             >>> pools = await router.pools
             >>> print(len(pools))
             42
 
         See Also:
-            - :meth:`get_pool`
+            :meth:`get_pool`
         """
         logger.info(
             "Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...",
@@ -254,28 +251,33 @@ class VelodromeRouterV2(SolidlyRouterBase):
     @stuck_coro_debugger
     async def get_routes_from_path(
         self, path: Path, block: Block
-    ) -> List[Tuple[Address, Address, bool]]:
+    ) -> List[Tuple[Address, Address, bool, Address]]:
         """
-        Get the routes for a given path of tokens.
+        Get the routes for a given token path.
 
         Args:
-            path: A list of token addresses representing the path.
+            path: A list of token addresses representing the swap path.
             block: The block number to consider.
 
         Returns:
-            A list of tuples, each containing the input token, output token, and stability preference.
+            A list of tuples, each containing:
+              - the input token address,
+              - the output token address,
+              - a boolean indicating the stability preference (True for stable, False for unstable),
+              - the factory address used.
 
         Raises:
             NoReservesError: If no route is available for the given path.
 
         Examples:
-            >>> router = VelodromeRouterV2()
-            >>> routes = await router.get_routes_from_path(["0xTokenA", "0xTokenB"], 12345678)
+            >>> router = VelodromeRouterV2("0xRouterAddress")
+            >>> path = ["0xTokenA", "0xTokenB"]
+            >>> routes = await router.get_routes_from_path(path, 12345678)
             >>> print(routes)
-            [("0xTokenA", "0xTokenB", True)]
+            [('0xTokenA', '0xTokenB', True, '0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a')]
 
         See Also:
-            - :meth:`get_pool`
+            :meth:`pool_for`
         """
         routes = []
         for i in range(len(path) - 1):
@@ -332,22 +334,22 @@ class VelodromeRouterV2(SolidlyRouterBase):
     @stuck_coro_debugger
     async def _init_pool_from_poolid(self, poolid: int) -> VelodromePool:
         """
-        Initialize a :class:`VelodromePool` from a pool ID.
+        Initialize a VelodromePool from a pool ID.
 
         Args:
             poolid: The ID of the pool to initialize.
 
         Returns:
-            A :class:`VelodromePool` instance.
+            A VelodromePool instance.
 
         Examples:
-            >>> router = VelodromeRouterV2()
+            >>> router = VelodromeRouterV2("0xRouterAddress")
             >>> pool = await router._init_pool_from_poolid(1)
             >>> print(pool)
             <VelodromePool instance>
 
         See Also:
-            - :meth:`pools`
+            :meth:`pools`
         """
         logger.debug("initing poolid %s", poolid)
 
