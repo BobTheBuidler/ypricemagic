@@ -2,7 +2,7 @@ aiosqlite
 bobs_lazy_logging==0.0.4
 cchecksum>=0.0.3
 checksum_dict>=2.1.2,<3
-dank_mids>=4.20.149
+dank_mids>=4.20.161
 eth-brownie>=1.21.0,<1.22
 eth_retry>=0.2.1
 evmspec>=0.3.4
