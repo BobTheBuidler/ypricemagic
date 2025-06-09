@@ -2,6 +2,7 @@ import logging
 from typing import List, Optional
 
 from a_sync import a_sync, cgather
+from web3.exceptions import ContractLogicError
 from web3.middleware.validation import is_not_null
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -83,8 +84,12 @@ async def get_pool(token_address: AnyAddressType) -> Address:
             return "0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6"
         elif token_address == "0xF32E91464ca18fc156aB97a697D6f8ae66Cd21a3":
             return "0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2"
-    pool = await has_method(token_address, "swap()(address)", return_response=True, sync=False)
-    return pool or None
+    try:
+        pool = await has_method(token_address, "swap()(address)", return_response=True, sync=False)
+    except ContractLogicError:
+        return None
+    else:
+        return pool or None
 
 
 @a_sync(default="sync")
