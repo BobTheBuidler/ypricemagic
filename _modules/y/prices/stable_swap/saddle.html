@@ -74,6 +74,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_sync</span><span class="p">,</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">web3.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractLogicError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">web3.middleware.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_not_null</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
@@ -160,8 +161,12 @@
             <span class="k">return</span> <span class="s2">&quot;0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6&quot;</span>
         <span class="k">elif</span> <span class="n">token_address</span> <span class="o">==</span> <span class="s2">&quot;0xF32E91464ca18fc156aB97a697D6f8ae66Cd21a3&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2&quot;</span>
-    <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">has_method</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="s2">&quot;swap()(address)&quot;</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">pool</span> <span class="ow">or</span> <span class="kc">None</span></div>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">has_method</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="s2">&quot;swap()(address)&quot;</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pool</span> <span class="ow">or</span> <span class="kc">None</span></div>
 
 
 
