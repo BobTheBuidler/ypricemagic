@@ -3,6 +3,10 @@ Use this tool to extract historical on-chain price data from an archive node.
 
 ypricemagic is built to work seamlessly with both sync and async Python codebases using the [ez-a-sync framework](https://github.com/BobTheBuidler/ez-a-sync).
 
+## Requirements
+- Python 3.9 or higher.
+- At least 16GB of RAM.
+
 ## Prerequisites
 - First, you will need to bring your own archive node. This can be one you run yourself, or one from one of the common providers (Tenderly, Alchemy, QuickNode, etc.)
 - You will also need an auth token for [Etherscan](https://etherscan.io/)'s API. Follow their [guide](https://docs.etherscan.io/etherscan-v2/getting-an-api-key) to get your key, and set env var `ETHERSCAN_TOKEN` with its value.
