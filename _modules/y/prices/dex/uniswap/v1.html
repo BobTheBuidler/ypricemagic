@@ -77,6 +77,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Revert</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">y._decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
@@ -147,10 +148,14 @@
 <span class="sd">            - :class:`~y.contracts.Contract`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
-        <span class="n">exchange</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">getExchange</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">exchange</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">ContractNotVerified</span><span class="p">):</span>
-                <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">exchange</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exchange</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">getExchange</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">Revert</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">exchange</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">ContractNotVerified</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">exchange</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UniswapV1.get_price">
