@@ -14,6 +14,8 @@ from cchecksum import to_checksum_address
 from faster_eth_utils import is_address
 from pony.orm import db_session, commit, delete, count, select
 
+from y.prices.utils.debug import debug_price
+
 
 def db_info() -> None:
     """
@@ -299,22 +301,28 @@ def main() -> None:
             print("Unknown db command.")
             sys.exit(1)
     elif args.command == "debug":
-        # Set up environment variables for the debug scripts
-        env = os.environ.copy()
-        env["BAD"] = args.token
-        if args.block:
-            env["BLOCK"] = args.block
-
-        network = env["BROWNIE_NETWORK_ID"]
         if args.debug_command == "price":
-            script = "debug-price"
+            token = args.token
+            block = args.block
+            try:
+                price = debug_price(token, int(block) if block else None)
+                print(f"Price for token {token} at block {block or 'current'}: {price}")
+            except Exception as e:
+                print(f"Error debugging price: {e}")
+                sys.exit(1)
         elif args.debug_command == "curve":
+            # The curve debug command still uses Brownie script for now
+            env = os.environ.copy()
+            env["BAD"] = args.token
+            if args.block:
+                env["BLOCK"] = args.block
+
+            network = env.get("BROWNIE_NETWORK_ID")
             script = "debug-curve"
+            subprocess.run(["brownie", "run", script, "--network", network], env=env)
         else:
             print("Unknown debug command.")
             sys.exit(1)
-
-        subprocess.run(["brownie", "run", script, "--network", network], env=env)
 
     else:
         print("Unknown command.")
