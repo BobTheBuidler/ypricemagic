@@ -1,6 +1,7 @@
 import os
 from y.prices.utils.debug import debug_price
 
+
 def main():
     """
     Main function to debug token price retrieval.

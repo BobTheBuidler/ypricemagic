@@ -10,6 +10,7 @@ y_logger.setLevel(logging.DEBUG)
 if not y_logger.hasHandlers():
     y_logger.addHandler(logging.StreamHandler())
 
+
 def debug_price(token: str, block: Optional[int] = None) -> float:
     """
     Debug token price retrieval.
