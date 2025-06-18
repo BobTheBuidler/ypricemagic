@@ -5,6 +5,7 @@ from typing import Any, Optional, Tuple
 import a_sync
 from a_sync import cgather
 from brownie import ZERO_ADDRESS, chain
+from dank_mids.exceptions import Revert
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._decorators import stuck_coro_debugger
