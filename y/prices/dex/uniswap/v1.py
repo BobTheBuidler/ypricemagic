@@ -68,10 +68,14 @@ class UniswapV1(a_sync.ASyncGenericBase):
             - :class:`~y.contracts.Contract`
         """
         factory = await Contract.coroutine(self.factory)
-        exchange = await factory.getExchange.coroutine(token_address)
-        if exchange != ZERO_ADDRESS:
-            with suppress(ContractNotVerified):
-                return await Contract.coroutine(exchange)
+        try:
+            exchange = await factory.getExchange.coroutine(token_address)
+        except Revert:
+            return None
+        if exchange == ZERO_ADDRESS:
+            return None
+        with suppress(ContractNotVerified):
+            return await Contract.coroutine(exchange)
 
     @stuck_coro_debugger
     async def get_price(
