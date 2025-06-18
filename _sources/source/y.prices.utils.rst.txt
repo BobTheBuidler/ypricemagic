@@ -12,6 +12,14 @@ y.prices.utils.buckets module
    :undoc-members:
    :show-inheritance:
 
+y.prices.utils.debug module
+---------------------------
+
+.. automodule:: y.prices.utils.debug
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 y.prices.utils.sense\_check module
 ----------------------------------
 
