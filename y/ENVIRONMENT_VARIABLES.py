@@ -43,7 +43,7 @@ This env is useful for testing, CI, or running multiple isolated environments.
 """
 
 DB_HOST: Final = _envs.create_env("DB_HOST", str, default="", verbose=False)
-"""Database host address if :obj:`~DB_PROVIDER` is "postgres"."""
+"""Database host address if :data:`~DB_PROVIDER` is not "sqlite"."""
 
 DB_PORT: Final = _envs.create_env("DB_PORT", str, default="", verbose=False)
 """Database port number"""
