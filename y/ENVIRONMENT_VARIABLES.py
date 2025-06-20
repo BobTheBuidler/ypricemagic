@@ -1,3 +1,4 @@
+from os import path
 from typing import Final
 
 from typed_envs import EnvVarFactory, create_env
@@ -27,8 +28,22 @@ CHECKSUM_CACHE_MAXSIZE: Final = _envs.create_env(
 DB_PROVIDER: Final = _envs.create_env("DB_PROVIDER", str, default="sqlite", verbose=False)
 """Database provider (e.g., 'sqlite', 'postgresql')"""
 
+SQLITE_PATH: Final = _envs.create_env(
+    "SQLITE_PATH",
+    str,
+    default=f"{path.expanduser('~')}/.ypricemagic/ypricemagic.sqlite",
+    verbose=False,
+)
+"""
+Path to the SQLite database file if :obj:`~DB_PROVIDER` is "sqlite".
+
+By default, this is ``~/.ypricemagic/ypricemagic.sqlite``.
+
+This env is useful for testing, CI, or running multiple isolated environments.
+"""
+
 DB_HOST: Final = _envs.create_env("DB_HOST", str, default="", verbose=False)
-"""Database host address"""
+"""Database host address if :data:`~DB_PROVIDER` is not "sqlite"."""
 
 DB_PORT: Final = _envs.create_env("DB_PORT", str, default="", verbose=False)
 """Database port number"""

@@ -13,7 +13,7 @@ Local SQL Cache
 ~~~~~~~~~~~~~~~
 
 - **Backend:** Pony ORM with SQLite (default, configurable via environment variables)
-- **Location:** ``~/.ypricemagic/ypricemagic.sqlite``
+- **Location:** ``~/.ypricemagic/ypricemagic.sqlite`` (can be overridden with ``YPRICEMAGIC_SQLITE_PATH``)
 - **Purpose:** Persistent storage for blockchain data, price data, and cache metadata.
 - **What is cached:**
   - Blockchain data: chains, blocks, addresses, contracts, tokens, prices
@@ -45,22 +45,25 @@ Database Environment Variables
 
 The following environment variables control how ypricemagic connects to and configures its database:
 
-- **DB_PROVIDER** (str, default: "sqlite"):  
+- **YPRICEMAGIC_DB_PROVIDER** (str, default: "sqlite"):  
   Database backend to use (e.g., "sqlite", "postgresql").
 
-- **DB_HOST** (str, default: ""):  
-  Host address for the database.
+- **YPRICEMAGIC_SQLITE_PATH** (str, default: ``~/.ypricemagic/ypricemagic.sqlite``):  
+  Path to the SQLite database file. Set this to use a custom or temporary database file (e.g., for testing, CI, or multiple environments).
 
-- **DB_PORT** (str, default: ""):  
+- **YPRICEMAGIC_DB_HOST** (str, default: ""):  
+  Host address for the database if not using sqlite.
+
+- **YPRICEMAGIC_DB_PORT** (str, default: ""):  
   Port for the database.
 
-- **DB_USER** (str, default: ""):  
+- **YPRICEMAGIC_DB_USER** (str, default: ""):  
   Username for the database.
 
-- **DB_PASSWORD** (str, default: ""):  
+- **YPRICEMAGIC_DB_PASSWORD** (str, default: ""):  
   Password for the database.
 
-- **DB_DATABASE** (str, default: "ypricemagic"):  
+- **YPRICEMAGIC_DB_DATABASE** (str, default: "ypricemagic"):  
   Database name.
 
 Set these variables in your environment to control which database backend is used and how ypricemagic connects to it.
@@ -131,4 +134,3 @@ References
 - ``y/_db/utils/``
 - ``y/contracts.py``
 - ``y/prices/utils/ypriceapi.py``
-- ``y/prices/pendle.py``

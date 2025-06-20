@@ -1,7 +1,7 @@
 import click
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y._db import SQLITE_PATH, delete_sqlite
+from y._db import delete_sqlite
 from y._db.config import connection_settings
 
 
@@ -33,7 +33,7 @@ class yDBError(Exception):
     """
 
     provider = ENVS.DB_PROVIDER
-    location = SQLITE_PATH if provider == "sqlite" else connection_settings
+    location = str(ENVS.SQLITE_PATH) if provider == "sqlite" else connection_settings
 
 
 class NewDatabaseSchemaError(yDBError):
