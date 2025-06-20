@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="CLI Tools" href="cli.html" />
-    <link rel="prev" title="y.utils package" href="source/y.utils.html" /> 
+    <link rel="prev" title="Environment Variables" href="environment.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,6 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="source/modules.html">y</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Environment Variables</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Caching in ypricemagic</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#disk-caches">Disk Caches</a><ul>
@@ -104,7 +105,7 @@
 <h3>Local SQL Cache<a class="headerlink" href="#local-sql-cache" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>Backend:</strong> Pony ORM with SQLite (default, configurable via environment variables)</p></li>
-<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">~/.ypricemagic/ypricemagic.sqlite</span></code></p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">~/.ypricemagic/ypricemagic.sqlite</span></code> (can be overridden with <code class="docutils literal notranslate"><span class="pre">YPRICEMAGIC_SQLITE_PATH</span></code>)</p></li>
 <li><p><strong>Purpose:</strong> Persistent storage for blockchain data, price data, and cache metadata.</p></li>
 <li><p><strong>What is cached:</strong>
 - Blockchain data: chains, blocks, addresses, contracts, tokens, prices
@@ -138,17 +139,19 @@
 <h2>Database Environment Variables<a class="headerlink" href="#database-environment-variables" title="Link to this heading"></a></h2>
 <p>The following environment variables control how ypricemagic connects to and configures its database:</p>
 <ul class="simple">
-<li><p><strong>DB_PROVIDER</strong> (str, default: “sqlite”):
+<li><p><strong>YPRICEMAGIC_DB_PROVIDER</strong> (str, default: “sqlite”):
 Database backend to use (e.g., “sqlite”, “postgresql”).</p></li>
-<li><p><strong>DB_HOST</strong> (str, default: “”):
-Host address for the database.</p></li>
-<li><p><strong>DB_PORT</strong> (str, default: “”):
+<li><p><strong>YPRICEMAGIC_SQLITE_PATH</strong> (str, default: <code class="docutils literal notranslate"><span class="pre">~/.ypricemagic/ypricemagic.sqlite</span></code>):
+Path to the SQLite database file. Set this to use a custom or temporary database file (e.g., for testing, CI, or multiple environments).</p></li>
+<li><p><strong>YPRICEMAGIC_DB_HOST</strong> (str, default: “”):
+Host address for the database if not using sqlite.</p></li>
+<li><p><strong>YPRICEMAGIC_DB_PORT</strong> (str, default: “”):
 Port for the database.</p></li>
-<li><p><strong>DB_USER</strong> (str, default: “”):
+<li><p><strong>YPRICEMAGIC_DB_USER</strong> (str, default: “”):
 Username for the database.</p></li>
-<li><p><strong>DB_PASSWORD</strong> (str, default: “”):
+<li><p><strong>YPRICEMAGIC_DB_PASSWORD</strong> (str, default: “”):
 Password for the database.</p></li>
-<li><p><strong>DB_DATABASE</strong> (str, default: “ypricemagic”):
+<li><p><strong>YPRICEMAGIC_DB_DATABASE</strong> (str, default: “ypricemagic”):
 Database name.</p></li>
 </ul>
 <p>Set these variables in your environment to control which database backend is used and how ypricemagic connects to it.</p>
@@ -259,7 +262,6 @@ y/prices/yearn.py</p></td>
 <li><p><code class="docutils literal notranslate"><span class="pre">y/_db/utils/</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">y/contracts.py</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">y/prices/utils/ypriceapi.py</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">y/prices/pendle.py</span></code></p></li>
 </ul>
 </section>
 </section>
@@ -268,7 +270,7 @@ y/prices/yearn.py</p></td>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="source/y.utils.html" class="btn btn-neutral float-left" title="y.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="environment.html" class="btn btn-neutral float-left" title="Environment Variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="cli.html" class="btn btn-neutral float-right" title="CLI Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
