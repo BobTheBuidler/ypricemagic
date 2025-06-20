@@ -155,7 +155,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         return None if price is None else UsdPrice(price)
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    #@a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_price(
         self,
         token_address: AnyAddressType,
