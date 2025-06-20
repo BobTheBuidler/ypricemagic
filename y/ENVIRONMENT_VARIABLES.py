@@ -32,7 +32,7 @@ SQLITE_PATH: Final = _envs.create_env(
     "SQLITE_PATH",
     str,
     default=f"{path.expanduser('~')}/.ypricemagic/ypricemagic.sqlite",
-    verbose=False
+    verbose=False,
 )
 """
 Path to the SQLite database file if :obj:`~DB_PROVIDER` is "sqlite".

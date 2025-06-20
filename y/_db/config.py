@@ -24,6 +24,7 @@ Examples:
 See Also:
     - :mod:`y.ENVIRONMENT_VARIABLES` for the environment variables used in the configuration.
 """
+
 import errno
 from os import mkdir, path
 from typing import Final
@@ -42,7 +43,7 @@ if db_provider == "sqlite":
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-    
+
     connection_settings = {
         "provider": db_provider,
         "filename": str(ENVS.SQLITE_PATH),
