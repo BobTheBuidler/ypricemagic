@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caching in ypricemagic &mdash; ypricemagic  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CLI Tools" href="cli.html" />
+    <link rel="prev" title="y.utils package" href="source/y.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ypricemagic
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="source/modules.html">y</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Caching in ypricemagic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#disk-caches">Disk Caches</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#local-sql-cache">Local SQL Cache</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#integration-with-eth-portfolio">Integration with eth_portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#joblib-disk-cache">Joblib Disk Cache</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#in-memory-lru-caches">In-Memory LRU Caches</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#synchronous-lru-caches">Synchronous LRU Caches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asynchronous-lru-caches">Asynchronous LRU Caches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-lru-cached">What is LRU-cached</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cache-control">Cache Control</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#summary-table">Summary Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ypricemagic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Caching in ypricemagic</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/caching.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="caching-in-ypricemagic">
+<h1>Caching in ypricemagic<a class="headerlink" href="#caching-in-ypricemagic" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>ypricemagic uses multiple caching strategies to maximize performance, minimize redundant RPC/database calls, and provide fast access to frequently used data. This document describes the two main types of disk caches and the various in-memory LRU cache mechanisms used throughout the codebase.</p>
+</section>
+<section id="disk-caches">
+<h2>Disk Caches<a class="headerlink" href="#disk-caches" title="Link to this heading"></a></h2>
+<section id="local-sql-cache">
+<h3>Local SQL Cache<a class="headerlink" href="#local-sql-cache" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Backend:</strong> Pony ORM with SQLite (default, configurable via environment variables)</p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">~/.ypricemagic/ypricemagic.sqlite</span></code></p></li>
+<li><p><strong>Purpose:</strong> Persistent storage for blockchain data, price data, and cache metadata.</p></li>
+<li><p><strong>What is cached:</strong>
+- Blockchain data: chains, blocks, addresses, contracts, tokens, prices
+- Cache metadata: <code class="docutils literal notranslate"><span class="pre">TraceCacheInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">LogCacheInfo</span></code> (for logs/traces)</p></li>
+<li><p><strong>Implementation:</strong> Entities defined in <code class="docutils literal notranslate"><span class="pre">y/_db/entities.py</span></code>, setup in <code class="docutils literal notranslate"><span class="pre">y/_db/config.py</span></code></p></li>
+<li><p><strong>Usage:</strong> Used for both persistent data and as a cache for expensive lookups.</p></li>
+</ul>
+</section>
+<section id="integration-with-eth-portfolio">
+<h3>Integration with eth_portfolio<a class="headerlink" href="#integration-with-eth-portfolio" title="Link to this heading"></a></h3>
+<p>If <cite>eth_portfolio</cite> is installed in your environment, ypricemagic will automatically use eth_portfolio’s extended database schema and utility functions for persistent storage and lookups. This means:</p>
+<ul class="simple">
+<li><p>Both ypricemagic and eth_portfolio will share the same persistent SQL database (typically SQLite).</p></li>
+<li><p>Cached blockchain, price, and portfolio data will be unified and accessible to both packages.</p></li>
+<li><p>Utility functions such as <cite>get_block</cite> and <cite>get_token</cite> will use the eth_portfolio versions if available, ensuring consistent and extended data access.</p></li>
+<li><p><strong>No configuration is required:</strong> the integration is seamless and automatic if eth_portfolio is present.</p></li>
+</ul>
+</section>
+<section id="joblib-disk-cache">
+<h3>Joblib Disk Cache<a class="headerlink" href="#joblib-disk-cache" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Backend:</strong> <code class="docutils literal notranslate"><span class="pre">joblib.Memory</span></code></p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">cache/{chain.id}</span></code></p></li>
+<li><p><strong>Purpose:</strong> Disk-based function result caching for expensive or slow-to-compute results.</p></li>
+<li><p><strong>Usage:</strong> Decorate functions with <code class="docutils literal notranslate"><span class="pre">&#64;memory.cache</span></code> to persist results to disk.</p></li>
+<li><p><strong>Example:</strong> Used in <code class="docutils literal notranslate"><span class="pre">y/contracts.py</span></code> and other modules.</p></li>
+</ul>
+</section>
+</section>
+<section id="in-memory-lru-caches">
+<h2>In-Memory LRU Caches<a class="headerlink" href="#in-memory-lru-caches" title="Link to this heading"></a></h2>
+<section id="synchronous-lru-caches">
+<h3>Synchronous LRU Caches<a class="headerlink" href="#synchronous-lru-caches" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>functools.lru_cache:</strong> Used for pure in-memory caching of function results (e.g., token metadata, block lookups).</p></li>
+<li><p><strong>cachetools.cached/TTLCache:</strong> Used for time-limited in-memory caching, especially for DB query results.</p></li>
+<li><p><strong>db_session_cached:</strong> Combines <code class="docutils literal notranslate"><span class="pre">lru_cache</span></code> with DB session/retry logic for DB reads.</p></li>
+</ul>
+</section>
+<section id="asynchronous-lru-caches">
+<h3>Asynchronous LRU Caches<a class="headerlink" href="#asynchronous-lru-caches" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>async_lru.alru_cache:</strong> Used for async LRU caching of coroutine results (e.g., async DB/API calls).</p></li>
+<li><p><strong>a_sync.a_sync:</strong> Used for both sync and async function caching, with options for TTL and maxsize.</p></li>
+<li><p><strong>a_sync_ttl_cache:</strong> Preconfigured async decorator with TTL, used for async memory caching.</p></li>
+</ul>
+</section>
+<section id="what-is-lru-cached">
+<h3>What is LRU-cached<a class="headerlink" href="#what-is-lru-cached" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Token metadata (symbols, decimals, names, buckets)</p></li>
+<li><p>Contract ABIs and deploy blocks</p></li>
+<li><p>Block/timestamp lookups</p></li>
+<li><p>Price data</p></li>
+<li><p>Log topics and hashes</p></li>
+<li><p>Results of expensive on-chain or DB queries</p></li>
+</ul>
+</section>
+<section id="cache-control">
+<h3>Cache Control<a class="headerlink" href="#cache-control" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Many functions accept <code class="docutils literal notranslate"><span class="pre">skip_cache</span></code> parameters to force fresh computation.</p></li>
+<li><p>TTL and maxsize are configurable for many caches.</p></li>
+<li><p>Some caches are per-chain (partitioned by chain ID).</p></li>
+</ul>
+</section>
+</section>
+<section id="summary-table">
+<h2>Summary Table<a class="headerlink" href="#summary-table" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Cache Type</p></th>
+<th class="head"><p>Library/Decorator</p></th>
+<th class="head"><p>Example Usage</p></th>
+<th class="head"><p>What is Cached</p></th>
+<th class="head"><p>Sync/Async</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Local SQL</p></td>
+<td><p>Pony ORM (SQLite)</p></td>
+<td><p>y/_db/entities.py</p></td>
+<td><p>Blockchain data, cache meta</p></td>
+<td><p>Sync</p></td>
+</tr>
+<tr class="row-odd"><td><p>Joblib Disk</p></td>
+<td><p>joblib.Memory</p></td>
+<td><p>y/utils/cache.py,
+y/contracts.py</p></td>
+<td><p>Function results</p></td>
+<td><p>Sync</p></td>
+</tr>
+<tr class="row-even"><td><p>LRU (in-memory)</p></td>
+<td><p>functools.lru_cache</p></td>
+<td><p>y/_db/utils/, y/contracts.py</p></td>
+<td><p>Function results</p></td>
+<td><p>Sync</p></td>
+</tr>
+<tr class="row-odd"><td><p>LRU (in-memory)</p></td>
+<td><p>cachetools.cached/TTL</p></td>
+<td><p>y/_db/utils/token.py</p></td>
+<td><p>DB query results</p></td>
+<td><p>Sync</p></td>
+</tr>
+<tr class="row-even"><td><p>LRU (in-memory)</p></td>
+<td><p>async_lru.alru_cache</p></td>
+<td><p>y/prices/utils/ypriceapi.py</p></td>
+<td><p>Async function results</p></td>
+<td><p>Async</p></td>
+</tr>
+<tr class="row-odd"><td><p>LRU (in-memory)</p></td>
+<td><p>a_sync.a_sync</p></td>
+<td><p>y/utils/cache.py,
+y/prices/yearn.py</p></td>
+<td><p>Sync/async function results</p></td>
+<td><p>Sync/Async</p></td>
+</tr>
+<tr class="row-even"><td><p>LRU (in-memory)</p></td>
+<td><p>db_session_cached</p></td>
+<td><p>y/_db/decorators.py</p></td>
+<td><p>DB reads</p></td>
+<td><p>Sync</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">y/utils/cache.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y/_db/entities.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y/_db/decorators.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y/_db/utils/</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y/contracts.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y/prices/utils/ypriceapi.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y/prices/pendle.py</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="source/y.utils.html" class="btn btn-neutral float-left" title="y.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cli.html" class="btn btn-neutral float-right" title="CLI Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BobTheBuidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
