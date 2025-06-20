@@ -6,6 +6,7 @@ from typing import Dict, Optional, Set
 
 from a_sync import ProcessingQueue, a_sync
 from brownie import chain
+from eth_typing import BlockNumber
 from pony.orm import commit, select
 
 from y._db.common import make_executor
@@ -152,7 +153,7 @@ def get_block_timestamp(number: int) -> Optional[int]:
 
 
 @a_sync_read_db_session
-def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
+def get_block_at_timestamp(timestamp: datetime) -> Optional[BlockNumber]:
     """Retrieve the block number at a specific timestamp.
 
     If the block number is not known, it attempts to find it in the database.
