@@ -42,6 +42,7 @@ To learn about the rest of ypricemagic's capabilities, navigate the library stru
    :caption: Contents:
 
    source/modules.rst
+   environment
    caching
    cli
 
