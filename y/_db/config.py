@@ -1,34 +1,3 @@
-import errno
-from os import mkdir, path
-
-from y import ENVIRONMENT_VARIABLES as ENVS
-
-SQLITE_DIR = f"{path.expanduser( '~' )}/.ypricemagic"
-SQLITE_PATH = f"{SQLITE_DIR}/ypricemagic.sqlite"
-
-if ENVS.DB_PROVIDER == "sqlite":
-    try:
-        mkdir(SQLITE_DIR)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
-
-    connection_settings = {
-        "provider": str(ENVS.DB_PROVIDER),
-        "filename": SQLITE_PATH,
-        "create_db": True,
-    }
-else:
-    connection_settings = {
-        "provider": str(ENVS.DB_PROVIDER),
-        "host": str(ENVS.DB_HOST),
-        "user": str(ENVS.DB_USER),
-        "password": str(ENVS.DB_PASSWORD),
-        "database": str(ENVS.DB_DATABASE),
-    }
-    if ENVS.DB_PORT:
-        connection_settings["port"] = int(ENVS.DB_PORT)
-
 """
 This module configures the database connection settings for ypricemagic.
 
@@ -55,3 +24,37 @@ Examples:
 See Also:
     - :mod:`y.ENVIRONMENT_VARIABLES` for the environment variables used in the configuration.
 """
+import errno
+from os import mkdir, path
+from typing import Final
+
+from y import ENVIRONMENT_VARIABLES as ENVS
+
+
+DEFAULT_SQLITE_DIR: Final = f"{path.expanduser( '~' )}/.ypricemagic"
+
+db_provider: Final = str(ENVS.DB_PROVIDER)
+
+if db_provider == "sqlite":
+    if ENVS.SQLITE_PATH._using_default:
+        try:
+            mkdir(DEFAULT_SQLITE_DIR)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+    
+    connection_settings = {
+        "provider": db_provider,
+        "filename": str(ENVS.SQLITE_PATH),
+        "create_db": True,
+    }
+else:
+    connection_settings = {
+        "provider": db_provider,
+        "host": str(ENVS.DB_HOST),
+        "user": str(ENVS.DB_USER),
+        "password": str(ENVS.DB_PASSWORD),
+        "database": str(ENVS.DB_DATABASE),
+    }
+    if ENVS.DB_PORT:
+        connection_settings["port"] = int(ENVS.DB_PORT)
