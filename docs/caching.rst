@@ -21,10 +21,10 @@ Local SQL Cache
 - **Implementation:** Entities defined in ``y/_db/entities.py``, setup in ``y/_db/config.py``
 - **Usage:** Used for both persistent data and as a cache for expensive lookups.
 
-Integration with eth_portfolio
+Integration with eth-portfolio
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If `eth_portfolio` is installed in your environment, ypricemagic will automatically use eth_portfolio's extended database schema and utility functions for persistent storage and lookups. This means:
+If [eth-portfolio](https://github.com/BobTheBuidler/eth-portfolio) is installed in your environment, ypricemagic will automatically use eth_portfolio's extended database schema and utility functions for persistent storage and lookups. This means:
 
 - Both ypricemagic and eth_portfolio will share the same persistent SQL database (typically SQLite).
 - Cached blockchain, price, and portfolio data will be unified and accessible to both packages.
@@ -39,6 +39,31 @@ Joblib Disk Cache
 - **Purpose:** Disk-based function result caching for expensive or slow-to-compute results.
 - **Usage:** Decorate functions with ``@memory.cache`` to persist results to disk.
 - **Example:** Used in ``y/contracts.py`` and other modules.
+
+Database Environment Variables
+------------------------------
+
+The following environment variables control how ypricemagic connects to and configures its database:
+
+- **DB_PROVIDER** (str, default: "sqlite"):  
+  Database backend to use (e.g., "sqlite", "postgresql").
+
+- **DB_HOST** (str, default: ""):  
+  Host address for the database.
+
+- **DB_PORT** (str, default: ""):  
+  Port for the database.
+
+- **DB_USER** (str, default: ""):  
+  Username for the database.
+
+- **DB_PASSWORD** (str, default: ""):  
+  Password for the database.
+
+- **DB_DATABASE** (str, default: "ypricemagic"):  
+  Database name.
+
+Set these variables in your environment to control which database backend is used and how ypricemagic connects to it.
 
 In-Memory LRU Caches
 --------------------
