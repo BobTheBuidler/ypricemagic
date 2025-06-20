@@ -49,10 +49,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#disk-caches">Disk Caches</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#local-sql-cache">Local SQL Cache</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#integration-with-eth-portfolio">Integration with eth_portfolio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#integration-with-eth-portfolio">Integration with eth-portfolio</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#joblib-disk-cache">Joblib Disk Cache</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#database-environment-variables">Database Environment Variables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#in-memory-lru-caches">In-Memory LRU Caches</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#synchronous-lru-caches">Synchronous LRU Caches</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asynchronous-lru-caches">Asynchronous LRU Caches</a></li>
@@ -113,8 +114,8 @@
 </ul>
 </section>
 <section id="integration-with-eth-portfolio">
-<h3>Integration with eth_portfolio<a class="headerlink" href="#integration-with-eth-portfolio" title="Link to this heading"></a></h3>
-<p>If <cite>eth_portfolio</cite> is installed in your environment, ypricemagic will automatically use eth_portfolio’s extended database schema and utility functions for persistent storage and lookups. This means:</p>
+<h3>Integration with eth-portfolio<a class="headerlink" href="#integration-with-eth-portfolio" title="Link to this heading"></a></h3>
+<p>If [eth-portfolio](<a class="reference external" href="https://github.com/BobTheBuidler/eth-portfolio">https://github.com/BobTheBuidler/eth-portfolio</a>) is installed in your environment, ypricemagic will automatically use eth_portfolio’s extended database schema and utility functions for persistent storage and lookups. This means:</p>
 <ul class="simple">
 <li><p>Both ypricemagic and eth_portfolio will share the same persistent SQL database (typically SQLite).</p></li>
 <li><p>Cached blockchain, price, and portfolio data will be unified and accessible to both packages.</p></li>
@@ -132,6 +133,25 @@
 <li><p><strong>Example:</strong> Used in <code class="docutils literal notranslate"><span class="pre">y/contracts.py</span></code> and other modules.</p></li>
 </ul>
 </section>
+</section>
+<section id="database-environment-variables">
+<h2>Database Environment Variables<a class="headerlink" href="#database-environment-variables" title="Link to this heading"></a></h2>
+<p>The following environment variables control how ypricemagic connects to and configures its database:</p>
+<ul class="simple">
+<li><p><strong>DB_PROVIDER</strong> (str, default: “sqlite”):
+Database backend to use (e.g., “sqlite”, “postgresql”).</p></li>
+<li><p><strong>DB_HOST</strong> (str, default: “”):
+Host address for the database.</p></li>
+<li><p><strong>DB_PORT</strong> (str, default: “”):
+Port for the database.</p></li>
+<li><p><strong>DB_USER</strong> (str, default: “”):
+Username for the database.</p></li>
+<li><p><strong>DB_PASSWORD</strong> (str, default: “”):
+Password for the database.</p></li>
+<li><p><strong>DB_DATABASE</strong> (str, default: “ypricemagic”):
+Database name.</p></li>
+</ul>
+<p>Set these variables in your environment to control which database backend is used and how ypricemagic connects to it.</p>
 </section>
 <section id="in-memory-lru-caches">
 <h2>In-Memory LRU Caches<a class="headerlink" href="#in-memory-lru-caches" title="Link to this heading"></a></h2>
