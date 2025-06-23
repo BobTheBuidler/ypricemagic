@@ -152,7 +152,7 @@ class YearnInspiredVault(ERC20):
     # yearnish clones use all sorts of other things, we gotchu covered
 
     # mypy helpers
-    underlying: ASyncCachedPropertyDescriptor["YearnInspiredVault", ERC20]
+    underlying: ASyncCachedPropertyDescriptor[Self, ERC20]
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
 
     @a_sync.aka.cached_property
