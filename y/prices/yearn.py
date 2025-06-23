@@ -228,7 +228,7 @@ class YearnInspiredVault(ERC20):
         raise CantFetchParam(f"underlying for {self}")
 
     # mypy helpers
-    underlying: ASyncCachedPropertyDescriptor[Self, ERC20]
+    underlying: ASyncCachedPropertyDescriptor["YearnInspiredVault", ERC20]
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
 
     @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=1000)
