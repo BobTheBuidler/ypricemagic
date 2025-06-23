@@ -3,7 +3,7 @@ from logging import DEBUG, getLogger
 from typing import Optional, Tuple
 
 import a_sync
-from a_sync import cgather
+from a_sync import ASyncCachedPropertyDescriptor, cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from dank_mids.exceptions import Revert
 from multicall.call import Call
@@ -151,6 +151,10 @@ class YearnInspiredVault(ERC20):
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
 
+    # mypy helpers
+    underlying: ASyncCachedPropertyDescriptor[Self, ERC20]
+    __underlying__: HiddenMethodDescriptor[Self, ERC20]
+
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
         """
@@ -227,10 +231,7 @@ class YearnInspiredVault(ERC20):
             return underlying
         raise CantFetchParam(f"underlying for {self}")
 
-    __underlying__: HiddenMethodDescriptor[Self, ERC20]
-
-    a_sync.a_sync(cache_type="memory", ram_cache_maxsize=1000)
-
+    @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=1000)
     async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
         """
         Calculates the share price of the vault.
