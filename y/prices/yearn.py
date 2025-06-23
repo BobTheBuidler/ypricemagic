@@ -3,7 +3,7 @@ from logging import DEBUG, getLogger
 from typing import Optional, Tuple
 
 import a_sync
-from a_sync import cgather
+from a_sync import ASyncCachedPropertyDescriptor, cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from dank_mids.exceptions import Revert
 from multicall.call import Call
@@ -227,6 +227,8 @@ class YearnInspiredVault(ERC20):
             return underlying
         raise CantFetchParam(f"underlying for {self}")
 
+    # mypy helpers
+    underlying: ASyncCachedPropertyDescriptor[Self, ERC20]
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
 
     a_sync.a_sync(cache_type="memory", ram_cache_maxsize=1000)
