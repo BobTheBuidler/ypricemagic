@@ -70,13 +70,13 @@ def hex_to_string(h: HexString) -> str:
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
     # defaults are stored as class vars to keep instance dicts smaller
-    
+
     asynchronous: bool = False
     """A boolean indicating whether the instance will be used asynchronously."""
-    
+
     _deploy_block: Optional[int] = None
     """The block when the contract was deployed, if known."""
-    
+
     __slots__ = ("address",)
 
     def __init__(
@@ -90,7 +90,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         """
         The address of the contract.
         """
-        
+
         if asynchronous:
             self.asynchronous = asynchronous
         if _deploy_block:
