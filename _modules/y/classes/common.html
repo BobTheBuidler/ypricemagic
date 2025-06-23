@@ -99,6 +99,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.convert.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HexString</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractNotFound</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">eth_retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">auto_retry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChecksumAddress</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">web3.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractLogicError</span>
 
@@ -148,8 +149,13 @@
 <a class="viewcode-back" href="../../../source/y.classes.html#y.ContractBase">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ContractBase</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
     <span class="c1"># defaults are stored as class vars to keep instance dicts smaller</span>
+
     <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A boolean indicating whether the instance will be used asynchronously.&quot;&quot;&quot;</span>
+
     <span class="n">_deploy_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The block when the contract was deployed, if known.&quot;&quot;&quot;</span>
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;address&quot;</span><span class="p">,)</span>
 
 <div class="viewcode-block" id="ContractBase.__init__">
@@ -162,6 +168,10 @@
         <span class="n">_deploy_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The address of the contract.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">asynchronous</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="k">if</span> <span class="n">_deploy_block</span><span class="p">:</span>
@@ -301,7 +311,7 @@
 <span class="sd">    Represents an ERC20 token.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">address</span><span class="p">:</span> <span class="n">Address</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The contract address of the token.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
