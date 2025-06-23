@@ -3639,27 +3639,32 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.prices.yearn.YearnInspiredVault.share_price">
 <span class="sig-name descname"><span class="pre">share_price</span></span><a class="reference internal" href="../_modules/y/prices/yearn.html#YearnInspiredVault.share_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.yearn.YearnInspiredVault.share_price" title="Link to this definition"></a></dt>
 <dd><p>Calculates the share price of the vault.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to the latest block.</p>
+<blockquote>
+<div><dl>
+<dt>Args:</dt><dd><p>block (optional): The block number to query. Defaults to the latest block.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The share price of the vault, or None if the vault’s total supply is zero.</p>
+<dt>Returns:</dt><dd><p>The share price of the vault, or None if the vault’s total supply is zero.</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="y.html#y.exceptions.CantFetchParam" title="y.exceptions.CantFetchParam"><strong>CantFetchParam</strong></a> – If the share price cannot be fetched or calculated.</p>
+<dt>Raises:</dt><dd><p>CantFetchParam: If the share price cannot be fetched or calculated.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.13)"><em>Decimal</em></a> | None</p>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vault</span> <span class="o">=</span> <span class="n">YearnInspiredVault</span><span class="p">(</span><span class="s2">&quot;0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9&quot;</span><span class="p">)</span>  <span class="c1"># yvUSDC</span>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vault</span> <span class="o">=</span> <span class="n">YearnInspiredVault</span><span class="p">(</span><span class="s2">&quot;0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9&quot;</span><span class="p">)</span>  <span class="c1"># yvUSDC</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">share_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vault</span><span class="o">.</span><span class="n">share_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="mi">14_000_000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">share_price</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">1.096431</span>
 </pre></div>
 </div>
+</dd>
+</dl>
+</div></blockquote>
+<p>Since <cite>share_price</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.13)"><em>Decimal</em></a> | None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3727,7 +3732,7 @@ owner: The owner class of the property.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.yearn.YearnInspiredVault.underlying">
-<span class="sig-name descname"><span class="pre">underlying</span></span><a class="reference internal" href="../_modules/y/prices/yearn.html#YearnInspiredVault.underlying"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.yearn.YearnInspiredVault.underlying" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">underlying</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.ASyncCachedPropertyDescriptor" title="(in ez-a-sync)"><span class="pre">ASyncCachedPropertyDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><span class="pre">ERC20</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../_modules/y/prices/yearn.html#YearnInspiredVault.underlying"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.yearn.YearnInspiredVault.underlying" title="Link to this definition"></a></dt>
 <dd><p>Fetches the underlying asset of the vault.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>

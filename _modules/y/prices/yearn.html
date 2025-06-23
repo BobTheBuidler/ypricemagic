@@ -77,7 +77,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASyncCachedPropertyDescriptor</span><span class="p">,</span> <span class="n">cgather</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dank_mids.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Revert</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">multicall.call</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
@@ -233,6 +233,10 @@
     <span class="c1"># v2 vaults use pricePerShare scaled to underlying token decimals</span>
     <span class="c1"># yearnish clones use all sorts of other things, we gotchu covered</span>
 
+    <span class="c1"># mypy helpers</span>
+    <span class="n">underlying</span><span class="p">:</span> <span class="n">ASyncCachedPropertyDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]</span>
+    <span class="n">__underlying__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]</span>
+
 <div class="viewcode-block" id="YearnInspiredVault.underlying">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.yearn.YearnInspiredVault.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
@@ -312,12 +316,9 @@
         <span class="k">raise</span> <span class="n">CantFetchParam</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;underlying for </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-    <span class="n">__underlying__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]</span>
-
-    <span class="n">a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-
 <div class="viewcode-block" id="YearnInspiredVault.share_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.yearn.YearnInspiredVault.share_price">[docs]</a>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">share_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the share price of the vault.</span>
