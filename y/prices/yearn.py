@@ -231,8 +231,7 @@ class YearnInspiredVault(ERC20):
     underlying: ASyncCachedPropertyDescriptor[Self, ERC20]
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
 
-    a_sync.a_sync(cache_type="memory", ram_cache_maxsize=1000)
-
+    @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=1000)
     async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
         """
         Calculates the share price of the vault.
