@@ -1,6 +1,7 @@
 /build/**/*.o
 /build/**/*.so
 /build/**/*.py
+/build/**/*.typed
 /build/ops.txt
 /dist
 /env
