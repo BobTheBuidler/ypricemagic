@@ -1,4 +1,7 @@
-/build
+/build/**/*.o
+/build/**/*.so
+/build/**/*.py
+/build/ops.txt
 /dist
 /env
 .hypothesis
