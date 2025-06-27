@@ -1,7 +1,7 @@
 import logging
 import time
 from functools import lru_cache, wraps
-from typing import Callable, Iterable, TypeVar
+from typing import Callable, Final, Iterable, TypeVar
 from typing_extensions import ParamSpec
 
 from a_sync import PruningThreadPoolExecutor, a_sync
@@ -20,10 +20,14 @@ from pony.orm import (
 _T = TypeVar("_T")
 _P = ParamSpec("_P")
 
-logger = logging.getLogger(__name__)
+DEBUG: Final = logging.DEBUG
 
-ydb_read_threads = PruningThreadPoolExecutor(12)
-ydb_write_threads = PruningThreadPoolExecutor(12)
+logger: Final = logging.getLogger(__name__)
+log_warning: Final = logger.warning
+log_debug: Final = logger.debug
+
+ydb_read_threads: Final = PruningThreadPoolExecutor(12)
+ydb_write_threads: Final = PruningThreadPoolExecutor(12)
 
 
 def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
@@ -59,25 +63,27 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                 commit()
                 return retval
             except (CommitException, OperationalError, UnexpectedError) as e:
-                log = logger.warning if sleep > 1 else logger.debug
-                log("%s.%s got exc %s", callable.__module__, callable.__name__, e)
-                if "database is locked" not in str(e):
+                log = log_warning if sleep > 1 else log_debug
+                stre = str(e)
+                log("%s.%s got %s: %s", callable.__module__, callable.__name__, type(e), stre)
+                if "database is locked" not in stre:
                     raise
                 time.sleep(sleep)
                 sleep *= 1.5
             except TransactionError as e:
-                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
-                if "An attempt to mix objects belonging to different transactions" not in str(e):
+                stre = str(e)
+                log_debug("%s.%s got %s: %s", callable.__module__, callable.__name__, type(e), stre)
+                if "An attempt to mix objects belonging to different transactions" not in stre:
                     raise
 
     return retry_locked_wrap
 
 
-db_session_retry_locked = lambda func: retry_locked(db_session(retry_locked(func)))
+db_session_retry_locked: Final = lambda func: retry_locked(db_session(retry_locked(func)))
 
-a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync(
-    default="async", executor=ydb_read_threads
-)(db_session_retry_locked(fn))
+a_sync_read_db_session: Final[Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]]] = (
+    lambda fn: a_sync(default="async", executor=ydb_read_threads)(db_session_retry_locked(fn))
+)
 """Decorator for asynchronous read database sessions with retry logic.
 
 This decorator wraps a function with an asynchronous database session for read operations,
@@ -101,13 +107,15 @@ See Also:
 """
 
 
-db_session_cached = lambda func: retry_locked(
+db_session_cached: Final = lambda func: retry_locked(
     lru_cache(maxsize=None)(db_session(retry_locked(func)))
 )
 
 
-_result_count_logger = logging.getLogger(f"{__name__}.result_count")
-_CHAIN_INFO = "chain", chain.id
+_result_count_logger: Final = logging.getLogger(f"{__name__}.result_count")
+_result_count_logger_debug: Final = _result_count_logger.debug
+_result_count_logger_is_enabled_for: Final = _result_count_logger.isEnabledFor
+_CHAIN_INFO: Final = "chain", chain.id
 
 
 def log_result_count(
@@ -138,9 +146,9 @@ def log_result_count(
         @wraps(fn)
         def result_count_wrap(*args: _P.args, **kwargs: _P.kwargs) -> _T:
             results = fn(*args, **kwargs)
-            if _result_count_logger.isEnabledFor(logging.DEBUG):
+            if _result_count_logger_is_enabled_for(DEBUG):
                 arg_values = " ".join(f"{k} {v}" for k, v in (_CHAIN_INFO, *zip(arg_names, args)))
-                _result_count_logger.debug("loaded %s %s for %s", len(results), name, arg_values)
+                _result_count_logger_debug("loaded %s %s for %s", len(results), name, arg_values)
             return results
 
         return result_count_wrap

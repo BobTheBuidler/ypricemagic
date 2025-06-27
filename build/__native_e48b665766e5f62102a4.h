@@ -1,15 +1,7 @@
-#ifndef MYPYC_NATIVE_66d5967dfa0c4007d77b_H
-#define MYPYC_NATIVE_66d5967dfa0c4007d77b_H
+#ifndef MYPYC_NATIVE_e48b665766e5f62102a4_H
+#define MYPYC_NATIVE_e48b665766e5f62102a4_H
 #include <Python.h>
 #include <CPy.h>
-#ifndef MYPYC_DECLARED_tuple_T2OO
-#define MYPYC_DECLARED_tuple_T2OO
-typedef struct tuple_T2OO {
-    PyObject *f0;
-    PyObject *f1;
-} tuple_T2OO;
-#endif
-
 #ifndef MYPYC_DECLARED_tuple_T3OOO
 #define MYPYC_DECLARED_tuple_T3OOO
 typedef struct tuple_T3OOO {
@@ -17,6 +9,22 @@ typedef struct tuple_T3OOO {
     PyObject *f1;
     PyObject *f2;
 } tuple_T3OOO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T2OI
+#define MYPYC_DECLARED_tuple_T2OI
+typedef struct tuple_T2OI {
+    PyObject *f0;
+    CPyTagged f1;
+} tuple_T2OI;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T2OO
+#define MYPYC_DECLARED_tuple_T2OO
+typedef struct tuple_T2OO {
+    PyObject *f0;
+    PyObject *f1;
+} tuple_T2OO;
 #endif
 
 #ifndef MYPYC_DECLARED_tuple_T6OOOOOO
@@ -30,6 +38,74 @@ typedef struct tuple_T6OOOOOO {
     PyObject *f5;
 } tuple_T6OOOOOO;
 #endif
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *___mypyc_self__;
+    PyObject *_callable;
+    PyObject *_retry_locked_wrap;
+} y____db___decorators___retry_locked_envObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    vectorcallfunc vectorcall;
+    PyObject *___mypyc_env__;
+} y____db___decorators___retry_locked_wrap_retry_locked_objObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    vectorcallfunc vectorcall;
+} y____db___decorators_____mypyc_lambda__0_objObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    vectorcallfunc vectorcall;
+} y____db___decorators_____mypyc_lambda__1_objObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    vectorcallfunc vectorcall;
+} y____db___decorators_____mypyc_lambda__2_objObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *___mypyc_self__;
+    PyObject *_name;
+    PyObject *_arg_names;
+    PyObject *_result_count_deco;
+} y____db___decorators___log_result_count_envObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *___mypyc_self__;
+    PyObject *___mypyc_env__;
+    PyObject *_fn;
+    PyObject *_result_count_wrap;
+    PyObject *_name;
+    PyObject *_arg_names;
+    PyObject *_result_count_deco;
+} y____db___decorators___result_count_deco_log_result_count_envObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    vectorcallfunc vectorcall;
+    PyObject *___mypyc_env__;
+} y____db___decorators___result_count_deco_log_result_count_objObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    vectorcallfunc vectorcall;
+    PyObject *___mypyc_env__;
+} y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject;
 
 typedef struct {
     PyObject_HEAD
@@ -336,7 +412,54 @@ typedef struct {
 } y___utils___gather____gather_methods_raw_genObject;
 
 
-struct export_table_66d5967dfa0c4007d77b {
+struct export_table_e48b665766e5f62102a4 {
+    CPyTagged *CPyStatic_decorators___DEBUG;
+    PyObject **CPyStatic_decorators___logger;
+    PyObject **CPyStatic_decorators___log_warning;
+    PyObject **CPyStatic_decorators___log_debug;
+    PyObject **CPyStatic_decorators___ydb_read_threads;
+    PyObject **CPyStatic_decorators___ydb_write_threads;
+    PyObject **CPyStatic_decorators___db_session_retry_locked;
+    PyObject **CPyStatic_decorators___a_sync_read_db_session;
+    PyObject **CPyStatic_decorators___db_session_cached;
+    PyObject **CPyStatic_decorators____result_count_logger;
+    PyObject **CPyStatic_decorators____result_count_logger_debug;
+    PyObject **CPyStatic_decorators____result_count_logger_is_enabled_for;
+    tuple_T2OI *CPyStatic_decorators____CHAIN_INFO;
+    PyObject **CPyStatic_decorators___y____db___decorators___log_result_count___arg_names;
+    PyTypeObject **CPyType_decorators___retry_locked_env;
+    PyObject *(*CPyDef_decorators___retry_locked_env)(void);
+    PyTypeObject **CPyType_decorators___retry_locked_wrap_retry_locked_obj;
+    PyObject *(*CPyDef_decorators___retry_locked_wrap_retry_locked_obj)(void);
+    PyTypeObject **CPyType_decorators_____mypyc_lambda__0_obj;
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__0_obj)(void);
+    PyTypeObject **CPyType_decorators_____mypyc_lambda__1_obj;
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__1_obj)(void);
+    PyTypeObject **CPyType_decorators_____mypyc_lambda__2_obj;
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__2_obj)(void);
+    PyTypeObject **CPyType_decorators___log_result_count_env;
+    PyObject *(*CPyDef_decorators___log_result_count_env)(void);
+    PyTypeObject **CPyType_decorators___result_count_deco_log_result_count_env;
+    PyObject *(*CPyDef_decorators___result_count_deco_log_result_count_env)(void);
+    PyTypeObject **CPyType_decorators___result_count_deco_log_result_count_obj;
+    PyObject *(*CPyDef_decorators___result_count_deco_log_result_count_obj)(void);
+    PyTypeObject **CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj;
+    PyObject *(*CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj)(void);
+    PyObject *(*CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner);
+    PyObject *(*CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____call__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_args, PyObject *cpy_r_kwargs);
+    PyObject *(*CPyDef_decorators___retry_locked)(PyObject *cpy_r_callable);
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__0_obj_____get__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner);
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__0_obj_____call__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_func);
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__1_obj_____get__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner);
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__1_obj_____call__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_fn);
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__2_obj_____get__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner);
+    PyObject *(*CPyDef_decorators_____mypyc_lambda__2_obj_____call__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_func);
+    PyObject *(*CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner);
+    PyObject *(*CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_args, PyObject *cpy_r_kwargs);
+    PyObject *(*CPyDef_decorators___result_count_deco_log_result_count_obj_____get__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner);
+    PyObject *(*CPyDef_decorators___result_count_deco_log_result_count_obj_____call__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_fn);
+    PyObject *(*CPyDef_decorators___log_result_count)(PyObject *cpy_r_name, PyObject *cpy_r_arg_names);
+    char (*CPyDef_decorators_____top_level__)(void);
     PyObject **CPyStatic_stringify___UTC;
     PyObject **CPyStatic_stringify___astimezone;
     PyObject **CPyStatic_stringify___isoformat;
