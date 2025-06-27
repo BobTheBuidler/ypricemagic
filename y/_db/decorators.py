@@ -81,9 +81,9 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
 
 db_session_retry_locked: Final = lambda func: retry_locked(db_session(retry_locked(func)))
 
-a_sync_read_db_session: Final[Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]]] = lambda fn: a_sync(
-    default="async", executor=ydb_read_threads
-)(db_session_retry_locked(fn))
+a_sync_read_db_session: Final[Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]]] = (
+    lambda fn: a_sync(default="async", executor=ydb_read_threads)(db_session_retry_locked(fn))
+)
 """Decorator for asynchronous read database sessions with retry logic.
 
 This decorator wraps a function with an asynchronous database session for read operations,
