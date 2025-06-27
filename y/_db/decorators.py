@@ -23,8 +23,8 @@ _P = ParamSpec("_P")
 DEBUG: Final = logging.DEBUG
 
 logger: Final = logging.getLogger(__name__)
-log_warning: Final
-log_debug: Final
+log_warning: Final = logger.warning
+log_debug: Final = logger.debug
 
 ydb_read_threads: Final = PruningThreadPoolExecutor(12)
 ydb_write_threads: Final = PruningThreadPoolExecutor(12)
