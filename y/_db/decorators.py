@@ -16,6 +16,8 @@ from pony.orm import (
     db_session,
 )
 
+from y import ENVIRONMENT_VARIABLES as ENVS
+
 
 _T = TypeVar("_T")
 _P = ParamSpec("_P")
@@ -26,8 +28,12 @@ logger: Final = logging.getLogger(__name__)
 log_warning: Final = logger.warning
 log_debug: Final = logger.debug
 
-ydb_read_threads: Final = PruningThreadPoolExecutor(12)
-ydb_write_threads: Final = PruningThreadPoolExecutor(12)
+ydb_read_threads: Final = PruningThreadPoolExecutor(
+    12 if ENVS.DB_PROVIDER == "postgres" else 4, "ydb read threads"
+)
+ydb_write_threads: Final = PruningThreadPoolExecutor(
+    12 if ENVS.DB_PROVIDER == "postgres" else 4, "ydb write threads"
+)
 
 
 def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
