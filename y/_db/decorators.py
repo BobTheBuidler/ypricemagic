@@ -4,7 +4,7 @@ from functools import lru_cache, wraps
 from typing import Callable, Final, Iterable, TypeVar
 from typing_extensions import ParamSpec
 
-from a_sync import PruningThreadPoolExecutor, a_sync
+from a_sync import a_sync
 from a_sync.a_sync import ASyncFunction
 from brownie import chain
 from pony.orm import (
@@ -16,6 +16,8 @@ from pony.orm import (
     db_session,
 )
 
+from y._db.common import make_executor
+
 
 _T = TypeVar("_T")
 _P = ParamSpec("_P")
@@ -26,8 +28,8 @@ logger: Final = logging.getLogger(__name__)
 log_warning: Final = logger.warning
 log_debug: Final = logger.debug
 
-ydb_read_threads: Final = PruningThreadPoolExecutor(12)
-ydb_write_threads: Final = PruningThreadPoolExecutor(12)
+ydb_read_threads: Final = make_executor(4, 12, "ydb read threads")
+ydb_write_threads: Final = make_executor(4, 12, "ydb write threads")
 
 
 def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
