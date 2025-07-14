@@ -110,23 +110,12 @@ typedef struct {
 typedef struct {
     PyObject_HEAD
     CPyVTableItem *vtable;
-    PyObject *___mypyc_self__;
     PyObject *_address;
-    PyObject *_type;
-    PyObject *_value;
-    PyObject *_traceback;
-    PyObject *_arg;
-    CPyTagged ___mypyc_next_label__;
+    int32_t ___mypyc_next_label__;
     PyObject *_normalized;
     PyObject *_checksummed;
     PyObject *___mypyc_temp__0;
     tuple_T3OOO ___mypyc_temp__1;
-} y___convert___to_address_async_envObject;
-
-typedef struct {
-    PyObject_HEAD
-    CPyVTableItem *vtable;
-    PyObject *___mypyc_env__;
 } y___convert___to_address_async_genObject;
 
 typedef struct {
@@ -222,22 +211,11 @@ typedef struct {
 typedef struct {
     PyObject_HEAD
     CPyVTableItem *vtable;
-    PyObject *___mypyc_self__;
     PyObject *_extra_context;
     char _after;
-    PyObject *_type;
-    PyObject *_value;
-    PyObject *_traceback;
-    PyObject *_arg;
-    CPyTagged ___mypyc_next_label__;
+    int32_t ___mypyc_next_label__;
     tuple_T3OOO ___mypyc_temp__0;
     PyObject *_e;
-} y___exceptions___reraise_excs_with_extra_context_envObject;
-
-typedef struct {
-    PyObject_HEAD
-    CPyVTableItem *vtable;
-    PyObject *___mypyc_env__;
 } y___exceptions___reraise_excs_with_extra_context_genObject;
 
 typedef struct {
@@ -261,15 +239,10 @@ typedef struct {
 typedef struct {
     PyObject_HEAD
     CPyVTableItem *vtable;
-    PyObject *___mypyc_self__;
     PyObject *_token_address;
     PyObject *_block;
     PyObject *_price;
-    PyObject *_type;
-    PyObject *_value;
-    PyObject *_traceback;
-    PyObject *_arg;
-    CPyTagged ___mypyc_next_label__;
+    int32_t ___mypyc_next_label__;
     PyObject *___mypyc_temp__0;
     tuple_T3OOO ___mypyc_temp__1;
     PyObject *_price_readable;
@@ -277,24 +250,13 @@ typedef struct {
     tuple_T3OOO ___mypyc_temp__3;
     PyObject *_symbol;
     tuple_T3OOO ___mypyc_temp__4;
-} y___prices___utils___sense_check___sense_check_envObject;
-
-typedef struct {
-    PyObject_HEAD
-    CPyVTableItem *vtable;
-    PyObject *___mypyc_env__;
 } y___prices___utils___sense_check___sense_check_genObject;
 
 typedef struct {
     PyObject_HEAD
     CPyVTableItem *vtable;
-    PyObject *___mypyc_self__;
     PyObject *_token_address;
-    PyObject *_type;
-    PyObject *_value;
-    PyObject *_traceback;
-    PyObject *_arg;
-    CPyTagged ___mypyc_next_label__;
+    int32_t ___mypyc_next_label__;
     PyObject *___mypyc_temp__5;
     tuple_T3OOO ___mypyc_temp__6;
     PyObject *_bucket;
@@ -323,52 +285,30 @@ typedef struct {
     PyObject *_underlying_addr;
     PyObject *___mypyc_temp__24;
     tuple_T3OOO ___mypyc_temp__25;
-} y___prices___utils___sense_check____exit_sense_check_envObject;
-
-typedef struct {
-    PyObject_HEAD
-    CPyVTableItem *vtable;
-    PyObject *___mypyc_env__;
 } y___prices___utils___sense_check____exit_sense_check_genObject;
 
 typedef struct {
     PyObject_HEAD
     CPyVTableItem *vtable;
-    PyObject *___mypyc_self__;
     PyObject *_address;
     PyObject *_methods;
     PyObject *_block;
     char _return_exceptions;
-    PyObject *_type;
-    PyObject *_value;
-    PyObject *_traceback;
-    PyObject *_arg;
-    CPyTagged ___mypyc_next_label__;
+    int32_t ___mypyc_next_label__;
     PyObject *___mypyc_temp__0;
     tuple_T3OOO ___mypyc_temp__1;
     PyObject *___mypyc_temp__2;
     tuple_T3OOO ___mypyc_temp__3;
-} y___utils___gather___gather_methods_envObject;
-
-typedef struct {
-    PyObject_HEAD
-    CPyVTableItem *vtable;
-    PyObject *___mypyc_env__;
 } y___utils___gather___gather_methods_genObject;
 
 typedef struct {
     PyObject_HEAD
     CPyVTableItem *vtable;
-    PyObject *___mypyc_self__;
     PyObject *_address;
     PyObject *_methods;
     PyObject *_block;
     char _return_exceptions;
-    PyObject *_type;
-    PyObject *_value;
-    PyObject *_traceback;
-    PyObject *_arg;
-    CPyTagged ___mypyc_next_label__;
+    int32_t ___mypyc_next_label__;
     PyObject *___mypyc_temp__4;
     tuple_T3OOO ___mypyc_temp__5;
     PyObject *_contract;
@@ -377,38 +317,21 @@ typedef struct {
     PyObject *_method;
     PyObject *___mypyc_temp__8;
     tuple_T3OOO ___mypyc_temp__9;
-} y___utils___gather____gather_methods_brownie_envObject;
-
-typedef struct {
-    PyObject_HEAD
-    CPyVTableItem *vtable;
-    PyObject *___mypyc_env__;
 } y___utils___gather____gather_methods_brownie_genObject;
 
 typedef struct {
     PyObject_HEAD
     CPyVTableItem *vtable;
-    PyObject *___mypyc_self__;
     PyObject *_address;
     PyObject *_methods;
     PyObject *_block;
     char _return_exceptions;
-    PyObject *_type;
-    PyObject *_value;
-    PyObject *_traceback;
-    PyObject *_arg;
-    CPyTagged ___mypyc_next_label__;
+    int32_t ___mypyc_next_label__;
     PyObject *___mypyc_temp__10;
     CPyTagged ___mypyc_temp__11;
     PyObject *_method;
     PyObject *___mypyc_temp__12;
     tuple_T3OOO ___mypyc_temp__13;
-} y___utils___gather____gather_methods_raw_envObject;
-
-typedef struct {
-    PyObject_HEAD
-    CPyVTableItem *vtable;
-    PyObject *___mypyc_env__;
 } y___utils___gather____gather_methods_raw_genObject;
 
 
@@ -491,8 +414,6 @@ struct export_table_e48b665766e5f62102a4 {
     PyObject **CPyStatic_convert____checksum_thread;
     PyObject **CPyStatic_convert____is_checksummed;
     PyObject **CPyStatic_convert____is_not_checksummed;
-    PyTypeObject **CPyType_convert___to_address_async_env;
-    PyObject *(*CPyDef_convert___to_address_async_env)(void);
     PyTypeObject **CPyType_convert___to_address_async_gen;
     PyObject *(*CPyDef_convert___to_address_async_gen)(void);
     PyObject *(*CPyDef_convert___checksum)(PyObject *cpy_r_address);
@@ -529,8 +450,6 @@ struct export_table_e48b665766e5f62102a4 {
     PyTypeObject **CPyType_exceptions___CalldataPreparationError;
     PyTypeObject **CPyType_exceptions___CallReverted;
     PyTypeObject **CPyType_exceptions___NodeNotSynced;
-    PyTypeObject **CPyType_exceptions___reraise_excs_with_extra_context_env;
-    PyObject *(*CPyDef_exceptions___reraise_excs_with_extra_context_env)(void);
     PyTypeObject **CPyType_exceptions___reraise_excs_with_extra_context_gen;
     PyObject *(*CPyDef_exceptions___reraise_excs_with_extra_context_gen)(void);
     char (*CPyDef_exceptions___yPriceMagicError_____init__)(PyObject *cpy_r_self, PyObject *cpy_r_exc, PyObject *cpy_r_token_address, PyObject *cpy_r_block, PyObject *cpy_r_symbol);
@@ -587,12 +506,8 @@ struct export_table_e48b665766e5f62102a4 {
     PyObject **CPyStatic_sense_check___logger;
     PyObject **CPyStatic_sense_check___acceptable_all_chains;
     PyObject **CPyStatic_sense_check___ACCEPTABLE_HIGH_PRICES;
-    PyTypeObject **CPyType_sense_check___sense_check_env;
-    PyObject *(*CPyDef_sense_check___sense_check_env)(void);
     PyTypeObject **CPyType_sense_check___sense_check_gen;
     PyObject *(*CPyDef_sense_check___sense_check_gen)(void);
-    PyTypeObject **CPyType_sense_check____exit_sense_check_env;
-    PyObject *(*CPyDef_sense_check____exit_sense_check_env)(void);
     PyTypeObject **CPyType_sense_check____exit_sense_check_gen;
     PyObject *(*CPyDef_sense_check____exit_sense_check_gen)(void);
     PyObject *(*CPyDef_sense_check___sense_check_gen_____mypyc_generator_helper__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg);
@@ -614,16 +529,10 @@ struct export_table_e48b665766e5f62102a4 {
     char (*CPyDef_sense_check_____top_level__)(void);
     PyObject **CPyStatic_gather___Call;
     PyObject **CPyStatic_gather___igather;
-    PyTypeObject **CPyType_gather___gather_methods_env;
-    PyObject *(*CPyDef_gather___gather_methods_env)(void);
     PyTypeObject **CPyType_gather___gather_methods_gen;
     PyObject *(*CPyDef_gather___gather_methods_gen)(void);
-    PyTypeObject **CPyType_gather____gather_methods_brownie_env;
-    PyObject *(*CPyDef_gather____gather_methods_brownie_env)(void);
     PyTypeObject **CPyType_gather____gather_methods_brownie_gen;
     PyObject *(*CPyDef_gather____gather_methods_brownie_gen)(void);
-    PyTypeObject **CPyType_gather____gather_methods_raw_env;
-    PyObject *(*CPyDef_gather____gather_methods_raw_env)(void);
     PyTypeObject **CPyType_gather____gather_methods_raw_gen;
     PyObject *(*CPyDef_gather____gather_methods_raw_gen)(void);
     PyObject *(*CPyDef_gather___gather_methods_gen_____mypyc_generator_helper__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg);
