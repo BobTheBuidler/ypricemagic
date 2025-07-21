@@ -82,7 +82,7 @@ async def get_price(
     """
     main = await Call(token_address, "main()(address)", block_id=block)
     if main is None:
-        raise TypeError(main, token_address, await is_rtoken(token_address))
+        raise TypeError(main, token_address, await is_rtoken(token_address, sync=False))
     basket_handler = await Contract.coroutine(
         await Call(main, "basketHandler()(address)", block_id=block)
     )
