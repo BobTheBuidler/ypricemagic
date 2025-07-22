@@ -305,9 +305,9 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
     return cache_wrap
 
 
-@stuck_coro_debugger
-@a_sync.a_sync(default="async", cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
-@__cache
+#@stuck_coro_debugger
+#@a_sync.a_sync(default="async", cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
+#@__cache
 async def _get_price(
     token: ChecksumAddress,
     block: BlockNumber,
