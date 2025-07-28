@@ -196,7 +196,9 @@
     <span class="p">)</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">asset</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sy</span><span class="o">.</span><span class="n">assetInfo</span>
     <span class="n">rate</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">decimals</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">rate</span> <span class="o">*</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">Decimal</span><span class="p">(</span>
+        <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
