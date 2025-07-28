@@ -114,4 +114,6 @@ async def get_lp_price(
     )
     _, asset, decimals = await sy.assetInfo
     rate /= Decimal(10**decimals)
-    return rate * Decimal(await ERC20(asset, asynchronous=True).price(block=block, skip_cache=skip_cache))
+    return rate * Decimal(
+        await ERC20(asset, asynchronous=True).price(block=block, skip_cache=skip_cache)
+    )
