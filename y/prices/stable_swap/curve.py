@@ -14,6 +14,7 @@ from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound, EventLookupError
 from brownie.network.event import _EventItem
+from eth_abi.exceptions import InvalidPointer
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
