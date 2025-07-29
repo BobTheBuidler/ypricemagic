@@ -409,7 +409,15 @@ class CurvePool(ERC20):
             if not hasattr(factory, "is_meta") or factory.is_meta(self.address):
                 coins = await factory.get_underlying_coins.coroutine(self.address)
             else:
-                coins = await factory.get_coins.coroutine(self.address)
+                try:
+                    coins = await factory.get_coins.coroutine(self.address)
+                except InvalidPointer:
+                    logger.warning(
+                        "InvalidPointer error when calling get_coins(pool) "
+                        "on factory %s with pool %s. Skipping.",
+                        factory.address,
+                        self.address,
+                    )
         else:
             registry = await curve.registry
             coins = await registry.get_underlying_coins.coroutine(self.address)
