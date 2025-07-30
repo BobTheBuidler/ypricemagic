@@ -160,7 +160,7 @@ async def _get_deployment(
         return None, None
 
     build_json = dict(zip(SOURCE_KEYS, row))
-    path_map = build_json.pop("paths")
+    path_map: dict = build_json.pop("paths")
 
     sources = {
         source_key: await __fetch_source_for_hash(val)
@@ -169,8 +169,9 @@ async def _get_deployment(
     }
 
     build_json["allSourcePaths"] = {k: v[1] for k, v in path_map.items()}
-    if isinstance(build_json.get("pcMap"), dict):
-        build_json["pcMap"] = keymap(int, build_json["pcMap"])
+    pc_map: Optional[dict] = build_json.get("pcMap")
+    if pc_map is not None:
+        build_json["pcMap"] = {int(key): pc_map[key] for key in pc_map}
 
     return build_json, sources
 
