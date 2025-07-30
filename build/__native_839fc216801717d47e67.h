@@ -528,6 +528,9 @@ typedef struct {
 
 struct export_table_839fc216801717d47e67 {
     PyObject **CPyStatic_brownie___SOURCE_KEYS;
+    PyObject **CPyStatic_brownie___sha1;
+    PyObject **CPyStatic_brownie___dumps;
+    PyObject **CPyStatic_brownie___loads;
     PyObject **CPyStatic_brownie___sqlite_lock;
     PyObject **CPyStatic_brownie___cur;
     PyObject **CPyStatic_brownie___fetchone;
