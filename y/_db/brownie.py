@@ -41,9 +41,26 @@ BuildJson = Dict[str, Any]
 Sources = Dict[SourceKey, Any]
 
 
-SOURCE_KEYS: Final[Tuple[SourceKey, ...]] = SourceKey.__args__
+SOURCE_KEYS: Final[Tuple[SourceKey, ...]] = (
+    "address",
+    "alias",
+    "paths",
+    "abi",
+    "ast",
+    "bytecode",
+    "compiler",
+    "contractName",
+    "deployedBytecode",
+    "deployedSourceMap",
+    "language",
+    "natspec",
+    "opcodes",
+    "pcMap",
+    "sourceMap",
+    "type",
+)
 
-DISCARD_SOURCE_KEYS: Tuple[SourceKey, ...] = (
+DISCARD_SOURCE_KEYS: Tuple[SourceKey, SourceKey, SourceKey, SourceKey, SourceKey, SourceKey, SourceKey, SourceKey] = (
     "ast",
     "bytecode",
     "coverageMap",
@@ -95,7 +112,7 @@ class AsyncCursor:
         async with self._execute(query, values):
             await self._db.commit()
 
-    async def fetchone(self, cmd: str, *args) -> Optional[Tuple]:
+    async def fetchone(self, cmd: str, *args: Any) -> Optional[Tuple[Any, ...]]:
         if self._db is None:
             await self.connect()
         async with sqlite_lock:
