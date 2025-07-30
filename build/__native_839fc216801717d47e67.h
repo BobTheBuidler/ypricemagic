@@ -27,6 +27,25 @@ typedef struct tuple_T2CC {
 } tuple_T2CC;
 #endif
 
+#ifndef MYPYC_DECLARED_tuple_T3CIO
+#define MYPYC_DECLARED_tuple_T3CIO
+typedef struct tuple_T3CIO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+} tuple_T3CIO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T4CIOO
+#define MYPYC_DECLARED_tuple_T4CIOO
+typedef struct tuple_T4CIOO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+    PyObject *f3;
+} tuple_T4CIOO;
+#endif
+
 #ifndef MYPYC_DECLARED_tuple_T16OOOOOOOOOOOOOOOO
 #define MYPYC_DECLARED_tuple_T16OOOOOOOOOOOOOOOO
 typedef struct tuple_T16OOOOOOOOOOOOOOOO {
@@ -177,17 +196,28 @@ typedef struct {
     PyObject *_path_map;
     PyObject *___mypyc_temp__44;
     PyObject *___mypyc_temp__45;
-    PyObject *___mypyc_temp__46;
+    CPyTagged ___mypyc_temp__46;
+    CPyTagged ___mypyc_temp__47;
+    PyObject *___mypyc_temp__48;
     PyObject *_val;
     PyObject *_source_key;
-    PyObject *___mypyc_temp__47;
-    tuple_T3OOO ___mypyc_temp__48;
-    PyObject *_sources;
     PyObject *___mypyc_temp__49;
-    PyObject *___mypyc_temp__50;
+    tuple_T3OOO ___mypyc_temp__50;
+    PyObject *_sources;
     PyObject *___mypyc_temp__51;
+    PyObject *___mypyc_temp__52;
+    CPyTagged ___mypyc_temp__53;
+    CPyTagged ___mypyc_temp__54;
+    PyObject *___mypyc_temp__55;
     PyObject *_k;
     PyObject *_v;
+    PyObject *_pc_map;
+    PyObject *___mypyc_temp__56;
+    PyObject *___mypyc_temp__57;
+    CPyTagged ___mypyc_temp__58;
+    CPyTagged ___mypyc_temp__59;
+    PyObject *___mypyc_temp__60;
+    PyObject *_key;
     PyObject *___mypyc_temp__2_0;
 } y____db___brownie____get_deployment_genObject;
 
@@ -196,8 +226,8 @@ typedef struct {
     CPyVTableItem *vtable;
     PyObject *_hashval;
     int32_t ___mypyc_next_label__;
-    PyObject *___mypyc_temp__52;
-    tuple_T3OOO ___mypyc_temp__53;
+    PyObject *___mypyc_temp__61;
+    tuple_T3OOO ___mypyc_temp__62;
 } y____db___brownie_____fetch_source_for_hash_genObject;
 
 typedef struct {
