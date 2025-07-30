@@ -14,6 +14,7 @@ from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound, EventLookupError
 from brownie.network.event import _EventItem
+from eth_abi.exceptions import InvalidPointer
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
@@ -409,7 +410,15 @@ class CurvePool(ERC20):
             if not hasattr(factory, "is_meta") or factory.is_meta(self.address):
                 coins = await factory.get_underlying_coins.coroutine(self.address)
             else:
-                coins = await factory.get_coins.coroutine(self.address)
+                try:
+                    coins = await factory.get_coins.coroutine(self.address)
+                except InvalidPointer:
+                    logger.warning(
+                        "InvalidPointer error when calling get_coins(pool) "
+                        "on factory %s with pool %s. Skipping.",
+                        factory.address,
+                        self.address,
+                    )
         else:
             registry = await curve.registry
             coins = await registry.get_underlying_coins.coroutine(self.address)
