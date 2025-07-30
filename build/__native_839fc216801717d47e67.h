@@ -1,5 +1,5 @@
-#ifndef MYPYC_NATIVE_e48b665766e5f62102a4_H
-#define MYPYC_NATIVE_e48b665766e5f62102a4_H
+#ifndef MYPYC_NATIVE_839fc216801717d47e67_H
+#define MYPYC_NATIVE_839fc216801717d47e67_H
 #include <Python.h>
 #include <CPy.h>
 #ifndef MYPYC_DECLARED_tuple_T3OOO
@@ -11,20 +11,83 @@ typedef struct tuple_T3OOO {
 } tuple_T3OOO;
 #endif
 
-#ifndef MYPYC_DECLARED_tuple_T2OI
-#define MYPYC_DECLARED_tuple_T2OI
-typedef struct tuple_T2OI {
-    PyObject *f0;
-    CPyTagged f1;
-} tuple_T2OI;
-#endif
-
 #ifndef MYPYC_DECLARED_tuple_T2OO
 #define MYPYC_DECLARED_tuple_T2OO
 typedef struct tuple_T2OO {
     PyObject *f0;
     PyObject *f1;
 } tuple_T2OO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T2CC
+#define MYPYC_DECLARED_tuple_T2CC
+typedef struct tuple_T2CC {
+    char f0;
+    char f1;
+} tuple_T2CC;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T3CIO
+#define MYPYC_DECLARED_tuple_T3CIO
+typedef struct tuple_T3CIO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+} tuple_T3CIO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T4CIOO
+#define MYPYC_DECLARED_tuple_T4CIOO
+typedef struct tuple_T4CIOO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+    PyObject *f3;
+} tuple_T4CIOO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T16OOOOOOOOOOOOOOOO
+#define MYPYC_DECLARED_tuple_T16OOOOOOOOOOOOOOOO
+typedef struct tuple_T16OOOOOOOOOOOOOOOO {
+    PyObject *f0;
+    PyObject *f1;
+    PyObject *f2;
+    PyObject *f3;
+    PyObject *f4;
+    PyObject *f5;
+    PyObject *f6;
+    PyObject *f7;
+    PyObject *f8;
+    PyObject *f9;
+    PyObject *f10;
+    PyObject *f11;
+    PyObject *f12;
+    PyObject *f13;
+    PyObject *f14;
+    PyObject *f15;
+} tuple_T16OOOOOOOOOOOOOOOO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T8OOOOOOOO
+#define MYPYC_DECLARED_tuple_T8OOOOOOOO
+typedef struct tuple_T8OOOOOOOO {
+    PyObject *f0;
+    PyObject *f1;
+    PyObject *f2;
+    PyObject *f3;
+    PyObject *f4;
+    PyObject *f5;
+    PyObject *f6;
+    PyObject *f7;
+} tuple_T8OOOOOOOO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T2OI
+#define MYPYC_DECLARED_tuple_T2OI
+typedef struct tuple_T2OI {
+    PyObject *f0;
+    CPyTagged f1;
+} tuple_T2OI;
 #endif
 
 #ifndef MYPYC_DECLARED_tuple_T6OOOOOO
@@ -38,6 +101,134 @@ typedef struct tuple_T6OOOOOO {
     PyObject *f5;
 } tuple_T6OOOOOO;
 #endif
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *__filename;
+    PyObject *__db;
+    char __connected;
+    PyObject *__execute;
+} y____db___brownie___AsyncCursorObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *_self;
+    int32_t ___mypyc_next_label__;
+    PyObject *___mypyc_temp__0;
+    PyObject *___mypyc_temp__1;
+    char ___mypyc_temp__2;
+    PyObject *___mypyc_temp__3;
+    tuple_T3OOO ___mypyc_temp__4;
+    PyObject *___mypyc_temp__5;
+    tuple_T3OOO ___mypyc_temp__6;
+    tuple_T3OOO ___mypyc_temp__7;
+    PyObject *___mypyc_temp__8;
+    tuple_T3OOO ___mypyc_temp__9;
+    PyObject *___mypyc_temp__10;
+    tuple_T3OOO ___mypyc_temp__11;
+} y____db___brownie___connect_AsyncCursor_genObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *_self;
+    PyObject *_table;
+    PyObject *_values;
+    int32_t ___mypyc_next_label__;
+} y____db___brownie___insert_AsyncCursor_genObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *_self;
+    PyObject *_cmd;
+    PyObject *_args;
+    int32_t ___mypyc_next_label__;
+    PyObject *___mypyc_temp__12;
+    tuple_T3OOO ___mypyc_temp__13;
+    PyObject *___mypyc_temp__14;
+    PyObject *___mypyc_temp__15;
+    char ___mypyc_temp__16;
+    PyObject *___mypyc_temp__17;
+    tuple_T3OOO ___mypyc_temp__18;
+    PyObject *___mypyc_temp__19;
+    PyObject *___mypyc_temp__20;
+    char ___mypyc_temp__21;
+    PyObject *___mypyc_temp__22;
+    tuple_T3OOO ___mypyc_temp__23;
+    PyObject *_cursor;
+    PyObject *___mypyc_temp__24;
+    tuple_T3OOO ___mypyc_temp__25;
+    PyObject *_row;
+    PyObject *___mypyc_temp__26;
+    PyObject *___mypyc_temp__27;
+    PyObject *___mypyc_temp__28;
+    PyObject *___mypyc_temp__29;
+    PyObject *_i;
+    tuple_T3OOO ___mypyc_temp__30;
+    PyObject *___mypyc_temp__31;
+    tuple_T3OOO ___mypyc_temp__32;
+    PyObject *___mypyc_temp__33;
+    tuple_T3OOO ___mypyc_temp__34;
+    PyObject *___mypyc_temp__35;
+    tuple_T3OOO ___mypyc_temp__36;
+    PyObject *___mypyc_temp__37;
+    tuple_T3OOO ___mypyc_temp__38;
+    PyObject *___mypyc_temp__39;
+    tuple_T3OOO ___mypyc_temp__40;
+} y____db___brownie___fetchone_AsyncCursor_genObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *_address;
+    PyObject *_alias;
+    PyObject *_skip_source_keys;
+    int32_t ___mypyc_next_label__;
+    PyObject *_where_clause;
+    PyObject *___mypyc_temp__41;
+    tuple_T3OOO ___mypyc_temp__42;
+    PyObject *_row;
+    tuple_T3OOO ___mypyc_temp__43;
+    PyObject *_build_json;
+    PyObject *_path_map;
+    PyObject *___mypyc_temp__44;
+    PyObject *___mypyc_temp__45;
+    CPyTagged ___mypyc_temp__46;
+    CPyTagged ___mypyc_temp__47;
+    PyObject *___mypyc_temp__48;
+    PyObject *_val;
+    PyObject *_source_key;
+    PyObject *___mypyc_temp__49;
+    tuple_T3OOO ___mypyc_temp__50;
+    PyObject *_sources;
+    PyObject *___mypyc_temp__51;
+    PyObject *___mypyc_temp__52;
+    CPyTagged ___mypyc_temp__53;
+    CPyTagged ___mypyc_temp__54;
+    PyObject *___mypyc_temp__55;
+    PyObject *_k;
+    PyObject *_v;
+    PyObject *_pc_map;
+    PyObject *___mypyc_temp__56;
+    PyObject *___mypyc_temp__57;
+    CPyTagged ___mypyc_temp__58;
+    CPyTagged ___mypyc_temp__59;
+    PyObject *___mypyc_temp__60;
+    PyObject *_key;
+    PyObject *___mypyc_temp__2_0;
+} y____db___brownie____get_deployment_genObject;
+
+typedef struct {
+    PyObject_HEAD
+    CPyVTableItem *vtable;
+    PyObject *_hashval;
+    int32_t ___mypyc_next_label__;
+    PyObject *___mypyc_temp__61;
+    tuple_T3OOO ___mypyc_temp__62;
+} y____db___brownie_____fetch_source_for_hash_genObject;
 
 typedef struct {
     PyObject_HEAD
@@ -335,7 +526,73 @@ typedef struct {
 } y___utils___gather____gather_methods_raw_genObject;
 
 
-struct export_table_e48b665766e5f62102a4 {
+struct export_table_839fc216801717d47e67 {
+    PyObject **CPyStatic_brownie___SOURCE_KEYS;
+    PyObject **CPyStatic_brownie___sha1;
+    PyObject **CPyStatic_brownie___dumps;
+    PyObject **CPyStatic_brownie___loads;
+    PyObject **CPyStatic_brownie___sqlite_lock;
+    PyObject **CPyStatic_brownie___cur;
+    PyObject **CPyStatic_brownie___fetchone;
+    PyObject **CPyStatic_brownie___y____db___brownie____get_deployment___skip_source_keys;
+    PyTypeObject **CPyType_brownie___AsyncCursor;
+    PyObject *(*CPyDef_brownie___AsyncCursor)(PyObject *cpy_r_filename);
+    PyTypeObject **CPyType_brownie___connect_AsyncCursor_gen;
+    PyObject *(*CPyDef_brownie___connect_AsyncCursor_gen)(void);
+    PyTypeObject **CPyType_brownie___insert_AsyncCursor_gen;
+    PyObject *(*CPyDef_brownie___insert_AsyncCursor_gen)(void);
+    PyTypeObject **CPyType_brownie___fetchone_AsyncCursor_gen;
+    PyObject *(*CPyDef_brownie___fetchone_AsyncCursor_gen)(void);
+    PyTypeObject **CPyType_brownie____get_deployment_gen;
+    PyObject *(*CPyDef_brownie____get_deployment_gen)(void);
+    PyTypeObject **CPyType_brownie_____fetch_source_for_hash_gen;
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash_gen)(void);
+    char (*CPyDef_brownie___AsyncCursor_____init__)(PyObject *cpy_r_self, PyObject *cpy_r_filename);
+    PyObject *(*CPyDef_brownie___connect_AsyncCursor_gen_____mypyc_generator_helper__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie___connect_AsyncCursor_gen_____next__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___connect_AsyncCursor_gen___send)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie___connect_AsyncCursor_gen_____iter__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___connect_AsyncCursor_gen___throw)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback);
+    PyObject *(*CPyDef_brownie___connect_AsyncCursor_gen___close)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___connect_AsyncCursor_gen_____await__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___AsyncCursor___connect)(PyObject *cpy_r_self);
+    PyObject *(*CPyDef_brownie___insert_AsyncCursor_gen_____mypyc_generator_helper__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie___insert_AsyncCursor_gen_____next__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___insert_AsyncCursor_gen___send)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie___insert_AsyncCursor_gen_____iter__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___insert_AsyncCursor_gen___throw)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback);
+    PyObject *(*CPyDef_brownie___insert_AsyncCursor_gen___close)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___insert_AsyncCursor_gen_____await__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___AsyncCursor___insert)(PyObject *cpy_r_self, PyObject *cpy_r_table, PyObject *cpy_r_values);
+    PyObject *(*CPyDef_brownie___fetchone_AsyncCursor_gen_____mypyc_generator_helper__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie___fetchone_AsyncCursor_gen_____next__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___fetchone_AsyncCursor_gen___send)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie___fetchone_AsyncCursor_gen_____iter__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___fetchone_AsyncCursor_gen___throw)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback);
+    PyObject *(*CPyDef_brownie___fetchone_AsyncCursor_gen___close)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___fetchone_AsyncCursor_gen_____await__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie___AsyncCursor___fetchone)(PyObject *cpy_r_self, PyObject *cpy_r_cmd, PyObject *cpy_r_args);
+    PyObject *(*CPyDef_brownie____get_select_statement)(void);
+    PyObject *(*CPyDef_brownie____get_deployment_gen_____mypyc_generator_helper__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie____get_deployment_gen_____next__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie____get_deployment_gen___send)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie____get_deployment_gen_____iter__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie____get_deployment_gen___throw)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback);
+    PyObject *(*CPyDef_brownie____get_deployment_gen___close)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie____get_deployment_gen_____await__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie____get_deployment)(PyObject *cpy_r_address, PyObject *cpy_r_alias, PyObject *cpy_r_skip_source_keys);
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash_gen_____mypyc_generator_helper__)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash_gen_____next__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash_gen___send)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg);
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash_gen_____iter__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash_gen___throw)(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback);
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash_gen___close)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash_gen_____await__)(PyObject *cpy_r___mypyc_self__);
+    PyObject *(*CPyDef_brownie_____fetch_source_for_hash)(PyObject *cpy_r_hashval);
+    char (*CPyDef_brownie_____top_level__)(void);
+    PyObject **CPyStatic_config___DEFAULT_SQLITE_DIR;
+    PyObject **CPyStatic_config___db_provider;
+    char (*CPyDef_config_____top_level__)(void);
     CPyTagged *CPyStatic_decorators___DEBUG;
     PyObject **CPyStatic_decorators___logger;
     PyObject **CPyStatic_decorators___log_warning;
@@ -390,9 +647,6 @@ struct export_table_e48b665766e5f62102a4 {
     PyObject *(*CPyDef_stringify___build_row)(PyObject *cpy_r_row, PyObject *cpy_r_provider);
     PyObject *(*CPyDef_stringify___build_query)(PyObject *cpy_r_provider_name, PyObject *cpy_r_entity_name, PyObject *cpy_r_columns, PyObject *cpy_r_items);
     char (*CPyDef_stringify_____top_level__)(void);
-    PyObject **CPyStatic_config___DEFAULT_SQLITE_DIR;
-    PyObject **CPyStatic_config___db_provider;
-    char (*CPyDef_config_____top_level__)(void);
     PyObject **CPyStatic_ENVIRONMENT_VARIABLES____envs;
     PyObject **CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL;
     PyObject **CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL;

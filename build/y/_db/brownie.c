@@ -1,14 +1,14 @@
 #include <Python.h>
 
 PyMODINIT_FUNC
-PyInit_config(void)
+PyInit_brownie(void)
 {
     PyObject *tmp;
     if (!(tmp = PyImport_ImportModule("839fc216801717d47e67__mypyc"))) return NULL;
-    PyObject *capsule = PyObject_GetAttrString(tmp, "init_y____db___config");
+    PyObject *capsule = PyObject_GetAttrString(tmp, "init_y____db___brownie");
     Py_DECREF(tmp);
     if (capsule == NULL) return NULL;
-    void *init_func = PyCapsule_GetPointer(capsule, "839fc216801717d47e67__mypyc.init_y____db___config");
+    void *init_func = PyCapsule_GetPointer(capsule, "839fc216801717d47e67__mypyc.init_y____db___brownie");
     Py_DECREF(capsule);
     if (!init_func) {
         return NULL;
@@ -18,4 +18,4 @@ PyInit_config(void)
 
 // distutils sometimes spuriously tells cl to export CPyInit___init__,
 // so provide that so it chills out
-PyMODINIT_FUNC PyInit___init__(void) { return PyInit_config(); }
+PyMODINIT_FUNC PyInit___init__(void) { return PyInit_brownie(); }
