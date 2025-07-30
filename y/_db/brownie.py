@@ -59,9 +59,7 @@ SOURCE_KEYS: Final[Tuple[SourceKey, ...]] = (
     "type",
 )
 
-DISCARD_SOURCE_KEYS: Tuple[
-    SourceKey, SourceKey, SourceKey, SourceKey, SourceKey, SourceKey, SourceKey, SourceKey
-] = (
+DISCARD_SOURCE_KEYS: Tuple[SourceKey, ...] = (
     "ast",
     "bytecode",
     "coverageMap",
