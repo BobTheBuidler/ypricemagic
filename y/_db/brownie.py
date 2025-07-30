@@ -95,8 +95,9 @@ class AsyncCursor:
         if self._db is not None:
             raise RuntimeError("already connected")
         async with sqlite_lock:
-            self._db = await aiosqlite.connect(self._filename, isolation_level=None)
-            self._execute = self._db.execute
+            if self._db is None:
+                self._db = await aiosqlite.connect(self._filename, isolation_level=None)
+                self._execute = self._db.execute
 
     async def insert(self, table, *values):
         raise NotImplementedError
