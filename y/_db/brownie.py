@@ -140,8 +140,8 @@ def _get_select_statement() -> str:
 
 
 async def _get_deployment(
-    address: str = None,
-    alias: str = None,
+    address: Optional[str] = None,
+    alias: Optional[str] = None,
     skip_source_keys: Container[SourceKey] = DISCARD_SOURCE_KEYS,
 ) -> Tuple[Optional[BuildJson], Optional[Sources]]:
     if address and alias:
