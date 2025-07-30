@@ -613,7 +613,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         except StopIteration:
             return None
 
-    @a_sync_ttl_cache
+    #@a_sync_ttl_cache
     async def get_price(
         self,
         token: Address,
