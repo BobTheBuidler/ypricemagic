@@ -1,17 +1,15 @@
+import hashlib
+import json
 from asyncio import Lock
-from hashlib import sha1
-from json import dumps, loads
 from pathlib import Path
 from typing import Any, Container, Dict, Final, Literal, Optional, Tuple, final
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
-from a_sync.async_property.cached import async_cached_property
 from brownie._config import CONFIG, _get_data_folder
 from brownie.exceptions import BrownieEnvironmentError
 from brownie.network.contract import _resolve_address
 from brownie.project.build import DEPLOYMENT_KEYS
-from eth_utils.toolz import keymap
 from functools import lru_cache
 from sqlite3 import InterfaceError, OperationalError
 
@@ -37,6 +35,7 @@ SourceKey = Literal[
     "type",
 ]
 
+# TODO: replace these with the typed dicts in brownie >=1.22
 BuildJson = Dict[str, Any]
 Sources = Dict[SourceKey, Any]
 
@@ -78,6 +77,13 @@ To keep our Contract objects smaller, we do not load all contract source data. M
 These keys will not be included in y.Contract object build data. If you need them, consider just using a dank_mids.Contract for your use case.
 """
 
+
+# C constants
+
+sha1: Final = hashlib.sha1
+
+dumps: Final = json.dumps
+loads: Final = json.loads
 
 sqlite_lock: Final = Lock()
 
