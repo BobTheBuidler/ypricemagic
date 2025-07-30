@@ -120,9 +120,11 @@ class AsyncCursor:
             await self.connect()
         async with sqlite_lock:
             async with self._execute(cmd, args) as cursor:
-                if row := await cursor.fetchone():
-                    # Convert any JSON-serialized columns back to their original data structures
-                    return tuple(loads(i) if str(i).startswith(("[", "{")) else i for i in row)
+                row = await cursor.fetchone()
+                if row is None:
+                    return None
+                # Convert any JSON-serialized columns back to their original data structures
+                return tuple(loads(i) if str(i).startswith(("[", "{")) else i for i in row)
 
 
 cur: Final = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
