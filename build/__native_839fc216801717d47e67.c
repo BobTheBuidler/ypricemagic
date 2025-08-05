@@ -334,6 +334,7 @@ static int
 brownie___connect_AsyncCursor_gen_traverse(y____db___brownie___connect_AsyncCursor_genObject *self, visitproc visit, void *arg)
 {
     Py_VISIT(self->_self);
+    Py_VISIT(self->_db);
     Py_VISIT(self->___mypyc_temp__0);
     Py_VISIT(self->___mypyc_temp__1);
     Py_VISIT(self->___mypyc_temp__3);
@@ -341,20 +342,21 @@ brownie___connect_AsyncCursor_gen_traverse(y____db___brownie___connect_AsyncCurs
     Py_VISIT(self->___mypyc_temp__4.f1);
     Py_VISIT(self->___mypyc_temp__4.f2);
     Py_VISIT(self->___mypyc_temp__5);
-    Py_VISIT(self->___mypyc_temp__6.f0);
-    Py_VISIT(self->___mypyc_temp__6.f1);
-    Py_VISIT(self->___mypyc_temp__6.f2);
+    Py_VISIT(self->___mypyc_temp__6);
     Py_VISIT(self->___mypyc_temp__7.f0);
     Py_VISIT(self->___mypyc_temp__7.f1);
     Py_VISIT(self->___mypyc_temp__7.f2);
-    Py_VISIT(self->___mypyc_temp__8);
-    Py_VISIT(self->___mypyc_temp__9.f0);
-    Py_VISIT(self->___mypyc_temp__9.f1);
-    Py_VISIT(self->___mypyc_temp__9.f2);
-    Py_VISIT(self->___mypyc_temp__10);
-    Py_VISIT(self->___mypyc_temp__11.f0);
-    Py_VISIT(self->___mypyc_temp__11.f1);
-    Py_VISIT(self->___mypyc_temp__11.f2);
+    Py_VISIT(self->___mypyc_temp__8.f0);
+    Py_VISIT(self->___mypyc_temp__8.f1);
+    Py_VISIT(self->___mypyc_temp__8.f2);
+    Py_VISIT(self->___mypyc_temp__9);
+    Py_VISIT(self->___mypyc_temp__10.f0);
+    Py_VISIT(self->___mypyc_temp__10.f1);
+    Py_VISIT(self->___mypyc_temp__10.f2);
+    Py_VISIT(self->___mypyc_temp__11);
+    Py_VISIT(self->___mypyc_temp__12.f0);
+    Py_VISIT(self->___mypyc_temp__12.f1);
+    Py_VISIT(self->___mypyc_temp__12.f2);
     return 0;
 }
 
@@ -362,6 +364,7 @@ static int
 brownie___connect_AsyncCursor_gen_clear(y____db___brownie___connect_AsyncCursor_genObject *self)
 {
     Py_CLEAR(self->_self);
+    Py_CLEAR(self->_db);
     Py_CLEAR(self->___mypyc_temp__0);
     Py_CLEAR(self->___mypyc_temp__1);
     Py_CLEAR(self->___mypyc_temp__3);
@@ -369,20 +372,21 @@ brownie___connect_AsyncCursor_gen_clear(y____db___brownie___connect_AsyncCursor_
     Py_CLEAR(self->___mypyc_temp__4.f1);
     Py_CLEAR(self->___mypyc_temp__4.f2);
     Py_CLEAR(self->___mypyc_temp__5);
-    Py_CLEAR(self->___mypyc_temp__6.f0);
-    Py_CLEAR(self->___mypyc_temp__6.f1);
-    Py_CLEAR(self->___mypyc_temp__6.f2);
+    Py_CLEAR(self->___mypyc_temp__6);
     Py_CLEAR(self->___mypyc_temp__7.f0);
     Py_CLEAR(self->___mypyc_temp__7.f1);
     Py_CLEAR(self->___mypyc_temp__7.f2);
-    Py_CLEAR(self->___mypyc_temp__8);
-    Py_CLEAR(self->___mypyc_temp__9.f0);
-    Py_CLEAR(self->___mypyc_temp__9.f1);
-    Py_CLEAR(self->___mypyc_temp__9.f2);
-    Py_CLEAR(self->___mypyc_temp__10);
-    Py_CLEAR(self->___mypyc_temp__11.f0);
-    Py_CLEAR(self->___mypyc_temp__11.f1);
-    Py_CLEAR(self->___mypyc_temp__11.f2);
+    Py_CLEAR(self->___mypyc_temp__8.f0);
+    Py_CLEAR(self->___mypyc_temp__8.f1);
+    Py_CLEAR(self->___mypyc_temp__8.f2);
+    Py_CLEAR(self->___mypyc_temp__9);
+    Py_CLEAR(self->___mypyc_temp__10.f0);
+    Py_CLEAR(self->___mypyc_temp__10.f1);
+    Py_CLEAR(self->___mypyc_temp__10.f2);
+    Py_CLEAR(self->___mypyc_temp__11);
+    Py_CLEAR(self->___mypyc_temp__12.f0);
+    Py_CLEAR(self->___mypyc_temp__12.f1);
+    Py_CLEAR(self->___mypyc_temp__12.f2);
     return 0;
 }
 
@@ -464,10 +468,10 @@ brownie___connect_AsyncCursor_gen_setup(PyTypeObject *type)
     self->___mypyc_next_label__ = -113;
     self->___mypyc_temp__2 = 2;
     self->___mypyc_temp__4 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__6 = (tuple_T3OOO) { NULL, NULL, NULL };
     self->___mypyc_temp__7 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__9 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__11 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__8 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__10 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__12 = (tuple_T3OOO) { NULL, NULL, NULL };
     return (PyObject *)self;
 }
 
@@ -624,56 +628,56 @@ brownie___fetchone_AsyncCursor_gen_traverse(y____db___brownie___fetchone_AsyncCu
     Py_VISIT(self->_self);
     Py_VISIT(self->_cmd);
     Py_VISIT(self->_args);
-    Py_VISIT(self->___mypyc_temp__12);
-    Py_VISIT(self->___mypyc_temp__13.f0);
-    Py_VISIT(self->___mypyc_temp__13.f1);
-    Py_VISIT(self->___mypyc_temp__13.f2);
-    Py_VISIT(self->___mypyc_temp__14);
+    Py_VISIT(self->___mypyc_temp__13);
+    Py_VISIT(self->___mypyc_temp__14.f0);
+    Py_VISIT(self->___mypyc_temp__14.f1);
+    Py_VISIT(self->___mypyc_temp__14.f2);
     Py_VISIT(self->___mypyc_temp__15);
-    Py_VISIT(self->___mypyc_temp__17);
-    Py_VISIT(self->___mypyc_temp__18.f0);
-    Py_VISIT(self->___mypyc_temp__18.f1);
-    Py_VISIT(self->___mypyc_temp__18.f2);
-    Py_VISIT(self->___mypyc_temp__19);
+    Py_VISIT(self->___mypyc_temp__16);
+    Py_VISIT(self->___mypyc_temp__18);
+    Py_VISIT(self->___mypyc_temp__19.f0);
+    Py_VISIT(self->___mypyc_temp__19.f1);
+    Py_VISIT(self->___mypyc_temp__19.f2);
     Py_VISIT(self->___mypyc_temp__20);
-    Py_VISIT(self->___mypyc_temp__22);
-    Py_VISIT(self->___mypyc_temp__23.f0);
-    Py_VISIT(self->___mypyc_temp__23.f1);
-    Py_VISIT(self->___mypyc_temp__23.f2);
+    Py_VISIT(self->___mypyc_temp__21);
+    Py_VISIT(self->___mypyc_temp__23);
+    Py_VISIT(self->___mypyc_temp__24.f0);
+    Py_VISIT(self->___mypyc_temp__24.f1);
+    Py_VISIT(self->___mypyc_temp__24.f2);
     Py_VISIT(self->_cursor);
-    Py_VISIT(self->___mypyc_temp__24);
-    Py_VISIT(self->___mypyc_temp__25.f0);
-    Py_VISIT(self->___mypyc_temp__25.f1);
-    Py_VISIT(self->___mypyc_temp__25.f2);
+    Py_VISIT(self->___mypyc_temp__25);
+    Py_VISIT(self->___mypyc_temp__26.f0);
+    Py_VISIT(self->___mypyc_temp__26.f1);
+    Py_VISIT(self->___mypyc_temp__26.f2);
     Py_VISIT(self->_row);
-    Py_VISIT(self->___mypyc_temp__26);
     Py_VISIT(self->___mypyc_temp__27);
     Py_VISIT(self->___mypyc_temp__28);
     Py_VISIT(self->___mypyc_temp__29);
+    Py_VISIT(self->___mypyc_temp__30);
     Py_VISIT(self->_i);
-    Py_VISIT(self->___mypyc_temp__30.f0);
-    Py_VISIT(self->___mypyc_temp__30.f1);
-    Py_VISIT(self->___mypyc_temp__30.f2);
-    Py_VISIT(self->___mypyc_temp__31);
-    Py_VISIT(self->___mypyc_temp__32.f0);
-    Py_VISIT(self->___mypyc_temp__32.f1);
-    Py_VISIT(self->___mypyc_temp__32.f2);
-    Py_VISIT(self->___mypyc_temp__33);
-    Py_VISIT(self->___mypyc_temp__34.f0);
-    Py_VISIT(self->___mypyc_temp__34.f1);
-    Py_VISIT(self->___mypyc_temp__34.f2);
-    Py_VISIT(self->___mypyc_temp__35);
-    Py_VISIT(self->___mypyc_temp__36.f0);
-    Py_VISIT(self->___mypyc_temp__36.f1);
-    Py_VISIT(self->___mypyc_temp__36.f2);
-    Py_VISIT(self->___mypyc_temp__37);
-    Py_VISIT(self->___mypyc_temp__38.f0);
-    Py_VISIT(self->___mypyc_temp__38.f1);
-    Py_VISIT(self->___mypyc_temp__38.f2);
-    Py_VISIT(self->___mypyc_temp__39);
-    Py_VISIT(self->___mypyc_temp__40.f0);
-    Py_VISIT(self->___mypyc_temp__40.f1);
-    Py_VISIT(self->___mypyc_temp__40.f2);
+    Py_VISIT(self->___mypyc_temp__31.f0);
+    Py_VISIT(self->___mypyc_temp__31.f1);
+    Py_VISIT(self->___mypyc_temp__31.f2);
+    Py_VISIT(self->___mypyc_temp__32);
+    Py_VISIT(self->___mypyc_temp__33.f0);
+    Py_VISIT(self->___mypyc_temp__33.f1);
+    Py_VISIT(self->___mypyc_temp__33.f2);
+    Py_VISIT(self->___mypyc_temp__34);
+    Py_VISIT(self->___mypyc_temp__35.f0);
+    Py_VISIT(self->___mypyc_temp__35.f1);
+    Py_VISIT(self->___mypyc_temp__35.f2);
+    Py_VISIT(self->___mypyc_temp__36);
+    Py_VISIT(self->___mypyc_temp__37.f0);
+    Py_VISIT(self->___mypyc_temp__37.f1);
+    Py_VISIT(self->___mypyc_temp__37.f2);
+    Py_VISIT(self->___mypyc_temp__38);
+    Py_VISIT(self->___mypyc_temp__39.f0);
+    Py_VISIT(self->___mypyc_temp__39.f1);
+    Py_VISIT(self->___mypyc_temp__39.f2);
+    Py_VISIT(self->___mypyc_temp__40);
+    Py_VISIT(self->___mypyc_temp__41.f0);
+    Py_VISIT(self->___mypyc_temp__41.f1);
+    Py_VISIT(self->___mypyc_temp__41.f2);
     return 0;
 }
 
@@ -683,56 +687,56 @@ brownie___fetchone_AsyncCursor_gen_clear(y____db___brownie___fetchone_AsyncCurso
     Py_CLEAR(self->_self);
     Py_CLEAR(self->_cmd);
     Py_CLEAR(self->_args);
-    Py_CLEAR(self->___mypyc_temp__12);
-    Py_CLEAR(self->___mypyc_temp__13.f0);
-    Py_CLEAR(self->___mypyc_temp__13.f1);
-    Py_CLEAR(self->___mypyc_temp__13.f2);
-    Py_CLEAR(self->___mypyc_temp__14);
+    Py_CLEAR(self->___mypyc_temp__13);
+    Py_CLEAR(self->___mypyc_temp__14.f0);
+    Py_CLEAR(self->___mypyc_temp__14.f1);
+    Py_CLEAR(self->___mypyc_temp__14.f2);
     Py_CLEAR(self->___mypyc_temp__15);
-    Py_CLEAR(self->___mypyc_temp__17);
-    Py_CLEAR(self->___mypyc_temp__18.f0);
-    Py_CLEAR(self->___mypyc_temp__18.f1);
-    Py_CLEAR(self->___mypyc_temp__18.f2);
-    Py_CLEAR(self->___mypyc_temp__19);
+    Py_CLEAR(self->___mypyc_temp__16);
+    Py_CLEAR(self->___mypyc_temp__18);
+    Py_CLEAR(self->___mypyc_temp__19.f0);
+    Py_CLEAR(self->___mypyc_temp__19.f1);
+    Py_CLEAR(self->___mypyc_temp__19.f2);
     Py_CLEAR(self->___mypyc_temp__20);
-    Py_CLEAR(self->___mypyc_temp__22);
-    Py_CLEAR(self->___mypyc_temp__23.f0);
-    Py_CLEAR(self->___mypyc_temp__23.f1);
-    Py_CLEAR(self->___mypyc_temp__23.f2);
+    Py_CLEAR(self->___mypyc_temp__21);
+    Py_CLEAR(self->___mypyc_temp__23);
+    Py_CLEAR(self->___mypyc_temp__24.f0);
+    Py_CLEAR(self->___mypyc_temp__24.f1);
+    Py_CLEAR(self->___mypyc_temp__24.f2);
     Py_CLEAR(self->_cursor);
-    Py_CLEAR(self->___mypyc_temp__24);
-    Py_CLEAR(self->___mypyc_temp__25.f0);
-    Py_CLEAR(self->___mypyc_temp__25.f1);
-    Py_CLEAR(self->___mypyc_temp__25.f2);
+    Py_CLEAR(self->___mypyc_temp__25);
+    Py_CLEAR(self->___mypyc_temp__26.f0);
+    Py_CLEAR(self->___mypyc_temp__26.f1);
+    Py_CLEAR(self->___mypyc_temp__26.f2);
     Py_CLEAR(self->_row);
-    Py_CLEAR(self->___mypyc_temp__26);
     Py_CLEAR(self->___mypyc_temp__27);
     Py_CLEAR(self->___mypyc_temp__28);
     Py_CLEAR(self->___mypyc_temp__29);
+    Py_CLEAR(self->___mypyc_temp__30);
     Py_CLEAR(self->_i);
-    Py_CLEAR(self->___mypyc_temp__30.f0);
-    Py_CLEAR(self->___mypyc_temp__30.f1);
-    Py_CLEAR(self->___mypyc_temp__30.f2);
-    Py_CLEAR(self->___mypyc_temp__31);
-    Py_CLEAR(self->___mypyc_temp__32.f0);
-    Py_CLEAR(self->___mypyc_temp__32.f1);
-    Py_CLEAR(self->___mypyc_temp__32.f2);
-    Py_CLEAR(self->___mypyc_temp__33);
-    Py_CLEAR(self->___mypyc_temp__34.f0);
-    Py_CLEAR(self->___mypyc_temp__34.f1);
-    Py_CLEAR(self->___mypyc_temp__34.f2);
-    Py_CLEAR(self->___mypyc_temp__35);
-    Py_CLEAR(self->___mypyc_temp__36.f0);
-    Py_CLEAR(self->___mypyc_temp__36.f1);
-    Py_CLEAR(self->___mypyc_temp__36.f2);
-    Py_CLEAR(self->___mypyc_temp__37);
-    Py_CLEAR(self->___mypyc_temp__38.f0);
-    Py_CLEAR(self->___mypyc_temp__38.f1);
-    Py_CLEAR(self->___mypyc_temp__38.f2);
-    Py_CLEAR(self->___mypyc_temp__39);
-    Py_CLEAR(self->___mypyc_temp__40.f0);
-    Py_CLEAR(self->___mypyc_temp__40.f1);
-    Py_CLEAR(self->___mypyc_temp__40.f2);
+    Py_CLEAR(self->___mypyc_temp__31.f0);
+    Py_CLEAR(self->___mypyc_temp__31.f1);
+    Py_CLEAR(self->___mypyc_temp__31.f2);
+    Py_CLEAR(self->___mypyc_temp__32);
+    Py_CLEAR(self->___mypyc_temp__33.f0);
+    Py_CLEAR(self->___mypyc_temp__33.f1);
+    Py_CLEAR(self->___mypyc_temp__33.f2);
+    Py_CLEAR(self->___mypyc_temp__34);
+    Py_CLEAR(self->___mypyc_temp__35.f0);
+    Py_CLEAR(self->___mypyc_temp__35.f1);
+    Py_CLEAR(self->___mypyc_temp__35.f2);
+    Py_CLEAR(self->___mypyc_temp__36);
+    Py_CLEAR(self->___mypyc_temp__37.f0);
+    Py_CLEAR(self->___mypyc_temp__37.f1);
+    Py_CLEAR(self->___mypyc_temp__37.f2);
+    Py_CLEAR(self->___mypyc_temp__38);
+    Py_CLEAR(self->___mypyc_temp__39.f0);
+    Py_CLEAR(self->___mypyc_temp__39.f1);
+    Py_CLEAR(self->___mypyc_temp__39.f2);
+    Py_CLEAR(self->___mypyc_temp__40);
+    Py_CLEAR(self->___mypyc_temp__41.f0);
+    Py_CLEAR(self->___mypyc_temp__41.f1);
+    Py_CLEAR(self->___mypyc_temp__41.f2);
     return 0;
 }
 
@@ -812,18 +816,18 @@ brownie___fetchone_AsyncCursor_gen_setup(PyTypeObject *type)
         return NULL;
     self->vtable = brownie___fetchone_AsyncCursor_gen_vtable;
     self->___mypyc_next_label__ = -113;
-    self->___mypyc_temp__13 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__16 = 2;
-    self->___mypyc_temp__18 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__21 = 2;
-    self->___mypyc_temp__23 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__25 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__30 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__32 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__34 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__36 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__38 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__40 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__14 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__17 = 2;
+    self->___mypyc_temp__19 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__22 = 2;
+    self->___mypyc_temp__24 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__26 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__31 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__33 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__35 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__37 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__39 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__41 = (tuple_T3OOO) { NULL, NULL, NULL };
     return (PyObject *)self;
 }
 
@@ -859,35 +863,35 @@ brownie____get_deployment_gen_traverse(y____db___brownie____get_deployment_genOb
     Py_VISIT(self->_alias);
     Py_VISIT(self->_skip_source_keys);
     Py_VISIT(self->_where_clause);
-    Py_VISIT(self->___mypyc_temp__41);
-    Py_VISIT(self->___mypyc_temp__42.f0);
-    Py_VISIT(self->___mypyc_temp__42.f1);
-    Py_VISIT(self->___mypyc_temp__42.f2);
-    Py_VISIT(self->_row);
+    Py_VISIT(self->___mypyc_temp__42);
     Py_VISIT(self->___mypyc_temp__43.f0);
     Py_VISIT(self->___mypyc_temp__43.f1);
     Py_VISIT(self->___mypyc_temp__43.f2);
+    Py_VISIT(self->_row);
+    Py_VISIT(self->___mypyc_temp__44.f0);
+    Py_VISIT(self->___mypyc_temp__44.f1);
+    Py_VISIT(self->___mypyc_temp__44.f2);
     Py_VISIT(self->_build_json);
     Py_VISIT(self->_path_map);
-    Py_VISIT(self->___mypyc_temp__44);
     Py_VISIT(self->___mypyc_temp__45);
-    Py_VISIT(self->___mypyc_temp__48);
+    Py_VISIT(self->___mypyc_temp__46);
+    Py_VISIT(self->___mypyc_temp__49);
     Py_VISIT(self->_val);
     Py_VISIT(self->_source_key);
-    Py_VISIT(self->___mypyc_temp__49);
-    Py_VISIT(self->___mypyc_temp__50.f0);
-    Py_VISIT(self->___mypyc_temp__50.f1);
-    Py_VISIT(self->___mypyc_temp__50.f2);
+    Py_VISIT(self->___mypyc_temp__50);
+    Py_VISIT(self->___mypyc_temp__51.f0);
+    Py_VISIT(self->___mypyc_temp__51.f1);
+    Py_VISIT(self->___mypyc_temp__51.f2);
     Py_VISIT(self->_sources);
-    Py_VISIT(self->___mypyc_temp__51);
     Py_VISIT(self->___mypyc_temp__52);
-    Py_VISIT(self->___mypyc_temp__55);
+    Py_VISIT(self->___mypyc_temp__53);
+    Py_VISIT(self->___mypyc_temp__56);
     Py_VISIT(self->_k);
     Py_VISIT(self->_v);
     Py_VISIT(self->_pc_map);
-    Py_VISIT(self->___mypyc_temp__56);
     Py_VISIT(self->___mypyc_temp__57);
-    Py_VISIT(self->___mypyc_temp__60);
+    Py_VISIT(self->___mypyc_temp__58);
+    Py_VISIT(self->___mypyc_temp__61);
     Py_VISIT(self->_key);
     Py_VISIT(self->___mypyc_temp__2_0);
     return 0;
@@ -900,35 +904,35 @@ brownie____get_deployment_gen_clear(y____db___brownie____get_deployment_genObjec
     Py_CLEAR(self->_alias);
     Py_CLEAR(self->_skip_source_keys);
     Py_CLEAR(self->_where_clause);
-    Py_CLEAR(self->___mypyc_temp__41);
-    Py_CLEAR(self->___mypyc_temp__42.f0);
-    Py_CLEAR(self->___mypyc_temp__42.f1);
-    Py_CLEAR(self->___mypyc_temp__42.f2);
-    Py_CLEAR(self->_row);
+    Py_CLEAR(self->___mypyc_temp__42);
     Py_CLEAR(self->___mypyc_temp__43.f0);
     Py_CLEAR(self->___mypyc_temp__43.f1);
     Py_CLEAR(self->___mypyc_temp__43.f2);
+    Py_CLEAR(self->_row);
+    Py_CLEAR(self->___mypyc_temp__44.f0);
+    Py_CLEAR(self->___mypyc_temp__44.f1);
+    Py_CLEAR(self->___mypyc_temp__44.f2);
     Py_CLEAR(self->_build_json);
     Py_CLEAR(self->_path_map);
-    Py_CLEAR(self->___mypyc_temp__44);
     Py_CLEAR(self->___mypyc_temp__45);
-    Py_CLEAR(self->___mypyc_temp__48);
+    Py_CLEAR(self->___mypyc_temp__46);
+    Py_CLEAR(self->___mypyc_temp__49);
     Py_CLEAR(self->_val);
     Py_CLEAR(self->_source_key);
-    Py_CLEAR(self->___mypyc_temp__49);
-    Py_CLEAR(self->___mypyc_temp__50.f0);
-    Py_CLEAR(self->___mypyc_temp__50.f1);
-    Py_CLEAR(self->___mypyc_temp__50.f2);
+    Py_CLEAR(self->___mypyc_temp__50);
+    Py_CLEAR(self->___mypyc_temp__51.f0);
+    Py_CLEAR(self->___mypyc_temp__51.f1);
+    Py_CLEAR(self->___mypyc_temp__51.f2);
     Py_CLEAR(self->_sources);
-    Py_CLEAR(self->___mypyc_temp__51);
     Py_CLEAR(self->___mypyc_temp__52);
-    Py_CLEAR(self->___mypyc_temp__55);
+    Py_CLEAR(self->___mypyc_temp__53);
+    Py_CLEAR(self->___mypyc_temp__56);
     Py_CLEAR(self->_k);
     Py_CLEAR(self->_v);
     Py_CLEAR(self->_pc_map);
-    Py_CLEAR(self->___mypyc_temp__56);
     Py_CLEAR(self->___mypyc_temp__57);
-    Py_CLEAR(self->___mypyc_temp__60);
+    Py_CLEAR(self->___mypyc_temp__58);
+    Py_CLEAR(self->___mypyc_temp__61);
     Py_CLEAR(self->_key);
     Py_CLEAR(self->___mypyc_temp__2_0);
     return 0;
@@ -1010,15 +1014,15 @@ brownie____get_deployment_gen_setup(PyTypeObject *type)
         return NULL;
     self->vtable = brownie____get_deployment_gen_vtable;
     self->___mypyc_next_label__ = -113;
-    self->___mypyc_temp__42 = (tuple_T3OOO) { NULL, NULL, NULL };
     self->___mypyc_temp__43 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__46 = CPY_INT_TAG;
+    self->___mypyc_temp__44 = (tuple_T3OOO) { NULL, NULL, NULL };
     self->___mypyc_temp__47 = CPY_INT_TAG;
-    self->___mypyc_temp__50 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__53 = CPY_INT_TAG;
+    self->___mypyc_temp__48 = CPY_INT_TAG;
+    self->___mypyc_temp__51 = (tuple_T3OOO) { NULL, NULL, NULL };
     self->___mypyc_temp__54 = CPY_INT_TAG;
-    self->___mypyc_temp__58 = CPY_INT_TAG;
+    self->___mypyc_temp__55 = CPY_INT_TAG;
     self->___mypyc_temp__59 = CPY_INT_TAG;
+    self->___mypyc_temp__60 = CPY_INT_TAG;
     return (PyObject *)self;
 }
 
@@ -1051,10 +1055,10 @@ static int
 brownie_____fetch_source_for_hash_gen_traverse(y____db___brownie_____fetch_source_for_hash_genObject *self, visitproc visit, void *arg)
 {
     Py_VISIT(self->_hashval);
-    Py_VISIT(self->___mypyc_temp__61);
-    Py_VISIT(self->___mypyc_temp__62.f0);
-    Py_VISIT(self->___mypyc_temp__62.f1);
-    Py_VISIT(self->___mypyc_temp__62.f2);
+    Py_VISIT(self->___mypyc_temp__62);
+    Py_VISIT(self->___mypyc_temp__63.f0);
+    Py_VISIT(self->___mypyc_temp__63.f1);
+    Py_VISIT(self->___mypyc_temp__63.f2);
     return 0;
 }
 
@@ -1062,10 +1066,10 @@ static int
 brownie_____fetch_source_for_hash_gen_clear(y____db___brownie_____fetch_source_for_hash_genObject *self)
 {
     Py_CLEAR(self->_hashval);
-    Py_CLEAR(self->___mypyc_temp__61);
-    Py_CLEAR(self->___mypyc_temp__62.f0);
-    Py_CLEAR(self->___mypyc_temp__62.f1);
-    Py_CLEAR(self->___mypyc_temp__62.f2);
+    Py_CLEAR(self->___mypyc_temp__62);
+    Py_CLEAR(self->___mypyc_temp__63.f0);
+    Py_CLEAR(self->___mypyc_temp__63.f1);
+    Py_CLEAR(self->___mypyc_temp__63.f2);
     return 0;
 }
 
@@ -1145,7 +1149,7 @@ brownie_____fetch_source_for_hash_gen_setup(PyTypeObject *type)
         return NULL;
     self->vtable = brownie_____fetch_source_for_hash_gen_vtable;
     self->___mypyc_next_label__ = -113;
-    self->___mypyc_temp__62 = (tuple_T3OOO) { NULL, NULL, NULL };
+    self->___mypyc_temp__63 = (tuple_T3OOO) { NULL, NULL, NULL };
     return (PyObject *)self;
 }
 
@@ -1323,181 +1327,189 @@ PyObject *CPyDef_brownie___connect_AsyncCursor_gen_____mypyc_generator_helper__(
     char cpy_r_r12;
     PyObject *cpy_r_r13;
     PyObject *cpy_r_r14;
-    PyObject *cpy_r_r15;
-    char cpy_r_r16;
+    char cpy_r_r15;
+    PyObject *cpy_r_r16;
     PyObject *cpy_r_r17;
-    PyObject *cpy_r_r18;
+    char cpy_r_r18;
     PyObject *cpy_r_r19;
     PyObject *cpy_r_r20;
-    PyObject **cpy_r_r22;
-    PyObject *cpy_r_r23;
-    PyObject *cpy_r_r24;
-    char cpy_r_r25;
+    PyObject *cpy_r_r21;
+    PyObject *cpy_r_r22;
+    PyObject **cpy_r_r24;
+    PyObject *cpy_r_r25;
     PyObject *cpy_r_r26;
-    PyObject *cpy_r_r27;
+    char cpy_r_r27;
     PyObject *cpy_r_r28;
-    char cpy_r_r29;
+    PyObject *cpy_r_r29;
     PyObject *cpy_r_r30;
-    PyObject *cpy_r_r31;
-    PyObject **cpy_r_r33;
-    PyObject *cpy_r_r34;
-    char cpy_r_r35;
-    char cpy_r_r36;
-    PyObject *cpy_r_r37;
+    char cpy_r_r31;
+    PyObject *cpy_r_r32;
+    PyObject *cpy_r_r33;
+    PyObject **cpy_r_r35;
+    PyObject *cpy_r_r36;
+    char cpy_r_r37;
     char cpy_r_r38;
     PyObject *cpy_r_r39;
-    PyObject *cpy_r_r40;
+    char cpy_r_r40;
     PyObject *cpy_r_r41;
     PyObject *cpy_r_r42;
     PyObject *cpy_r_r43;
-    char cpy_r_r44;
+    PyObject *cpy_r_r44;
     PyObject *cpy_r_r45;
     char cpy_r_r46;
     PyObject *cpy_r_r47;
     char cpy_r_r48;
-    tuple_T3OOO cpy_r_r49;
+    PyObject *cpy_r_r49;
     char cpy_r_r50;
-    PyObject **cpy_r_r51;
-    PyObject *cpy_r_r52;
-    char cpy_r_r53;
-    tuple_T3OOO cpy_r_r54;
-    tuple_T3OOO cpy_r_r55;
+    tuple_T3OOO cpy_r_r51;
+    char cpy_r_r52;
+    PyObject **cpy_r_r53;
+    PyObject *cpy_r_r54;
+    char cpy_r_r55;
     tuple_T3OOO cpy_r_r56;
-    char cpy_r_r57;
-    PyObject *cpy_r_r58;
-    PyObject *cpy_r_r59;
+    tuple_T3OOO cpy_r_r57;
+    tuple_T3OOO cpy_r_r58;
+    char cpy_r_r59;
     PyObject *cpy_r_r60;
     PyObject *cpy_r_r61;
     PyObject *cpy_r_r62;
-    char cpy_r_r63;
+    PyObject *cpy_r_r63;
     PyObject *cpy_r_r64;
     PyObject *cpy_r_r65;
     char cpy_r_r66;
     PyObject *cpy_r_r67;
-    PyObject *cpy_r_r68;
+    char cpy_r_r68;
     PyObject *cpy_r_r69;
     PyObject *cpy_r_r70;
     PyObject *cpy_r_r71;
     PyObject *cpy_r_r72;
-    PyObject **cpy_r_r74;
-    PyObject *cpy_r_r75;
-    PyObject *cpy_r_r76;
+    PyObject *cpy_r_r73;
+    PyObject *cpy_r_r74;
+    PyObject **cpy_r_r76;
     PyObject *cpy_r_r77;
-    char cpy_r_r78;
+    PyObject *cpy_r_r78;
     PyObject *cpy_r_r79;
-    PyObject *cpy_r_r80;
+    char cpy_r_r80;
     PyObject *cpy_r_r81;
     PyObject *cpy_r_r82;
     PyObject *cpy_r_r83;
-    char cpy_r_r84;
+    PyObject *cpy_r_r84;
     PyObject *cpy_r_r85;
     char cpy_r_r86;
     PyObject *cpy_r_r87;
     char cpy_r_r88;
-    tuple_T3OOO cpy_r_r89;
+    PyObject *cpy_r_r89;
     char cpy_r_r90;
-    PyObject **cpy_r_r91;
-    PyObject *cpy_r_r92;
-    char cpy_r_r93;
-    tuple_T3OOO cpy_r_r94;
-    tuple_T3OOO cpy_r_r95;
+    tuple_T3OOO cpy_r_r91;
+    char cpy_r_r92;
+    PyObject **cpy_r_r93;
+    PyObject *cpy_r_r94;
+    char cpy_r_r95;
     tuple_T3OOO cpy_r_r96;
-    char cpy_r_r97;
-    PyObject *cpy_r_r98;
-    PyObject *cpy_r_r99;
+    tuple_T3OOO cpy_r_r97;
+    tuple_T3OOO cpy_r_r98;
+    char cpy_r_r99;
     PyObject *cpy_r_r100;
     PyObject *cpy_r_r101;
-    char cpy_r_r102;
+    PyObject *cpy_r_r102;
     PyObject *cpy_r_r103;
-    PyObject *cpy_r_r104;
+    char cpy_r_r104;
     PyObject *cpy_r_r105;
     PyObject *cpy_r_r106;
     PyObject *cpy_r_r107;
     PyObject *cpy_r_r108;
-    char cpy_r_r109;
-    tuple_T3OOO cpy_r_r110;
+    PyObject *cpy_r_r109;
+    PyObject *cpy_r_r110;
     char cpy_r_r111;
-    char cpy_r_r112;
-    tuple_T3OOO cpy_r_r113;
-    PyObject *cpy_r_r114;
-    PyObject *cpy_r_r115;
+    tuple_T3OOO cpy_r_r112;
+    char cpy_r_r113;
+    char cpy_r_r114;
+    tuple_T3OOO cpy_r_r115;
     PyObject *cpy_r_r116;
     PyObject *cpy_r_r117;
     PyObject *cpy_r_r118;
-    PyObject **cpy_r_r120;
-    PyObject *cpy_r_r121;
-    PyObject *cpy_r_r122;
-    char cpy_r_r123;
+    PyObject *cpy_r_r119;
+    PyObject *cpy_r_r120;
+    PyObject **cpy_r_r122;
+    PyObject *cpy_r_r123;
     PyObject *cpy_r_r124;
-    PyObject *cpy_r_r125;
+    char cpy_r_r125;
     PyObject *cpy_r_r126;
     PyObject *cpy_r_r127;
     PyObject *cpy_r_r128;
-    char cpy_r_r129;
+    PyObject *cpy_r_r129;
     PyObject *cpy_r_r130;
     char cpy_r_r131;
     PyObject *cpy_r_r132;
     char cpy_r_r133;
-    tuple_T3OOO cpy_r_r134;
+    PyObject *cpy_r_r134;
     char cpy_r_r135;
-    PyObject **cpy_r_r136;
-    PyObject *cpy_r_r137;
-    char cpy_r_r138;
-    tuple_T3OOO cpy_r_r139;
-    tuple_T3OOO cpy_r_r140;
+    tuple_T3OOO cpy_r_r136;
+    char cpy_r_r137;
+    PyObject **cpy_r_r138;
+    PyObject *cpy_r_r139;
+    char cpy_r_r140;
     tuple_T3OOO cpy_r_r141;
-    char cpy_r_r142;
-    PyObject *cpy_r_r143;
-    PyObject *cpy_r_r144;
+    tuple_T3OOO cpy_r_r142;
+    tuple_T3OOO cpy_r_r143;
+    char cpy_r_r144;
     PyObject *cpy_r_r145;
-    int32_t cpy_r_r146;
-    char cpy_r_r147;
-    char cpy_r_r148;
-    tuple_T3OOO cpy_r_r149;
-    tuple_T3OOO cpy_r_r150;
-    char cpy_r_r151;
+    PyObject *cpy_r_r146;
+    PyObject *cpy_r_r147;
+    int32_t cpy_r_r148;
+    char cpy_r_r149;
+    char cpy_r_r150;
+    tuple_T3OOO cpy_r_r151;
     tuple_T3OOO cpy_r_r152;
-    tuple_T3OOO cpy_r_r153;
-    char cpy_r_r154;
-    PyObject *cpy_r_r155;
-    PyObject *cpy_r_r156;
+    char cpy_r_r153;
+    PyObject *cpy_r_r154;
+    char cpy_r_r155;
+    tuple_T3OOO cpy_r_r156;
     PyObject *cpy_r_r157;
-    PyObject **cpy_r_r159;
-    PyObject *cpy_r_r160;
+    char cpy_r_r158;
+    tuple_T3OOO cpy_r_r159;
+    char cpy_r_r160;
     PyObject *cpy_r_r161;
-    char cpy_r_r162;
+    PyObject *cpy_r_r162;
     PyObject *cpy_r_r163;
-    PyObject *cpy_r_r164;
-    PyObject *cpy_r_r165;
+    PyObject **cpy_r_r165;
     PyObject *cpy_r_r166;
     PyObject *cpy_r_r167;
     char cpy_r_r168;
     PyObject *cpy_r_r169;
-    char cpy_r_r170;
+    PyObject *cpy_r_r170;
     PyObject *cpy_r_r171;
-    char cpy_r_r172;
-    tuple_T3OOO cpy_r_r173;
+    PyObject *cpy_r_r172;
+    PyObject *cpy_r_r173;
     char cpy_r_r174;
-    PyObject **cpy_r_r175;
-    PyObject *cpy_r_r176;
-    char cpy_r_r177;
-    tuple_T3OOO cpy_r_r178;
+    PyObject *cpy_r_r175;
+    char cpy_r_r176;
+    PyObject *cpy_r_r177;
+    char cpy_r_r178;
     tuple_T3OOO cpy_r_r179;
-    tuple_T3OOO cpy_r_r180;
-    char cpy_r_r181;
+    char cpy_r_r180;
+    PyObject **cpy_r_r181;
     PyObject *cpy_r_r182;
-    PyObject *cpy_r_r183;
-    PyObject *cpy_r_r184;
-    char cpy_r_r185;
-    PyObject *cpy_r_r186;
+    char cpy_r_r183;
+    tuple_T3OOO cpy_r_r184;
+    tuple_T3OOO cpy_r_r185;
+    tuple_T3OOO cpy_r_r186;
     char cpy_r_r187;
-    char cpy_r_r188;
-    char cpy_r_r189;
-    char cpy_r_r190;
-    char cpy_r_r191;
+    PyObject *cpy_r_r188;
+    PyObject *cpy_r_r189;
+    PyObject *cpy_r_r190;
+    PyObject *cpy_r_r191;
     char cpy_r_r192;
     char cpy_r_r193;
     PyObject *cpy_r_r194;
+    char cpy_r_r195;
+    char cpy_r_r196;
+    char cpy_r_r197;
+    char cpy_r_r198;
+    char cpy_r_r199;
+    char cpy_r_r200;
+    char cpy_r_r201;
+    PyObject *cpy_r_r202;
     cpy_r_r0 = NULL;
     cpy_r_r1 = cpy_r_r0;
     cpy_r_r2 = NULL;
@@ -1510,7 +1522,7 @@ PyObject *CPyDef_brownie___connect_AsyncCursor_gen_____mypyc_generator_helper__(
     cpy_r_r8 = __tmp3;
     cpy_r_r9 = cpy_r_r8;
     cpy_r_r10 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__;
-    goto CPyL174;
+    goto CPyL182;
 CPyL1: ;
     cpy_r_r11 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r12 = cpy_r_type != cpy_r_r11;
@@ -1518,1186 +1530,1237 @@ CPyL1: ;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", 97, CPyStatic_brownie___globals);
-        goto CPyL181;
+        goto CPyL189;
     }
     CPy_Unreachable();
 CPyL4: ;
     cpy_r_r13 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
     if (unlikely(cpy_r_r13 == NULL)) {
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 99, CPyStatic_brownie___globals);
-        goto CPyL181;
+        goto CPyL189;
     }
     CPy_INCREF_NO_IMM(cpy_r_r13);
 CPyL5: ;
     cpy_r_r14 = ((y____db___brownie___AsyncCursorObject *)cpy_r_r13)->__db;
-    cpy_r_r15 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r16 = cpy_r_r14 != cpy_r_r15;
+    CPy_INCREF(cpy_r_r14);
     CPy_DECREF_NO_IMM(cpy_r_r13);
-    if (!cpy_r_r16) goto CPyL10;
-    cpy_r_r17 = CPyStatics[3]; /* 'already connected' */
-    cpy_r_r18 = CPyModule_builtins;
-    cpy_r_r19 = CPyStatics[4]; /* 'RuntimeError' */
-    cpy_r_r20 = CPyObject_GetAttr(cpy_r_r18, cpy_r_r19);
-    if (unlikely(cpy_r_r20 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 100, CPyStatic_brownie___globals);
-        goto CPyL181;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_db != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_db);
     }
-    PyObject *cpy_r_r21[1] = {cpy_r_r17};
-    cpy_r_r22 = (PyObject **)&cpy_r_r21;
-    cpy_r_r23 = PyObject_Vectorcall(cpy_r_r20, cpy_r_r22, 1, 0);
-    CPy_DECREF(cpy_r_r20);
-    if (unlikely(cpy_r_r23 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 100, CPyStatic_brownie___globals);
-        goto CPyL181;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_db = cpy_r_r14;
+    cpy_r_r15 = 1;
+    if (unlikely(!cpy_r_r15)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 99, CPyStatic_brownie___globals);
+        goto CPyL189;
     }
-    CPy_Raise(cpy_r_r23);
-    CPy_DECREF(cpy_r_r23);
+    cpy_r_r16 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_db;
+    if (unlikely(cpy_r_r16 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "db", 100, CPyStatic_brownie___globals);
+        goto CPyL189;
+    }
+    CPy_INCREF(cpy_r_r16);
+CPyL7: ;
+    cpy_r_r17 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r18 = cpy_r_r16 != cpy_r_r17;
+    CPy_DECREF(cpy_r_r16);
+    if (!cpy_r_r18) goto CPyL12;
+    cpy_r_r19 = CPyStatics[3]; /* 'already connected' */
+    cpy_r_r20 = CPyModule_builtins;
+    cpy_r_r21 = CPyStatics[4]; /* 'RuntimeError' */
+    cpy_r_r22 = CPyObject_GetAttr(cpy_r_r20, cpy_r_r21);
+    if (unlikely(cpy_r_r22 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
+        goto CPyL189;
+    }
+    PyObject *cpy_r_r23[1] = {cpy_r_r19};
+    cpy_r_r24 = (PyObject **)&cpy_r_r23;
+    cpy_r_r25 = PyObject_Vectorcall(cpy_r_r22, cpy_r_r24, 1, 0);
+    CPy_DECREF(cpy_r_r22);
+    if (unlikely(cpy_r_r25 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
+        goto CPyL189;
+    }
+    CPy_Raise(cpy_r_r25);
+    CPy_DECREF(cpy_r_r25);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 100, CPyStatic_brownie___globals);
-        goto CPyL181;
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
+        goto CPyL189;
     }
     CPy_Unreachable();
-CPyL10: ;
-    cpy_r_r24 = CPyStatic_brownie___sqlite_lock;
-    if (likely(cpy_r_r24 != NULL)) goto CPyL13;
+CPyL12: ;
+    cpy_r_r26 = CPyStatic_brownie___sqlite_lock;
+    if (likely(cpy_r_r26 != NULL)) goto CPyL15;
     PyErr_SetString(PyExc_NameError, "value for final name \"sqlite_lock\" was not set");
-    cpy_r_r25 = 0;
-    if (unlikely(!cpy_r_r25)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL181;
+    cpy_r_r27 = 0;
+    if (unlikely(!cpy_r_r27)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL189;
     }
     CPy_Unreachable();
-CPyL13: ;
-    cpy_r_r26 = PyObject_Type(cpy_r_r24);
-    cpy_r_r27 = CPyStatics[5]; /* '__aexit__' */
-    cpy_r_r28 = CPyObject_GetAttr(cpy_r_r26, cpy_r_r27);
-    if (unlikely(cpy_r_r28 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL182;
+CPyL15: ;
+    cpy_r_r28 = PyObject_Type(cpy_r_r26);
+    cpy_r_r29 = CPyStatics[5]; /* '__aexit__' */
+    cpy_r_r30 = CPyObject_GetAttr(cpy_r_r28, cpy_r_r29);
+    if (unlikely(cpy_r_r30 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL190;
     }
     if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0 != NULL) {
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0);
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0 = cpy_r_r28;
-    cpy_r_r29 = 1;
-    if (unlikely(!cpy_r_r29)) {
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0 = cpy_r_r30;
+    cpy_r_r31 = 1;
+    if (unlikely(!cpy_r_r31)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL182;
+        goto CPyL190;
     }
-    cpy_r_r30 = CPyStatics[6]; /* '__aenter__' */
-    cpy_r_r31 = CPyObject_GetAttr(cpy_r_r26, cpy_r_r30);
-    CPy_DECREF(cpy_r_r26);
-    if (unlikely(cpy_r_r31 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL181;
+    cpy_r_r32 = CPyStatics[6]; /* '__aenter__' */
+    cpy_r_r33 = CPyObject_GetAttr(cpy_r_r28, cpy_r_r32);
+    CPy_DECREF(cpy_r_r28);
+    if (unlikely(cpy_r_r33 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL189;
     }
-    PyObject *cpy_r_r32[1] = {cpy_r_r24};
-    cpy_r_r33 = (PyObject **)&cpy_r_r32;
-    cpy_r_r34 = PyObject_Vectorcall(cpy_r_r31, cpy_r_r33, 1, 0);
-    CPy_DECREF(cpy_r_r31);
-    if (unlikely(cpy_r_r34 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL181;
+    PyObject *cpy_r_r34[1] = {cpy_r_r26};
+    cpy_r_r35 = (PyObject **)&cpy_r_r34;
+    cpy_r_r36 = PyObject_Vectorcall(cpy_r_r33, cpy_r_r35, 1, 0);
+    CPy_DECREF(cpy_r_r33);
+    if (unlikely(cpy_r_r36 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL189;
     }
-    CPy_INCREF(cpy_r_r24);
+    CPy_INCREF(cpy_r_r26);
     if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1 != NULL) {
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1);
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1 = cpy_r_r24;
-    cpy_r_r35 = 1;
-    if (unlikely(!cpy_r_r35)) {
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1 = cpy_r_r26;
+    cpy_r_r37 = 1;
+    if (unlikely(!cpy_r_r37)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL183;
+        goto CPyL191;
     }
     ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2 = 1;
-    cpy_r_r36 = 1;
-    if (unlikely(!cpy_r_r36)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL183;
-    }
-    cpy_r_r37 = CPy_GetCoro(cpy_r_r34);
-    CPy_DECREF(cpy_r_r34);
-    if (unlikely(cpy_r_r37 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL181;
-    }
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3);
-    }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3 = cpy_r_r37;
     cpy_r_r38 = 1;
     if (unlikely(!cpy_r_r38)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL181;
+        goto CPyL191;
     }
-    cpy_r_r39 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
+    cpy_r_r39 = CPy_GetCoro(cpy_r_r36);
+    CPy_DECREF(cpy_r_r36);
     if (unlikely(cpy_r_r39 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__3", -1, CPyStatic_brownie___globals);
-        goto CPyL181;
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL189;
     }
-    CPy_INCREF(cpy_r_r39);
-CPyL22: ;
-    cpy_r_r40 = CPyIter_Next(cpy_r_r39);
-    CPy_DECREF(cpy_r_r39);
-    if (cpy_r_r40 != NULL) goto CPyL25;
-    cpy_r_r41 = CPy_FetchStopIterationValue();
-    if (unlikely(cpy_r_r41 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL181;
-    }
-    cpy_r_r42 = cpy_r_r41;
-    CPy_DECREF(cpy_r_r42);
-    cpy_r_r43 = NULL;
     if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3 != NULL) {
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3);
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3 = cpy_r_r43;
-    cpy_r_r44 = 1;
-    if (unlikely(!cpy_r_r44)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL181;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3 = cpy_r_r39;
+    cpy_r_r40 = 1;
+    if (unlikely(!cpy_r_r40)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
+        goto CPyL189;
+    }
+    cpy_r_r41 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
+    if (unlikely(cpy_r_r41 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__3", -1, CPyStatic_brownie___globals);
+        goto CPyL189;
+    }
+    CPy_INCREF(cpy_r_r41);
+CPyL24: ;
+    cpy_r_r42 = CPyIter_Next(cpy_r_r41);
+    CPy_DECREF(cpy_r_r41);
+    if (cpy_r_r42 != NULL) goto CPyL27;
+    cpy_r_r43 = CPy_FetchStopIterationValue();
+    if (unlikely(cpy_r_r43 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL189;
+    }
+    cpy_r_r44 = cpy_r_r43;
+    CPy_DECREF(cpy_r_r44);
+    cpy_r_r45 = NULL;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3 = cpy_r_r45;
+    cpy_r_r46 = 1;
+    if (unlikely(!cpy_r_r46)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL189;
     } else
-        goto CPyL47;
-CPyL25: ;
-    cpy_r_r45 = cpy_r_r40;
-CPyL26: ;
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = 1;
-    return cpy_r_r45;
+        goto CPyL49;
 CPyL27: ;
-    cpy_r_r47 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r48 = cpy_r_type != cpy_r_r47;
-    if (!cpy_r_r48) goto CPyL184;
+    cpy_r_r47 = cpy_r_r42;
+CPyL28: ;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = 1;
+    return cpy_r_r47;
+CPyL29: ;
+    cpy_r_r49 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r50 = cpy_r_type != cpy_r_r49;
+    if (!cpy_r_r50) goto CPyL192;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL31;
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL33;
     } else
-        goto CPyL185;
-CPyL29: ;
-    CPy_Unreachable();
-CPyL30: ;
-    CPy_INCREF(cpy_r_arg);
-    goto CPyL42;
+        goto CPyL193;
 CPyL31: ;
-    cpy_r_r49 = CPy_CatchError();
+    CPy_Unreachable();
+CPyL32: ;
+    CPy_INCREF(cpy_r_arg);
+    goto CPyL44;
+CPyL33: ;
+    cpy_r_r51 = CPy_CatchError();
     if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4.f0 != NULL) {
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4.f0);
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4.f1);
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4.f2);
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4 = cpy_r_r49;
-    cpy_r_r50 = 1;
-    if (unlikely(!cpy_r_r50)) {
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4 = cpy_r_r51;
+    cpy_r_r52 = 1;
+    if (unlikely(!cpy_r_r52)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL186;
+        goto CPyL194;
     }
-    cpy_r_r51 = (PyObject **)&cpy_r_r1;
-    cpy_r_r52 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
-    if (unlikely(cpy_r_r52 == NULL)) {
+    cpy_r_r53 = (PyObject **)&cpy_r_r1;
+    cpy_r_r54 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
+    if (unlikely(cpy_r_r54 == NULL)) {
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__3", -1, CPyStatic_brownie___globals);
-        goto CPyL186;
+        goto CPyL194;
     }
-    CPy_INCREF(cpy_r_r52);
-CPyL33: ;
-    cpy_r_r53 = CPy_YieldFromErrorHandle(cpy_r_r52, cpy_r_r51);
-    CPy_DecRef(cpy_r_r52);
-    if (unlikely(cpy_r_r53 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL186;
+    CPy_INCREF(cpy_r_r54);
+CPyL35: ;
+    cpy_r_r55 = CPy_YieldFromErrorHandle(cpy_r_r54, cpy_r_r53);
+    CPy_DecRef(cpy_r_r54);
+    if (unlikely(cpy_r_r55 == 2)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL194;
     }
-    if (cpy_r_r53) goto CPyL37;
-    cpy_r_r45 = cpy_r_r1;
-    cpy_r_r54 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
-    if (unlikely(cpy_r_r54.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__4", -1, CPyStatic_brownie___globals);
-        goto CPyL187;
-    }
-    CPy_INCREF(cpy_r_r54.f0);
-    CPy_INCREF(cpy_r_r54.f1);
-    CPy_INCREF(cpy_r_r54.f2);
-CPyL36: ;
-    CPy_RestoreExcInfo(cpy_r_r54);
-    CPy_DecRef(cpy_r_r54.f0);
-    CPy_DecRef(cpy_r_r54.f1);
-    CPy_DecRef(cpy_r_r54.f2);
-    goto CPyL26;
-CPyL37: ;
-    cpy_r_r42 = cpy_r_r1;
-    CPy_DecRef(cpy_r_r42);
-    cpy_r_r55 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
-    if (unlikely(cpy_r_r55.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__4", -1, CPyStatic_brownie___globals);
-        goto CPyL39;
-    }
-    CPy_INCREF(cpy_r_r55.f0);
-    CPy_INCREF(cpy_r_r55.f1);
-    CPy_INCREF(cpy_r_r55.f2);
-CPyL38: ;
-    CPy_RestoreExcInfo(cpy_r_r55);
-    CPy_DecRef(cpy_r_r55.f0);
-    CPy_DecRef(cpy_r_r55.f1);
-    CPy_DecRef(cpy_r_r55.f2);
-    goto CPyL47;
-CPyL39: ;
+    if (cpy_r_r55) goto CPyL39;
+    cpy_r_r47 = cpy_r_r1;
     cpy_r_r56 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
     if (unlikely(cpy_r_r56.f0 == NULL)) {
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__4", -1, CPyStatic_brownie___globals);
-        goto CPyL181;
+        goto CPyL195;
     }
     CPy_INCREF(cpy_r_r56.f0);
     CPy_INCREF(cpy_r_r56.f1);
     CPy_INCREF(cpy_r_r56.f2);
-CPyL40: ;
+CPyL38: ;
     CPy_RestoreExcInfo(cpy_r_r56);
     CPy_DecRef(cpy_r_r56.f0);
     CPy_DecRef(cpy_r_r56.f1);
     CPy_DecRef(cpy_r_r56.f2);
-    cpy_r_r57 = CPy_KeepPropagating();
-    if (!cpy_r_r57) goto CPyL181;
-    CPy_Unreachable();
+    goto CPyL28;
+CPyL39: ;
+    cpy_r_r44 = cpy_r_r1;
+    CPy_DecRef(cpy_r_r44);
+    cpy_r_r57 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
+    if (unlikely(cpy_r_r57.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__4", -1, CPyStatic_brownie___globals);
+        goto CPyL41;
+    }
+    CPy_INCREF(cpy_r_r57.f0);
+    CPy_INCREF(cpy_r_r57.f1);
+    CPy_INCREF(cpy_r_r57.f2);
+CPyL40: ;
+    CPy_RestoreExcInfo(cpy_r_r57);
+    CPy_DecRef(cpy_r_r57.f0);
+    CPy_DecRef(cpy_r_r57.f1);
+    CPy_DecRef(cpy_r_r57.f2);
+    goto CPyL49;
+CPyL41: ;
+    cpy_r_r58 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
+    if (unlikely(cpy_r_r58.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__4", -1, CPyStatic_brownie___globals);
+        goto CPyL189;
+    }
+    CPy_INCREF(cpy_r_r58.f0);
+    CPy_INCREF(cpy_r_r58.f1);
+    CPy_INCREF(cpy_r_r58.f2);
 CPyL42: ;
-    cpy_r_r58 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
-    if (unlikely(cpy_r_r58 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__3", -1, CPyStatic_brownie___globals);
-        goto CPyL188;
-    }
-    CPy_INCREF(cpy_r_r58);
-CPyL43: ;
-    cpy_r_r59 = CPyIter_Send(cpy_r_r58, cpy_r_arg);
-    CPy_DECREF(cpy_r_r58);
-    CPy_DECREF(cpy_r_arg);
-    if (cpy_r_r59 == NULL) goto CPyL45;
-    cpy_r_r45 = cpy_r_r59;
-    goto CPyL26;
-CPyL45: ;
-    cpy_r_r60 = CPy_FetchStopIterationValue();
+    CPy_RestoreExcInfo(cpy_r_r58);
+    CPy_DecRef(cpy_r_r58.f0);
+    CPy_DecRef(cpy_r_r58.f1);
+    CPy_DecRef(cpy_r_r58.f2);
+    cpy_r_r59 = CPy_KeepPropagating();
+    if (!cpy_r_r59) goto CPyL189;
+    CPy_Unreachable();
+CPyL44: ;
+    cpy_r_r60 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
     if (unlikely(cpy_r_r60 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL181;
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__3", -1, CPyStatic_brownie___globals);
+        goto CPyL196;
     }
-    cpy_r_r42 = cpy_r_r60;
-    CPy_DECREF(cpy_r_r42);
+    CPy_INCREF(cpy_r_r60);
+CPyL45: ;
+    cpy_r_r61 = CPyIter_Send(cpy_r_r60, cpy_r_arg);
+    CPy_DECREF(cpy_r_r60);
+    CPy_DECREF(cpy_r_arg);
+    if (cpy_r_r61 == NULL) goto CPyL47;
+    cpy_r_r47 = cpy_r_r61;
+    goto CPyL28;
 CPyL47: ;
-    cpy_r_r61 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
-    if (unlikely(cpy_r_r61 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 102, CPyStatic_brownie___globals);
-        goto CPyL87;
-    }
-    CPy_INCREF_NO_IMM(cpy_r_r61);
-CPyL48: ;
-    cpy_r_r62 = ((y____db___brownie___AsyncCursorObject *)cpy_r_r61)->__db;
-    if (unlikely(cpy_r_r62 != Py_None)) {
-        CPy_TypeError("None", cpy_r_r62); cpy_r_r63 = 2;
-    } else
-        cpy_r_r63 = 1;
-    if (unlikely(cpy_r_r63 == 2)) {
+    cpy_r_r62 = CPy_FetchStopIterationValue();
+    if (unlikely(cpy_r_r62 == NULL)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
         goto CPyL189;
     }
-    cpy_r_r64 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r65 = Py_None;
-    cpy_r_r66 = cpy_r_r65 == cpy_r_r64;
-    CPy_DECREF_NO_IMM(cpy_r_r61);
-    if (!cpy_r_r66) goto CPyL129;
-    cpy_r_r67 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
-    if (unlikely(cpy_r_r67 == NULL)) {
+    cpy_r_r44 = cpy_r_r62;
+    CPy_DECREF(cpy_r_r44);
+CPyL49: ;
+    cpy_r_r63 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
+    if (unlikely(cpy_r_r63 == NULL)) {
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 103, CPyStatic_brownie___globals);
-        goto CPyL87;
+        goto CPyL89;
     }
-    CPy_INCREF_NO_IMM(cpy_r_r67);
-CPyL51: ;
-    cpy_r_r68 = ((y____db___brownie___AsyncCursorObject *)cpy_r_r67)->__filename;
-    CPy_INCREF(cpy_r_r68);
-    CPy_DECREF_NO_IMM(cpy_r_r67);
-    cpy_r_r69 = CPyModule_aiosqlite;
-    cpy_r_r70 = CPyStatics[7]; /* 'connect' */
-    cpy_r_r71 = CPyObject_GetAttr(cpy_r_r69, cpy_r_r70);
-    if (unlikely(cpy_r_r71 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 103, CPyStatic_brownie___globals);
-        goto CPyL190;
-    }
-    cpy_r_r72 = Py_None;
-    PyObject *cpy_r_r73[2] = {cpy_r_r68, cpy_r_r72};
-    cpy_r_r74 = (PyObject **)&cpy_r_r73;
-    cpy_r_r75 = CPyStatics[568]; /* ('isolation_level',) */
-    cpy_r_r76 = PyObject_Vectorcall(cpy_r_r71, cpy_r_r74, 1, cpy_r_r75);
-    CPy_DECREF(cpy_r_r71);
-    if (unlikely(cpy_r_r76 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 103, CPyStatic_brownie___globals);
-        goto CPyL190;
-    }
-    CPy_DECREF(cpy_r_r68);
-    cpy_r_r77 = CPy_GetCoro(cpy_r_r76);
-    CPy_DECREF(cpy_r_r76);
-    if (unlikely(cpy_r_r77 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 103, CPyStatic_brownie___globals);
-        goto CPyL87;
-    }
+    CPy_INCREF_NO_IMM(cpy_r_r63);
+CPyL50: ;
+    cpy_r_r64 = ((y____db___brownie___AsyncCursorObject *)cpy_r_r63)->__db;
+    cpy_r_r65 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r66 = cpy_r_r64 != cpy_r_r65;
+    CPy_DECREF_NO_IMM(cpy_r_r63);
+    if (!cpy_r_r66) goto CPyL52;
+    cpy_r_r67 = Py_None;
     if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 != NULL) {
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5);
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 = cpy_r_r77;
-    cpy_r_r78 = 1;
-    if (unlikely(!cpy_r_r78)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL87;
-    }
-    cpy_r_r79 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5;
-    if (unlikely(cpy_r_r79 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__5", -1, CPyStatic_brownie___globals);
-        goto CPyL87;
-    }
-    CPy_INCREF(cpy_r_r79);
-CPyL56: ;
-    cpy_r_r80 = CPyIter_Next(cpy_r_r79);
-    CPy_DECREF(cpy_r_r79);
-    if (cpy_r_r80 != NULL) goto CPyL59;
-    cpy_r_r81 = CPy_FetchStopIterationValue();
-    if (unlikely(cpy_r_r81 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 103, CPyStatic_brownie___globals);
-        goto CPyL87;
-    }
-    cpy_r_r82 = cpy_r_r81;
-    cpy_r_r83 = NULL;
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5);
-    }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 = cpy_r_r83;
-    cpy_r_r84 = 1;
-    if (unlikely(!cpy_r_r84)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 103, CPyStatic_brownie___globals);
-        goto CPyL191;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 = cpy_r_r67;
+    cpy_r_r68 = 1;
+    if (unlikely(!cpy_r_r68)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 104, CPyStatic_brownie___globals);
+        goto CPyL89;
     } else
-        goto CPyL81;
-CPyL59: ;
-    cpy_r_r85 = cpy_r_r80;
-CPyL60: ;
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = 2;
-    return cpy_r_r85;
-CPyL61: ;
-    cpy_r_r87 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r88 = cpy_r_type != cpy_r_r87;
-    if (!cpy_r_r88) goto CPyL192;
-    CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
-    if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 103, CPyStatic_brownie___globals);
-        goto CPyL65;
-    } else
-        goto CPyL193;
-CPyL63: ;
-    CPy_Unreachable();
-CPyL64: ;
-    CPy_INCREF(cpy_r_arg);
-    goto CPyL76;
-CPyL65: ;
-    cpy_r_r89 = CPy_CatchError();
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6.f0);
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6.f1);
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6.f2);
+        goto CPyL132;
+CPyL52: ;
+    cpy_r_r69 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
+    if (unlikely(cpy_r_r69 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 105, CPyStatic_brownie___globals);
+        goto CPyL89;
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6 = cpy_r_r89;
-    cpy_r_r90 = 1;
-    if (unlikely(!cpy_r_r90)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL194;
-    }
-    cpy_r_r91 = (PyObject **)&cpy_r_r3;
-    cpy_r_r92 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5;
-    if (unlikely(cpy_r_r92 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__5", -1, CPyStatic_brownie___globals);
-        goto CPyL194;
-    }
-    CPy_INCREF(cpy_r_r92);
-CPyL67: ;
-    cpy_r_r93 = CPy_YieldFromErrorHandle(cpy_r_r92, cpy_r_r91);
-    CPy_DecRef(cpy_r_r92);
-    if (unlikely(cpy_r_r93 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 103, CPyStatic_brownie___globals);
-        goto CPyL194;
-    }
-    if (cpy_r_r93) goto CPyL71;
-    cpy_r_r85 = cpy_r_r3;
-    cpy_r_r94 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6;
-    if (unlikely(cpy_r_r94.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__6", -1, CPyStatic_brownie___globals);
-        goto CPyL195;
-    }
-    CPy_INCREF(cpy_r_r94.f0);
-    CPy_INCREF(cpy_r_r94.f1);
-    CPy_INCREF(cpy_r_r94.f2);
-CPyL70: ;
-    CPy_RestoreExcInfo(cpy_r_r94);
-    CPy_DecRef(cpy_r_r94.f0);
-    CPy_DecRef(cpy_r_r94.f1);
-    CPy_DecRef(cpy_r_r94.f2);
-    goto CPyL60;
-CPyL71: ;
-    cpy_r_r82 = cpy_r_r3;
-    cpy_r_r95 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6;
-    if (unlikely(cpy_r_r95.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__6", -1, CPyStatic_brownie___globals);
-        goto CPyL196;
-    }
-    CPy_INCREF(cpy_r_r95.f0);
-    CPy_INCREF(cpy_r_r95.f1);
-    CPy_INCREF(cpy_r_r95.f2);
-CPyL72: ;
-    CPy_RestoreExcInfo(cpy_r_r95);
-    CPy_DecRef(cpy_r_r95.f0);
-    CPy_DecRef(cpy_r_r95.f1);
-    CPy_DecRef(cpy_r_r95.f2);
-    goto CPyL81;
-CPyL73: ;
-    cpy_r_r96 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6;
-    if (unlikely(cpy_r_r96.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__6", -1, CPyStatic_brownie___globals);
-        goto CPyL87;
-    }
-    CPy_INCREF(cpy_r_r96.f0);
-    CPy_INCREF(cpy_r_r96.f1);
-    CPy_INCREF(cpy_r_r96.f2);
-CPyL74: ;
-    CPy_RestoreExcInfo(cpy_r_r96);
-    CPy_DecRef(cpy_r_r96.f0);
-    CPy_DecRef(cpy_r_r96.f1);
-    CPy_DecRef(cpy_r_r96.f2);
-    cpy_r_r97 = CPy_KeepPropagating();
-    if (!cpy_r_r97) goto CPyL87;
-    CPy_Unreachable();
-CPyL76: ;
-    cpy_r_r98 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5;
-    if (unlikely(cpy_r_r98 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__5", -1, CPyStatic_brownie___globals);
+    CPy_INCREF_NO_IMM(cpy_r_r69);
+CPyL53: ;
+    cpy_r_r70 = ((y____db___brownie___AsyncCursorObject *)cpy_r_r69)->__filename;
+    CPy_INCREF(cpy_r_r70);
+    CPy_DECREF_NO_IMM(cpy_r_r69);
+    cpy_r_r71 = CPyModule_aiosqlite;
+    cpy_r_r72 = CPyStatics[7]; /* 'connect' */
+    cpy_r_r73 = CPyObject_GetAttr(cpy_r_r71, cpy_r_r72);
+    if (unlikely(cpy_r_r73 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 105, CPyStatic_brownie___globals);
         goto CPyL197;
     }
-    CPy_INCREF(cpy_r_r98);
-CPyL77: ;
-    cpy_r_r99 = CPyIter_Send(cpy_r_r98, cpy_r_arg);
-    CPy_DECREF(cpy_r_r98);
-    CPy_DECREF(cpy_r_arg);
-    if (cpy_r_r99 == NULL) goto CPyL79;
-    cpy_r_r85 = cpy_r_r99;
-    goto CPyL60;
-CPyL79: ;
-    cpy_r_r100 = CPy_FetchStopIterationValue();
-    if (unlikely(cpy_r_r100 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 103, CPyStatic_brownie___globals);
-        goto CPyL87;
+    cpy_r_r74 = Py_None;
+    PyObject *cpy_r_r75[2] = {cpy_r_r70, cpy_r_r74};
+    cpy_r_r76 = (PyObject **)&cpy_r_r75;
+    cpy_r_r77 = CPyStatics[568]; /* ('isolation_level',) */
+    cpy_r_r78 = PyObject_Vectorcall(cpy_r_r73, cpy_r_r76, 1, cpy_r_r77);
+    CPy_DECREF(cpy_r_r73);
+    if (unlikely(cpy_r_r78 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 105, CPyStatic_brownie___globals);
+        goto CPyL197;
     }
-    cpy_r_r82 = cpy_r_r100;
-CPyL81: ;
-    cpy_r_r101 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
-    if (unlikely(cpy_r_r101 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 103, CPyStatic_brownie___globals);
-        goto CPyL191;
+    CPy_DECREF(cpy_r_r70);
+    cpy_r_r79 = CPy_GetCoro(cpy_r_r78);
+    CPy_DECREF(cpy_r_r78);
+    if (unlikely(cpy_r_r79 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 105, CPyStatic_brownie___globals);
+        goto CPyL89;
     }
-    CPy_INCREF_NO_IMM(cpy_r_r101);
-CPyL82: ;
-    CPy_DECREF(((y____db___brownie___AsyncCursorObject *)cpy_r_r101)->__db);
-    ((y____db___brownie___AsyncCursorObject *)cpy_r_r101)->__db = cpy_r_r82;
-    CPy_DECREF_NO_IMM(cpy_r_r101);
-    cpy_r_r103 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
-    if (unlikely(cpy_r_r103 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 104, CPyStatic_brownie___globals);
-        goto CPyL87;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6);
     }
-    CPy_INCREF_NO_IMM(cpy_r_r103);
-CPyL83: ;
-    cpy_r_r104 = ((y____db___brownie___AsyncCursorObject *)cpy_r_r103)->__db;
-    CPy_INCREF(cpy_r_r104);
-    CPy_DECREF_NO_IMM(cpy_r_r103);
-    cpy_r_r105 = cpy_r_r104;
-    cpy_r_r106 = CPyStatics[9]; /* 'execute' */
-    cpy_r_r107 = CPyObject_GetAttr(cpy_r_r105, cpy_r_r106);
-    CPy_DECREF(cpy_r_r105);
-    if (unlikely(cpy_r_r107 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 104, CPyStatic_brownie___globals);
-        goto CPyL87;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6 = cpy_r_r79;
+    cpy_r_r80 = 1;
+    if (unlikely(!cpy_r_r80)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
+        goto CPyL89;
     }
-    cpy_r_r108 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
-    if (unlikely(cpy_r_r108 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 104, CPyStatic_brownie___globals);
+    cpy_r_r81 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6;
+    if (unlikely(cpy_r_r81 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__6", -1, CPyStatic_brownie___globals);
+        goto CPyL89;
+    }
+    CPy_INCREF(cpy_r_r81);
+CPyL58: ;
+    cpy_r_r82 = CPyIter_Next(cpy_r_r81);
+    CPy_DECREF(cpy_r_r81);
+    if (cpy_r_r82 != NULL) goto CPyL61;
+    cpy_r_r83 = CPy_FetchStopIterationValue();
+    if (unlikely(cpy_r_r83 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 105, CPyStatic_brownie___globals);
+        goto CPyL89;
+    }
+    cpy_r_r84 = cpy_r_r83;
+    cpy_r_r85 = NULL;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6 = cpy_r_r85;
+    cpy_r_r86 = 1;
+    if (unlikely(!cpy_r_r86)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 105, CPyStatic_brownie___globals);
         goto CPyL198;
-    }
-    CPy_INCREF_NO_IMM(cpy_r_r108);
-CPyL86: ;
-    CPy_DECREF(((y____db___brownie___AsyncCursorObject *)cpy_r_r108)->__execute);
-    ((y____db___brownie___AsyncCursorObject *)cpy_r_r108)->__execute = cpy_r_r107;
-    CPy_DECREF_NO_IMM(cpy_r_r108);
-    goto CPyL129;
-CPyL87: ;
-    cpy_r_r110 = CPy_CatchError();
+    } else
+        goto CPyL83;
+CPyL61: ;
+    cpy_r_r87 = cpy_r_r82;
+CPyL62: ;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = 2;
+    return cpy_r_r87;
+CPyL63: ;
+    cpy_r_r89 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r90 = cpy_r_type != cpy_r_r89;
+    if (!cpy_r_r90) goto CPyL199;
+    CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
+    if (unlikely(!0)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 105, CPyStatic_brownie___globals);
+        goto CPyL67;
+    } else
+        goto CPyL200;
+CPyL65: ;
+    CPy_Unreachable();
+CPyL66: ;
+    CPy_INCREF(cpy_r_arg);
+    goto CPyL78;
+CPyL67: ;
+    cpy_r_r91 = CPy_CatchError();
     if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7.f0 != NULL) {
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7.f0);
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7.f1);
         CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7.f2);
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7 = cpy_r_r110;
-    cpy_r_r111 = 1;
-    if (unlikely(!cpy_r_r111)) {
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7 = cpy_r_r91;
+    cpy_r_r92 = 1;
+    if (unlikely(!cpy_r_r92)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL126;
-    }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2 = 0;
-    cpy_r_r112 = 1;
-    if (unlikely(!cpy_r_r112)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL126;
-    }
-    cpy_r_r113 = CPy_GetExcInfo();
-    cpy_r_r114 = cpy_r_r113.f0;
-    CPy_INCREF(cpy_r_r114);
-    cpy_r_r115 = cpy_r_r113.f1;
-    CPy_INCREF(cpy_r_r115);
-    cpy_r_r116 = cpy_r_r113.f2;
-    CPy_INCREF(cpy_r_r116);
-    CPy_DecRef(cpy_r_r113.f0);
-    CPy_DecRef(cpy_r_r113.f1);
-    CPy_DecRef(cpy_r_r113.f2);
-    cpy_r_r117 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
-    if (unlikely(cpy_r_r117 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__0", -1, CPyStatic_brownie___globals);
-        goto CPyL199;
-    }
-    CPy_INCREF(cpy_r_r117);
-CPyL90: ;
-    cpy_r_r118 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
-    if (unlikely(cpy_r_r118 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__1", -1, CPyStatic_brownie___globals);
-        goto CPyL200;
-    }
-    CPy_INCREF(cpy_r_r118);
-CPyL91: ;
-    PyObject *cpy_r_r119[4] = {cpy_r_r118, cpy_r_r114, cpy_r_r115, cpy_r_r116};
-    cpy_r_r120 = (PyObject **)&cpy_r_r119;
-    cpy_r_r121 = PyObject_Vectorcall(cpy_r_r117, cpy_r_r120, 4, 0);
-    CPy_DecRef(cpy_r_r117);
-    if (unlikely(cpy_r_r121 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
         goto CPyL201;
     }
-    CPy_DecRef(cpy_r_r118);
-    CPy_DecRef(cpy_r_r114);
-    CPy_DecRef(cpy_r_r115);
-    CPy_DecRef(cpy_r_r116);
-    cpy_r_r122 = CPy_GetCoro(cpy_r_r121);
-    CPy_DecRef(cpy_r_r121);
-    if (unlikely(cpy_r_r122 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL126;
+    cpy_r_r93 = (PyObject **)&cpy_r_r3;
+    cpy_r_r94 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6;
+    if (unlikely(cpy_r_r94 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__6", -1, CPyStatic_brownie___globals);
+        goto CPyL201;
     }
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8);
+    CPy_INCREF(cpy_r_r94);
+CPyL69: ;
+    cpy_r_r95 = CPy_YieldFromErrorHandle(cpy_r_r94, cpy_r_r93);
+    CPy_DecRef(cpy_r_r94);
+    if (unlikely(cpy_r_r95 == 2)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 105, CPyStatic_brownie___globals);
+        goto CPyL201;
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8 = cpy_r_r122;
-    cpy_r_r123 = 1;
-    if (unlikely(!cpy_r_r123)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL126;
-    }
-    cpy_r_r124 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
-    if (unlikely(cpy_r_r124 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__8", -1, CPyStatic_brownie___globals);
-        goto CPyL126;
-    }
-    CPy_INCREF(cpy_r_r124);
-CPyL95: ;
-    cpy_r_r125 = CPyIter_Next(cpy_r_r124);
-    CPy_DecRef(cpy_r_r124);
-    if (cpy_r_r125 != NULL) goto CPyL98;
-    cpy_r_r126 = CPy_FetchStopIterationValue();
-    if (unlikely(cpy_r_r126 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL126;
-    }
-    cpy_r_r127 = cpy_r_r126;
-    cpy_r_r128 = NULL;
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8);
-    }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8 = cpy_r_r128;
-    cpy_r_r129 = 1;
-    if (unlikely(!cpy_r_r129)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
+    if (cpy_r_r95) goto CPyL73;
+    cpy_r_r87 = cpy_r_r3;
+    cpy_r_r96 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7;
+    if (unlikely(cpy_r_r96.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__7", -1, CPyStatic_brownie___globals);
         goto CPyL202;
-    } else
-        goto CPyL120;
-CPyL98: ;
-    cpy_r_r130 = cpy_r_r125;
-CPyL99: ;
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = 3;
-    return cpy_r_r130;
-CPyL100: ;
-    cpy_r_r132 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r133 = cpy_r_type != cpy_r_r132;
-    if (!cpy_r_r133) goto CPyL203;
-    CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
-    if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL104;
-    } else
-        goto CPyL204;
-CPyL102: ;
+    }
+    CPy_INCREF(cpy_r_r96.f0);
+    CPy_INCREF(cpy_r_r96.f1);
+    CPy_INCREF(cpy_r_r96.f2);
+CPyL72: ;
+    CPy_RestoreExcInfo(cpy_r_r96);
+    CPy_DecRef(cpy_r_r96.f0);
+    CPy_DecRef(cpy_r_r96.f1);
+    CPy_DecRef(cpy_r_r96.f2);
+    goto CPyL62;
+CPyL73: ;
+    cpy_r_r84 = cpy_r_r3;
+    cpy_r_r97 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7;
+    if (unlikely(cpy_r_r97.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__7", -1, CPyStatic_brownie___globals);
+        goto CPyL203;
+    }
+    CPy_INCREF(cpy_r_r97.f0);
+    CPy_INCREF(cpy_r_r97.f1);
+    CPy_INCREF(cpy_r_r97.f2);
+CPyL74: ;
+    CPy_RestoreExcInfo(cpy_r_r97);
+    CPy_DecRef(cpy_r_r97.f0);
+    CPy_DecRef(cpy_r_r97.f1);
+    CPy_DecRef(cpy_r_r97.f2);
+    goto CPyL83;
+CPyL75: ;
+    cpy_r_r98 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7;
+    if (unlikely(cpy_r_r98.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__7", -1, CPyStatic_brownie___globals);
+        goto CPyL89;
+    }
+    CPy_INCREF(cpy_r_r98.f0);
+    CPy_INCREF(cpy_r_r98.f1);
+    CPy_INCREF(cpy_r_r98.f2);
+CPyL76: ;
+    CPy_RestoreExcInfo(cpy_r_r98);
+    CPy_DecRef(cpy_r_r98.f0);
+    CPy_DecRef(cpy_r_r98.f1);
+    CPy_DecRef(cpy_r_r98.f2);
+    cpy_r_r99 = CPy_KeepPropagating();
+    if (!cpy_r_r99) goto CPyL89;
     CPy_Unreachable();
-CPyL103: ;
-    CPy_INCREF(cpy_r_arg);
-    goto CPyL115;
-CPyL104: ;
-    cpy_r_r134 = CPy_CatchError();
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9.f0);
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9.f1);
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9.f2);
+CPyL78: ;
+    cpy_r_r100 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6;
+    if (unlikely(cpy_r_r100 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__6", -1, CPyStatic_brownie___globals);
+        goto CPyL204;
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9 = cpy_r_r134;
-    cpy_r_r135 = 1;
-    if (unlikely(!cpy_r_r135)) {
+    CPy_INCREF(cpy_r_r100);
+CPyL79: ;
+    cpy_r_r101 = CPyIter_Send(cpy_r_r100, cpy_r_arg);
+    CPy_DECREF(cpy_r_r100);
+    CPy_DECREF(cpy_r_arg);
+    if (cpy_r_r101 == NULL) goto CPyL81;
+    cpy_r_r87 = cpy_r_r101;
+    goto CPyL62;
+CPyL81: ;
+    cpy_r_r102 = CPy_FetchStopIterationValue();
+    if (unlikely(cpy_r_r102 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 105, CPyStatic_brownie___globals);
+        goto CPyL89;
+    }
+    cpy_r_r84 = cpy_r_r102;
+CPyL83: ;
+    cpy_r_r103 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
+    if (unlikely(cpy_r_r103 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 105, CPyStatic_brownie___globals);
+        goto CPyL198;
+    }
+    CPy_INCREF_NO_IMM(cpy_r_r103);
+CPyL84: ;
+    CPy_DECREF(((y____db___brownie___AsyncCursorObject *)cpy_r_r103)->__db);
+    ((y____db___brownie___AsyncCursorObject *)cpy_r_r103)->__db = cpy_r_r84;
+    CPy_DECREF_NO_IMM(cpy_r_r103);
+    cpy_r_r105 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
+    if (unlikely(cpy_r_r105 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 106, CPyStatic_brownie___globals);
+        goto CPyL89;
+    }
+    CPy_INCREF_NO_IMM(cpy_r_r105);
+CPyL85: ;
+    cpy_r_r106 = ((y____db___brownie___AsyncCursorObject *)cpy_r_r105)->__db;
+    CPy_INCREF(cpy_r_r106);
+    CPy_DECREF_NO_IMM(cpy_r_r105);
+    cpy_r_r107 = cpy_r_r106;
+    cpy_r_r108 = CPyStatics[9]; /* 'execute' */
+    cpy_r_r109 = CPyObject_GetAttr(cpy_r_r107, cpy_r_r108);
+    CPy_DECREF(cpy_r_r107);
+    if (unlikely(cpy_r_r109 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 106, CPyStatic_brownie___globals);
+        goto CPyL89;
+    }
+    cpy_r_r110 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
+    if (unlikely(cpy_r_r110 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 106, CPyStatic_brownie___globals);
+        goto CPyL205;
+    }
+    CPy_INCREF_NO_IMM(cpy_r_r110);
+CPyL88: ;
+    CPy_DECREF(((y____db___brownie___AsyncCursorObject *)cpy_r_r110)->__execute);
+    ((y____db___brownie___AsyncCursorObject *)cpy_r_r110)->__execute = cpy_r_r109;
+    CPy_DECREF_NO_IMM(cpy_r_r110);
+    goto CPyL131;
+CPyL89: ;
+    cpy_r_r112 = CPy_CatchError();
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8.f0);
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8.f1);
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8.f2);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8 = cpy_r_r112;
+    cpy_r_r113 = 1;
+    if (unlikely(!cpy_r_r113)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL205;
+        goto CPyL128;
     }
-    cpy_r_r136 = (PyObject **)&cpy_r_r5;
-    cpy_r_r137 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
-    if (unlikely(cpy_r_r137 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__8", -1, CPyStatic_brownie___globals);
-        goto CPyL205;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2 = 0;
+    cpy_r_r114 = 1;
+    if (unlikely(!cpy_r_r114)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL128;
     }
-    CPy_INCREF(cpy_r_r137);
-CPyL106: ;
-    cpy_r_r138 = CPy_YieldFromErrorHandle(cpy_r_r137, cpy_r_r136);
-    CPy_DecRef(cpy_r_r137);
-    if (unlikely(cpy_r_r138 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL205;
-    }
-    if (cpy_r_r138) goto CPyL110;
-    cpy_r_r130 = cpy_r_r5;
-    cpy_r_r139 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
-    if (unlikely(cpy_r_r139.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__9", -1, CPyStatic_brownie___globals);
+    cpy_r_r115 = CPy_GetExcInfo();
+    cpy_r_r116 = cpy_r_r115.f0;
+    CPy_INCREF(cpy_r_r116);
+    cpy_r_r117 = cpy_r_r115.f1;
+    CPy_INCREF(cpy_r_r117);
+    cpy_r_r118 = cpy_r_r115.f2;
+    CPy_INCREF(cpy_r_r118);
+    CPy_DecRef(cpy_r_r115.f0);
+    CPy_DecRef(cpy_r_r115.f1);
+    CPy_DecRef(cpy_r_r115.f2);
+    cpy_r_r119 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
+    if (unlikely(cpy_r_r119 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__0", -1, CPyStatic_brownie___globals);
         goto CPyL206;
     }
-    CPy_INCREF(cpy_r_r139.f0);
-    CPy_INCREF(cpy_r_r139.f1);
-    CPy_INCREF(cpy_r_r139.f2);
-CPyL109: ;
-    CPy_RestoreExcInfo(cpy_r_r139);
-    CPy_DecRef(cpy_r_r139.f0);
-    CPy_DecRef(cpy_r_r139.f1);
-    CPy_DecRef(cpy_r_r139.f2);
-    goto CPyL99;
-CPyL110: ;
-    cpy_r_r127 = cpy_r_r5;
-    cpy_r_r140 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
-    if (unlikely(cpy_r_r140.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__9", -1, CPyStatic_brownie___globals);
+    CPy_INCREF(cpy_r_r119);
+CPyL92: ;
+    cpy_r_r120 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
+    if (unlikely(cpy_r_r120 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__1", -1, CPyStatic_brownie___globals);
         goto CPyL207;
     }
-    CPy_INCREF(cpy_r_r140.f0);
-    CPy_INCREF(cpy_r_r140.f1);
-    CPy_INCREF(cpy_r_r140.f2);
-CPyL111: ;
-    CPy_RestoreExcInfo(cpy_r_r140);
-    CPy_DecRef(cpy_r_r140.f0);
-    CPy_DecRef(cpy_r_r140.f1);
-    CPy_DecRef(cpy_r_r140.f2);
-    goto CPyL120;
-CPyL112: ;
-    cpy_r_r141 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
-    if (unlikely(cpy_r_r141.f0 == NULL)) {
+    CPy_INCREF(cpy_r_r120);
+CPyL93: ;
+    PyObject *cpy_r_r121[4] = {cpy_r_r120, cpy_r_r116, cpy_r_r117, cpy_r_r118};
+    cpy_r_r122 = (PyObject **)&cpy_r_r121;
+    cpy_r_r123 = PyObject_Vectorcall(cpy_r_r119, cpy_r_r122, 4, 0);
+    CPy_DecRef(cpy_r_r119);
+    if (unlikely(cpy_r_r123 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL208;
+    }
+    CPy_DecRef(cpy_r_r120);
+    CPy_DecRef(cpy_r_r116);
+    CPy_DecRef(cpy_r_r117);
+    CPy_DecRef(cpy_r_r118);
+    cpy_r_r124 = CPy_GetCoro(cpy_r_r123);
+    CPy_DecRef(cpy_r_r123);
+    if (unlikely(cpy_r_r124 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL128;
+    }
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9 = cpy_r_r124;
+    cpy_r_r125 = 1;
+    if (unlikely(!cpy_r_r125)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
+        goto CPyL128;
+    }
+    cpy_r_r126 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
+    if (unlikely(cpy_r_r126 == NULL)) {
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__9", -1, CPyStatic_brownie___globals);
-        goto CPyL126;
+        goto CPyL128;
+    }
+    CPy_INCREF(cpy_r_r126);
+CPyL97: ;
+    cpy_r_r127 = CPyIter_Next(cpy_r_r126);
+    CPy_DecRef(cpy_r_r126);
+    if (cpy_r_r127 != NULL) goto CPyL100;
+    cpy_r_r128 = CPy_FetchStopIterationValue();
+    if (unlikely(cpy_r_r128 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL128;
+    }
+    cpy_r_r129 = cpy_r_r128;
+    cpy_r_r130 = NULL;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9 = cpy_r_r130;
+    cpy_r_r131 = 1;
+    if (unlikely(!cpy_r_r131)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL209;
+    } else
+        goto CPyL122;
+CPyL100: ;
+    cpy_r_r132 = cpy_r_r127;
+CPyL101: ;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = 3;
+    return cpy_r_r132;
+CPyL102: ;
+    cpy_r_r134 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r135 = cpy_r_type != cpy_r_r134;
+    if (!cpy_r_r135) goto CPyL210;
+    CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
+    if (unlikely(!0)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL106;
+    } else
+        goto CPyL211;
+CPyL104: ;
+    CPy_Unreachable();
+CPyL105: ;
+    CPy_INCREF(cpy_r_arg);
+    goto CPyL117;
+CPyL106: ;
+    cpy_r_r136 = CPy_CatchError();
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10.f0);
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10.f1);
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10.f2);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10 = cpy_r_r136;
+    cpy_r_r137 = 1;
+    if (unlikely(!cpy_r_r137)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
+        goto CPyL212;
+    }
+    cpy_r_r138 = (PyObject **)&cpy_r_r5;
+    cpy_r_r139 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
+    if (unlikely(cpy_r_r139 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__9", -1, CPyStatic_brownie___globals);
+        goto CPyL212;
+    }
+    CPy_INCREF(cpy_r_r139);
+CPyL108: ;
+    cpy_r_r140 = CPy_YieldFromErrorHandle(cpy_r_r139, cpy_r_r138);
+    CPy_DecRef(cpy_r_r139);
+    if (unlikely(cpy_r_r140 == 2)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL212;
+    }
+    if (cpy_r_r140) goto CPyL112;
+    cpy_r_r132 = cpy_r_r5;
+    cpy_r_r141 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
+    if (unlikely(cpy_r_r141.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__10", -1, CPyStatic_brownie___globals);
+        goto CPyL213;
     }
     CPy_INCREF(cpy_r_r141.f0);
     CPy_INCREF(cpy_r_r141.f1);
     CPy_INCREF(cpy_r_r141.f2);
-CPyL113: ;
+CPyL111: ;
     CPy_RestoreExcInfo(cpy_r_r141);
     CPy_DecRef(cpy_r_r141.f0);
     CPy_DecRef(cpy_r_r141.f1);
     CPy_DecRef(cpy_r_r141.f2);
-    cpy_r_r142 = CPy_KeepPropagating();
-    if (!cpy_r_r142) goto CPyL126;
-    CPy_Unreachable();
+    goto CPyL101;
+CPyL112: ;
+    cpy_r_r129 = cpy_r_r5;
+    cpy_r_r142 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
+    if (unlikely(cpy_r_r142.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__10", -1, CPyStatic_brownie___globals);
+        goto CPyL214;
+    }
+    CPy_INCREF(cpy_r_r142.f0);
+    CPy_INCREF(cpy_r_r142.f1);
+    CPy_INCREF(cpy_r_r142.f2);
+CPyL113: ;
+    CPy_RestoreExcInfo(cpy_r_r142);
+    CPy_DecRef(cpy_r_r142.f0);
+    CPy_DecRef(cpy_r_r142.f1);
+    CPy_DecRef(cpy_r_r142.f2);
+    goto CPyL122;
+CPyL114: ;
+    cpy_r_r143 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
+    if (unlikely(cpy_r_r143.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__10", -1, CPyStatic_brownie___globals);
+        goto CPyL128;
+    }
+    CPy_INCREF(cpy_r_r143.f0);
+    CPy_INCREF(cpy_r_r143.f1);
+    CPy_INCREF(cpy_r_r143.f2);
 CPyL115: ;
-    cpy_r_r143 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
-    if (unlikely(cpy_r_r143 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__8", -1, CPyStatic_brownie___globals);
-        goto CPyL208;
-    }
-    CPy_INCREF(cpy_r_r143);
-CPyL116: ;
-    cpy_r_r144 = CPyIter_Send(cpy_r_r143, cpy_r_arg);
-    CPy_DECREF(cpy_r_r143);
-    CPy_DECREF(cpy_r_arg);
-    if (cpy_r_r144 == NULL) goto CPyL118;
-    cpy_r_r130 = cpy_r_r144;
-    goto CPyL99;
-CPyL118: ;
-    cpy_r_r145 = CPy_FetchStopIterationValue();
+    CPy_RestoreExcInfo(cpy_r_r143);
+    CPy_DecRef(cpy_r_r143.f0);
+    CPy_DecRef(cpy_r_r143.f1);
+    CPy_DecRef(cpy_r_r143.f2);
+    cpy_r_r144 = CPy_KeepPropagating();
+    if (!cpy_r_r144) goto CPyL128;
+    CPy_Unreachable();
+CPyL117: ;
+    cpy_r_r145 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
     if (unlikely(cpy_r_r145 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL126;
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__9", -1, CPyStatic_brownie___globals);
+        goto CPyL215;
     }
-    cpy_r_r127 = cpy_r_r145;
+    CPy_INCREF(cpy_r_r145);
+CPyL118: ;
+    cpy_r_r146 = CPyIter_Send(cpy_r_r145, cpy_r_arg);
+    CPy_DECREF(cpy_r_r145);
+    CPy_DECREF(cpy_r_arg);
+    if (cpy_r_r146 == NULL) goto CPyL120;
+    cpy_r_r132 = cpy_r_r146;
+    goto CPyL101;
 CPyL120: ;
-    cpy_r_r146 = PyObject_IsTrue(cpy_r_r127);
-    CPy_DECREF(cpy_r_r127);
-    cpy_r_r147 = cpy_r_r146 >= 0;
-    if (unlikely(!cpy_r_r147)) {
+    cpy_r_r147 = CPy_FetchStopIterationValue();
+    if (unlikely(cpy_r_r147 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL128;
+    }
+    cpy_r_r129 = cpy_r_r147;
+CPyL122: ;
+    cpy_r_r148 = PyObject_IsTrue(cpy_r_r129);
+    CPy_DECREF(cpy_r_r129);
+    cpy_r_r149 = cpy_r_r148 >= 0;
+    if (unlikely(!cpy_r_r149)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL126;
+        goto CPyL128;
     }
-    cpy_r_r148 = cpy_r_r146;
-    if (cpy_r_r148) goto CPyL124;
+    cpy_r_r150 = cpy_r_r148;
+    if (cpy_r_r150) goto CPyL126;
     CPy_Reraise();
-    if (!0) goto CPyL126;
+    if (!0) goto CPyL128;
     CPy_Unreachable();
-CPyL124: ;
-    cpy_r_r149 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7;
-    if (unlikely(cpy_r_r149.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__7", -1, CPyStatic_brownie___globals);
-        goto CPyL130;
-    }
-    CPy_INCREF(cpy_r_r149.f0);
-    CPy_INCREF(cpy_r_r149.f1);
-    CPy_INCREF(cpy_r_r149.f2);
-CPyL125: ;
-    CPy_RestoreExcInfo(cpy_r_r149);
-    CPy_DECREF(cpy_r_r149.f0);
-    CPy_DECREF(cpy_r_r149.f1);
-    CPy_DECREF(cpy_r_r149.f2);
-    goto CPyL129;
 CPyL126: ;
-    cpy_r_r150 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7;
-    if (unlikely(cpy_r_r150.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__7", -1, CPyStatic_brownie___globals);
-        goto CPyL130;
+    cpy_r_r151 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
+    if (unlikely(cpy_r_r151.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__8", -1, CPyStatic_brownie___globals);
+        goto CPyL133;
     }
-    CPy_INCREF(cpy_r_r150.f0);
-    CPy_INCREF(cpy_r_r150.f1);
-    CPy_INCREF(cpy_r_r150.f2);
+    CPy_INCREF(cpy_r_r151.f0);
+    CPy_INCREF(cpy_r_r151.f1);
+    CPy_INCREF(cpy_r_r151.f2);
 CPyL127: ;
-    CPy_RestoreExcInfo(cpy_r_r150);
-    CPy_DECREF(cpy_r_r150.f0);
-    CPy_DECREF(cpy_r_r150.f1);
-    CPy_DECREF(cpy_r_r150.f2);
-    cpy_r_r151 = CPy_KeepPropagating();
-    if (!cpy_r_r151) goto CPyL130;
-    CPy_Unreachable();
-CPyL129: ;
-    tuple_T3OOO __tmp4 = { NULL, NULL, NULL };
-    cpy_r_r152 = __tmp4;
-    cpy_r_r9 = cpy_r_r152;
+    CPy_RestoreExcInfo(cpy_r_r151);
+    CPy_DECREF(cpy_r_r151.f0);
+    CPy_DECREF(cpy_r_r151.f1);
+    CPy_DECREF(cpy_r_r151.f2);
     goto CPyL131;
-CPyL130: ;
-    cpy_r_r153 = CPy_CatchError();
-    cpy_r_r9 = cpy_r_r153;
+CPyL128: ;
+    cpy_r_r152 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
+    if (unlikely(cpy_r_r152.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__8", -1, CPyStatic_brownie___globals);
+        goto CPyL133;
+    }
+    CPy_INCREF(cpy_r_r152.f0);
+    CPy_INCREF(cpy_r_r152.f1);
+    CPy_INCREF(cpy_r_r152.f2);
+CPyL129: ;
+    CPy_RestoreExcInfo(cpy_r_r152);
+    CPy_DECREF(cpy_r_r152.f0);
+    CPy_DECREF(cpy_r_r152.f1);
+    CPy_DECREF(cpy_r_r152.f2);
+    cpy_r_r153 = CPy_KeepPropagating();
+    if (!cpy_r_r153) goto CPyL133;
+    CPy_Unreachable();
 CPyL131: ;
-    cpy_r_r154 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2;
-    if (unlikely(cpy_r_r154 == 2)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__2", -1, CPyStatic_brownie___globals);
-        goto CPyL167;
+    cpy_r_r154 = NULL;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 = cpy_r_r154;
+    cpy_r_r155 = 1;
+    if (unlikely(!cpy_r_r155)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
+        goto CPyL189;
     }
 CPyL132: ;
-    if (!cpy_r_r154) goto CPyL164;
+    tuple_T3OOO __tmp4 = { NULL, NULL, NULL };
+    cpy_r_r156 = __tmp4;
+    cpy_r_r9 = cpy_r_r156;
+    goto CPyL135;
 CPyL133: ;
-    cpy_r_r155 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r156 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
-    if (unlikely(cpy_r_r156 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__0", -1, CPyStatic_brownie___globals);
-        goto CPyL167;
+    cpy_r_r157 = NULL;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5);
     }
-    CPy_INCREF(cpy_r_r156);
-CPyL134: ;
-    cpy_r_r157 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
-    if (unlikely(cpy_r_r157 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__1", -1, CPyStatic_brownie___globals);
-        goto CPyL209;
-    }
-    CPy_INCREF(cpy_r_r157);
-CPyL135: ;
-    PyObject *cpy_r_r158[4] = {cpy_r_r157, cpy_r_r155, cpy_r_r155, cpy_r_r155};
-    cpy_r_r159 = (PyObject **)&cpy_r_r158;
-    cpy_r_r160 = PyObject_Vectorcall(cpy_r_r156, cpy_r_r159, 4, 0);
-    CPy_DECREF(cpy_r_r156);
-    if (unlikely(cpy_r_r160 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL210;
-    }
-    CPy_DECREF(cpy_r_r157);
-    cpy_r_r161 = CPy_GetCoro(cpy_r_r160);
-    CPy_DECREF(cpy_r_r160);
-    if (unlikely(cpy_r_r161 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL167;
-    }
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10);
-    }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10 = cpy_r_r161;
-    cpy_r_r162 = 1;
-    if (unlikely(!cpy_r_r162)) {
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5 = cpy_r_r157;
+    cpy_r_r158 = 1;
+    if (unlikely(!cpy_r_r158)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL167;
+        goto CPyL189;
     }
-    cpy_r_r163 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
+    cpy_r_r159 = CPy_CatchError();
+    cpy_r_r9 = cpy_r_r159;
+CPyL135: ;
+    cpy_r_r160 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2;
+    if (unlikely(cpy_r_r160 == 2)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__2", -1, CPyStatic_brownie___globals);
+        goto CPyL175;
+    }
+CPyL136: ;
+    if (!cpy_r_r160) goto CPyL168;
+CPyL137: ;
+    cpy_r_r161 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r162 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
+    if (unlikely(cpy_r_r162 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__0", -1, CPyStatic_brownie___globals);
+        goto CPyL175;
+    }
+    CPy_INCREF(cpy_r_r162);
+CPyL138: ;
+    cpy_r_r163 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
     if (unlikely(cpy_r_r163 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__10", -1, CPyStatic_brownie___globals);
-        goto CPyL167;
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__1", -1, CPyStatic_brownie___globals);
+        goto CPyL216;
     }
     CPy_INCREF(cpy_r_r163);
 CPyL139: ;
-    cpy_r_r164 = CPyIter_Next(cpy_r_r163);
+    PyObject *cpy_r_r164[4] = {cpy_r_r163, cpy_r_r161, cpy_r_r161, cpy_r_r161};
+    cpy_r_r165 = (PyObject **)&cpy_r_r164;
+    cpy_r_r166 = PyObject_Vectorcall(cpy_r_r162, cpy_r_r165, 4, 0);
+    CPy_DECREF(cpy_r_r162);
+    if (unlikely(cpy_r_r166 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL217;
+    }
     CPy_DECREF(cpy_r_r163);
-    if (cpy_r_r164 != NULL) goto CPyL211;
-    cpy_r_r165 = CPy_FetchStopIterationValue();
-    if (unlikely(cpy_r_r165 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL167;
-    }
-    cpy_r_r166 = cpy_r_r165;
+    cpy_r_r167 = CPy_GetCoro(cpy_r_r166);
     CPy_DECREF(cpy_r_r166);
-    cpy_r_r167 = NULL;
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10);
+    if (unlikely(cpy_r_r167 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL175;
     }
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10 = cpy_r_r167;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11 = cpy_r_r167;
     cpy_r_r168 = 1;
     if (unlikely(!cpy_r_r168)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL167;
-    } else
-        goto CPyL164;
-CPyL142: ;
-    cpy_r_r169 = cpy_r_r164;
+        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
+        goto CPyL175;
+    }
+    cpy_r_r169 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11;
+    if (unlikely(cpy_r_r169 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__11", -1, CPyStatic_brownie___globals);
+        goto CPyL175;
+    }
+    CPy_INCREF(cpy_r_r169);
 CPyL143: ;
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = 4;
-    return cpy_r_r169;
-CPyL144: ;
-    cpy_r_r171 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r172 = cpy_r_type != cpy_r_r171;
-    if (!cpy_r_r172) goto CPyL212;
-    CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
-    if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL148;
-    } else
-        goto CPyL213;
-CPyL146: ;
-    CPy_Unreachable();
-CPyL147: ;
-    CPy_INCREF(cpy_r_arg);
-    goto CPyL159;
-CPyL148: ;
-    cpy_r_r173 = CPy_CatchError();
-    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11.f0);
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11.f1);
-        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11.f2);
+    cpy_r_r170 = CPyIter_Next(cpy_r_r169);
+    CPy_DECREF(cpy_r_r169);
+    if (cpy_r_r170 != NULL) goto CPyL218;
+    cpy_r_r171 = CPy_FetchStopIterationValue();
+    if (unlikely(cpy_r_r171 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL175;
+    }
+    cpy_r_r172 = cpy_r_r171;
+    CPy_DECREF(cpy_r_r172);
+    cpy_r_r173 = NULL;
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11);
     }
     ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11 = cpy_r_r173;
     cpy_r_r174 = 1;
     if (unlikely(!cpy_r_r174)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
-        goto CPyL214;
-    }
-    cpy_r_r175 = (PyObject **)&cpy_r_r7;
-    cpy_r_r176 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
-    if (unlikely(cpy_r_r176 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__10", -1, CPyStatic_brownie___globals);
-        goto CPyL214;
-    }
-    CPy_INCREF(cpy_r_r176);
-CPyL150: ;
-    cpy_r_r177 = CPy_YieldFromErrorHandle(cpy_r_r176, cpy_r_r175);
-    CPy_DecRef(cpy_r_r176);
-    if (unlikely(cpy_r_r177 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL214;
-    }
-    if (cpy_r_r177) goto CPyL154;
-    cpy_r_r169 = cpy_r_r7;
-    cpy_r_r178 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11;
-    if (unlikely(cpy_r_r178.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__11", -1, CPyStatic_brownie___globals);
-        goto CPyL215;
-    }
-    CPy_INCREF(cpy_r_r178.f0);
-    CPy_INCREF(cpy_r_r178.f1);
-    CPy_INCREF(cpy_r_r178.f2);
-    goto CPyL216;
-CPyL153: ;
-    CPy_RestoreExcInfo(cpy_r_r178);
-    CPy_DecRef(cpy_r_r178.f0);
-    CPy_DecRef(cpy_r_r178.f1);
-    CPy_DecRef(cpy_r_r178.f2);
-    goto CPyL143;
-CPyL154: ;
-    cpy_r_r166 = cpy_r_r7;
-    CPy_DecRef(cpy_r_r166);
-    cpy_r_r179 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11;
-    if (unlikely(cpy_r_r179.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__11", -1, CPyStatic_brownie___globals);
-        goto CPyL156;
-    }
-    CPy_INCREF(cpy_r_r179.f0);
-    CPy_INCREF(cpy_r_r179.f1);
-    CPy_INCREF(cpy_r_r179.f2);
-CPyL155: ;
-    CPy_RestoreExcInfo(cpy_r_r179);
-    CPy_DecRef(cpy_r_r179.f0);
-    CPy_DecRef(cpy_r_r179.f1);
-    CPy_DecRef(cpy_r_r179.f2);
-    goto CPyL164;
-CPyL156: ;
-    cpy_r_r180 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11;
-    if (unlikely(cpy_r_r180.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__11", -1, CPyStatic_brownie___globals);
-        goto CPyL167;
-    }
-    CPy_INCREF(cpy_r_r180.f0);
-    CPy_INCREF(cpy_r_r180.f1);
-    CPy_INCREF(cpy_r_r180.f2);
-CPyL157: ;
-    CPy_RestoreExcInfo(cpy_r_r180);
-    CPy_DecRef(cpy_r_r180.f0);
-    CPy_DecRef(cpy_r_r180.f1);
-    CPy_DecRef(cpy_r_r180.f2);
-    cpy_r_r181 = CPy_KeepPropagating();
-    if (!cpy_r_r181) {
-        goto CPyL167;
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL175;
     } else
-        goto CPyL217;
-CPyL158: ;
+        goto CPyL168;
+CPyL146: ;
+    cpy_r_r175 = cpy_r_r170;
+CPyL147: ;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = 4;
+    return cpy_r_r175;
+CPyL148: ;
+    cpy_r_r177 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r178 = cpy_r_type != cpy_r_r177;
+    if (!cpy_r_r178) goto CPyL219;
+    CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
+    if (unlikely(!0)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL152;
+    } else
+        goto CPyL220;
+CPyL150: ;
     CPy_Unreachable();
-CPyL159: ;
-    cpy_r_r182 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
+CPyL151: ;
+    CPy_INCREF(cpy_r_arg);
+    goto CPyL163;
+CPyL152: ;
+    cpy_r_r179 = CPy_CatchError();
+    if (((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12.f0);
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12.f1);
+        CPy_DECREF(((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12.f2);
+    }
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12 = cpy_r_r179;
+    cpy_r_r180 = 1;
+    if (unlikely(!cpy_r_r180)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", -1, CPyStatic_brownie___globals);
+        goto CPyL221;
+    }
+    cpy_r_r181 = (PyObject **)&cpy_r_r7;
+    cpy_r_r182 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11;
     if (unlikely(cpy_r_r182 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__10", -1, CPyStatic_brownie___globals);
-        goto CPyL218;
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__11", -1, CPyStatic_brownie___globals);
+        goto CPyL221;
     }
     CPy_INCREF(cpy_r_r182);
-CPyL160: ;
-    cpy_r_r183 = CPyIter_Send(cpy_r_r182, cpy_r_arg);
-    CPy_DECREF(cpy_r_r182);
-    CPy_DECREF(cpy_r_arg);
-    if (cpy_r_r183 == NULL) {
-        goto CPyL162;
-    } else
-        goto CPyL219;
-CPyL161: ;
-    cpy_r_r169 = cpy_r_r183;
-    goto CPyL143;
-CPyL162: ;
-    cpy_r_r184 = CPy_FetchStopIterationValue();
-    if (unlikely(cpy_r_r184 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "connect", 101, CPyStatic_brownie___globals);
-        goto CPyL167;
+CPyL154: ;
+    cpy_r_r183 = CPy_YieldFromErrorHandle(cpy_r_r182, cpy_r_r181);
+    CPy_DecRef(cpy_r_r182);
+    if (unlikely(cpy_r_r183 == 2)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL221;
     }
-    cpy_r_r166 = cpy_r_r184;
-    CPy_DECREF(cpy_r_r166);
+    if (cpy_r_r183) goto CPyL158;
+    cpy_r_r175 = cpy_r_r7;
+    cpy_r_r184 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12;
+    if (unlikely(cpy_r_r184.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__12", -1, CPyStatic_brownie___globals);
+        goto CPyL222;
+    }
+    CPy_INCREF(cpy_r_r184.f0);
+    CPy_INCREF(cpy_r_r184.f1);
+    CPy_INCREF(cpy_r_r184.f2);
+    goto CPyL223;
+CPyL157: ;
+    CPy_RestoreExcInfo(cpy_r_r184);
+    CPy_DecRef(cpy_r_r184.f0);
+    CPy_DecRef(cpy_r_r184.f1);
+    CPy_DecRef(cpy_r_r184.f2);
+    goto CPyL147;
+CPyL158: ;
+    cpy_r_r172 = cpy_r_r7;
+    CPy_DecRef(cpy_r_r172);
+    cpy_r_r185 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12;
+    if (unlikely(cpy_r_r185.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__12", -1, CPyStatic_brownie___globals);
+        goto CPyL160;
+    }
+    CPy_INCREF(cpy_r_r185.f0);
+    CPy_INCREF(cpy_r_r185.f1);
+    CPy_INCREF(cpy_r_r185.f2);
+CPyL159: ;
+    CPy_RestoreExcInfo(cpy_r_r185);
+    CPy_DecRef(cpy_r_r185.f0);
+    CPy_DecRef(cpy_r_r185.f1);
+    CPy_DecRef(cpy_r_r185.f2);
+    goto CPyL168;
+CPyL160: ;
+    cpy_r_r186 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12;
+    if (unlikely(cpy_r_r186.f0 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__12", -1, CPyStatic_brownie___globals);
+        goto CPyL175;
+    }
+    CPy_INCREF(cpy_r_r186.f0);
+    CPy_INCREF(cpy_r_r186.f1);
+    CPy_INCREF(cpy_r_r186.f2);
+CPyL161: ;
+    CPy_RestoreExcInfo(cpy_r_r186);
+    CPy_DecRef(cpy_r_r186.f0);
+    CPy_DecRef(cpy_r_r186.f1);
+    CPy_DecRef(cpy_r_r186.f2);
+    cpy_r_r187 = CPy_KeepPropagating();
+    if (!cpy_r_r187) {
+        goto CPyL175;
+    } else
+        goto CPyL224;
+CPyL162: ;
+    CPy_Unreachable();
+CPyL163: ;
+    cpy_r_r188 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11;
+    if (unlikely(cpy_r_r188 == NULL)) {
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "__mypyc_temp__11", -1, CPyStatic_brownie___globals);
+        goto CPyL225;
+    }
+    CPy_INCREF(cpy_r_r188);
 CPyL164: ;
+    cpy_r_r189 = CPyIter_Send(cpy_r_r188, cpy_r_arg);
+    CPy_DECREF(cpy_r_r188);
+    CPy_DECREF(cpy_r_arg);
+    if (cpy_r_r189 == NULL) {
+        goto CPyL166;
+    } else
+        goto CPyL226;
+CPyL165: ;
+    cpy_r_r175 = cpy_r_r189;
+    goto CPyL147;
+CPyL166: ;
+    cpy_r_r190 = CPy_FetchStopIterationValue();
+    if (unlikely(cpy_r_r190 == NULL)) {
+        CPy_AddTraceback("y/_db/brownie.py", "connect", 102, CPyStatic_brownie___globals);
+        goto CPyL175;
+    }
+    cpy_r_r172 = cpy_r_r190;
+    CPy_DECREF(cpy_r_r172);
+CPyL168: ;
     if (cpy_r_r9.f0 == NULL) goto CPyL171;
     CPy_Reraise();
     if (!0) {
-        goto CPyL167;
+        goto CPyL175;
     } else
-        goto CPyL220;
-CPyL166: ;
+        goto CPyL227;
+CPyL170: ;
     CPy_Unreachable();
-CPyL167: ;
-    if (cpy_r_r9.f0 == NULL) goto CPyL169;
+CPyL171: ;
+    cpy_r_r191 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5;
+    if (cpy_r_r191 != NULL) {
+        CPy_INCREF(cpy_r_r191);
+    }
+    if (cpy_r_r191 == NULL) goto CPyL179;
+CPyL172: ;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
+    CPyGen_SetStopIterationValue(cpy_r_r191);
+    CPy_DECREF(cpy_r_r191);
+    if (!0) goto CPyL189;
+    CPy_Unreachable();
+CPyL175: ;
+    if (cpy_r_r9.f0 == NULL) goto CPyL177;
     CPy_RestoreExcInfo(cpy_r_r9);
     CPy_XDECREF(cpy_r_r9.f0);
     CPy_XDECREF(cpy_r_r9.f1);
     CPy_XDECREF(cpy_r_r9.f2);
-CPyL169: ;
-    cpy_r_r185 = CPy_KeepPropagating();
-    if (!cpy_r_r185) goto CPyL181;
-    CPy_Unreachable();
-CPyL171: ;
-    cpy_r_r186 = Py_None;
-    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
-    CPyGen_SetStopIterationValue(cpy_r_r186);
-    if (!0) goto CPyL181;
-    CPy_Unreachable();
-CPyL174: ;
-    cpy_r_r188 = cpy_r_r10 == 0;
-    if (cpy_r_r188) goto CPyL221;
-    cpy_r_r189 = cpy_r_r10 == 1;
-    if (cpy_r_r189) {
-        goto CPyL222;
-    } else
-        goto CPyL223;
-CPyL176: ;
-    cpy_r_r190 = cpy_r_r10 == 2;
-    if (cpy_r_r190) {
-        goto CPyL224;
-    } else
-        goto CPyL225;
 CPyL177: ;
-    cpy_r_r191 = cpy_r_r10 == 3;
-    if (cpy_r_r191) {
-        goto CPyL226;
-    } else
-        goto CPyL227;
-CPyL178: ;
-    cpy_r_r192 = cpy_r_r10 == 4;
-    if (cpy_r_r192) {
-        goto CPyL144;
-    } else
-        goto CPyL228;
+    cpy_r_r193 = CPy_KeepPropagating();
+    if (!cpy_r_r193) goto CPyL189;
+    CPy_Unreachable();
 CPyL179: ;
+    cpy_r_r194 = Py_None;
+    ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
+    CPyGen_SetStopIterationValue(cpy_r_r194);
+    if (!0) goto CPyL189;
+    CPy_Unreachable();
+CPyL182: ;
+    cpy_r_r196 = cpy_r_r10 == 0;
+    if (cpy_r_r196) goto CPyL228;
+    cpy_r_r197 = cpy_r_r10 == 1;
+    if (cpy_r_r197) {
+        goto CPyL229;
+    } else
+        goto CPyL230;
+CPyL184: ;
+    cpy_r_r198 = cpy_r_r10 == 2;
+    if (cpy_r_r198) {
+        goto CPyL231;
+    } else
+        goto CPyL232;
+CPyL185: ;
+    cpy_r_r199 = cpy_r_r10 == 3;
+    if (cpy_r_r199) {
+        goto CPyL233;
+    } else
+        goto CPyL234;
+CPyL186: ;
+    cpy_r_r200 = cpy_r_r10 == 4;
+    if (cpy_r_r200) {
+        goto CPyL148;
+    } else
+        goto CPyL235;
+CPyL187: ;
     PyErr_SetNone(PyExc_StopIteration);
-    cpy_r_r193 = 0;
-    if (unlikely(!cpy_r_r193)) {
+    cpy_r_r201 = 0;
+    if (unlikely(!cpy_r_r201)) {
         CPy_AddTraceback("y/_db/brownie.py", "connect", 97, CPyStatic_brownie___globals);
-        goto CPyL181;
+        goto CPyL189;
     }
     CPy_Unreachable();
-CPyL181: ;
-    cpy_r_r194 = NULL;
-    return cpy_r_r194;
-CPyL182: ;
-    CPy_DecRef(cpy_r_r26);
-    goto CPyL181;
-CPyL183: ;
-    CPy_DecRef(cpy_r_r34);
-    goto CPyL181;
-CPyL184: ;
-    CPy_XDECREF(cpy_r_r1);
-    goto CPyL30;
-CPyL185: ;
-    CPy_XDECREF(cpy_r_r1);
-    goto CPyL29;
-CPyL186: ;
-    CPy_XDecRef(cpy_r_r1);
-    goto CPyL39;
-CPyL187: ;
-    CPy_DecRef(cpy_r_r45);
-    goto CPyL39;
-CPyL188: ;
-    CPy_DecRef(cpy_r_arg);
-    goto CPyL181;
 CPyL189: ;
-    CPy_DecRef(cpy_r_r61);
-    goto CPyL87;
+    cpy_r_r202 = NULL;
+    return cpy_r_r202;
 CPyL190: ;
-    CPy_DecRef(cpy_r_r68);
-    goto CPyL87;
+    CPy_DecRef(cpy_r_r28);
+    goto CPyL189;
 CPyL191: ;
-    CPy_DecRef(cpy_r_r82);
-    goto CPyL87;
+    CPy_DecRef(cpy_r_r36);
+    goto CPyL189;
 CPyL192: ;
-    CPy_XDECREF(cpy_r_r3);
-    goto CPyL64;
+    CPy_XDECREF(cpy_r_r1);
+    goto CPyL32;
 CPyL193: ;
-    CPy_XDECREF(cpy_r_r3);
-    goto CPyL63;
+    CPy_XDECREF(cpy_r_r1);
+    goto CPyL31;
 CPyL194: ;
-    CPy_XDecRef(cpy_r_r3);
-    goto CPyL73;
+    CPy_XDecRef(cpy_r_r1);
+    goto CPyL41;
 CPyL195: ;
-    CPy_DecRef(cpy_r_r85);
-    goto CPyL73;
+    CPy_DecRef(cpy_r_r47);
+    goto CPyL41;
 CPyL196: ;
-    CPy_DecRef(cpy_r_r82);
-    goto CPyL73;
-CPyL197: ;
     CPy_DecRef(cpy_r_arg);
-    goto CPyL87;
+    goto CPyL189;
+CPyL197: ;
+    CPy_DecRef(cpy_r_r70);
+    goto CPyL89;
 CPyL198: ;
-    CPy_DecRef(cpy_r_r107);
-    goto CPyL87;
+    CPy_DecRef(cpy_r_r84);
+    goto CPyL89;
 CPyL199: ;
-    CPy_DecRef(cpy_r_r114);
-    CPy_DecRef(cpy_r_r115);
-    CPy_DecRef(cpy_r_r116);
-    goto CPyL126;
+    CPy_XDECREF(cpy_r_r3);
+    goto CPyL66;
 CPyL200: ;
-    CPy_DecRef(cpy_r_r114);
-    CPy_DecRef(cpy_r_r115);
+    CPy_XDECREF(cpy_r_r3);
+    goto CPyL65;
+CPyL201: ;
+    CPy_XDecRef(cpy_r_r3);
+    goto CPyL75;
+CPyL202: ;
+    CPy_DecRef(cpy_r_r87);
+    goto CPyL75;
+CPyL203: ;
+    CPy_DecRef(cpy_r_r84);
+    goto CPyL75;
+CPyL204: ;
+    CPy_DecRef(cpy_r_arg);
+    goto CPyL89;
+CPyL205: ;
+    CPy_DecRef(cpy_r_r109);
+    goto CPyL89;
+CPyL206: ;
     CPy_DecRef(cpy_r_r116);
     CPy_DecRef(cpy_r_r117);
-    goto CPyL126;
-CPyL201: ;
-    CPy_DecRef(cpy_r_r114);
-    CPy_DecRef(cpy_r_r115);
-    CPy_DecRef(cpy_r_r116);
     CPy_DecRef(cpy_r_r118);
-    goto CPyL126;
-CPyL202: ;
-    CPy_DecRef(cpy_r_r127);
-    goto CPyL126;
-CPyL203: ;
-    CPy_XDECREF(cpy_r_r5);
-    goto CPyL103;
-CPyL204: ;
-    CPy_XDECREF(cpy_r_r5);
-    goto CPyL102;
-CPyL205: ;
-    CPy_XDecRef(cpy_r_r5);
-    goto CPyL112;
-CPyL206: ;
-    CPy_DecRef(cpy_r_r130);
-    goto CPyL112;
+    goto CPyL128;
 CPyL207: ;
-    CPy_DecRef(cpy_r_r127);
-    goto CPyL112;
+    CPy_DecRef(cpy_r_r116);
+    CPy_DecRef(cpy_r_r117);
+    CPy_DecRef(cpy_r_r118);
+    CPy_DecRef(cpy_r_r119);
+    goto CPyL128;
 CPyL208: ;
-    CPy_DecRef(cpy_r_arg);
-    goto CPyL126;
+    CPy_DecRef(cpy_r_r116);
+    CPy_DecRef(cpy_r_r117);
+    CPy_DecRef(cpy_r_r118);
+    CPy_DecRef(cpy_r_r120);
+    goto CPyL128;
 CPyL209: ;
-    CPy_DecRef(cpy_r_r156);
-    goto CPyL167;
+    CPy_DecRef(cpy_r_r129);
+    goto CPyL128;
 CPyL210: ;
-    CPy_DecRef(cpy_r_r157);
-    goto CPyL167;
+    CPy_XDECREF(cpy_r_r5);
+    goto CPyL105;
 CPyL211: ;
-    CPy_XDECREF(cpy_r_r9.f0);
-    CPy_XDECREF(cpy_r_r9.f1);
-    CPy_XDECREF(cpy_r_r9.f2);
-    goto CPyL142;
+    CPy_XDECREF(cpy_r_r5);
+    goto CPyL104;
 CPyL212: ;
-    CPy_XDECREF(cpy_r_r7);
-    goto CPyL147;
+    CPy_XDecRef(cpy_r_r5);
+    goto CPyL114;
 CPyL213: ;
-    CPy_XDECREF(cpy_r_r7);
+    CPy_DecRef(cpy_r_r132);
+    goto CPyL114;
+CPyL214: ;
+    CPy_DecRef(cpy_r_r129);
+    goto CPyL114;
+CPyL215: ;
+    CPy_DecRef(cpy_r_arg);
+    goto CPyL128;
+CPyL216: ;
+    CPy_DecRef(cpy_r_r162);
+    goto CPyL175;
+CPyL217: ;
+    CPy_DecRef(cpy_r_r163);
+    goto CPyL175;
+CPyL218: ;
     CPy_XDECREF(cpy_r_r9.f0);
     CPy_XDECREF(cpy_r_r9.f1);
     CPy_XDECREF(cpy_r_r9.f2);
     goto CPyL146;
-CPyL214: ;
-    CPy_XDecRef(cpy_r_r7);
-    goto CPyL156;
-CPyL215: ;
-    CPy_DecRef(cpy_r_r169);
-    goto CPyL156;
-CPyL216: ;
-    CPy_XDecRef(cpy_r_r9.f0);
-    CPy_XDecRef(cpy_r_r9.f1);
-    CPy_XDecRef(cpy_r_r9.f2);
-    goto CPyL153;
-CPyL217: ;
-    CPy_XDecRef(cpy_r_r9.f0);
-    CPy_XDecRef(cpy_r_r9.f1);
-    CPy_XDecRef(cpy_r_r9.f2);
-    goto CPyL158;
-CPyL218: ;
-    CPy_DecRef(cpy_r_arg);
-    goto CPyL167;
 CPyL219: ;
-    CPy_XDECREF(cpy_r_r9.f0);
-    CPy_XDECREF(cpy_r_r9.f1);
-    CPy_XDECREF(cpy_r_r9.f2);
-    goto CPyL161;
+    CPy_XDECREF(cpy_r_r7);
+    goto CPyL151;
 CPyL220: ;
+    CPy_XDECREF(cpy_r_r7);
     CPy_XDECREF(cpy_r_r9.f0);
     CPy_XDECREF(cpy_r_r9.f1);
     CPy_XDECREF(cpy_r_r9.f2);
-    goto CPyL166;
+    goto CPyL150;
 CPyL221: ;
+    CPy_XDecRef(cpy_r_r7);
+    goto CPyL160;
+CPyL222: ;
+    CPy_DecRef(cpy_r_r175);
+    goto CPyL160;
+CPyL223: ;
+    CPy_XDecRef(cpy_r_r9.f0);
+    CPy_XDecRef(cpy_r_r9.f1);
+    CPy_XDecRef(cpy_r_r9.f2);
+    goto CPyL157;
+CPyL224: ;
+    CPy_XDecRef(cpy_r_r9.f0);
+    CPy_XDecRef(cpy_r_r9.f1);
+    CPy_XDecRef(cpy_r_r9.f2);
+    goto CPyL162;
+CPyL225: ;
+    CPy_DecRef(cpy_r_arg);
+    goto CPyL175;
+CPyL226: ;
+    CPy_XDECREF(cpy_r_r9.f0);
+    CPy_XDECREF(cpy_r_r9.f1);
+    CPy_XDECREF(cpy_r_r9.f2);
+    goto CPyL165;
+CPyL227: ;
+    CPy_XDECREF(cpy_r_r9.f0);
+    CPy_XDECREF(cpy_r_r9.f1);
+    CPy_XDECREF(cpy_r_r9.f2);
+    goto CPyL170;
+CPyL228: ;
     CPy_XDECREF(cpy_r_r1);
     CPy_XDECREF(cpy_r_r3);
     CPy_XDECREF(cpy_r_r5);
@@ -2706,42 +2769,42 @@ CPyL221: ;
     CPy_XDECREF(cpy_r_r9.f1);
     CPy_XDECREF(cpy_r_r9.f2);
     goto CPyL1;
-CPyL222: ;
+CPyL229: ;
     CPy_XDECREF(cpy_r_r3);
     CPy_XDECREF(cpy_r_r5);
     CPy_XDECREF(cpy_r_r7);
     CPy_XDECREF(cpy_r_r9.f0);
     CPy_XDECREF(cpy_r_r9.f1);
     CPy_XDECREF(cpy_r_r9.f2);
-    goto CPyL27;
-CPyL223: ;
+    goto CPyL29;
+CPyL230: ;
     CPy_XDECREF(cpy_r_r1);
-    goto CPyL176;
-CPyL224: ;
+    goto CPyL184;
+CPyL231: ;
     CPy_XDECREF(cpy_r_r5);
     CPy_XDECREF(cpy_r_r7);
     CPy_XDECREF(cpy_r_r9.f0);
     CPy_XDECREF(cpy_r_r9.f1);
     CPy_XDECREF(cpy_r_r9.f2);
-    goto CPyL61;
-CPyL225: ;
+    goto CPyL63;
+CPyL232: ;
     CPy_XDECREF(cpy_r_r3);
-    goto CPyL177;
-CPyL226: ;
+    goto CPyL185;
+CPyL233: ;
     CPy_XDECREF(cpy_r_r7);
     CPy_XDECREF(cpy_r_r9.f0);
     CPy_XDECREF(cpy_r_r9.f1);
     CPy_XDECREF(cpy_r_r9.f2);
-    goto CPyL100;
-CPyL227: ;
+    goto CPyL102;
+CPyL234: ;
     CPy_XDECREF(cpy_r_r5);
-    goto CPyL178;
-CPyL228: ;
+    goto CPyL186;
+CPyL235: ;
     CPy_XDECREF(cpy_r_r7);
     CPy_XDECREF(cpy_r_r9.f0);
     CPy_XDECREF(cpy_r_r9.f1);
     CPy_XDECREF(cpy_r_r9.f2);
-    goto CPyL179;
+    goto CPyL187;
 }
 
 PyObject *CPyDef_brownie___connect_AsyncCursor_gen_____next__(PyObject *cpy_r___mypyc_self__) {
@@ -3101,7 +3164,7 @@ CPyL1: ;
     if (!cpy_r_r2) goto CPyL4;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "insert", 106, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "insert", 108, CPyStatic_brownie___globals);
         goto CPyL10;
     }
     CPy_Unreachable();
@@ -3110,13 +3173,13 @@ CPyL4: ;
     cpy_r_r4 = CPyStatics[12]; /* 'NotImplementedError' */
     cpy_r_r5 = CPyObject_GetAttr(cpy_r_r3, cpy_r_r4);
     if (unlikely(cpy_r_r5 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "insert", 107, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "insert", 109, CPyStatic_brownie___globals);
         goto CPyL10;
     }
     CPy_Raise(cpy_r_r5);
     CPy_DECREF(cpy_r_r5);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "insert", 107, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "insert", 109, CPyStatic_brownie___globals);
         goto CPyL10;
     }
     CPy_Unreachable();
@@ -3126,7 +3189,7 @@ CPyL7: ;
     PyErr_SetNone(PyExc_StopIteration);
     cpy_r_r7 = 0;
     if (unlikely(!cpy_r_r7)) {
-        CPy_AddTraceback("y/_db/brownie.py", "insert", 106, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "insert", 108, CPyStatic_brownie___globals);
         goto CPyL10;
     }
     CPy_Unreachable();
@@ -3432,7 +3495,7 @@ PyObject *CPyDef_brownie___AsyncCursor___insert(PyObject *cpy_r_self, PyObject *
     PyObject *cpy_r_r5;
     cpy_r_r0 = CPyDef_brownie___insert_AsyncCursor_gen();
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "insert", 106, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "insert", 108, CPyStatic_brownie___globals);
         goto CPyL5;
     }
     ((y____db___brownie___insert_AsyncCursor_genObject *)cpy_r_r0)->___mypyc_next_label__ = 0;
@@ -3443,7 +3506,7 @@ PyObject *CPyDef_brownie___AsyncCursor___insert(PyObject *cpy_r_self, PyObject *
     ((y____db___brownie___insert_AsyncCursor_genObject *)cpy_r_r0)->_self = cpy_r_self;
     cpy_r_r2 = 1;
     if (unlikely(!cpy_r_r2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "insert", 106, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "insert", 108, CPyStatic_brownie___globals);
         goto CPyL6;
     }
     CPy_INCREF(cpy_r_table);
@@ -3453,7 +3516,7 @@ PyObject *CPyDef_brownie___AsyncCursor___insert(PyObject *cpy_r_self, PyObject *
     ((y____db___brownie___insert_AsyncCursor_genObject *)cpy_r_r0)->_table = cpy_r_table;
     cpy_r_r3 = 1;
     if (unlikely(!cpy_r_r3)) {
-        CPy_AddTraceback("y/_db/brownie.py", "insert", 106, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "insert", 108, CPyStatic_brownie___globals);
         goto CPyL6;
     }
     CPy_INCREF(cpy_r_values);
@@ -3463,7 +3526,7 @@ PyObject *CPyDef_brownie___AsyncCursor___insert(PyObject *cpy_r_self, PyObject *
     ((y____db___brownie___insert_AsyncCursor_genObject *)cpy_r_r0)->_values = cpy_r_values;
     cpy_r_r4 = 1;
     if (unlikely(!cpy_r_r4)) {
-        CPy_AddTraceback("y/_db/brownie.py", "insert", 106, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "insert", 108, CPyStatic_brownie___globals);
         goto CPyL6;
     }
     return cpy_r_r0;
@@ -3504,7 +3567,7 @@ PyObject *CPyPy_brownie___AsyncCursor___insert(PyObject *self, PyObject *const *
     return retval;
 fail: ;
     CPy_DECREF(obj_values);
-    CPy_AddTraceback("y/_db/brownie.py", "insert", 106, CPyStatic_brownie___globals);
+    CPy_AddTraceback("y/_db/brownie.py", "insert", 108, CPyStatic_brownie___globals);
     return NULL;
 }
 
@@ -3906,14 +3969,14 @@ CPyL1: ;
     if (!cpy_r_r22) goto CPyL4;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 122, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_Unreachable();
 CPyL4: ;
     cpy_r_r23 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
     if (unlikely(cpy_r_r23 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 123, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 125, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_INCREF_NO_IMM(cpy_r_r23);
@@ -3925,7 +3988,7 @@ CPyL5: ;
     if (!cpy_r_r26) goto CPyL36;
     cpy_r_r27 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
     if (unlikely(cpy_r_r27 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 124, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 126, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_INCREF_NO_IMM(cpy_r_r27);
@@ -3933,27 +3996,27 @@ CPyL7: ;
     cpy_r_r28 = CPyDef_brownie___AsyncCursor___connect(cpy_r_r27);
     CPy_DECREF_NO_IMM(cpy_r_r27);
     if (unlikely(cpy_r_r28 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     cpy_r_r29 = CPy_GetCoro(cpy_r_r28);
     CPy_DECREF(cpy_r_r28);
     if (unlikely(cpy_r_r29 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
         goto CPyL365;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12 = cpy_r_r29;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13 = cpy_r_r29;
     cpy_r_r30 = 1;
     if (unlikely(!cpy_r_r30)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL365;
     }
-    cpy_r_r31 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12;
+    cpy_r_r31 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
     if (unlikely(cpy_r_r31 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__12", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__13", -1, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_INCREF(cpy_r_r31);
@@ -3963,19 +4026,19 @@ CPyL11: ;
     if (cpy_r_r32 != NULL) goto CPyL14;
     cpy_r_r33 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r33 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     cpy_r_r34 = cpy_r_r33;
     CPy_DECREF(cpy_r_r34);
     cpy_r_r35 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12 = cpy_r_r35;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13 = cpy_r_r35;
     cpy_r_r36 = 1;
     if (unlikely(!cpy_r_r36)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
         goto CPyL365;
     } else
         goto CPyL36;
@@ -3990,7 +4053,7 @@ CPyL16: ;
     if (!cpy_r_r40) goto CPyL366;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
         goto CPyL20;
     } else
         goto CPyL367;
@@ -4001,21 +4064,21 @@ CPyL19: ;
     goto CPyL31;
 CPyL20: ;
     cpy_r_r41 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13 = cpy_r_r41;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14 = cpy_r_r41;
     cpy_r_r42 = 1;
     if (unlikely(!cpy_r_r42)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL368;
     }
     cpy_r_r43 = (PyObject **)&cpy_r_r1;
-    cpy_r_r44 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12;
+    cpy_r_r44 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
     if (unlikely(cpy_r_r44 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__12", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__13", -1, CPyStatic_brownie___globals);
         goto CPyL368;
     }
     CPy_INCREF(cpy_r_r44);
@@ -4023,14 +4086,14 @@ CPyL22: ;
     cpy_r_r45 = CPy_YieldFromErrorHandle(cpy_r_r44, cpy_r_r43);
     CPy_DecRef(cpy_r_r44);
     if (unlikely(cpy_r_r45 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
         goto CPyL368;
     }
     if (cpy_r_r45) goto CPyL26;
     cpy_r_r37 = cpy_r_r1;
-    cpy_r_r46 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
+    cpy_r_r46 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14;
     if (unlikely(cpy_r_r46.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__13", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__14", -1, CPyStatic_brownie___globals);
         goto CPyL369;
     }
     CPy_INCREF(cpy_r_r46.f0);
@@ -4045,9 +4108,9 @@ CPyL25: ;
 CPyL26: ;
     cpy_r_r34 = cpy_r_r1;
     CPy_DecRef(cpy_r_r34);
-    cpy_r_r47 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
+    cpy_r_r47 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14;
     if (unlikely(cpy_r_r47.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__13", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__14", -1, CPyStatic_brownie___globals);
         goto CPyL28;
     }
     CPy_INCREF(cpy_r_r47.f0);
@@ -4060,9 +4123,9 @@ CPyL27: ;
     CPy_DecRef(cpy_r_r47.f2);
     goto CPyL36;
 CPyL28: ;
-    cpy_r_r48 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
+    cpy_r_r48 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14;
     if (unlikely(cpy_r_r48.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__13", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__14", -1, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_INCREF(cpy_r_r48.f0);
@@ -4077,9 +4140,9 @@ CPyL29: ;
     if (!cpy_r_r49) goto CPyL365;
     CPy_Unreachable();
 CPyL31: ;
-    cpy_r_r50 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12;
+    cpy_r_r50 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
     if (unlikely(cpy_r_r50 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__12", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__13", -1, CPyStatic_brownie___globals);
         goto CPyL370;
     }
     CPy_INCREF(cpy_r_r50);
@@ -4093,7 +4156,7 @@ CPyL32: ;
 CPyL34: ;
     cpy_r_r52 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r52 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     cpy_r_r34 = cpy_r_r52;
@@ -4104,7 +4167,7 @@ CPyL36: ;
     PyErr_SetString(PyExc_NameError, "value for final name \"sqlite_lock\" was not set");
     cpy_r_r54 = 0;
     if (unlikely(!cpy_r_r54)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_Unreachable();
@@ -4113,13 +4176,13 @@ CPyL39: ;
     cpy_r_r56 = CPyStatics[5]; /* '__aexit__' */
     cpy_r_r57 = CPyObject_GetAttr(cpy_r_r55, cpy_r_r56);
     if (unlikely(cpy_r_r57 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL371;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14 = cpy_r_r57;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15 = cpy_r_r57;
     cpy_r_r58 = 1;
     if (unlikely(!cpy_r_r58)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -4129,7 +4192,7 @@ CPyL39: ;
     cpy_r_r60 = CPyObject_GetAttr(cpy_r_r55, cpy_r_r59);
     CPy_DECREF(cpy_r_r55);
     if (unlikely(cpy_r_r60 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     PyObject *cpy_r_r61[1] = {cpy_r_r53};
@@ -4137,20 +4200,20 @@ CPyL39: ;
     cpy_r_r63 = PyObject_Vectorcall(cpy_r_r60, cpy_r_r62, 1, 0);
     CPy_DECREF(cpy_r_r60);
     if (unlikely(cpy_r_r63 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_INCREF(cpy_r_r53);
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__16 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__16);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15 = cpy_r_r53;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__16 = cpy_r_r53;
     cpy_r_r64 = 1;
     if (unlikely(!cpy_r_r64)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL372;
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__16 = 1;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17 = 1;
     cpy_r_r65 = 1;
     if (unlikely(!cpy_r_r65)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -4159,21 +4222,21 @@ CPyL39: ;
     cpy_r_r66 = CPy_GetCoro(cpy_r_r63);
     CPy_DECREF(cpy_r_r63);
     if (unlikely(cpy_r_r66 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL365;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17 = cpy_r_r66;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18 = cpy_r_r66;
     cpy_r_r67 = 1;
     if (unlikely(!cpy_r_r67)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL365;
     }
-    cpy_r_r68 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17;
+    cpy_r_r68 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18;
     if (unlikely(cpy_r_r68 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__17", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__18", -1, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_INCREF(cpy_r_r68);
@@ -4183,19 +4246,19 @@ CPyL48: ;
     if (cpy_r_r69 != NULL) goto CPyL51;
     cpy_r_r70 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r70 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     cpy_r_r71 = cpy_r_r70;
     CPy_DECREF(cpy_r_r71);
     cpy_r_r72 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17 = cpy_r_r72;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18 = cpy_r_r72;
     cpy_r_r73 = 1;
     if (unlikely(!cpy_r_r73)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL365;
     } else
         goto CPyL73;
@@ -4210,7 +4273,7 @@ CPyL53: ;
     if (!cpy_r_r77) goto CPyL373;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL57;
     } else
         goto CPyL374;
@@ -4221,21 +4284,21 @@ CPyL56: ;
     goto CPyL68;
 CPyL57: ;
     cpy_r_r78 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18 = cpy_r_r78;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19 = cpy_r_r78;
     cpy_r_r79 = 1;
     if (unlikely(!cpy_r_r79)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL375;
     }
     cpy_r_r80 = (PyObject **)&cpy_r_r3;
-    cpy_r_r81 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17;
+    cpy_r_r81 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18;
     if (unlikely(cpy_r_r81 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__17", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__18", -1, CPyStatic_brownie___globals);
         goto CPyL375;
     }
     CPy_INCREF(cpy_r_r81);
@@ -4243,14 +4306,14 @@ CPyL59: ;
     cpy_r_r82 = CPy_YieldFromErrorHandle(cpy_r_r81, cpy_r_r80);
     CPy_DecRef(cpy_r_r81);
     if (unlikely(cpy_r_r82 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL375;
     }
     if (cpy_r_r82) goto CPyL63;
     cpy_r_r74 = cpy_r_r3;
-    cpy_r_r83 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18;
+    cpy_r_r83 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19;
     if (unlikely(cpy_r_r83.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__18", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__19", -1, CPyStatic_brownie___globals);
         goto CPyL376;
     }
     CPy_INCREF(cpy_r_r83.f0);
@@ -4265,9 +4328,9 @@ CPyL62: ;
 CPyL63: ;
     cpy_r_r71 = cpy_r_r3;
     CPy_DecRef(cpy_r_r71);
-    cpy_r_r84 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18;
+    cpy_r_r84 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19;
     if (unlikely(cpy_r_r84.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__18", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__19", -1, CPyStatic_brownie___globals);
         goto CPyL65;
     }
     CPy_INCREF(cpy_r_r84.f0);
@@ -4280,9 +4343,9 @@ CPyL64: ;
     CPy_DecRef(cpy_r_r84.f2);
     goto CPyL73;
 CPyL65: ;
-    cpy_r_r85 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18;
+    cpy_r_r85 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19;
     if (unlikely(cpy_r_r85.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__18", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__19", -1, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_INCREF(cpy_r_r85.f0);
@@ -4297,9 +4360,9 @@ CPyL66: ;
     if (!cpy_r_r86) goto CPyL365;
     CPy_Unreachable();
 CPyL68: ;
-    cpy_r_r87 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17;
+    cpy_r_r87 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__18;
     if (unlikely(cpy_r_r87 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__17", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__18", -1, CPyStatic_brownie___globals);
         goto CPyL377;
     }
     CPy_INCREF(cpy_r_r87);
@@ -4313,7 +4376,7 @@ CPyL69: ;
 CPyL71: ;
     cpy_r_r89 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r89 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     cpy_r_r71 = cpy_r_r89;
@@ -4321,21 +4384,21 @@ CPyL71: ;
 CPyL73: ;
     cpy_r_r90 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_self;
     if (unlikely(cpy_r_r90 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 126, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 128, CPyStatic_brownie___globals);
         goto CPyL261;
     }
     CPy_INCREF_NO_IMM(cpy_r_r90);
 CPyL74: ;
     cpy_r_r91 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_cmd;
     if (unlikely(cpy_r_r91 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "cmd", 126, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "cmd", 128, CPyStatic_brownie___globals);
         goto CPyL378;
     }
     CPy_INCREF(cpy_r_r91);
 CPyL75: ;
     cpy_r_r92 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_args;
     if (unlikely(cpy_r_r92 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "args", 126, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "args", 128, CPyStatic_brownie___globals);
         goto CPyL379;
     }
     CPy_INCREF(cpy_r_r92);
@@ -4348,7 +4411,7 @@ CPyL76: ;
     cpy_r_r96 = PyObject_Vectorcall(cpy_r_r93, cpy_r_r95, 2, 0);
     CPy_DECREF(cpy_r_r93);
     if (unlikely(cpy_r_r96 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL380;
     }
     CPy_DECREF(cpy_r_r91);
@@ -4357,13 +4420,13 @@ CPyL76: ;
     cpy_r_r98 = CPyStatics[5]; /* '__aexit__' */
     cpy_r_r99 = CPyObject_GetAttr(cpy_r_r97, cpy_r_r98);
     if (unlikely(cpy_r_r99 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL381;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19 = cpy_r_r99;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20 = cpy_r_r99;
     cpy_r_r100 = 1;
     if (unlikely(!cpy_r_r100)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -4373,7 +4436,7 @@ CPyL76: ;
     cpy_r_r102 = CPyObject_GetAttr(cpy_r_r97, cpy_r_r101);
     CPy_DECREF(cpy_r_r97);
     if (unlikely(cpy_r_r102 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL382;
     }
     PyObject *cpy_r_r103[1] = {cpy_r_r96};
@@ -4381,19 +4444,19 @@ CPyL76: ;
     cpy_r_r105 = PyObject_Vectorcall(cpy_r_r102, cpy_r_r104, 1, 0);
     CPy_DECREF(cpy_r_r102);
     if (unlikely(cpy_r_r105 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL382;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__21 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__21);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20 = cpy_r_r96;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__21 = cpy_r_r96;
     cpy_r_r106 = 1;
     if (unlikely(!cpy_r_r106)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL383;
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__21 = 1;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22 = 1;
     cpy_r_r107 = 1;
     if (unlikely(!cpy_r_r107)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -4402,21 +4465,21 @@ CPyL76: ;
     cpy_r_r108 = CPy_GetCoro(cpy_r_r105);
     CPy_DECREF(cpy_r_r105);
     if (unlikely(cpy_r_r108 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL261;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22 = cpy_r_r108;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23 = cpy_r_r108;
     cpy_r_r109 = 1;
     if (unlikely(!cpy_r_r109)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL261;
     }
-    cpy_r_r110 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22;
+    cpy_r_r110 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23;
     if (unlikely(cpy_r_r110 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__22", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__23", -1, CPyStatic_brownie___globals);
         goto CPyL261;
     }
     CPy_INCREF(cpy_r_r110);
@@ -4426,18 +4489,18 @@ CPyL86: ;
     if (cpy_r_r111 != NULL) goto CPyL89;
     cpy_r_r112 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r112 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL261;
     }
     cpy_r_r113 = cpy_r_r112;
     cpy_r_r114 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22 = cpy_r_r114;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23 = cpy_r_r114;
     cpy_r_r115 = 1;
     if (unlikely(!cpy_r_r115)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL384;
     } else
         goto CPyL111;
@@ -4452,7 +4515,7 @@ CPyL91: ;
     if (!cpy_r_r119) goto CPyL385;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL95;
     } else
         goto CPyL386;
@@ -4463,21 +4526,21 @@ CPyL94: ;
     goto CPyL106;
 CPyL95: ;
     cpy_r_r120 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23 = cpy_r_r120;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24 = cpy_r_r120;
     cpy_r_r121 = 1;
     if (unlikely(!cpy_r_r121)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL387;
     }
     cpy_r_r122 = (PyObject **)&cpy_r_r5;
-    cpy_r_r123 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22;
+    cpy_r_r123 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23;
     if (unlikely(cpy_r_r123 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__22", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__23", -1, CPyStatic_brownie___globals);
         goto CPyL387;
     }
     CPy_INCREF(cpy_r_r123);
@@ -4485,14 +4548,14 @@ CPyL97: ;
     cpy_r_r124 = CPy_YieldFromErrorHandle(cpy_r_r123, cpy_r_r122);
     CPy_DecRef(cpy_r_r123);
     if (unlikely(cpy_r_r124 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL387;
     }
     if (cpy_r_r124) goto CPyL101;
     cpy_r_r116 = cpy_r_r5;
-    cpy_r_r125 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23;
+    cpy_r_r125 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24;
     if (unlikely(cpy_r_r125.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__23", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__24", -1, CPyStatic_brownie___globals);
         goto CPyL388;
     }
     CPy_INCREF(cpy_r_r125.f0);
@@ -4506,9 +4569,9 @@ CPyL100: ;
     goto CPyL90;
 CPyL101: ;
     cpy_r_r113 = cpy_r_r5;
-    cpy_r_r126 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23;
+    cpy_r_r126 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24;
     if (unlikely(cpy_r_r126.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__23", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__24", -1, CPyStatic_brownie___globals);
         goto CPyL389;
     }
     CPy_INCREF(cpy_r_r126.f0);
@@ -4521,9 +4584,9 @@ CPyL102: ;
     CPy_DecRef(cpy_r_r126.f2);
     goto CPyL111;
 CPyL103: ;
-    cpy_r_r127 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23;
+    cpy_r_r127 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24;
     if (unlikely(cpy_r_r127.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__23", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__24", -1, CPyStatic_brownie___globals);
         goto CPyL261;
     }
     CPy_INCREF(cpy_r_r127.f0);
@@ -4538,9 +4601,9 @@ CPyL104: ;
     if (!cpy_r_r128) goto CPyL261;
     CPy_Unreachable();
 CPyL106: ;
-    cpy_r_r129 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22;
+    cpy_r_r129 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__23;
     if (unlikely(cpy_r_r129 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__22", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__23", -1, CPyStatic_brownie___globals);
         goto CPyL390;
     }
     CPy_INCREF(cpy_r_r129);
@@ -4554,7 +4617,7 @@ CPyL107: ;
 CPyL109: ;
     cpy_r_r131 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r131 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL261;
     }
     cpy_r_r113 = cpy_r_r131;
@@ -4565,12 +4628,12 @@ CPyL111: ;
     ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_cursor = cpy_r_r113;
     cpy_r_r132 = 1;
     if (unlikely(!cpy_r_r132)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     cpy_r_r133 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_cursor;
     if (unlikely(cpy_r_r133 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "cursor", 127, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "cursor", 129, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r133);
@@ -4580,28 +4643,28 @@ CPyL113: ;
     cpy_r_r136 = (PyObject **)&cpy_r_r135;
     cpy_r_r137 = PyObject_VectorcallMethod(cpy_r_r134, cpy_r_r136, 9223372036854775809ULL, 0);
     if (unlikely(cpy_r_r137 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
         goto CPyL391;
     }
     CPy_DECREF(cpy_r_r133);
     cpy_r_r138 = CPy_GetCoro(cpy_r_r137);
     CPy_DECREF(cpy_r_r137);
     if (unlikely(cpy_r_r138 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
         goto CPyL173;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24 = cpy_r_r138;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25 = cpy_r_r138;
     cpy_r_r139 = 1;
     if (unlikely(!cpy_r_r139)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL173;
     }
-    cpy_r_r140 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24;
+    cpy_r_r140 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25;
     if (unlikely(cpy_r_r140 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__24", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__25", -1, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r140);
@@ -4611,18 +4674,18 @@ CPyL117: ;
     if (cpy_r_r141 != NULL) goto CPyL120;
     cpy_r_r142 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r142 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     cpy_r_r143 = cpy_r_r142;
     cpy_r_r144 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24 = cpy_r_r144;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25 = cpy_r_r144;
     cpy_r_r145 = 1;
     if (unlikely(!cpy_r_r145)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
         goto CPyL392;
     } else
         goto CPyL142;
@@ -4637,7 +4700,7 @@ CPyL122: ;
     if (!cpy_r_r149) goto CPyL393;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
         goto CPyL126;
     } else
         goto CPyL394;
@@ -4648,21 +4711,21 @@ CPyL125: ;
     goto CPyL137;
 CPyL126: ;
     cpy_r_r150 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25 = cpy_r_r150;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 = cpy_r_r150;
     cpy_r_r151 = 1;
     if (unlikely(!cpy_r_r151)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL395;
     }
     cpy_r_r152 = (PyObject **)&cpy_r_r7;
-    cpy_r_r153 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24;
+    cpy_r_r153 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25;
     if (unlikely(cpy_r_r153 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__24", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__25", -1, CPyStatic_brownie___globals);
         goto CPyL395;
     }
     CPy_INCREF(cpy_r_r153);
@@ -4670,14 +4733,14 @@ CPyL128: ;
     cpy_r_r154 = CPy_YieldFromErrorHandle(cpy_r_r153, cpy_r_r152);
     CPy_DecRef(cpy_r_r153);
     if (unlikely(cpy_r_r154 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
         goto CPyL395;
     }
     if (cpy_r_r154) goto CPyL132;
     cpy_r_r146 = cpy_r_r7;
-    cpy_r_r155 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25;
+    cpy_r_r155 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26;
     if (unlikely(cpy_r_r155.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__25", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__26", -1, CPyStatic_brownie___globals);
         goto CPyL396;
     }
     CPy_INCREF(cpy_r_r155.f0);
@@ -4691,9 +4754,9 @@ CPyL131: ;
     goto CPyL121;
 CPyL132: ;
     cpy_r_r143 = cpy_r_r7;
-    cpy_r_r156 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25;
+    cpy_r_r156 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26;
     if (unlikely(cpy_r_r156.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__25", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__26", -1, CPyStatic_brownie___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r156.f0);
@@ -4706,9 +4769,9 @@ CPyL133: ;
     CPy_DecRef(cpy_r_r156.f2);
     goto CPyL142;
 CPyL134: ;
-    cpy_r_r157 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25;
+    cpy_r_r157 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26;
     if (unlikely(cpy_r_r157.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__25", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__26", -1, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r157.f0);
@@ -4723,9 +4786,9 @@ CPyL135: ;
     if (!cpy_r_r158) goto CPyL173;
     CPy_Unreachable();
 CPyL137: ;
-    cpy_r_r159 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__24;
+    cpy_r_r159 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__25;
     if (unlikely(cpy_r_r159 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__24", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__25", -1, CPyStatic_brownie___globals);
         goto CPyL398;
     }
     CPy_INCREF(cpy_r_r159);
@@ -4739,7 +4802,7 @@ CPyL138: ;
 CPyL140: ;
     cpy_r_r161 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r161 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     cpy_r_r143 = cpy_r_r161;
@@ -4750,12 +4813,12 @@ CPyL142: ;
     ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_row = cpy_r_r143;
     cpy_r_r162 = 1;
     if (unlikely(!cpy_r_r162)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     cpy_r_r163 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_row;
     if (unlikely(cpy_r_r163 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "row", 128, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "row", 130, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r163);
@@ -4765,26 +4828,26 @@ CPyL144: ;
     CPy_DECREF(cpy_r_r163);
     if (!cpy_r_r165) goto CPyL146;
     cpy_r_r166 = Py_None;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 = cpy_r_r166;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 = cpy_r_r166;
     cpy_r_r167 = 1;
     if (unlikely(!cpy_r_r167)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 129, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
         goto CPyL173;
     } else
         goto CPyL216;
 CPyL146: ;
     cpy_r_r168 = PyList_New(0);
     if (unlikely(cpy_r_r168 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 != NULL) {
-        CPy_DECREF_NO_IMM(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__28 != NULL) {
+        CPy_DECREF_NO_IMM(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__28);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 = cpy_r_r168;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__28 = cpy_r_r168;
     cpy_r_r169 = 1;
     if (unlikely(!cpy_r_r169)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -4792,38 +4855,38 @@ CPyL146: ;
     }
     cpy_r_r170 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_row;
     if (unlikely(cpy_r_r170 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "row", 131, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "row", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r170);
 CPyL149: ;
     cpy_r_r171 = PyObject_GetIter(cpy_r_r170);
     if (unlikely(cpy_r_r171 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL399;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__28 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__28);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__29 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__29);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__28 = cpy_r_r170;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__29 = cpy_r_r170;
     cpy_r_r172 = 1;
     if (unlikely(!cpy_r_r172)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL400;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__29 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__29);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__29 = cpy_r_r171;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30 = cpy_r_r171;
     cpy_r_r173 = 1;
     if (unlikely(!cpy_r_r173)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL173;
     }
 CPyL152: ;
-    cpy_r_r174 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__29;
+    cpy_r_r174 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30;
     if (unlikely(cpy_r_r174 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__29", 131, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__30", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r174);
@@ -4837,12 +4900,12 @@ CPyL153: ;
     ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_i = cpy_r_r175;
     cpy_r_r176 = 1;
     if (unlikely(!cpy_r_r176)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     cpy_r_r177 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_i;
     if (unlikely(cpy_r_r177 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 131, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r177);
@@ -4850,7 +4913,7 @@ CPyL156: ;
     cpy_r_r178 = PyObject_Str(cpy_r_r177);
     CPy_DECREF(cpy_r_r177);
     if (unlikely(cpy_r_r178 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     cpy_r_r179 = CPyStatics[14]; /* '[' */
@@ -4870,13 +4933,13 @@ CPyL156: ;
     CPy_DECREF(cpy_r_r178);
     CPy_DECREF(cpy_r_r182);
     if (unlikely(cpy_r_r183 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     if (!cpy_r_r183) goto CPyL165;
     cpy_r_r184 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_i;
     if (unlikely(cpy_r_r184 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 131, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r184);
@@ -4890,7 +4953,7 @@ CPyL161: ;
     PyErr_SetString(PyExc_NameError, "value for final name \"loads\" was not set");
     cpy_r_r186 = 0;
     if (unlikely(!cpy_r_r186)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_Unreachable();
@@ -4899,7 +4962,7 @@ CPyL163: ;
     cpy_r_r188 = (PyObject **)&cpy_r_r187;
     cpy_r_r189 = PyObject_Vectorcall(cpy_r_r185, cpy_r_r188, 1, 0);
     if (unlikely(cpy_r_r189 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL402;
     }
     CPy_DECREF(cpy_r_r184);
@@ -4908,16 +4971,16 @@ CPyL163: ;
 CPyL165: ;
     cpy_r_r191 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->_i;
     if (unlikely(cpy_r_r191 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 131, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF(cpy_r_r191);
 CPyL166: ;
     cpy_r_r190 = cpy_r_r191;
 CPyL167: ;
-    cpy_r_r192 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27;
+    cpy_r_r192 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__28;
     if (unlikely(cpy_r_r192 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__27", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__28", -1, CPyStatic_brownie___globals);
         goto CPyL403;
     }
     CPy_INCREF_NO_IMM(cpy_r_r192);
@@ -4927,19 +4990,19 @@ CPyL168: ;
     CPy_DECREF(cpy_r_r190);
     cpy_r_r194 = cpy_r_r193 >= 0;
     if (unlikely(!cpy_r_r194)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     } else
         goto CPyL152;
 CPyL169: ;
     cpy_r_r195 = CPy_NoErrOccurred();
     if (unlikely(!cpy_r_r195)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
-    cpy_r_r196 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27;
+    cpy_r_r196 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__28;
     if (unlikely(cpy_r_r196 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__27", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__28", -1, CPyStatic_brownie___globals);
         goto CPyL173;
     }
     CPy_INCREF_NO_IMM(cpy_r_r196);
@@ -4947,35 +5010,35 @@ CPyL171: ;
     cpy_r_r197 = PyList_AsTuple(cpy_r_r196);
     CPy_DECREF_NO_IMM(cpy_r_r196);
     if (unlikely(cpy_r_r197 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
         goto CPyL173;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 = cpy_r_r197;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 = cpy_r_r197;
     cpy_r_r198 = 1;
     if (unlikely(!cpy_r_r198)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 131, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 133, CPyStatic_brownie___globals);
     } else
         goto CPyL216;
 CPyL173: ;
     cpy_r_r199 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30 = cpy_r_r199;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31 = cpy_r_r199;
     cpy_r_r200 = 1;
     if (unlikely(!cpy_r_r200)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL212;
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__21 = 0;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22 = 0;
     cpy_r_r201 = 1;
     if (unlikely(!cpy_r_r201)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL212;
     }
     cpy_r_r202 = CPy_GetExcInfo();
@@ -4988,16 +5051,16 @@ CPyL173: ;
     CPy_DecRef(cpy_r_r202.f0);
     CPy_DecRef(cpy_r_r202.f1);
     CPy_DecRef(cpy_r_r202.f2);
-    cpy_r_r206 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19;
+    cpy_r_r206 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20;
     if (unlikely(cpy_r_r206 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__19", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__20", -1, CPyStatic_brownie___globals);
         goto CPyL404;
     }
     CPy_INCREF(cpy_r_r206);
 CPyL176: ;
-    cpy_r_r207 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20;
+    cpy_r_r207 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__21;
     if (unlikely(cpy_r_r207 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__20", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__21", -1, CPyStatic_brownie___globals);
         goto CPyL405;
     }
     CPy_INCREF(cpy_r_r207);
@@ -5007,7 +5070,7 @@ CPyL177: ;
     cpy_r_r210 = PyObject_Vectorcall(cpy_r_r206, cpy_r_r209, 4, 0);
     CPy_DecRef(cpy_r_r206);
     if (unlikely(cpy_r_r210 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL406;
     }
     CPy_DecRef(cpy_r_r207);
@@ -5017,21 +5080,21 @@ CPyL177: ;
     cpy_r_r211 = CPy_GetCoro(cpy_r_r210);
     CPy_DecRef(cpy_r_r210);
     if (unlikely(cpy_r_r211 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL212;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31 = cpy_r_r211;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32 = cpy_r_r211;
     cpy_r_r212 = 1;
     if (unlikely(!cpy_r_r212)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL212;
     }
-    cpy_r_r213 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31;
+    cpy_r_r213 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32;
     if (unlikely(cpy_r_r213 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__31", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__32", -1, CPyStatic_brownie___globals);
         goto CPyL212;
     }
     CPy_INCREF(cpy_r_r213);
@@ -5041,18 +5104,18 @@ CPyL181: ;
     if (cpy_r_r214 != NULL) goto CPyL184;
     cpy_r_r215 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r215 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL212;
     }
     cpy_r_r216 = cpy_r_r215;
     cpy_r_r217 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31 = cpy_r_r217;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32 = cpy_r_r217;
     cpy_r_r218 = 1;
     if (unlikely(!cpy_r_r218)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL407;
     } else
         goto CPyL206;
@@ -5067,7 +5130,7 @@ CPyL186: ;
     if (!cpy_r_r222) goto CPyL408;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL190;
     } else
         goto CPyL409;
@@ -5078,21 +5141,21 @@ CPyL189: ;
     goto CPyL201;
 CPyL190: ;
     cpy_r_r223 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32 = cpy_r_r223;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33 = cpy_r_r223;
     cpy_r_r224 = 1;
     if (unlikely(!cpy_r_r224)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL410;
     }
     cpy_r_r225 = (PyObject **)&cpy_r_r9;
-    cpy_r_r226 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31;
+    cpy_r_r226 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32;
     if (unlikely(cpy_r_r226 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__31", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__32", -1, CPyStatic_brownie___globals);
         goto CPyL410;
     }
     CPy_INCREF(cpy_r_r226);
@@ -5100,14 +5163,14 @@ CPyL192: ;
     cpy_r_r227 = CPy_YieldFromErrorHandle(cpy_r_r226, cpy_r_r225);
     CPy_DecRef(cpy_r_r226);
     if (unlikely(cpy_r_r227 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL410;
     }
     if (cpy_r_r227) goto CPyL196;
     cpy_r_r219 = cpy_r_r9;
-    cpy_r_r228 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32;
+    cpy_r_r228 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33;
     if (unlikely(cpy_r_r228.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__32", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__33", -1, CPyStatic_brownie___globals);
         goto CPyL411;
     }
     CPy_INCREF(cpy_r_r228.f0);
@@ -5121,9 +5184,9 @@ CPyL195: ;
     goto CPyL185;
 CPyL196: ;
     cpy_r_r216 = cpy_r_r9;
-    cpy_r_r229 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32;
+    cpy_r_r229 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33;
     if (unlikely(cpy_r_r229.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__32", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__33", -1, CPyStatic_brownie___globals);
         goto CPyL412;
     }
     CPy_INCREF(cpy_r_r229.f0);
@@ -5136,9 +5199,9 @@ CPyL197: ;
     CPy_DecRef(cpy_r_r229.f2);
     goto CPyL206;
 CPyL198: ;
-    cpy_r_r230 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32;
+    cpy_r_r230 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33;
     if (unlikely(cpy_r_r230.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__32", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__33", -1, CPyStatic_brownie___globals);
         goto CPyL212;
     }
     CPy_INCREF(cpy_r_r230.f0);
@@ -5153,9 +5216,9 @@ CPyL199: ;
     if (!cpy_r_r231) goto CPyL212;
     CPy_Unreachable();
 CPyL201: ;
-    cpy_r_r232 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31;
+    cpy_r_r232 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__32;
     if (unlikely(cpy_r_r232 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__31", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__32", -1, CPyStatic_brownie___globals);
         goto CPyL413;
     }
     CPy_INCREF(cpy_r_r232);
@@ -5169,7 +5232,7 @@ CPyL202: ;
 CPyL204: ;
     cpy_r_r234 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r234 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL212;
     }
     cpy_r_r216 = cpy_r_r234;
@@ -5187,9 +5250,9 @@ CPyL206: ;
     if (!0) goto CPyL212;
     CPy_Unreachable();
 CPyL210: ;
-    cpy_r_r238 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30;
+    cpy_r_r238 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31;
     if (unlikely(cpy_r_r238.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__30", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__31", -1, CPyStatic_brownie___globals);
         goto CPyL217;
     }
     CPy_INCREF(cpy_r_r238.f0);
@@ -5202,9 +5265,9 @@ CPyL211: ;
     CPy_DECREF(cpy_r_r238.f2);
     goto CPyL215;
 CPyL212: ;
-    cpy_r_r239 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30;
+    cpy_r_r239 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__31;
     if (unlikely(cpy_r_r239.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__30", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__31", -1, CPyStatic_brownie___globals);
         goto CPyL217;
     }
     CPy_INCREF(cpy_r_r239.f0);
@@ -5220,10 +5283,10 @@ CPyL213: ;
     CPy_Unreachable();
 CPyL215: ;
     cpy_r_r241 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 = cpy_r_r241;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 = cpy_r_r241;
     cpy_r_r242 = 1;
     if (unlikely(!cpy_r_r242)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -5236,10 +5299,10 @@ CPyL216: ;
     goto CPyL219;
 CPyL217: ;
     cpy_r_r244 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26 = cpy_r_r244;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27 = cpy_r_r244;
     cpy_r_r245 = 1;
     if (unlikely(!cpy_r_r245)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -5248,25 +5311,25 @@ CPyL217: ;
     cpy_r_r246 = CPy_CatchError();
     cpy_r_r13 = cpy_r_r246;
 CPyL219: ;
-    cpy_r_r247 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__21;
+    cpy_r_r247 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__22;
     if (unlikely(cpy_r_r247 == 2)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__21", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__22", -1, CPyStatic_brownie___globals);
         goto CPyL257;
     }
 CPyL220: ;
     if (!cpy_r_r247) goto CPyL252;
 CPyL221: ;
     cpy_r_r248 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r249 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__19;
+    cpy_r_r249 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20;
     if (unlikely(cpy_r_r249 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__19", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__20", -1, CPyStatic_brownie___globals);
         goto CPyL257;
     }
     CPy_INCREF(cpy_r_r249);
 CPyL222: ;
-    cpy_r_r250 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__20;
+    cpy_r_r250 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__21;
     if (unlikely(cpy_r_r250 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__20", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__21", -1, CPyStatic_brownie___globals);
         goto CPyL414;
     }
     CPy_INCREF(cpy_r_r250);
@@ -5276,28 +5339,28 @@ CPyL223: ;
     cpy_r_r253 = PyObject_Vectorcall(cpy_r_r249, cpy_r_r252, 4, 0);
     CPy_DECREF(cpy_r_r249);
     if (unlikely(cpy_r_r253 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL415;
     }
     CPy_DECREF(cpy_r_r250);
     cpy_r_r254 = CPy_GetCoro(cpy_r_r253);
     CPy_DECREF(cpy_r_r253);
     if (unlikely(cpy_r_r254 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL257;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33 = cpy_r_r254;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34 = cpy_r_r254;
     cpy_r_r255 = 1;
     if (unlikely(!cpy_r_r255)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL257;
     }
-    cpy_r_r256 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33;
+    cpy_r_r256 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34;
     if (unlikely(cpy_r_r256 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__33", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__34", -1, CPyStatic_brownie___globals);
         goto CPyL257;
     }
     CPy_INCREF(cpy_r_r256);
@@ -5307,19 +5370,19 @@ CPyL227: ;
     if (cpy_r_r257 != NULL) goto CPyL416;
     cpy_r_r258 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r258 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL257;
     }
     cpy_r_r259 = cpy_r_r258;
     CPy_DECREF(cpy_r_r259);
     cpy_r_r260 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33 = cpy_r_r260;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34 = cpy_r_r260;
     cpy_r_r261 = 1;
     if (unlikely(!cpy_r_r261)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL257;
     } else
         goto CPyL252;
@@ -5334,7 +5397,7 @@ CPyL232: ;
     if (!cpy_r_r265) goto CPyL417;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL236;
     } else
         goto CPyL418;
@@ -5345,21 +5408,21 @@ CPyL235: ;
     goto CPyL247;
 CPyL236: ;
     cpy_r_r266 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34 = cpy_r_r266;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35 = cpy_r_r266;
     cpy_r_r267 = 1;
     if (unlikely(!cpy_r_r267)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL419;
     }
     cpy_r_r268 = (PyObject **)&cpy_r_r11;
-    cpy_r_r269 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33;
+    cpy_r_r269 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34;
     if (unlikely(cpy_r_r269 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__33", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__34", -1, CPyStatic_brownie___globals);
         goto CPyL419;
     }
     CPy_INCREF(cpy_r_r269);
@@ -5367,14 +5430,14 @@ CPyL238: ;
     cpy_r_r270 = CPy_YieldFromErrorHandle(cpy_r_r269, cpy_r_r268);
     CPy_DecRef(cpy_r_r269);
     if (unlikely(cpy_r_r270 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL419;
     }
     if (cpy_r_r270) goto CPyL242;
     cpy_r_r262 = cpy_r_r11;
-    cpy_r_r271 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34;
+    cpy_r_r271 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35;
     if (unlikely(cpy_r_r271.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__34", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__35", -1, CPyStatic_brownie___globals);
         goto CPyL420;
     }
     CPy_INCREF(cpy_r_r271.f0);
@@ -5390,9 +5453,9 @@ CPyL241: ;
 CPyL242: ;
     cpy_r_r259 = cpy_r_r11;
     CPy_DecRef(cpy_r_r259);
-    cpy_r_r272 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34;
+    cpy_r_r272 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35;
     if (unlikely(cpy_r_r272.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__34", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__35", -1, CPyStatic_brownie___globals);
         goto CPyL244;
     }
     CPy_INCREF(cpy_r_r272.f0);
@@ -5405,9 +5468,9 @@ CPyL243: ;
     CPy_DecRef(cpy_r_r272.f2);
     goto CPyL252;
 CPyL244: ;
-    cpy_r_r273 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34;
+    cpy_r_r273 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35;
     if (unlikely(cpy_r_r273.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__34", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__35", -1, CPyStatic_brownie___globals);
         goto CPyL257;
     }
     CPy_INCREF(cpy_r_r273.f0);
@@ -5426,9 +5489,9 @@ CPyL245: ;
 CPyL246: ;
     CPy_Unreachable();
 CPyL247: ;
-    cpy_r_r275 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__33;
+    cpy_r_r275 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__34;
     if (unlikely(cpy_r_r275 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__33", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__34", -1, CPyStatic_brownie___globals);
         goto CPyL423;
     }
     CPy_INCREF(cpy_r_r275);
@@ -5446,7 +5509,7 @@ CPyL249: ;
 CPyL250: ;
     cpy_r_r277 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r277 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 126, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 128, CPyStatic_brownie___globals);
         goto CPyL257;
     }
     cpy_r_r259 = cpy_r_r277;
@@ -5461,16 +5524,16 @@ CPyL252: ;
 CPyL254: ;
     CPy_Unreachable();
 CPyL255: ;
-    cpy_r_r278 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__26;
+    cpy_r_r278 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__27;
     if (cpy_r_r278 != NULL) {
         CPy_INCREF(cpy_r_r278);
     }
     if (cpy_r_r278 == NULL) goto CPyL303;
 CPyL256: ;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35 = cpy_r_r278;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36 = cpy_r_r278;
     cpy_r_r279 = 1;
     if (unlikely(!cpy_r_r279)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -5489,21 +5552,21 @@ CPyL259: ;
     CPy_Unreachable();
 CPyL261: ;
     cpy_r_r281 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36 = cpy_r_r281;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37 = cpy_r_r281;
     cpy_r_r282 = 1;
     if (unlikely(!cpy_r_r282)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL300;
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__16 = 0;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17 = 0;
     cpy_r_r283 = 1;
     if (unlikely(!cpy_r_r283)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL300;
     }
     cpy_r_r284 = CPy_GetExcInfo();
@@ -5516,16 +5579,16 @@ CPyL261: ;
     CPy_DECREF(cpy_r_r284.f0);
     CPy_DECREF(cpy_r_r284.f1);
     CPy_DECREF(cpy_r_r284.f2);
-    cpy_r_r288 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14;
+    cpy_r_r288 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15;
     if (unlikely(cpy_r_r288 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__14", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__15", -1, CPyStatic_brownie___globals);
         goto CPyL426;
     }
     CPy_INCREF(cpy_r_r288);
 CPyL264: ;
-    cpy_r_r289 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15;
+    cpy_r_r289 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__16;
     if (unlikely(cpy_r_r289 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__15", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__16", -1, CPyStatic_brownie___globals);
         goto CPyL427;
     }
     CPy_INCREF(cpy_r_r289);
@@ -5535,7 +5598,7 @@ CPyL265: ;
     cpy_r_r292 = PyObject_Vectorcall(cpy_r_r288, cpy_r_r291, 4, 0);
     CPy_DECREF(cpy_r_r288);
     if (unlikely(cpy_r_r292 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL428;
     }
     CPy_DECREF(cpy_r_r289);
@@ -5545,21 +5608,21 @@ CPyL265: ;
     cpy_r_r293 = CPy_GetCoro(cpy_r_r292);
     CPy_DECREF(cpy_r_r292);
     if (unlikely(cpy_r_r293 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL300;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37 = cpy_r_r293;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38 = cpy_r_r293;
     cpy_r_r294 = 1;
     if (unlikely(!cpy_r_r294)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL300;
     }
-    cpy_r_r295 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37;
+    cpy_r_r295 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38;
     if (unlikely(cpy_r_r295 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__37", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__38", -1, CPyStatic_brownie___globals);
         goto CPyL300;
     }
     CPy_INCREF(cpy_r_r295);
@@ -5569,18 +5632,18 @@ CPyL269: ;
     if (cpy_r_r296 != NULL) goto CPyL272;
     cpy_r_r297 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r297 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL300;
     }
     cpy_r_r298 = cpy_r_r297;
     cpy_r_r299 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37 = cpy_r_r299;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38 = cpy_r_r299;
     cpy_r_r300 = 1;
     if (unlikely(!cpy_r_r300)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL429;
     } else
         goto CPyL294;
@@ -5595,7 +5658,7 @@ CPyL274: ;
     if (!cpy_r_r304) goto CPyL430;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL278;
     } else
         goto CPyL431;
@@ -5606,21 +5669,21 @@ CPyL277: ;
     goto CPyL289;
 CPyL278: ;
     cpy_r_r305 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38 = cpy_r_r305;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39 = cpy_r_r305;
     cpy_r_r306 = 1;
     if (unlikely(!cpy_r_r306)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL432;
     }
     cpy_r_r307 = (PyObject **)&cpy_r_r15;
-    cpy_r_r308 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37;
+    cpy_r_r308 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38;
     if (unlikely(cpy_r_r308 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__37", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__38", -1, CPyStatic_brownie___globals);
         goto CPyL432;
     }
     CPy_INCREF(cpy_r_r308);
@@ -5628,14 +5691,14 @@ CPyL280: ;
     cpy_r_r309 = CPy_YieldFromErrorHandle(cpy_r_r308, cpy_r_r307);
     CPy_DecRef(cpy_r_r308);
     if (unlikely(cpy_r_r309 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL432;
     }
     if (cpy_r_r309) goto CPyL284;
     cpy_r_r301 = cpy_r_r15;
-    cpy_r_r310 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38;
+    cpy_r_r310 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39;
     if (unlikely(cpy_r_r310.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__38", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__39", -1, CPyStatic_brownie___globals);
         goto CPyL433;
     }
     CPy_INCREF(cpy_r_r310.f0);
@@ -5649,9 +5712,9 @@ CPyL283: ;
     goto CPyL273;
 CPyL284: ;
     cpy_r_r298 = cpy_r_r15;
-    cpy_r_r311 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38;
+    cpy_r_r311 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39;
     if (unlikely(cpy_r_r311.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__38", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__39", -1, CPyStatic_brownie___globals);
         goto CPyL434;
     }
     CPy_INCREF(cpy_r_r311.f0);
@@ -5664,9 +5727,9 @@ CPyL285: ;
     CPy_DecRef(cpy_r_r311.f2);
     goto CPyL294;
 CPyL286: ;
-    cpy_r_r312 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38;
+    cpy_r_r312 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39;
     if (unlikely(cpy_r_r312.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__38", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__39", -1, CPyStatic_brownie___globals);
         goto CPyL300;
     }
     CPy_INCREF(cpy_r_r312.f0);
@@ -5681,9 +5744,9 @@ CPyL287: ;
     if (!cpy_r_r313) goto CPyL300;
     CPy_Unreachable();
 CPyL289: ;
-    cpy_r_r314 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37;
+    cpy_r_r314 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__38;
     if (unlikely(cpy_r_r314 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__37", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__38", -1, CPyStatic_brownie___globals);
         goto CPyL435;
     }
     CPy_INCREF(cpy_r_r314);
@@ -5697,7 +5760,7 @@ CPyL290: ;
 CPyL292: ;
     cpy_r_r316 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r316 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL300;
     }
     cpy_r_r298 = cpy_r_r316;
@@ -5715,9 +5778,9 @@ CPyL294: ;
     if (!0) goto CPyL300;
     CPy_Unreachable();
 CPyL298: ;
-    cpy_r_r320 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36;
+    cpy_r_r320 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37;
     if (unlikely(cpy_r_r320.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__36", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__37", -1, CPyStatic_brownie___globals);
         goto CPyL305;
     }
     CPy_INCREF(cpy_r_r320.f0);
@@ -5730,9 +5793,9 @@ CPyL299: ;
     CPy_DECREF(cpy_r_r320.f2);
     goto CPyL303;
 CPyL300: ;
-    cpy_r_r321 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36;
+    cpy_r_r321 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__37;
     if (unlikely(cpy_r_r321.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__36", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__37", -1, CPyStatic_brownie___globals);
         goto CPyL305;
     }
     CPy_INCREF(cpy_r_r321.f0);
@@ -5748,10 +5811,10 @@ CPyL301: ;
     CPy_Unreachable();
 CPyL303: ;
     cpy_r_r323 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35 = cpy_r_r323;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36 = cpy_r_r323;
     cpy_r_r324 = 1;
     if (unlikely(!cpy_r_r324)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -5764,10 +5827,10 @@ CPyL304: ;
     goto CPyL307;
 CPyL305: ;
     cpy_r_r326 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35 = cpy_r_r326;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36 = cpy_r_r326;
     cpy_r_r327 = 1;
     if (unlikely(!cpy_r_r327)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
@@ -5776,25 +5839,25 @@ CPyL305: ;
     cpy_r_r328 = CPy_CatchError();
     cpy_r_r19 = cpy_r_r328;
 CPyL307: ;
-    cpy_r_r329 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__16;
+    cpy_r_r329 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__17;
     if (unlikely(cpy_r_r329 == 2)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__16", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__17", -1, CPyStatic_brownie___globals);
         goto CPyL347;
     }
 CPyL308: ;
     if (!cpy_r_r329) goto CPyL340;
 CPyL309: ;
     cpy_r_r330 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r331 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14;
+    cpy_r_r331 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15;
     if (unlikely(cpy_r_r331 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__14", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__15", -1, CPyStatic_brownie___globals);
         goto CPyL347;
     }
     CPy_INCREF(cpy_r_r331);
 CPyL310: ;
-    cpy_r_r332 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15;
+    cpy_r_r332 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__16;
     if (unlikely(cpy_r_r332 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__15", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__16", -1, CPyStatic_brownie___globals);
         goto CPyL436;
     }
     CPy_INCREF(cpy_r_r332);
@@ -5804,28 +5867,28 @@ CPyL311: ;
     cpy_r_r335 = PyObject_Vectorcall(cpy_r_r331, cpy_r_r334, 4, 0);
     CPy_DECREF(cpy_r_r331);
     if (unlikely(cpy_r_r335 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL437;
     }
     CPy_DECREF(cpy_r_r332);
     cpy_r_r336 = CPy_GetCoro(cpy_r_r335);
     CPy_DECREF(cpy_r_r335);
     if (unlikely(cpy_r_r336 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL347;
     }
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39 = cpy_r_r336;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40 = cpy_r_r336;
     cpy_r_r337 = 1;
     if (unlikely(!cpy_r_r337)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL347;
     }
-    cpy_r_r338 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39;
+    cpy_r_r338 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40;
     if (unlikely(cpy_r_r338 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__39", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__40", -1, CPyStatic_brownie___globals);
         goto CPyL347;
     }
     CPy_INCREF(cpy_r_r338);
@@ -5835,19 +5898,19 @@ CPyL315: ;
     if (cpy_r_r339 != NULL) goto CPyL438;
     cpy_r_r340 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r340 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL347;
     }
     cpy_r_r341 = cpy_r_r340;
     CPy_DECREF(cpy_r_r341);
     cpy_r_r342 = NULL;
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39 = cpy_r_r342;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40 = cpy_r_r342;
     cpy_r_r343 = 1;
     if (unlikely(!cpy_r_r343)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL347;
     } else
         goto CPyL340;
@@ -5862,7 +5925,7 @@ CPyL320: ;
     if (!cpy_r_r347) goto CPyL439;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL324;
     } else
         goto CPyL440;
@@ -5873,21 +5936,21 @@ CPyL323: ;
     goto CPyL335;
 CPyL324: ;
     cpy_r_r348 = CPy_CatchError();
-    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40.f0);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40.f1);
-        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40.f2);
+    if (((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41.f0);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41.f1);
+        CPy_DECREF(((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41.f2);
     }
-    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40 = cpy_r_r348;
+    ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41 = cpy_r_r348;
     cpy_r_r349 = 1;
     if (unlikely(!cpy_r_r349)) {
         CPy_AddTraceback("y/_db/brownie.py", "fetchone", -1, CPyStatic_brownie___globals);
         goto CPyL441;
     }
     cpy_r_r350 = (PyObject **)&cpy_r_r17;
-    cpy_r_r351 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39;
+    cpy_r_r351 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40;
     if (unlikely(cpy_r_r351 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__39", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__40", -1, CPyStatic_brownie___globals);
         goto CPyL441;
     }
     CPy_INCREF(cpy_r_r351);
@@ -5895,14 +5958,14 @@ CPyL326: ;
     cpy_r_r352 = CPy_YieldFromErrorHandle(cpy_r_r351, cpy_r_r350);
     CPy_DecRef(cpy_r_r351);
     if (unlikely(cpy_r_r352 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL441;
     }
     if (cpy_r_r352) goto CPyL330;
     cpy_r_r344 = cpy_r_r17;
-    cpy_r_r353 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40;
+    cpy_r_r353 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41;
     if (unlikely(cpy_r_r353.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__40", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__41", -1, CPyStatic_brownie___globals);
         goto CPyL442;
     }
     CPy_INCREF(cpy_r_r353.f0);
@@ -5918,9 +5981,9 @@ CPyL329: ;
 CPyL330: ;
     cpy_r_r341 = cpy_r_r17;
     CPy_DecRef(cpy_r_r341);
-    cpy_r_r354 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40;
+    cpy_r_r354 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41;
     if (unlikely(cpy_r_r354.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__40", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__41", -1, CPyStatic_brownie___globals);
         goto CPyL332;
     }
     CPy_INCREF(cpy_r_r354.f0);
@@ -5933,9 +5996,9 @@ CPyL331: ;
     CPy_DecRef(cpy_r_r354.f2);
     goto CPyL340;
 CPyL332: ;
-    cpy_r_r355 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40;
+    cpy_r_r355 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41;
     if (unlikely(cpy_r_r355.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__40", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__41", -1, CPyStatic_brownie___globals);
         goto CPyL347;
     }
     CPy_INCREF(cpy_r_r355.f0);
@@ -5954,9 +6017,9 @@ CPyL333: ;
 CPyL334: ;
     CPy_Unreachable();
 CPyL335: ;
-    cpy_r_r357 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__39;
+    cpy_r_r357 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__40;
     if (unlikely(cpy_r_r357 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__39", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__40", -1, CPyStatic_brownie___globals);
         goto CPyL445;
     }
     CPy_INCREF(cpy_r_r357);
@@ -5974,7 +6037,7 @@ CPyL337: ;
 CPyL338: ;
     cpy_r_r359 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r359 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 125, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 127, CPyStatic_brownie___globals);
         goto CPyL347;
     }
     cpy_r_r341 = cpy_r_r359;
@@ -5989,7 +6052,7 @@ CPyL340: ;
 CPyL342: ;
     CPy_Unreachable();
 CPyL343: ;
-    cpy_r_r360 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__35;
+    cpy_r_r360 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__36;
     if (cpy_r_r360 != NULL) {
         CPy_INCREF(cpy_r_r360);
     }
@@ -6070,7 +6133,7 @@ CPyL363: ;
     PyErr_SetNone(PyExc_StopIteration);
     cpy_r_r374 = 0;
     if (unlikely(!cpy_r_r374)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 122, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
         goto CPyL365;
     }
     CPy_Unreachable();
@@ -6791,7 +6854,7 @@ PyObject *CPyDef_brownie___AsyncCursor___fetchone(PyObject *cpy_r_self, PyObject
     PyObject *cpy_r_r5;
     cpy_r_r0 = CPyDef_brownie___fetchone_AsyncCursor_gen();
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 122, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
         goto CPyL5;
     }
     ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r_r0)->___mypyc_next_label__ = 0;
@@ -6802,7 +6865,7 @@ PyObject *CPyDef_brownie___AsyncCursor___fetchone(PyObject *cpy_r_self, PyObject
     ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r_r0)->_self = cpy_r_self;
     cpy_r_r2 = 1;
     if (unlikely(!cpy_r_r2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 122, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
         goto CPyL6;
     }
     CPy_INCREF(cpy_r_cmd);
@@ -6812,7 +6875,7 @@ PyObject *CPyDef_brownie___AsyncCursor___fetchone(PyObject *cpy_r_self, PyObject
     ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r_r0)->_cmd = cpy_r_cmd;
     cpy_r_r3 = 1;
     if (unlikely(!cpy_r_r3)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 122, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
         goto CPyL6;
     }
     CPy_INCREF(cpy_r_args);
@@ -6822,7 +6885,7 @@ PyObject *CPyDef_brownie___AsyncCursor___fetchone(PyObject *cpy_r_self, PyObject
     ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r_r0)->_args = cpy_r_args;
     cpy_r_r4 = 1;
     if (unlikely(!cpy_r_r4)) {
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 122, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
         goto CPyL6;
     }
     return cpy_r_r0;
@@ -6863,7 +6926,7 @@ PyObject *CPyPy_brownie___AsyncCursor___fetchone(PyObject *self, PyObject *const
     return retval;
 fail: ;
     CPy_DECREF(obj_args);
-    CPy_AddTraceback("y/_db/brownie.py", "fetchone", 122, CPyStatic_brownie___globals);
+    CPy_AddTraceback("y/_db/brownie.py", "fetchone", 124, CPyStatic_brownie___globals);
     return NULL;
 }
 
@@ -6896,33 +6959,33 @@ PyObject *CPyDef_brownie____get_select_statement(void) {
     cpy_r_r2 = CPyStatics[17]; /* 'CONFIG' */
     cpy_r_r3 = CPyDict_GetItem(cpy_r_r1, cpy_r_r2);
     if (unlikely(cpy_r_r3 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 141, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 143, CPyStatic_brownie___globals);
         goto CPyL7;
     }
     cpy_r_r4 = CPyStatics[18]; /* 'active_network' */
     cpy_r_r5 = CPyObject_GetAttr(cpy_r_r3, cpy_r_r4);
     CPy_DECREF(cpy_r_r3);
     if (unlikely(cpy_r_r5 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 141, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 143, CPyStatic_brownie___globals);
         goto CPyL7;
     }
     cpy_r_r6 = CPyStatics[19]; /* 'chainid' */
     cpy_r_r7 = PyObject_GetItem(cpy_r_r5, cpy_r_r6);
     CPy_DECREF(cpy_r_r5);
     if (unlikely(cpy_r_r7 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 141, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 143, CPyStatic_brownie___globals);
         goto CPyL7;
     }
     cpy_r_r8 = PyObject_Str(cpy_r_r7);
     CPy_DECREF(cpy_r_r7);
     if (unlikely(cpy_r_r8 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 141, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 143, CPyStatic_brownie___globals);
         goto CPyL7;
     }
     cpy_r_r9 = CPyStr_Build(2, cpy_r_r0, cpy_r_r8);
     CPy_DECREF(cpy_r_r8);
     if (unlikely(cpy_r_r9 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 141, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 143, CPyStatic_brownie___globals);
         goto CPyL7;
     }
     return cpy_r_r9;
@@ -6932,7 +6995,7 @@ CPyL7: ;
     cpy_r_r12 = CPyStatics[20]; /* 'KeyError' */
     cpy_r_r13 = CPyObject_GetAttr(cpy_r_r11, cpy_r_r12);
     if (unlikely(cpy_r_r13 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 142, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 144, CPyStatic_brownie___globals);
         goto CPyL15;
     }
     cpy_r_r14 = CPy_ExceptionMatches(cpy_r_r13);
@@ -6943,7 +7006,7 @@ CPyL7: ;
     cpy_r_r17 = CPyStatics[22]; /* 'BrownieEnvironmentError' */
     cpy_r_r18 = CPyDict_GetItem(cpy_r_r16, cpy_r_r17);
     if (unlikely(cpy_r_r18 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 143, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 145, CPyStatic_brownie___globals);
         goto CPyL15;
     }
     PyObject *cpy_r_r19[1] = {cpy_r_r15};
@@ -6951,13 +7014,13 @@ CPyL7: ;
     cpy_r_r21 = PyObject_Vectorcall(cpy_r_r18, cpy_r_r20, 1, 0);
     CPy_DecRef(cpy_r_r18);
     if (unlikely(cpy_r_r21 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 143, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 145, CPyStatic_brownie___globals);
         goto CPyL15;
     }
     CPy_Raise(cpy_r_r21);
     CPy_DecRef(cpy_r_r21);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 143, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 145, CPyStatic_brownie___globals);
         goto CPyL15;
     } else
         goto CPyL18;
@@ -7003,7 +7066,7 @@ PyObject *CPyPy_brownie____get_select_statement(PyObject *self, PyObject *const 
     PyObject *retval = CPyDef_brownie____get_select_statement();
     return retval;
 fail: ;
-    CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 139, CPyStatic_brownie___globals);
+    CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", 141, CPyStatic_brownie___globals);
     return NULL;
 }
 
@@ -7330,14 +7393,14 @@ CPyL1: ;
     if (!cpy_r_r6) goto CPyL4;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 146, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 148, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_Unreachable();
 CPyL4: ;
     cpy_r_r7 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_address;
     if (unlikely(cpy_r_r7 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 151, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 153, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r7);
@@ -7348,7 +7411,7 @@ CPyL5: ;
     if (likely(cpy_r_r7 != Py_None))
         cpy_r_r10 = cpy_r_r7;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 151, CPyStatic_brownie___globals, "str", cpy_r_r7);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 153, CPyStatic_brownie___globals, "str", cpy_r_r7);
         goto CPyL252;
     }
     cpy_r_r11 = CPyStr_IsTrue(cpy_r_r10);
@@ -7356,7 +7419,7 @@ CPyL5: ;
     if (!cpy_r_r11) goto CPyL16;
     cpy_r_r12 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_alias;
     if (unlikely(cpy_r_r12 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 151, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 153, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r12);
@@ -7367,7 +7430,7 @@ CPyL9: ;
     if (likely(cpy_r_r12 != Py_None))
         cpy_r_r15 = cpy_r_r12;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 151, CPyStatic_brownie___globals, "str", cpy_r_r12);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 153, CPyStatic_brownie___globals, "str", cpy_r_r12);
         goto CPyL252;
     }
     cpy_r_r16 = CPyStr_IsTrue(cpy_r_r15);
@@ -7378,7 +7441,7 @@ CPyL9: ;
     cpy_r_r19 = CPyStatics[24]; /* 'ValueError' */
     cpy_r_r20 = CPyObject_GetAttr(cpy_r_r18, cpy_r_r19);
     if (unlikely(cpy_r_r20 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 152, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     PyObject *cpy_r_r21[1] = {cpy_r_r17};
@@ -7386,20 +7449,20 @@ CPyL9: ;
     cpy_r_r23 = PyObject_Vectorcall(cpy_r_r20, cpy_r_r22, 1, 0);
     CPy_DECREF(cpy_r_r20);
     if (unlikely(cpy_r_r23 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 152, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_Raise(cpy_r_r23);
     CPy_DECREF(cpy_r_r23);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 152, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_Unreachable();
 CPyL16: ;
     cpy_r_r24 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_address;
     if (unlikely(cpy_r_r24 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 153, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 155, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r24);
@@ -7410,7 +7473,7 @@ CPyL17: ;
     if (likely(cpy_r_r24 != Py_None))
         cpy_r_r27 = cpy_r_r24;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 153, CPyStatic_brownie___globals, "str", cpy_r_r24);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 155, CPyStatic_brownie___globals, "str", cpy_r_r24);
         goto CPyL252;
     }
     cpy_r_r28 = CPyStr_IsTrue(cpy_r_r27);
@@ -7418,7 +7481,7 @@ CPyL17: ;
     if (!cpy_r_r28) goto CPyL30;
     cpy_r_r29 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_address;
     if (unlikely(cpy_r_r29 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 154, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 156, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r29);
@@ -7426,14 +7489,14 @@ CPyL21: ;
     if (likely(cpy_r_r29 != Py_None))
         cpy_r_r30 = cpy_r_r29;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals, "str", cpy_r_r29);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 156, CPyStatic_brownie___globals, "str", cpy_r_r29);
         goto CPyL252;
     }
     cpy_r_r31 = CPyStatic_brownie___globals;
     cpy_r_r32 = CPyStatics[25]; /* '_resolve_address' */
     cpy_r_r33 = CPyDict_GetItem(cpy_r_r31, cpy_r_r32);
     if (unlikely(cpy_r_r33 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 156, CPyStatic_brownie___globals);
         goto CPyL256;
     }
     PyObject *cpy_r_r34[1] = {cpy_r_r30};
@@ -7441,14 +7504,14 @@ CPyL21: ;
     cpy_r_r36 = PyObject_Vectorcall(cpy_r_r33, cpy_r_r35, 1, 0);
     CPy_DECREF(cpy_r_r33);
     if (unlikely(cpy_r_r36 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 156, CPyStatic_brownie___globals);
         goto CPyL256;
     }
     CPy_DECREF(cpy_r_r30);
     if (likely(PyUnicode_Check(cpy_r_r36)))
         cpy_r_r37 = cpy_r_r36;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals, "str", cpy_r_r36);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 156, CPyStatic_brownie___globals, "str", cpy_r_r36);
         goto CPyL252;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_address != NULL) {
@@ -7457,13 +7520,13 @@ CPyL21: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_address = cpy_r_r37;
     cpy_r_r38 = 1;
     if (unlikely(!cpy_r_r38)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 156, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r39 = CPyStatics[26]; /* " WHERE address='" */
     cpy_r_r40 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_address;
     if (unlikely(cpy_r_r40 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 155, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 157, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r40);
@@ -7471,14 +7534,14 @@ CPyL27: ;
     if (likely(cpy_r_r40 != Py_None))
         cpy_r_r41 = cpy_r_r40;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 155, CPyStatic_brownie___globals, "str", cpy_r_r40);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals, "str", cpy_r_r40);
         goto CPyL252;
     }
     cpy_r_r42 = CPyStatics[27]; /* "'" */
     cpy_r_r43 = CPyStr_Build(3, cpy_r_r39, cpy_r_r41, cpy_r_r42);
     CPy_DECREF(cpy_r_r41);
     if (unlikely(cpy_r_r43 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 155, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_where_clause != NULL) {
@@ -7487,14 +7550,14 @@ CPyL27: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_where_clause = cpy_r_r43;
     cpy_r_r44 = 1;
     if (unlikely(!cpy_r_r44)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 155, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals);
         goto CPyL252;
     } else
         goto CPyL38;
 CPyL30: ;
     cpy_r_r45 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_alias;
     if (unlikely(cpy_r_r45 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 156, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 158, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r45);
@@ -7505,7 +7568,7 @@ CPyL31: ;
     if (likely(cpy_r_r45 != Py_None))
         cpy_r_r48 = cpy_r_r45;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 156, CPyStatic_brownie___globals, "str", cpy_r_r45);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 158, CPyStatic_brownie___globals, "str", cpy_r_r45);
         goto CPyL252;
     }
     cpy_r_r49 = CPyStr_IsTrue(cpy_r_r48);
@@ -7514,7 +7577,7 @@ CPyL31: ;
     cpy_r_r50 = CPyStatics[28]; /* " WHERE alias='" */
     cpy_r_r51 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_alias;
     if (unlikely(cpy_r_r51 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 157, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 159, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r51);
@@ -7522,14 +7585,14 @@ CPyL35: ;
     if (likely(cpy_r_r51 != Py_None))
         cpy_r_r52 = cpy_r_r51;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals, "str", cpy_r_r51);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 159, CPyStatic_brownie___globals, "str", cpy_r_r51);
         goto CPyL252;
     }
     cpy_r_r53 = CPyStatics[27]; /* "'" */
     cpy_r_r54 = CPyStr_Build(3, cpy_r_r50, cpy_r_r52, cpy_r_r53);
     CPy_DECREF(cpy_r_r52);
     if (unlikely(cpy_r_r54 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 159, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_where_clause != NULL) {
@@ -7538,7 +7601,7 @@ CPyL35: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_where_clause = cpy_r_r54;
     cpy_r_r55 = 1;
     if (unlikely(!cpy_r_r55)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 159, CPyStatic_brownie___globals);
         goto CPyL252;
     }
 CPyL38: ;
@@ -7546,24 +7609,24 @@ CPyL38: ;
     cpy_r_r57 = CPyStatics[29]; /* '_get_select_statement' */
     cpy_r_r58 = CPyDict_GetItem(cpy_r_r56, cpy_r_r57);
     if (unlikely(cpy_r_r58 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL77;
     }
     cpy_r_r59 = PyObject_Vectorcall(cpy_r_r58, 0, 0, 0);
     CPy_DECREF(cpy_r_r58);
     if (unlikely(cpy_r_r59 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL77;
     }
     if (likely(PyUnicode_Check(cpy_r_r59)))
         cpy_r_r60 = cpy_r_r59;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals, "str", cpy_r_r59);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals, "str", cpy_r_r59);
         goto CPyL77;
     }
     cpy_r_r61 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_where_clause;
     if (unlikely(cpy_r_r61 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "where_clause", 160, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "where_clause", 162, CPyStatic_brownie___globals);
         goto CPyL258;
     }
     CPy_INCREF(cpy_r_r61);
@@ -7572,7 +7635,7 @@ CPyL42: ;
     CPy_DECREF(cpy_r_r60);
     CPy_DECREF(cpy_r_r61);
     if (unlikely(cpy_r_r62 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL77;
     }
     cpy_r_r63 = CPyStatic_brownie___fetchone;
@@ -7584,7 +7647,7 @@ CPyL44: ;
     PyErr_SetString(PyExc_NameError, "value for final name \"fetchone\" was not set");
     cpy_r_r64 = 0;
     if (unlikely(!cpy_r_r64)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL77;
     }
     CPy_Unreachable();
@@ -7593,28 +7656,28 @@ CPyL46: ;
     cpy_r_r66 = (PyObject **)&cpy_r_r65;
     cpy_r_r67 = PyObject_Vectorcall(cpy_r_r63, cpy_r_r66, 1, 0);
     if (unlikely(cpy_r_r67 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL260;
     }
     CPy_DECREF(cpy_r_r62);
     cpy_r_r68 = CPy_GetCoro(cpy_r_r67);
     CPy_DECREF(cpy_r_r67);
     if (unlikely(cpy_r_r68 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL77;
     }
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41 = cpy_r_r68;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42 = cpy_r_r68;
     cpy_r_r69 = 1;
     if (unlikely(!cpy_r_r69)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL77;
     }
-    cpy_r_r70 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41;
+    cpy_r_r70 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42;
     if (unlikely(cpy_r_r70 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__41", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__42", -1, CPyStatic_brownie___globals);
         goto CPyL77;
     }
     CPy_INCREF(cpy_r_r70);
@@ -7624,18 +7687,18 @@ CPyL50: ;
     if (cpy_r_r71 != NULL) goto CPyL53;
     cpy_r_r72 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r72 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL77;
     }
     cpy_r_r73 = cpy_r_r72;
     cpy_r_r74 = NULL;
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41 = cpy_r_r74;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42 = cpy_r_r74;
     cpy_r_r75 = 1;
     if (unlikely(!cpy_r_r75)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL261;
     } else
         goto CPyL75;
@@ -7650,7 +7713,7 @@ CPyL55: ;
     if (!cpy_r_r79) goto CPyL262;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL59;
     } else
         goto CPyL263;
@@ -7661,21 +7724,21 @@ CPyL58: ;
     goto CPyL70;
 CPyL59: ;
     cpy_r_r80 = CPy_CatchError();
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42.f0);
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42.f1);
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42.f2);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43.f0);
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43.f1);
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43.f2);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42 = cpy_r_r80;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43 = cpy_r_r80;
     cpy_r_r81 = 1;
     if (unlikely(!cpy_r_r81)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL264;
     }
     cpy_r_r82 = (PyObject **)&cpy_r_r1;
-    cpy_r_r83 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41;
+    cpy_r_r83 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42;
     if (unlikely(cpy_r_r83 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__41", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__42", -1, CPyStatic_brownie___globals);
         goto CPyL264;
     }
     CPy_INCREF(cpy_r_r83);
@@ -7683,14 +7746,14 @@ CPyL61: ;
     cpy_r_r84 = CPy_YieldFromErrorHandle(cpy_r_r83, cpy_r_r82);
     CPy_DecRef(cpy_r_r83);
     if (unlikely(cpy_r_r84 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL264;
     }
     if (cpy_r_r84) goto CPyL65;
     cpy_r_r76 = cpy_r_r1;
-    cpy_r_r85 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42;
+    cpy_r_r85 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43;
     if (unlikely(cpy_r_r85.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__42", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__43", -1, CPyStatic_brownie___globals);
         goto CPyL265;
     }
     CPy_INCREF(cpy_r_r85.f0);
@@ -7704,9 +7767,9 @@ CPyL64: ;
     goto CPyL54;
 CPyL65: ;
     cpy_r_r73 = cpy_r_r1;
-    cpy_r_r86 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42;
+    cpy_r_r86 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43;
     if (unlikely(cpy_r_r86.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__42", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__43", -1, CPyStatic_brownie___globals);
         goto CPyL266;
     }
     CPy_INCREF(cpy_r_r86.f0);
@@ -7719,9 +7782,9 @@ CPyL66: ;
     CPy_DecRef(cpy_r_r86.f2);
     goto CPyL75;
 CPyL67: ;
-    cpy_r_r87 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42;
+    cpy_r_r87 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43;
     if (unlikely(cpy_r_r87.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__42", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__43", -1, CPyStatic_brownie___globals);
         goto CPyL77;
     }
     CPy_INCREF(cpy_r_r87.f0);
@@ -7736,9 +7799,9 @@ CPyL68: ;
     if (!cpy_r_r88) goto CPyL77;
     CPy_Unreachable();
 CPyL70: ;
-    cpy_r_r89 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__41;
+    cpy_r_r89 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__42;
     if (unlikely(cpy_r_r89 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__41", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__42", -1, CPyStatic_brownie___globals);
         goto CPyL267;
     }
     CPy_INCREF(cpy_r_r89);
@@ -7752,7 +7815,7 @@ CPyL71: ;
 CPyL73: ;
     cpy_r_r91 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r91 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
         goto CPyL77;
     }
     cpy_r_r73 = cpy_r_r91;
@@ -7769,7 +7832,7 @@ CPyL75: ;
         cpy_r_r92 = NULL;
     }
     if (cpy_r_r92 != NULL) goto __LL17;
-    CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals, "tuple or None", cpy_r_r73);
+    CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals, "tuple or None", cpy_r_r73);
     goto CPyL77;
 __LL17: ;
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_row != NULL) {
@@ -7778,17 +7841,17 @@ __LL17: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_row = cpy_r_r92;
     cpy_r_r93 = 1;
     if (unlikely(!cpy_r_r93)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
     } else
         goto CPyL88;
 CPyL77: ;
     cpy_r_r94 = CPy_CatchError();
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43.f0);
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43.f1);
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43.f2);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44.f0);
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44.f1);
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44.f2);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43 = cpy_r_r94;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44 = cpy_r_r94;
     cpy_r_r95 = 1;
     if (unlikely(!cpy_r_r95)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
@@ -7798,7 +7861,7 @@ CPyL77: ;
     cpy_r_r97 = CPyStatics[30]; /* 'OperationalError' */
     cpy_r_r98 = CPyDict_GetItem(cpy_r_r96, cpy_r_r97);
     if (unlikely(cpy_r_r98 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 161, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 163, CPyStatic_brownie___globals);
         goto CPyL85;
     }
     cpy_r_r99 = CPy_ExceptionMatches(cpy_r_r98);
@@ -7811,7 +7874,7 @@ CPyL77: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_row = cpy_r_r100;
     cpy_r_r101 = 1;
     if (unlikely(!cpy_r_r101)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 162, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 164, CPyStatic_brownie___globals);
         goto CPyL85;
     } else
         goto CPyL83;
@@ -7820,9 +7883,9 @@ CPyL81: ;
     if (!0) goto CPyL85;
     CPy_Unreachable();
 CPyL83: ;
-    cpy_r_r102 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43;
+    cpy_r_r102 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44;
     if (unlikely(cpy_r_r102.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__43", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__44", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r102.f0);
@@ -7835,9 +7898,9 @@ CPyL84: ;
     CPy_DecRef(cpy_r_r102.f2);
     goto CPyL88;
 CPyL85: ;
-    cpy_r_r103 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__43;
+    cpy_r_r103 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44;
     if (unlikely(cpy_r_r103.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__43", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__44", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r103.f0);
@@ -7854,7 +7917,7 @@ CPyL86: ;
 CPyL88: ;
     cpy_r_r105 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_row;
     if (unlikely(cpy_r_r105 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "row", 163, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "row", 165, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r105);
@@ -7865,14 +7928,14 @@ CPyL89: ;
     if (likely(cpy_r_r105 != Py_None))
         cpy_r_r108 = cpy_r_r105;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 163, CPyStatic_brownie___globals, "tuple", cpy_r_r105);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 165, CPyStatic_brownie___globals, "tuple", cpy_r_r105);
         goto CPyL252;
     }
     cpy_r_r109 = PyObject_IsTrue(cpy_r_r108);
     CPy_DECREF(cpy_r_r108);
     cpy_r_r110 = cpy_r_r109 >= 0;
     if (unlikely(!cpy_r_r110)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 163, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 165, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r111 = cpy_r_r109;
@@ -7900,14 +7963,14 @@ CPyL96: ;
     PyErr_SetString(PyExc_NameError, "value for final name \"SOURCE_KEYS\" was not set");
     cpy_r_r116 = 0;
     if (unlikely(!cpy_r_r116)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 166, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 168, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_Unreachable();
 CPyL99: ;
     cpy_r_r117 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_row;
     if (unlikely(cpy_r_r117 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "row", 166, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "row", 168, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r117);
@@ -7915,14 +7978,14 @@ CPyL100: ;
     if (likely(cpy_r_r117 != Py_None))
         cpy_r_r118 = cpy_r_r117;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 166, CPyStatic_brownie___globals, "tuple", cpy_r_r117);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 168, CPyStatic_brownie___globals, "tuple", cpy_r_r117);
         goto CPyL252;
     }
     cpy_r_r119 = CPyModule_builtins;
     cpy_r_r120 = CPyStatics[31]; /* 'zip' */
     cpy_r_r121 = CPyObject_GetAttr(cpy_r_r119, cpy_r_r120);
     if (unlikely(cpy_r_r121 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 166, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 168, CPyStatic_brownie___globals);
         goto CPyL269;
     }
     CPy_INCREF(cpy_r_r115.f0);
@@ -7981,7 +8044,7 @@ CPyL100: ;
     cpy_r_r125 = PyObject_Vectorcall(cpy_r_r121, cpy_r_r124, 2, 0);
     CPy_DECREF(cpy_r_r121);
     if (unlikely(cpy_r_r125 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 166, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 168, CPyStatic_brownie___globals);
         goto CPyL270;
     }
     CPy_DECREF(cpy_r_r122);
@@ -7989,7 +8052,7 @@ CPyL100: ;
     cpy_r_r126 = CPyDict_FromAny(cpy_r_r125);
     CPy_DECREF(cpy_r_r125);
     if (unlikely(cpy_r_r126 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 166, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 168, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_build_json != NULL) {
@@ -7998,12 +8061,12 @@ CPyL100: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_build_json = cpy_r_r126;
     cpy_r_r127 = 1;
     if (unlikely(!cpy_r_r127)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 166, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 168, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r128 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_build_json;
     if (unlikely(cpy_r_r128 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 167, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 169, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r128);
@@ -8014,14 +8077,14 @@ CPyL106: ;
     cpy_r_r132 = (PyObject **)&cpy_r_r131;
     cpy_r_r133 = PyObject_VectorcallMethod(cpy_r_r130, cpy_r_r132, 9223372036854775810ULL, 0);
     if (unlikely(cpy_r_r133 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 167, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
         goto CPyL271;
     }
     CPy_DECREF(cpy_r_r128);
     if (likely(PyDict_Check(cpy_r_r133)))
         cpy_r_r134 = cpy_r_r133;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 167, CPyStatic_brownie___globals, "dict", cpy_r_r133);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals, "dict", cpy_r_r133);
         goto CPyL252;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_path_map != NULL) {
@@ -8030,18 +8093,18 @@ CPyL106: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_path_map = cpy_r_r134;
     cpy_r_r135 = 1;
     if (unlikely(!cpy_r_r135)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 167, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r136 = PyDict_New();
     if (unlikely(cpy_r_r136 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44 = cpy_r_r136;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45 = cpy_r_r136;
     cpy_r_r137 = 1;
     if (unlikely(!cpy_r_r137)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
@@ -8049,30 +8112,30 @@ CPyL106: ;
     }
     cpy_r_r138 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_path_map;
     if (unlikely(cpy_r_r138 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "path_map", 171, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "path_map", 173, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r138);
 CPyL112: ;
     CPy_INCREF(cpy_r_r138);
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45 = cpy_r_r138;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46 = cpy_r_r138;
     cpy_r_r139 = 1;
     if (unlikely(!cpy_r_r139)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL272;
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46 = 0;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__47 = 0;
     cpy_r_r140 = 1;
     if (unlikely(!cpy_r_r140)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL272;
     }
-    cpy_r_r141 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45;
+    cpy_r_r141 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46;
     if (unlikely(cpy_r_r141 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__45", 169, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__46", 171, CPyStatic_brownie___globals);
         goto CPyL272;
     }
     CPy_INCREF(cpy_r_r141);
@@ -8080,7 +8143,7 @@ CPyL115: ;
     cpy_r_r142 = PyDict_Size(cpy_r_r141);
     CPy_DECREF(cpy_r_r141);
     cpy_r_r143 = cpy_r_r142 << 1;
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__47 = cpy_r_r143;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__48 = cpy_r_r143;
     cpy_r_r144 = 1;
     if (unlikely(!cpy_r_r144)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
@@ -8089,39 +8152,39 @@ CPyL115: ;
     cpy_r_r145 = CPyDict_GetValuesIter(cpy_r_r138);
     CPy_DECREF(cpy_r_r138);
     if (unlikely(cpy_r_r145 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__48 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__48);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__48 = cpy_r_r145;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49 = cpy_r_r145;
     cpy_r_r146 = 1;
     if (unlikely(!cpy_r_r146)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
 CPyL118: ;
-    cpy_r_r147 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__48;
+    cpy_r_r147 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49;
     if (unlikely(cpy_r_r147 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__48", 169, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__49", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r147);
 CPyL119: ;
-    cpy_r_r148 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46;
+    cpy_r_r148 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__47;
     if (unlikely(cpy_r_r148 == CPY_INT_TAG)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__46", 169, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__47", 171, CPyStatic_brownie___globals);
         goto CPyL273;
     }
 CPyL120: ;
     cpy_r_r149 = CPyDict_NextValue(cpy_r_r147, cpy_r_r148);
     CPy_DECREF(cpy_r_r147);
     cpy_r_r150 = cpy_r_r149.f1;
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46 = cpy_r_r150;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__47 = cpy_r_r150;
     cpy_r_r151 = 1;
     if (unlikely(!cpy_r_r151)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL274;
     }
     cpy_r_r152 = cpy_r_r149.f0;
@@ -8132,7 +8195,7 @@ CPyL120: ;
     cpy_r_r154 = PyObject_GetIter(cpy_r_r153);
     CPy_DECREF(cpy_r_r153);
     if (unlikely(cpy_r_r154 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r155 = PyIter_Next(cpy_r_r154);
@@ -8144,7 +8207,7 @@ CPyL124: ;
     PyErr_SetString(PyExc_ValueError, "not enough values to unpack");
     cpy_r_r156 = 0;
     if (unlikely(!cpy_r_r156)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_Unreachable();
@@ -8155,7 +8218,7 @@ CPyL126: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_val = cpy_r_r155;
     cpy_r_r157 = 1;
     if (unlikely(!cpy_r_r157)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL277;
     }
     cpy_r_r158 = PyIter_Next(cpy_r_r154);
@@ -8167,7 +8230,7 @@ CPyL128: ;
     PyErr_SetString(PyExc_ValueError, "not enough values to unpack");
     cpy_r_r159 = 0;
     if (unlikely(!cpy_r_r159)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_Unreachable();
@@ -8178,7 +8241,7 @@ CPyL130: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_source_key = cpy_r_r158;
     cpy_r_r160 = 1;
     if (unlikely(!cpy_r_r160)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL277;
     }
     cpy_r_r161 = PyIter_Next(cpy_r_r154);
@@ -8191,21 +8254,21 @@ CPyL132: ;
     PyErr_SetString(PyExc_ValueError, "too many values to unpack");
     cpy_r_r162 = 0;
     if (unlikely(!cpy_r_r162)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_Unreachable();
 CPyL134: ;
     cpy_r_r163 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_source_key;
     if (unlikely(cpy_r_r163 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "source_key", 172, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "source_key", 174, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r163);
 CPyL135: ;
     cpy_r_r164 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_skip_source_keys;
     if (unlikely(cpy_r_r164 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "skip_source_keys", 172, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "skip_source_keys", 174, CPyStatic_brownie___globals);
         goto CPyL280;
     }
     CPy_INCREF(cpy_r_r164);
@@ -8215,7 +8278,7 @@ CPyL136: ;
     CPy_DECREF(cpy_r_r163);
     cpy_r_r166 = cpy_r_r165 >= 0;
     if (unlikely(!cpy_r_r166)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 174, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r167 = cpy_r_r165;
@@ -8233,13 +8296,13 @@ CPyL136: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2_0 = cpy_r_r169;
     cpy_r_r170 = 1;
     if (unlikely(cpy_r_r169 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
         goto CPyL252;
     }
 CPyL139: ;
     cpy_r_r171 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_val;
     if (unlikely(cpy_r_r171 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "val", 170, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "val", 172, CPyStatic_brownie___globals);
         goto CPyL281;
     }
     CPy_INCREF(cpy_r_r171);
@@ -8247,33 +8310,33 @@ CPyL140: ;
     if (likely(PyUnicode_Check(cpy_r_r171)))
         cpy_r_r172 = cpy_r_r171;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals, "str", cpy_r_r171);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals, "str", cpy_r_r171);
         goto CPyL281;
     }
     cpy_r_r173 = CPyDef_brownie_____fetch_source_for_hash(cpy_r_r172);
     CPy_DECREF(cpy_r_r172);
     if (unlikely(cpy_r_r173 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
         goto CPyL281;
     }
     cpy_r_r174 = CPy_GetCoro(cpy_r_r173);
     CPy_DECREF(cpy_r_r173);
     if (unlikely(cpy_r_r174 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
         goto CPyL281;
     }
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49 = cpy_r_r174;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50 = cpy_r_r174;
     cpy_r_r175 = 1;
     if (unlikely(!cpy_r_r175)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL281;
     }
-    cpy_r_r176 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49;
+    cpy_r_r176 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50;
     if (unlikely(cpy_r_r176 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__49", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__50", -1, CPyStatic_brownie___globals);
         goto CPyL281;
     }
     CPy_INCREF(cpy_r_r176);
@@ -8283,18 +8346,18 @@ CPyL145: ;
     if (cpy_r_r177 != NULL) goto CPyL282;
     cpy_r_r178 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r178 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
         goto CPyL281;
     }
     cpy_r_r179 = cpy_r_r178;
     cpy_r_r180 = NULL;
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49 = cpy_r_r180;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50 = cpy_r_r180;
     cpy_r_r181 = 1;
     if (unlikely(!cpy_r_r181)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
         goto CPyL283;
     } else
         goto CPyL170;
@@ -8309,7 +8372,7 @@ CPyL150: ;
     if (!cpy_r_r185) goto CPyL284;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
         goto CPyL154;
     } else
         goto CPyL285;
@@ -8320,21 +8383,21 @@ CPyL153: ;
     goto CPyL165;
 CPyL154: ;
     cpy_r_r186 = CPy_CatchError();
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50.f0);
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50.f1);
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50.f2);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51.f0);
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51.f1);
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51.f2);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50 = cpy_r_r186;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51 = cpy_r_r186;
     cpy_r_r187 = 1;
     if (unlikely(!cpy_r_r187)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL286;
     }
     cpy_r_r188 = (PyObject **)&cpy_r_r3;
-    cpy_r_r189 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49;
+    cpy_r_r189 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50;
     if (unlikely(cpy_r_r189 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__49", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__50", -1, CPyStatic_brownie___globals);
         goto CPyL286;
     }
     CPy_INCREF(cpy_r_r189);
@@ -8342,7 +8405,7 @@ CPyL156: ;
     cpy_r_r190 = CPy_YieldFromErrorHandle(cpy_r_r189, cpy_r_r188);
     CPy_DecRef(cpy_r_r189);
     if (unlikely(cpy_r_r190 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
         goto CPyL286;
     }
     if (cpy_r_r190) {
@@ -8351,9 +8414,9 @@ CPyL156: ;
         goto CPyL287;
 CPyL158: ;
     cpy_r_r182 = cpy_r_r3;
-    cpy_r_r191 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50;
+    cpy_r_r191 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51;
     if (unlikely(cpy_r_r191.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__50", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__51", -1, CPyStatic_brownie___globals);
         goto CPyL288;
     }
     CPy_INCREF(cpy_r_r191.f0);
@@ -8367,9 +8430,9 @@ CPyL159: ;
     goto CPyL149;
 CPyL160: ;
     cpy_r_r179 = cpy_r_r3;
-    cpy_r_r192 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50;
+    cpy_r_r192 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51;
     if (unlikely(cpy_r_r192.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__50", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__51", -1, CPyStatic_brownie___globals);
         goto CPyL289;
     }
     CPy_INCREF(cpy_r_r192.f0);
@@ -8382,9 +8445,9 @@ CPyL161: ;
     CPy_DecRef(cpy_r_r192.f2);
     goto CPyL170;
 CPyL162: ;
-    cpy_r_r193 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50;
+    cpy_r_r193 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51;
     if (unlikely(cpy_r_r193.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__50", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__51", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r193.f0);
@@ -8399,9 +8462,9 @@ CPyL163: ;
     if (!cpy_r_r194) goto CPyL252;
     CPy_Unreachable();
 CPyL165: ;
-    cpy_r_r195 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49;
+    cpy_r_r195 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__50;
     if (unlikely(cpy_r_r195 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__49", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__50", -1, CPyStatic_brownie___globals);
         goto CPyL290;
     }
     CPy_INCREF(cpy_r_r195);
@@ -8419,14 +8482,14 @@ CPyL167: ;
 CPyL168: ;
     cpy_r_r197 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r197 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 172, CPyStatic_brownie___globals);
         goto CPyL281;
     }
     cpy_r_r179 = cpy_r_r197;
 CPyL170: ;
-    cpy_r_r198 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44;
+    cpy_r_r198 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45;
     if (unlikely(cpy_r_r198 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__44", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__45", -1, CPyStatic_brownie___globals);
         goto CPyL283;
     }
     CPy_INCREF(cpy_r_r198);
@@ -8449,39 +8512,39 @@ CPyL171: ;
     CPy_DECREF(cpy_r_r179);
     cpy_r_r203 = cpy_r_r200 >= 0;
     if (unlikely(!cpy_r_r203)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
 CPyL172: ;
-    cpy_r_r204 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45;
+    cpy_r_r204 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46;
     if (unlikely(cpy_r_r204 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__45", 169, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__46", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r204);
 CPyL173: ;
-    cpy_r_r205 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__47;
+    cpy_r_r205 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__48;
     if (unlikely(cpy_r_r205 == CPY_INT_TAG)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__47", 169, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__48", 171, CPyStatic_brownie___globals);
         goto CPyL292;
     }
 CPyL174: ;
     cpy_r_r206 = CPyDict_CheckSize(cpy_r_r204, cpy_r_r205);
     CPy_DECREF(cpy_r_r204);
     if (unlikely(!cpy_r_r206)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     } else
         goto CPyL118;
 CPyL175: ;
     cpy_r_r207 = CPy_NoErrOccurred();
     if (unlikely(!cpy_r_r207)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    cpy_r_r208 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__44;
+    cpy_r_r208 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__45;
     if (unlikely(cpy_r_r208 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__44", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__45", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r208);
@@ -8492,18 +8555,18 @@ CPyL177: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_sources = cpy_r_r208;
     cpy_r_r209 = 1;
     if (unlikely(!cpy_r_r209)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r210 = PyDict_New();
     if (unlikely(cpy_r_r210 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51 = cpy_r_r210;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52 = cpy_r_r210;
     cpy_r_r211 = 1;
     if (unlikely(!cpy_r_r211)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
@@ -8511,30 +8574,30 @@ CPyL177: ;
     }
     cpy_r_r212 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_path_map;
     if (unlikely(cpy_r_r212 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "path_map", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "path_map", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r212);
 CPyL181: ;
     CPy_INCREF(cpy_r_r212);
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52 = cpy_r_r212;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53 = cpy_r_r212;
     cpy_r_r213 = 1;
     if (unlikely(!cpy_r_r213)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL293;
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53 = 0;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__54 = 0;
     cpy_r_r214 = 1;
     if (unlikely(!cpy_r_r214)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL293;
     }
-    cpy_r_r215 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52;
+    cpy_r_r215 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53;
     if (unlikely(cpy_r_r215 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__52", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__53", 177, CPyStatic_brownie___globals);
         goto CPyL293;
     }
     CPy_INCREF(cpy_r_r215);
@@ -8542,7 +8605,7 @@ CPyL184: ;
     cpy_r_r216 = PyDict_Size(cpy_r_r215);
     CPy_DECREF(cpy_r_r215);
     cpy_r_r217 = cpy_r_r216 << 1;
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__54 = cpy_r_r217;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__55 = cpy_r_r217;
     cpy_r_r218 = 1;
     if (unlikely(!cpy_r_r218)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
@@ -8551,39 +8614,39 @@ CPyL184: ;
     cpy_r_r219 = CPyDict_GetItemsIter(cpy_r_r212);
     CPy_DECREF(cpy_r_r212);
     if (unlikely(cpy_r_r219 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__55 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__55);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__55 = cpy_r_r219;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56 = cpy_r_r219;
     cpy_r_r220 = 1;
     if (unlikely(!cpy_r_r220)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
 CPyL187: ;
-    cpy_r_r221 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__55;
+    cpy_r_r221 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56;
     if (unlikely(cpy_r_r221 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__55", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__56", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r221);
 CPyL188: ;
-    cpy_r_r222 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53;
+    cpy_r_r222 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__54;
     if (unlikely(cpy_r_r222 == CPY_INT_TAG)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__53", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__54", 177, CPyStatic_brownie___globals);
         goto CPyL294;
     }
 CPyL189: ;
     cpy_r_r223 = CPyDict_NextItem(cpy_r_r221, cpy_r_r222);
     CPy_DECREF(cpy_r_r221);
     cpy_r_r224 = cpy_r_r223.f1;
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53 = cpy_r_r224;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__54 = cpy_r_r224;
     cpy_r_r225 = 1;
     if (unlikely(!cpy_r_r225)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL295;
     }
     cpy_r_r226 = cpy_r_r223.f0;
@@ -8600,7 +8663,7 @@ CPyL189: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_k = cpy_r_r227;
     cpy_r_r229 = 1;
     if (unlikely(!cpy_r_r229)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL297;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_v != NULL) {
@@ -8609,19 +8672,19 @@ CPyL189: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_v = cpy_r_r228;
     cpy_r_r230 = 1;
     if (unlikely(!cpy_r_r230)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r231 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_k;
     if (unlikely(cpy_r_r231 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "k", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "k", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r231);
 CPyL194: ;
     cpy_r_r232 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_v;
     if (unlikely(cpy_r_r232 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "v", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "v", 177, CPyStatic_brownie___globals);
         goto CPyL298;
     }
     CPy_INCREF(cpy_r_r232);
@@ -8630,12 +8693,12 @@ CPyL195: ;
     cpy_r_r234 = PyObject_GetItem(cpy_r_r232, cpy_r_r233);
     CPy_DECREF(cpy_r_r232);
     if (unlikely(cpy_r_r234 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL298;
     }
-    cpy_r_r235 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51;
+    cpy_r_r235 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52;
     if (unlikely(cpy_r_r235 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__51", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__52", -1, CPyStatic_brownie___globals);
         goto CPyL299;
     }
     CPy_INCREF(cpy_r_r235);
@@ -8646,45 +8709,45 @@ CPyL197: ;
     CPy_DECREF(cpy_r_r234);
     cpy_r_r237 = cpy_r_r236 >= 0;
     if (unlikely(!cpy_r_r237)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    cpy_r_r238 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52;
+    cpy_r_r238 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53;
     if (unlikely(cpy_r_r238 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__52", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__53", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r238);
 CPyL199: ;
-    cpy_r_r239 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__54;
+    cpy_r_r239 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__55;
     if (unlikely(cpy_r_r239 == CPY_INT_TAG)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__54", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__55", 177, CPyStatic_brownie___globals);
         goto CPyL300;
     }
 CPyL200: ;
     cpy_r_r240 = CPyDict_CheckSize(cpy_r_r238, cpy_r_r239);
     CPy_DECREF(cpy_r_r238);
     if (unlikely(!cpy_r_r240)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     } else
         goto CPyL187;
 CPyL201: ;
     cpy_r_r241 = CPy_NoErrOccurred();
     if (unlikely(!cpy_r_r241)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    cpy_r_r242 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__51;
+    cpy_r_r242 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__52;
     if (unlikely(cpy_r_r242 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__51", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__52", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r242);
 CPyL203: ;
     cpy_r_r243 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_build_json;
     if (unlikely(cpy_r_r243 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 175, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 177, CPyStatic_brownie___globals);
         goto CPyL301;
     }
     CPy_INCREF(cpy_r_r243);
@@ -8695,12 +8758,12 @@ CPyL204: ;
     CPy_DECREF(cpy_r_r242);
     cpy_r_r246 = cpy_r_r245 >= 0;
     if (unlikely(!cpy_r_r246)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 175, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 177, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r247 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_build_json;
     if (unlikely(cpy_r_r247 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 176, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 178, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r247);
@@ -8709,7 +8772,7 @@ CPyL206: ;
     cpy_r_r249 = CPyDict_GetWithNone(cpy_r_r247, cpy_r_r248);
     CPy_DECREF(cpy_r_r247);
     if (unlikely(cpy_r_r249 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 176, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     if (PyDict_Check(cpy_r_r249))
@@ -8724,7 +8787,7 @@ CPyL206: ;
         cpy_r_r250 = NULL;
     }
     if (cpy_r_r250 != NULL) goto __LL36;
-    CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 176, CPyStatic_brownie___globals, "dict or None", cpy_r_r249);
+    CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals, "dict or None", cpy_r_r249);
     goto CPyL252;
 __LL36: ;
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_pc_map != NULL) {
@@ -8733,12 +8796,12 @@ __LL36: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_pc_map = cpy_r_r250;
     cpy_r_r251 = 1;
     if (unlikely(!cpy_r_r251)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 176, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r252 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_pc_map;
     if (unlikely(cpy_r_r252 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 177, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 179, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r252);
@@ -8749,13 +8812,13 @@ CPyL210: ;
     if (!cpy_r_r254) goto CPyL242;
     cpy_r_r255 = PyDict_New();
     if (unlikely(cpy_r_r255 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56 = cpy_r_r255;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57 = cpy_r_r255;
     cpy_r_r256 = 1;
     if (unlikely(!cpy_r_r256)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
@@ -8763,7 +8826,7 @@ CPyL210: ;
     }
     cpy_r_r257 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_pc_map;
     if (unlikely(cpy_r_r257 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r257);
@@ -8771,28 +8834,28 @@ CPyL214: ;
     if (likely(cpy_r_r257 != Py_None))
         cpy_r_r258 = cpy_r_r257;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals, "dict", cpy_r_r257);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals, "dict", cpy_r_r257);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r258);
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57 = cpy_r_r258;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58 = cpy_r_r258;
     cpy_r_r259 = 1;
     if (unlikely(!cpy_r_r259)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL302;
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58 = 0;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__59 = 0;
     cpy_r_r260 = 1;
     if (unlikely(!cpy_r_r260)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL302;
     }
-    cpy_r_r261 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57;
+    cpy_r_r261 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58;
     if (unlikely(cpy_r_r261 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__57", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__58", 180, CPyStatic_brownie___globals);
         goto CPyL302;
     }
     CPy_INCREF(cpy_r_r261);
@@ -8800,7 +8863,7 @@ CPyL218: ;
     cpy_r_r262 = PyDict_Size(cpy_r_r261);
     CPy_DECREF(cpy_r_r261);
     cpy_r_r263 = cpy_r_r262 << 1;
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__59 = cpy_r_r263;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__60 = cpy_r_r263;
     cpy_r_r264 = 1;
     if (unlikely(!cpy_r_r264)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
@@ -8809,39 +8872,39 @@ CPyL218: ;
     cpy_r_r265 = CPyDict_GetKeysIter(cpy_r_r258);
     CPy_DECREF(cpy_r_r258);
     if (unlikely(cpy_r_r265 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__60 != NULL) {
-        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__60);
+    if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61 != NULL) {
+        CPy_DECREF(((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61);
     }
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__60 = cpy_r_r265;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61 = cpy_r_r265;
     cpy_r_r266 = 1;
     if (unlikely(!cpy_r_r266)) {
         CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
 CPyL221: ;
-    cpy_r_r267 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__60;
+    cpy_r_r267 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61;
     if (unlikely(cpy_r_r267 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__60", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__61", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r267);
 CPyL222: ;
-    cpy_r_r268 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58;
+    cpy_r_r268 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__59;
     if (unlikely(cpy_r_r268 == CPY_INT_TAG)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__58", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__59", 180, CPyStatic_brownie___globals);
         goto CPyL303;
     }
 CPyL223: ;
     cpy_r_r269 = CPyDict_NextKey(cpy_r_r267, cpy_r_r268);
     CPy_DECREF(cpy_r_r267);
     cpy_r_r270 = cpy_r_r269.f1;
-    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58 = cpy_r_r270;
+    ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__59 = cpy_r_r270;
     cpy_r_r271 = 1;
     if (unlikely(!cpy_r_r271)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL304;
     }
     cpy_r_r272 = cpy_r_r269.f0;
@@ -8855,12 +8918,12 @@ CPyL223: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_key = cpy_r_r273;
     cpy_r_r274 = 1;
     if (unlikely(!cpy_r_r274)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r275 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_key;
     if (unlikely(cpy_r_r275 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "key", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "key", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r275);
@@ -8870,7 +8933,7 @@ CPyL227: ;
     cpy_r_r278 = (PyObject **)&cpy_r_r277;
     cpy_r_r279 = PyObject_Vectorcall(cpy_r_r276, cpy_r_r278, 1, 0);
     if (unlikely(cpy_r_r279 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL306;
     }
     CPy_DECREF(cpy_r_r275);
@@ -8881,12 +8944,12 @@ CPyL227: ;
     }
     CPy_DECREF(cpy_r_r279);
     if (unlikely(cpy_r_r280 == CPY_INT_TAG)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     cpy_r_r281 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_pc_map;
     if (unlikely(cpy_r_r281 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 180, CPyStatic_brownie___globals);
         goto CPyL307;
     }
     CPy_INCREF(cpy_r_r281);
@@ -8894,12 +8957,12 @@ CPyL230: ;
     if (likely(cpy_r_r281 != Py_None))
         cpy_r_r282 = cpy_r_r281;
     else {
-        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals, "dict", cpy_r_r281);
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals, "dict", cpy_r_r281);
         goto CPyL307;
     }
     cpy_r_r283 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_key;
     if (unlikely(cpy_r_r283 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "key", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "key", 180, CPyStatic_brownie___globals);
         goto CPyL308;
     }
     CPy_INCREF(cpy_r_r283);
@@ -8908,12 +8971,12 @@ CPyL232: ;
     CPy_DECREF(cpy_r_r282);
     CPy_DECREF(cpy_r_r283);
     if (unlikely(cpy_r_r284 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL307;
     }
-    cpy_r_r285 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56;
+    cpy_r_r285 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57;
     if (unlikely(cpy_r_r285 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__56", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__57", -1, CPyStatic_brownie___globals);
         goto CPyL309;
     }
     CPy_INCREF(cpy_r_r285);
@@ -8925,45 +8988,45 @@ CPyL234: ;
     CPy_DECREF(cpy_r_r284);
     cpy_r_r288 = cpy_r_r287 >= 0;
     if (unlikely(!cpy_r_r288)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    cpy_r_r289 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57;
+    cpy_r_r289 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58;
     if (unlikely(cpy_r_r289 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__57", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__58", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r289);
 CPyL236: ;
-    cpy_r_r290 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__59;
+    cpy_r_r290 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__60;
     if (unlikely(cpy_r_r290 == CPY_INT_TAG)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__59", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__60", 180, CPyStatic_brownie___globals);
         goto CPyL310;
     }
 CPyL237: ;
     cpy_r_r291 = CPyDict_CheckSize(cpy_r_r289, cpy_r_r290);
     CPy_DECREF(cpy_r_r289);
     if (unlikely(!cpy_r_r291)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     } else
         goto CPyL221;
 CPyL238: ;
     cpy_r_r292 = CPy_NoErrOccurred();
     if (unlikely(!cpy_r_r292)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
-    cpy_r_r293 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56;
+    cpy_r_r293 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__57;
     if (unlikely(cpy_r_r293 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__56", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__57", -1, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r293);
 CPyL240: ;
     cpy_r_r294 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_build_json;
     if (unlikely(cpy_r_r294 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 178, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 180, CPyStatic_brownie___globals);
         goto CPyL311;
     }
     CPy_INCREF(cpy_r_r294);
@@ -8974,20 +9037,20 @@ CPyL241: ;
     CPy_DECREF(cpy_r_r293);
     cpy_r_r297 = cpy_r_r296 >= 0;
     if (unlikely(!cpy_r_r297)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 178, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals);
         goto CPyL252;
     }
 CPyL242: ;
     cpy_r_r298 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_build_json;
     if (unlikely(cpy_r_r298 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 180, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 182, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_INCREF(cpy_r_r298);
 CPyL243: ;
     cpy_r_r299 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->_sources;
     if (unlikely(cpy_r_r299 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "sources", 180, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "sources", 182, CPyStatic_brownie___globals);
         goto CPyL312;
     }
     CPy_INCREF(cpy_r_r299);
@@ -9024,7 +9087,7 @@ CPyL250: ;
     PyErr_SetNone(PyExc_StopIteration);
     cpy_r_r306 = 0;
     if (unlikely(!cpy_r_r306)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 146, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 148, CPyStatic_brownie___globals);
         goto CPyL252;
     }
     CPy_Unreachable();
@@ -9570,7 +9633,7 @@ CPyL6: ;
     PyErr_SetString(PyExc_NameError, "value for final name \"DISCARD_SOURCE_KEYS\" was not set");
     cpy_r_r3 = 0;
     if (unlikely(!cpy_r_r3)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 149, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 151, CPyStatic_brownie___globals);
         goto CPyL14;
     }
     CPy_Unreachable();
@@ -9606,7 +9669,7 @@ CPyL8: ;
 CPyL9: ;
     cpy_r_r5 = CPyDef_brownie____get_deployment_gen();
     if (unlikely(cpy_r_r5 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 146, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 148, CPyStatic_brownie___globals);
         goto CPyL19;
     }
     ((y____db___brownie____get_deployment_genObject *)cpy_r_r5)->___mypyc_next_label__ = 0;
@@ -9616,7 +9679,7 @@ CPyL9: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r_r5)->_address = cpy_r_address;
     cpy_r_r7 = 1;
     if (unlikely(!cpy_r_r7)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 146, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 148, CPyStatic_brownie___globals);
         goto CPyL20;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r_r5)->_alias != NULL) {
@@ -9625,7 +9688,7 @@ CPyL9: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r_r5)->_alias = cpy_r_alias;
     cpy_r_r8 = 1;
     if (unlikely(!cpy_r_r8)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 146, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 148, CPyStatic_brownie___globals);
         goto CPyL21;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r_r5)->_skip_source_keys != NULL) {
@@ -9634,7 +9697,7 @@ CPyL9: ;
     ((y____db___brownie____get_deployment_genObject *)cpy_r_r5)->_skip_source_keys = cpy_r_skip_source_keys;
     cpy_r_r9 = 1;
     if (unlikely(!cpy_r_r9)) {
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 146, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 148, CPyStatic_brownie___globals);
         goto CPyL22;
     }
     return cpy_r_r5;
@@ -9731,7 +9794,7 @@ __LL50: ;
     PyObject *retval = CPyDef_brownie____get_deployment(arg_address, arg_alias, arg_skip_source_keys);
     return retval;
 fail: ;
-    CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 146, CPyStatic_brownie___globals);
+    CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", 148, CPyStatic_brownie___globals);
     return NULL;
 }
 
@@ -9790,7 +9853,7 @@ CPyL1: ;
     if (!cpy_r_r4) goto CPyL4;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 183, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 185, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     CPy_Unreachable();
@@ -9798,7 +9861,7 @@ CPyL4: ;
     cpy_r_r5 = CPyStatics[36]; /* 'SELECT source FROM sources WHERE hash=?' */
     cpy_r_r6 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->_hashval;
     if (unlikely(cpy_r_r6 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "hashval", 184, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "hashval", 186, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     CPy_INCREF(cpy_r_r6);
@@ -9812,7 +9875,7 @@ CPyL6: ;
     PyErr_SetString(PyExc_NameError, "value for final name \"fetchone\" was not set");
     cpy_r_r8 = 0;
     if (unlikely(!cpy_r_r8)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     CPy_Unreachable();
@@ -9821,28 +9884,28 @@ CPyL8: ;
     cpy_r_r10 = (PyObject **)&cpy_r_r9;
     cpy_r_r11 = PyObject_Vectorcall(cpy_r_r7, cpy_r_r10, 2, 0);
     if (unlikely(cpy_r_r11 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL49;
     }
     CPy_DECREF(cpy_r_r6);
     cpy_r_r12 = CPy_GetCoro(cpy_r_r11);
     CPy_DECREF(cpy_r_r11);
     if (unlikely(cpy_r_r12 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL47;
     }
-    if (((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61 != NULL) {
-        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61);
+    if (((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62 != NULL) {
+        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62);
     }
-    ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61 = cpy_r_r12;
+    ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62 = cpy_r_r12;
     cpy_r_r13 = 1;
     if (unlikely(!cpy_r_r13)) {
         CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", -1, CPyStatic_brownie___globals);
         goto CPyL47;
     }
-    cpy_r_r14 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61;
+    cpy_r_r14 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62;
     if (unlikely(cpy_r_r14 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__61", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__62", -1, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     CPy_INCREF(cpy_r_r14);
@@ -9852,18 +9915,18 @@ CPyL12: ;
     if (cpy_r_r15 != NULL) goto CPyL15;
     cpy_r_r16 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r16 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     cpy_r_r17 = cpy_r_r16;
     cpy_r_r18 = NULL;
-    if (((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61 != NULL) {
-        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61);
+    if (((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62 != NULL) {
+        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62);
     }
-    ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61 = cpy_r_r18;
+    ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62 = cpy_r_r18;
     cpy_r_r19 = 1;
     if (unlikely(!cpy_r_r19)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL50;
     } else
         goto CPyL37;
@@ -9878,7 +9941,7 @@ CPyL17: ;
     if (!cpy_r_r23) goto CPyL51;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL21;
     } else
         goto CPyL52;
@@ -9889,21 +9952,21 @@ CPyL20: ;
     goto CPyL32;
 CPyL21: ;
     cpy_r_r24 = CPy_CatchError();
-    if (((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62.f0 != NULL) {
-        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62.f0);
-        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62.f1);
-        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62.f2);
+    if (((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__63.f0 != NULL) {
+        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__63.f0);
+        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__63.f1);
+        CPy_DECREF(((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__63.f2);
     }
-    ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62 = cpy_r_r24;
+    ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__63 = cpy_r_r24;
     cpy_r_r25 = 1;
     if (unlikely(!cpy_r_r25)) {
         CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", -1, CPyStatic_brownie___globals);
         goto CPyL53;
     }
     cpy_r_r26 = (PyObject **)&cpy_r_r1;
-    cpy_r_r27 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61;
+    cpy_r_r27 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62;
     if (unlikely(cpy_r_r27 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__61", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__62", -1, CPyStatic_brownie___globals);
         goto CPyL53;
     }
     CPy_INCREF(cpy_r_r27);
@@ -9911,14 +9974,14 @@ CPyL23: ;
     cpy_r_r28 = CPy_YieldFromErrorHandle(cpy_r_r27, cpy_r_r26);
     CPy_DecRef(cpy_r_r27);
     if (unlikely(cpy_r_r28 == 2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL53;
     }
     if (cpy_r_r28) goto CPyL27;
     cpy_r_r20 = cpy_r_r1;
-    cpy_r_r29 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62;
+    cpy_r_r29 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__63;
     if (unlikely(cpy_r_r29.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__62", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__63", -1, CPyStatic_brownie___globals);
         goto CPyL54;
     }
     CPy_INCREF(cpy_r_r29.f0);
@@ -9932,9 +9995,9 @@ CPyL26: ;
     goto CPyL16;
 CPyL27: ;
     cpy_r_r17 = cpy_r_r1;
-    cpy_r_r30 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62;
+    cpy_r_r30 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__63;
     if (unlikely(cpy_r_r30.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__62", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__63", -1, CPyStatic_brownie___globals);
         goto CPyL55;
     }
     CPy_INCREF(cpy_r_r30.f0);
@@ -9947,9 +10010,9 @@ CPyL28: ;
     CPy_DecRef(cpy_r_r30.f2);
     goto CPyL37;
 CPyL29: ;
-    cpy_r_r31 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62;
+    cpy_r_r31 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__63;
     if (unlikely(cpy_r_r31.f0 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__62", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__63", -1, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     CPy_INCREF(cpy_r_r31.f0);
@@ -9964,9 +10027,9 @@ CPyL30: ;
     if (!cpy_r_r32) goto CPyL47;
     CPy_Unreachable();
 CPyL32: ;
-    cpy_r_r33 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61;
+    cpy_r_r33 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__62;
     if (unlikely(cpy_r_r33 == NULL)) {
-        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__61", -1, CPyStatic_brownie___globals);
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "__mypyc_temp__62", -1, CPyStatic_brownie___globals);
         goto CPyL56;
     }
     CPy_INCREF(cpy_r_r33);
@@ -9980,7 +10043,7 @@ CPyL33: ;
 CPyL35: ;
     cpy_r_r35 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r35 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     cpy_r_r17 = cpy_r_r35;
@@ -9997,7 +10060,7 @@ CPyL37: ;
         cpy_r_r36 = NULL;
     }
     if (cpy_r_r36 != NULL) goto __LL51;
-    CPy_TypeErrorTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals, "tuple or None", cpy_r_r17);
+    CPy_TypeErrorTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals, "tuple or None", cpy_r_r17);
     goto CPyL47;
 __LL51: ;
     cpy_r_r37 = cpy_r_r36;
@@ -10005,7 +10068,7 @@ __LL51: ;
     cpy_r_r39 = PyObject_GetItem(cpy_r_r37, cpy_r_r38);
     CPy_DECREF(cpy_r_r37);
     if (unlikely(cpy_r_r39 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 184, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 186, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
@@ -10025,7 +10088,7 @@ CPyL45: ;
     PyErr_SetNone(PyExc_StopIteration);
     cpy_r_r43 = 0;
     if (unlikely(!cpy_r_r43)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 183, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 185, CPyStatic_brownie___globals);
         goto CPyL47;
     }
     CPy_Unreachable();
@@ -10362,7 +10425,7 @@ PyObject *CPyDef_brownie_____fetch_source_for_hash(PyObject *cpy_r_hashval) {
     PyObject *cpy_r_r3;
     cpy_r_r0 = CPyDef_brownie_____fetch_source_for_hash_gen();
     if (unlikely(cpy_r_r0 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 183, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 185, CPyStatic_brownie___globals);
         goto CPyL3;
     }
     ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r_r0)->___mypyc_next_label__ = 0;
@@ -10373,7 +10436,7 @@ PyObject *CPyDef_brownie_____fetch_source_for_hash(PyObject *cpy_r_hashval) {
     ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r_r0)->_hashval = cpy_r_hashval;
     cpy_r_r2 = 1;
     if (unlikely(!cpy_r_r2)) {
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 183, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 185, CPyStatic_brownie___globals);
         goto CPyL4;
     }
     return cpy_r_r0;
@@ -10402,7 +10465,7 @@ PyObject *CPyPy_brownie_____fetch_source_for_hash(PyObject *self, PyObject *cons
     PyObject *retval = CPyDef_brownie_____fetch_source_for_hash(arg_hashval);
     return retval;
 fail: ;
-    CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 183, CPyStatic_brownie___globals);
+    CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 185, CPyStatic_brownie___globals);
     return NULL;
 }
 
@@ -11302,13 +11365,13 @@ CPyL3: ;
     cpy_r_r209 = CPyStatics[59]; /* '_get_data_folder' */
     cpy_r_r210 = CPyDict_GetItem(cpy_r_r208, cpy_r_r209);
     if (unlikely(cpy_r_r210 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 134, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 136, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     cpy_r_r211 = PyObject_Vectorcall(cpy_r_r210, 0, 0, 0);
     CPy_DECREF(cpy_r_r210);
     if (unlikely(cpy_r_r211 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 134, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 136, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     cpy_r_r212 = CPyStatics[102]; /* 'deployments.db' */
@@ -11317,14 +11380,14 @@ CPyL3: ;
     cpy_r_r215 = (PyObject **)&cpy_r_r214;
     cpy_r_r216 = PyObject_VectorcallMethod(cpy_r_r213, cpy_r_r215, 9223372036854775810ULL, 0);
     if (unlikely(cpy_r_r216 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 134, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 136, CPyStatic_brownie___globals);
         goto CPyL67;
     }
     CPy_DECREF(cpy_r_r211);
     cpy_r_r217 = CPyDef_brownie___AsyncCursor(cpy_r_r216);
     CPy_DECREF(cpy_r_r216);
     if (unlikely(cpy_r_r217 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 134, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 136, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     CPyStatic_brownie___cur = cpy_r_r217;
@@ -11335,7 +11398,7 @@ CPyL3: ;
     CPy_DECREF_NO_IMM(cpy_r_r217);
     cpy_r_r221 = cpy_r_r220 >= 0;
     if (unlikely(!cpy_r_r221)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 134, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 136, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     cpy_r_r222 = CPyStatic_brownie___cur;
@@ -11343,7 +11406,7 @@ CPyL3: ;
     PyErr_SetString(PyExc_NameError, "value for final name \"cur\" was not set");
     cpy_r_r223 = 0;
     if (unlikely(!cpy_r_r223)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 135, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 137, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     CPy_Unreachable();
@@ -11351,14 +11414,14 @@ CPyL52: ;
     cpy_r_r224 = CPyStatics[13]; /* 'fetchone' */
     cpy_r_r225 = CPyObject_GetAttr(cpy_r_r222, cpy_r_r224);
     if (unlikely(cpy_r_r225 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 135, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 137, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     cpy_r_r226 = CPyStatic_brownie___globals;
     cpy_r_r227 = CPyStatics[57]; /* 'SmartProcessingQueue' */
     cpy_r_r228 = CPyDict_GetItem(cpy_r_r226, cpy_r_r227);
     if (unlikely(cpy_r_r228 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 135, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 137, CPyStatic_brownie___globals);
         goto CPyL68;
     }
     cpy_r_r229 = CPyStatics[549]; /* 32 */
@@ -11368,7 +11431,7 @@ CPyL52: ;
     cpy_r_r233 = PyObject_Vectorcall(cpy_r_r228, cpy_r_r231, 1, cpy_r_r232);
     CPy_DECREF(cpy_r_r228);
     if (unlikely(cpy_r_r233 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 135, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 137, CPyStatic_brownie___globals);
         goto CPyL68;
     }
     CPy_DECREF(cpy_r_r225);
@@ -11380,21 +11443,21 @@ CPyL52: ;
     CPy_DECREF(cpy_r_r233);
     cpy_r_r237 = cpy_r_r236 >= 0;
     if (unlikely(!cpy_r_r237)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 135, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 137, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     cpy_r_r238 = CPyStatic_brownie___globals;
     cpy_r_r239 = CPyStatics[29]; /* '_get_select_statement' */
     cpy_r_r240 = CPyDict_GetItem(cpy_r_r238, cpy_r_r239);
     if (unlikely(cpy_r_r240 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 138, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 140, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     cpy_r_r241 = CPyStatic_brownie___globals;
     cpy_r_r242 = CPyStatics[65]; /* 'lru_cache' */
     cpy_r_r243 = CPyDict_GetItem(cpy_r_r241, cpy_r_r242);
     if (unlikely(cpy_r_r243 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 138, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 140, CPyStatic_brownie___globals);
         goto CPyL69;
     }
     cpy_r_r244 = Py_None;
@@ -11404,7 +11467,7 @@ CPyL52: ;
     cpy_r_r248 = PyObject_Vectorcall(cpy_r_r243, cpy_r_r246, 0, cpy_r_r247);
     CPy_DECREF(cpy_r_r243);
     if (unlikely(cpy_r_r248 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 138, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 140, CPyStatic_brownie___globals);
         goto CPyL69;
     }
     PyObject *cpy_r_r249[1] = {cpy_r_r240};
@@ -11412,7 +11475,7 @@ CPyL52: ;
     cpy_r_r251 = PyObject_Vectorcall(cpy_r_r248, cpy_r_r250, 1, 0);
     CPy_DECREF(cpy_r_r248);
     if (unlikely(cpy_r_r251 == NULL)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 138, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 140, CPyStatic_brownie___globals);
         goto CPyL69;
     }
     CPy_DECREF(cpy_r_r240);
@@ -11422,7 +11485,7 @@ CPyL52: ;
     CPy_DECREF(cpy_r_r251);
     cpy_r_r255 = cpy_r_r254 >= 0;
     if (unlikely(!cpy_r_r255)) {
-        CPy_AddTraceback("y/_db/brownie.py", "<module>", 138, CPyStatic_brownie___globals);
+        CPy_AddTraceback("y/_db/brownie.py", "<module>", 140, CPyStatic_brownie___globals);
         goto CPyL62;
     }
     return 1;
