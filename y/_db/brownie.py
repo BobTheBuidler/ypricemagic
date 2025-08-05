@@ -96,7 +96,8 @@ class AsyncCursor:
 
     async def connect(self) -> None:
         """Establish an async connection to the SQLite database"""
-        if self._db is not None:
+        db = self._db  # must assign before checking to avoid a TypeError below
+        if db is not None:
             raise RuntimeError("already connected")
         async with sqlite_lock:
             if self._db is not None:
