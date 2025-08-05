@@ -27,25 +27,6 @@ typedef struct tuple_T2CC {
 } tuple_T2CC;
 #endif
 
-#ifndef MYPYC_DECLARED_tuple_T3CIO
-#define MYPYC_DECLARED_tuple_T3CIO
-typedef struct tuple_T3CIO {
-    char f0;
-    CPyTagged f1;
-    PyObject *f2;
-} tuple_T3CIO;
-#endif
-
-#ifndef MYPYC_DECLARED_tuple_T4CIOO
-#define MYPYC_DECLARED_tuple_T4CIOO
-typedef struct tuple_T4CIOO {
-    char f0;
-    CPyTagged f1;
-    PyObject *f2;
-    PyObject *f3;
-} tuple_T4CIOO;
-#endif
-
 #ifndef MYPYC_DECLARED_tuple_T16OOOOOOOOOOOOOOOO
 #define MYPYC_DECLARED_tuple_T16OOOOOOOOOOOOOOOO
 typedef struct tuple_T16OOOOOOOOOOOOOOOO {
@@ -66,6 +47,25 @@ typedef struct tuple_T16OOOOOOOOOOOOOOOO {
     PyObject *f14;
     PyObject *f15;
 } tuple_T16OOOOOOOOOOOOOOOO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T3CIO
+#define MYPYC_DECLARED_tuple_T3CIO
+typedef struct tuple_T3CIO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+} tuple_T3CIO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T4CIOO
+#define MYPYC_DECLARED_tuple_T4CIOO
+typedef struct tuple_T4CIOO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+    PyObject *f3;
+} tuple_T4CIOO;
 #endif
 
 #ifndef MYPYC_DECLARED_tuple_T8OOOOOOOO
@@ -116,18 +116,20 @@ typedef struct {
     CPyVTableItem *vtable;
     PyObject *_self;
     int32_t ___mypyc_next_label__;
+    PyObject *_db;
     PyObject *___mypyc_temp__0;
     PyObject *___mypyc_temp__1;
     char ___mypyc_temp__2;
     PyObject *___mypyc_temp__3;
     tuple_T3OOO ___mypyc_temp__4;
     PyObject *___mypyc_temp__5;
-    tuple_T3OOO ___mypyc_temp__6;
+    PyObject *___mypyc_temp__6;
     tuple_T3OOO ___mypyc_temp__7;
-    PyObject *___mypyc_temp__8;
-    tuple_T3OOO ___mypyc_temp__9;
-    PyObject *___mypyc_temp__10;
-    tuple_T3OOO ___mypyc_temp__11;
+    tuple_T3OOO ___mypyc_temp__8;
+    PyObject *___mypyc_temp__9;
+    tuple_T3OOO ___mypyc_temp__10;
+    PyObject *___mypyc_temp__11;
+    tuple_T3OOO ___mypyc_temp__12;
 } y____db___brownie___connect_AsyncCursor_genObject;
 
 typedef struct {
@@ -146,38 +148,38 @@ typedef struct {
     PyObject *_cmd;
     PyObject *_args;
     int32_t ___mypyc_next_label__;
-    PyObject *___mypyc_temp__12;
-    tuple_T3OOO ___mypyc_temp__13;
-    PyObject *___mypyc_temp__14;
+    PyObject *___mypyc_temp__13;
+    tuple_T3OOO ___mypyc_temp__14;
     PyObject *___mypyc_temp__15;
-    char ___mypyc_temp__16;
-    PyObject *___mypyc_temp__17;
-    tuple_T3OOO ___mypyc_temp__18;
-    PyObject *___mypyc_temp__19;
+    PyObject *___mypyc_temp__16;
+    char ___mypyc_temp__17;
+    PyObject *___mypyc_temp__18;
+    tuple_T3OOO ___mypyc_temp__19;
     PyObject *___mypyc_temp__20;
-    char ___mypyc_temp__21;
-    PyObject *___mypyc_temp__22;
-    tuple_T3OOO ___mypyc_temp__23;
+    PyObject *___mypyc_temp__21;
+    char ___mypyc_temp__22;
+    PyObject *___mypyc_temp__23;
+    tuple_T3OOO ___mypyc_temp__24;
     PyObject *_cursor;
-    PyObject *___mypyc_temp__24;
-    tuple_T3OOO ___mypyc_temp__25;
+    PyObject *___mypyc_temp__25;
+    tuple_T3OOO ___mypyc_temp__26;
     PyObject *_row;
-    PyObject *___mypyc_temp__26;
     PyObject *___mypyc_temp__27;
     PyObject *___mypyc_temp__28;
     PyObject *___mypyc_temp__29;
+    PyObject *___mypyc_temp__30;
     PyObject *_i;
-    tuple_T3OOO ___mypyc_temp__30;
-    PyObject *___mypyc_temp__31;
-    tuple_T3OOO ___mypyc_temp__32;
-    PyObject *___mypyc_temp__33;
-    tuple_T3OOO ___mypyc_temp__34;
-    PyObject *___mypyc_temp__35;
-    tuple_T3OOO ___mypyc_temp__36;
-    PyObject *___mypyc_temp__37;
-    tuple_T3OOO ___mypyc_temp__38;
-    PyObject *___mypyc_temp__39;
-    tuple_T3OOO ___mypyc_temp__40;
+    tuple_T3OOO ___mypyc_temp__31;
+    PyObject *___mypyc_temp__32;
+    tuple_T3OOO ___mypyc_temp__33;
+    PyObject *___mypyc_temp__34;
+    tuple_T3OOO ___mypyc_temp__35;
+    PyObject *___mypyc_temp__36;
+    tuple_T3OOO ___mypyc_temp__37;
+    PyObject *___mypyc_temp__38;
+    tuple_T3OOO ___mypyc_temp__39;
+    PyObject *___mypyc_temp__40;
+    tuple_T3OOO ___mypyc_temp__41;
 } y____db___brownie___fetchone_AsyncCursor_genObject;
 
 typedef struct {
@@ -188,35 +190,35 @@ typedef struct {
     PyObject *_skip_source_keys;
     int32_t ___mypyc_next_label__;
     PyObject *_where_clause;
-    PyObject *___mypyc_temp__41;
-    tuple_T3OOO ___mypyc_temp__42;
-    PyObject *_row;
+    PyObject *___mypyc_temp__42;
     tuple_T3OOO ___mypyc_temp__43;
+    PyObject *_row;
+    tuple_T3OOO ___mypyc_temp__44;
     PyObject *_build_json;
     PyObject *_path_map;
-    PyObject *___mypyc_temp__44;
     PyObject *___mypyc_temp__45;
-    CPyTagged ___mypyc_temp__46;
+    PyObject *___mypyc_temp__46;
     CPyTagged ___mypyc_temp__47;
-    PyObject *___mypyc_temp__48;
+    CPyTagged ___mypyc_temp__48;
+    PyObject *___mypyc_temp__49;
     PyObject *_val;
     PyObject *_source_key;
-    PyObject *___mypyc_temp__49;
-    tuple_T3OOO ___mypyc_temp__50;
+    PyObject *___mypyc_temp__50;
+    tuple_T3OOO ___mypyc_temp__51;
     PyObject *_sources;
-    PyObject *___mypyc_temp__51;
     PyObject *___mypyc_temp__52;
-    CPyTagged ___mypyc_temp__53;
+    PyObject *___mypyc_temp__53;
     CPyTagged ___mypyc_temp__54;
-    PyObject *___mypyc_temp__55;
+    CPyTagged ___mypyc_temp__55;
+    PyObject *___mypyc_temp__56;
     PyObject *_k;
     PyObject *_v;
     PyObject *_pc_map;
-    PyObject *___mypyc_temp__56;
     PyObject *___mypyc_temp__57;
-    CPyTagged ___mypyc_temp__58;
+    PyObject *___mypyc_temp__58;
     CPyTagged ___mypyc_temp__59;
-    PyObject *___mypyc_temp__60;
+    CPyTagged ___mypyc_temp__60;
+    PyObject *___mypyc_temp__61;
     PyObject *_key;
     PyObject *___mypyc_temp__2_0;
 } y____db___brownie____get_deployment_genObject;
@@ -226,8 +228,8 @@ typedef struct {
     CPyVTableItem *vtable;
     PyObject *_hashval;
     int32_t ___mypyc_next_label__;
-    PyObject *___mypyc_temp__61;
-    tuple_T3OOO ___mypyc_temp__62;
+    PyObject *___mypyc_temp__62;
+    tuple_T3OOO ___mypyc_temp__63;
 } y____db___brownie_____fetch_source_for_hash_genObject;
 
 typedef struct {
@@ -527,14 +529,14 @@ typedef struct {
 
 
 struct export_table_839fc216801717d47e67 {
-    PyObject **CPyStatic_brownie___SOURCE_KEYS;
+    tuple_T16OOOOOOOOOOOOOOOO *CPyStatic_brownie___SOURCE_KEYS;
+    tuple_T8OOOOOOOO *CPyStatic_brownie___DISCARD_SOURCE_KEYS;
     PyObject **CPyStatic_brownie___sha1;
     PyObject **CPyStatic_brownie___dumps;
     PyObject **CPyStatic_brownie___loads;
     PyObject **CPyStatic_brownie___sqlite_lock;
     PyObject **CPyStatic_brownie___cur;
     PyObject **CPyStatic_brownie___fetchone;
-    PyObject **CPyStatic_brownie___y____db___brownie____get_deployment___skip_source_keys;
     PyTypeObject **CPyType_brownie___AsyncCursor;
     PyObject *(*CPyDef_brownie___AsyncCursor)(PyObject *cpy_r_filename);
     PyTypeObject **CPyType_brownie___connect_AsyncCursor_gen;
