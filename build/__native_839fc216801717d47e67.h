@@ -27,25 +27,6 @@ typedef struct tuple_T2CC {
 } tuple_T2CC;
 #endif
 
-#ifndef MYPYC_DECLARED_tuple_T3CIO
-#define MYPYC_DECLARED_tuple_T3CIO
-typedef struct tuple_T3CIO {
-    char f0;
-    CPyTagged f1;
-    PyObject *f2;
-} tuple_T3CIO;
-#endif
-
-#ifndef MYPYC_DECLARED_tuple_T4CIOO
-#define MYPYC_DECLARED_tuple_T4CIOO
-typedef struct tuple_T4CIOO {
-    char f0;
-    CPyTagged f1;
-    PyObject *f2;
-    PyObject *f3;
-} tuple_T4CIOO;
-#endif
-
 #ifndef MYPYC_DECLARED_tuple_T16OOOOOOOOOOOOOOOO
 #define MYPYC_DECLARED_tuple_T16OOOOOOOOOOOOOOOO
 typedef struct tuple_T16OOOOOOOOOOOOOOOO {
@@ -66,6 +47,25 @@ typedef struct tuple_T16OOOOOOOOOOOOOOOO {
     PyObject *f14;
     PyObject *f15;
 } tuple_T16OOOOOOOOOOOOOOOO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T3CIO
+#define MYPYC_DECLARED_tuple_T3CIO
+typedef struct tuple_T3CIO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+} tuple_T3CIO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T4CIOO
+#define MYPYC_DECLARED_tuple_T4CIOO
+typedef struct tuple_T4CIOO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+    PyObject *f3;
+} tuple_T4CIOO;
 #endif
 
 #ifndef MYPYC_DECLARED_tuple_T8OOOOOOOO
@@ -527,14 +527,14 @@ typedef struct {
 
 
 struct export_table_839fc216801717d47e67 {
-    PyObject **CPyStatic_brownie___SOURCE_KEYS;
+    tuple_T16OOOOOOOOOOOOOOOO *CPyStatic_brownie___SOURCE_KEYS;
+    tuple_T8OOOOOOOO *CPyStatic_brownie___DISCARD_SOURCE_KEYS;
     PyObject **CPyStatic_brownie___sha1;
     PyObject **CPyStatic_brownie___dumps;
     PyObject **CPyStatic_brownie___loads;
     PyObject **CPyStatic_brownie___sqlite_lock;
     PyObject **CPyStatic_brownie___cur;
     PyObject **CPyStatic_brownie___fetchone;
-    PyObject **CPyStatic_brownie___y____db___brownie____get_deployment___skip_source_keys;
     PyTypeObject **CPyType_brownie___AsyncCursor;
     PyObject *(*CPyDef_brownie___AsyncCursor)(PyObject *cpy_r_filename);
     PyTypeObject **CPyType_brownie___connect_AsyncCursor_gen;
