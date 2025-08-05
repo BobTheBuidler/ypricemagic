@@ -40,7 +40,7 @@ BuildJson = Dict[str, Any]
 Sources = Dict[SourceKey, Any]
 
 
-SOURCE_KEYS: Final[Tuple[SourceKey, ...]] = (
+SOURCE_KEYS: Final = (
     "address",
     "alias",
     "paths",
@@ -59,7 +59,7 @@ SOURCE_KEYS: Final[Tuple[SourceKey, ...]] = (
     "type",
 )
 
-DISCARD_SOURCE_KEYS: Tuple[SourceKey, ...] = (
+DISCARD_SOURCE_KEYS: Final = (
     "ast",
     "bytecode",
     "coverageMap",
@@ -88,13 +88,13 @@ sqlite_lock: Final = Lock()
 
 @final
 class AsyncCursor:
-    def __init__(self, filename: Path):
-        self._filename: Path = filename
+    def __init__(self, filename: Path) -> None:
+        self._filename: Final = filename
         self._db: Optional[aiosqlite.Connection] = None
         self._connected: bool = False
         self._execute: Optional[Callable[..., aiosqlite.Cursor]] = None
 
-    async def connect(self):
+    async def connect(self) -> None:
         """Establish an async connection to the SQLite database"""
         if self._db is not None:
             raise RuntimeError("already connected")
@@ -103,7 +103,7 @@ class AsyncCursor:
                 self._db = await aiosqlite.connect(self._filename, isolation_level=None)
                 self._execute = self._db.execute
 
-    async def insert(self, table, *values):
+    async def insert(self, table: str, *values: Any) -> None:
         raise NotImplementedError
         if self._db is None:
             await self.connect()
