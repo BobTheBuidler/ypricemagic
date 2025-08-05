@@ -2,7 +2,7 @@ import hashlib
 import json
 from asyncio import Lock
 from pathlib import Path
-from typing import Any, Container, Dict, Final, Literal, Optional, Tuple, final
+from typing import Any, Callable, Container, Dict, Final, Literal, Optional, Tuple, final
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
@@ -90,9 +90,9 @@ sqlite_lock: Final = Lock()
 class AsyncCursor:
     def __init__(self, filename: Path):
         self._filename: Path = filename
-        self._db: Any = None
+        self._db: Optional[aiosqlite.Connection] = None
         self._connected: bool = False
-        self._execute: Any = None
+        self._execute: Optional[Callable[..., aiosqlite.Cursor]] = None
 
     async def connect(self):
         """Establish an async connection to the SQLite database"""
