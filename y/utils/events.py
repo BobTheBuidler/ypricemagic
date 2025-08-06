@@ -37,10 +37,9 @@ from brownie.network.event import (
     EventDict,
 )
 from eth_typing import ChecksumAddress
-from eth_utils.toolz import concat
+from eth_utils.toolz import concat, groupby
 from evmspec import Log
 from msgspec.structs import force_setattr
-from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
