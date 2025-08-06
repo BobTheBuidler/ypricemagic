@@ -27,7 +27,7 @@ import dank_mids
 import eth_retry
 from a_sync import igather
 from a_sync.executor import _AsyncExecutorMixin
-from async_property import async_property
+from async_property import async_property  # type: ignore [import-untyped]
 from brownie import web3
 from brownie.network.event import (
     _EventItem,
