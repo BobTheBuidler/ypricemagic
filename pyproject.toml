@@ -4,6 +4,7 @@ requires = [
   "wheel",
   "mypy[mypyc]==1.17.0",
   "types-python-dateutil",
+  "types-cachetools",
   "types-requests",
   "eth-typing==4.4.0",
 ]
