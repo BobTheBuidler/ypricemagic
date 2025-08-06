@@ -25,7 +25,6 @@ try:
             "--pretty",
             "--install-types",
             "--disable-error-code=import-not-found",
-            "--disable-error-code=import-untyped",
             "--disable-error-code=misc",
             "--disable-error-code=attr-defined",
             "--disable-error-code=return-value",

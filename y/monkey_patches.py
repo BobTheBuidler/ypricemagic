@@ -63,7 +63,7 @@ def monkey_patch_checksum_cache():
         pass
 
     try:
-        import ens.ens
+        import ens.ens  # type: ignore [import-untyped]
 
         ens.ens.to_checksum_address = y.convert.to_address
     except ModuleNotFoundError:
@@ -71,7 +71,7 @@ def monkey_patch_checksum_cache():
         pass
 
     try:
-        import ens.async_ens
+        import ens.async_ens  # type: ignore [import-untyped]
 
         ens.async_ens.to_checksum_address = y.convert.to_address
     except ModuleNotFoundError:

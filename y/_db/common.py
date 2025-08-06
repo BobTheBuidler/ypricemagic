@@ -30,7 +30,7 @@ from a_sync import (
     CounterLock,
     PruningThreadPoolExecutor,
 )
-from async_property import async_property
+from async_property import async_property  # type: ignore [import-untyped]
 from brownie import ZERO_ADDRESS
 from dank_mids import BlockSemaphore
 from evmspec.data import Address, HexBytes32

@@ -27,7 +27,7 @@ import dank_mids
 import eth_retry
 from a_sync import igather
 from a_sync.executor import _AsyncExecutorMixin
-from async_property import async_property
+from async_property import async_property  # type: ignore [import-untyped]
 from brownie import web3
 from brownie.network.event import (
     _EventItem,
@@ -37,10 +37,9 @@ from brownie.network.event import (
     EventDict,
 )
 from eth_typing import ChecksumAddress
-from eth_utils.toolz import concat
+from eth_utils.toolz import concat, groupby
 from evmspec import Log
 from msgspec.structs import force_setattr
-from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 

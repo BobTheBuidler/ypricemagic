@@ -7,7 +7,7 @@ from weakref import WeakValueDictionary, ref as weak_ref
 import a_sync
 from brownie import chain
 from eth_typing import BlockNumber, ChecksumAddress
-from lazy_logging import LazyLoggerFactory
+from lazy_logging import LazyLoggerFactory  # type: ignore [import-untyped]
 from typing_extensions import ParamSpec
 
 from y.datatypes import AnyAddressType, Block
