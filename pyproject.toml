@@ -1,5 +1,11 @@
 [build-system]
-requires = ["setuptools", "wheel", "mypy[mypyc]==1.17.0", "eth-typing==4.4.0"]
+requires = [
+  "setuptools",
+  "wheel",
+  "mypy[mypyc]==1.17.0",
+  "types-requests",
+  "eth-typing==4.4.0",
+]
 
 [tool.black]
 line-length = 100
