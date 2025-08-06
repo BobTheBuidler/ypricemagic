@@ -101,7 +101,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">eth_retry</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">igather</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.executor</span><span class="w"> </span><span class="kn">import</span> <span class="n">_AsyncExecutorMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">async_property</span><span class="w"> </span><span class="kn">import</span> <span class="n">async_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">async_property</span><span class="w"> </span><span class="kn">import</span> <span class="n">async_property</span>  <span class="c1"># type: ignore [import-untyped]</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">web3</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.network.event</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_EventItem</span><span class="p">,</span>
@@ -111,10 +111,9 @@
     <span class="n">EventDict</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChecksumAddress</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">eth_utils.toolz</span><span class="w"> </span><span class="kn">import</span> <span class="n">concat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eth_utils.toolz</span><span class="w"> </span><span class="kn">import</span> <span class="n">concat</span><span class="p">,</span> <span class="n">groupby</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">evmspec</span><span class="w"> </span><span class="kn">import</span> <span class="n">Log</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">msgspec.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">force_setattr</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">toolz</span><span class="w"> </span><span class="kn">import</span> <span class="n">groupby</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">web3.middleware.filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_ranges</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">web3.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogReceipt</span>
 
