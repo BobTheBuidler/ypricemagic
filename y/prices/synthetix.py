@@ -25,6 +25,7 @@ addresses: Final = {
     Network.Optimism: "0x95A6a3f44a70172E7d50a9e28c85Dfd712756B8C",
 }
 
+
 def encode_bytes(s: str) -> bytes:
     return encode(["bytes32"], [s.encode()])
 
