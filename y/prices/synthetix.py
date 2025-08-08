@@ -1,10 +1,11 @@
 import logging
-from typing import Callable, List, Optional
+from typing import Callable, Final, List, Optional, final
 
 import a_sync
 from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from eth_typing import ChecksumAddress, HexStr
+from faster_eth_abi import encode
 from multicall import Call
 from typing_extensions import Self
 
@@ -16,23 +17,20 @@ from y.exceptions import UnsupportedNetwork, call_reverted
 from y.networks import Network
 from y.utils import a_sync_ttl_cache
 
-try:
-    from eth_abi import encode
 
-    encode_bytes: Callable[[str], bytes] = lambda s: encode(["bytes32"], [s.encode()])
-except ImportError:
-    from eth_abi import encode_single
+logger: Final = logging.getLogger(__name__)
 
-    encode_bytes: Callable[[str], bytes] = lambda s: encode_single("bytes32", s.encode())
-
-logger = logging.getLogger(__name__)
-
-addresses = {
+addresses: Final = {
     Network.Mainnet: "0x823bE81bbF96BEc0e25CA13170F5AaCb5B79ba83",
     Network.Optimism: "0x95A6a3f44a70172E7d50a9e28c85Dfd712756B8C",
 }
 
 
+def encode_bytes(s: str) -> bytes:
+    return encode(["bytes32"], [s.encode()])
+
+
+@final
 class Synthetix(a_sync.ASyncGenericSingleton):
     """A class to interact with the Synthetix protocol.
 

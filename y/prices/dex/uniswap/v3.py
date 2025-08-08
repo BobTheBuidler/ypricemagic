@@ -8,6 +8,7 @@ from typing import (
     AsyncIterator,
     DefaultDict,
     Dict,
+    Final,
     Iterable,
     List,
     Literal,
@@ -22,6 +23,7 @@ from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from eth_typing import ChecksumAddress, HexAddress
+from faster_eth_abi import encode_packed
 from typing_extensions import Self
 
 from y import convert
@@ -41,21 +43,17 @@ from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
 from y.utils.events import ProcessedEvents
 
-try:
-    from eth_abi.packed import encode_packed
-except ImportError:
-    from eth_abi.packed import encode_abi_packed as encode_packed
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
-UNISWAP_V3_FACTORY = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
-UNISWAP_V3_QUOTER = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6"
+UNISWAP_V3_FACTORY: Final = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+UNISWAP_V3_QUOTER: Final = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6"
 
-logger = getLogger(__name__)
+logger: Final = getLogger(__name__)
 
 Path = Iterable[Union[Address, int]]
 
 # same addresses on all networks
-addresses = {
+addresses: Final = {
     Network.Mainnet: {
         "factory": UNISWAP_V3_FACTORY,
         "quoter": UNISWAP_V3_QUOTER,
@@ -78,7 +76,7 @@ addresses = {
     },
 }
 
-forked_deployments = {
+forked_deployments: Final = {
     Network.Optimism: [
         {
             # Velodrome slipstream
@@ -97,9 +95,9 @@ forked_deployments = {
     ],
 }
 
-_FEE_DENOMINATOR = Decimal(1_000_000)
+_FEE_DENOMINATOR: Final = Decimal(1_000_000)
 
-_PATH_TYPE_STRINGS: Dict[int, Tuple[Literal["address", "uint24"], ...]] = {
+_PATH_TYPE_STRINGS: Final[Dict[int, Tuple[Literal["address", "uint24"], ...]]] = {
     3: tuple(islice(cycle(("address", "uint24")), 3)),
     5: tuple(islice(cycle(("address", "uint24")), 5)),
 }

@@ -4,9 +4,11 @@ cchecksum>=0.0.3
 checksum_dict>=2.1.10.dev0,<3
 dank_mids>=4.20.161
 eth-brownie>=1.21.0,<1.23
+eth-event>=1.4.0
 eth_retry>=0.2.1
 evmspec>=0.3.4
 ez-a-sync>=0.32.18,<1
+faster-eth-abi>=5.2.1,<6
 faster-eth-utils
 inflection>=0.1,<0.6
 joblib>=1.0.1
