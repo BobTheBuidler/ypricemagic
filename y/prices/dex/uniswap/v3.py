@@ -23,7 +23,7 @@ from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from eth_typing import ChecksumAddress, HexAddress
-from faster_eth_abi import encode_packed
+from faster_eth_abi.packed import encode_packed
 from typing_extensions import Self
 
 from y import convert
