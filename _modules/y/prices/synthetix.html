@@ -73,12 +73,13 @@
              
   <h1>Source code for y.prices.synthetix</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">final</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">a_sync</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">cgather</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexStr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_abi</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">multicall</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
@@ -90,25 +91,25 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">y.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">eth_abi</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode</span>
 
-    <span class="n">encode_bytes</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">encode</span><span class="p">([</span><span class="s2">&quot;bytes32&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">()])</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">eth_abi</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_single</span>
+<span class="n">logger</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-    <span class="n">encode_bytes</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">encode_single</span><span class="p">(</span><span class="s2">&quot;bytes32&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
-
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-<span class="n">addresses</span> <span class="o">=</span> <span class="p">{</span>
+<span class="n">addresses</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="s2">&quot;0x823bE81bbF96BEc0e25CA13170F5AaCb5B79ba83&quot;</span><span class="p">,</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span> <span class="s2">&quot;0x95A6a3f44a70172E7d50a9e28c85Dfd712756B8C&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 
+<div class="viewcode-block" id="encode_bytes">
+<a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.encode_bytes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">encode_bytes</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">encode</span><span class="p">([</span><span class="s2">&quot;bytes32&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">()])</span></div>
+
+
+
 <div class="viewcode-block" id="Synthetix">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix">[docs]</a>
+<span class="nd">@final</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Synthetix</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class to interact with the Synthetix protocol.</span>
 

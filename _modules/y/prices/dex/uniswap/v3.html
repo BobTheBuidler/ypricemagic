@@ -82,6 +82,7 @@
     <span class="n">AsyncIterator</span><span class="p">,</span>
     <span class="n">DefaultDict</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Final</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Literal</span><span class="p">,</span>
@@ -96,6 +97,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.network.event</span><span class="w"> </span><span class="kn">import</span> <span class="n">_EventItem</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexAddress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_abi.packed</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_packed</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">y</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert</span>
@@ -115,21 +117,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">y.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">y.utils.events</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessedEvents</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">eth_abi.packed</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_packed</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">eth_abi.packed</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_abi_packed</span> <span class="k">as</span> <span class="n">encode_packed</span>
 
 <span class="c1"># https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md</span>
-<span class="n">UNISWAP_V3_FACTORY</span> <span class="o">=</span> <span class="s2">&quot;0x1F98431c8aD98523631AE4a59f267346ea31F984&quot;</span>
-<span class="n">UNISWAP_V3_QUOTER</span> <span class="o">=</span> <span class="s2">&quot;0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6&quot;</span>
+<span class="n">UNISWAP_V3_FACTORY</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="s2">&quot;0x1F98431c8aD98523631AE4a59f267346ea31F984&quot;</span>
+<span class="n">UNISWAP_V3_QUOTER</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="s2">&quot;0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6&quot;</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">Path</span> <span class="o">=</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
 
 <span class="c1"># same addresses on all networks</span>
-<span class="n">addresses</span> <span class="o">=</span> <span class="p">{</span>
+<span class="n">addresses</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;factory&quot;</span><span class="p">:</span> <span class="n">UNISWAP_V3_FACTORY</span><span class="p">,</span>
         <span class="s2">&quot;quoter&quot;</span><span class="p">:</span> <span class="n">UNISWAP_V3_QUOTER</span><span class="p">,</span>
@@ -152,7 +150,7 @@
     <span class="p">},</span>
 <span class="p">}</span>
 
-<span class="n">forked_deployments</span> <span class="o">=</span> <span class="p">{</span>
+<span class="n">forked_deployments</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
             <span class="c1"># Velodrome slipstream</span>
@@ -171,9 +169,9 @@
     <span class="p">],</span>
 <span class="p">}</span>
 
-<span class="n">_FEE_DENOMINATOR</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">)</span>
+<span class="n">_FEE_DENOMINATOR</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">)</span>
 
-<span class="n">_PATH_TYPE_STRINGS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;uint24&quot;</span><span class="p">],</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+<span class="n">_PATH_TYPE_STRINGS</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;uint24&quot;</span><span class="p">],</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="mi">3</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">cycle</span><span class="p">((</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;uint24&quot;</span><span class="p">)),</span> <span class="mi">3</span><span class="p">)),</span>
     <span class="mi">5</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">cycle</span><span class="p">((</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;uint24&quot;</span><span class="p">)),</span> <span class="mi">5</span><span class="p">)),</span>
 <span class="p">}</span>
