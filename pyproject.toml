@@ -7,7 +7,7 @@ requires = [
   "types-cachetools",
   "types-requests",
   "faster-eth-abi>=5.2.1,<6",
-  "eth-typing==4.4.0",
+  "eth-typing==5.2.1",
 ]
 
 [tool.black]
