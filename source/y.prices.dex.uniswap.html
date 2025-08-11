@@ -168,7 +168,7 @@ and returns the maximum liquidity found.</p>
 <p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.</p></li>
-<li><p>A semaphore is used to limit the number of concurrent checks to 100.</p></li>
+<li><p>A semaphore is used to limit the number of concurrent checks to 250.</p></li>
 </ul>
 </div>
 <p class="rubric">Examples</p>

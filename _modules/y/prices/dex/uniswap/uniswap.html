@@ -299,7 +299,7 @@
 
 <div class="viewcode-block" id="UniswapMultiplexer.check_liquidity">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.uniswap.UniswapMultiplexer.check_liquidity">[docs]</a>
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># some arbitrary number to keep the loop unclogged</span>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>  <span class="c1"># some arbitrary number to keep the loop unclogged</span>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_liquidity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -320,7 +320,7 @@
 
 <span class="sd">        Note:</span>
 <span class="sd">            - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.</span>
-<span class="sd">            - A semaphore is used to limit the number of concurrent checks to 100.</span>
+<span class="sd">            - A semaphore is used to limit the number of concurrent checks to 250.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; multiplexer = UniswapMultiplexer(asynchronous=True)</span>
