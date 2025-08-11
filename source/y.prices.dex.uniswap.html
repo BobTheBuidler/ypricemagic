@@ -466,7 +466,7 @@ ignore_pools: A tuple of pools to ignore when checking liquidity.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.__await__">
-<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__await__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__await__" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously iterate through the {cls} and return all {obj}.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -507,7 +507,7 @@ ignore_pools: A tuple of pools to ignore when checking liquidity.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__iter__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ASyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__iter__" title="Link to this definition"></a></dt>
 <dd><p>Return an iterator that yields {obj} from the {cls}.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -855,44 +855,43 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapRouterV2.__build_name__">
 <span class="sig-name descname"><span class="pre">__build_name__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HiddenMethodDescriptor</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.__build_name__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -900,44 +899,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapRouterV2.__pools__">
 <span class="sig-name descname"><span class="pre">__pools__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><span class="pre">UniswapV2Pool</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.__pools__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1276,44 +1274,43 @@ total value locked (TVL), and price calculations.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapV2Pool.__build_name__">
 <span class="sig-name descname"><span class="pre">__build_name__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HiddenMethodDescriptor</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__build_name__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1321,44 +1318,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapV2Pool.__decimals__">
 <span class="sig-name descname"><span class="pre">__decimals__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HiddenMethodDescriptor</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__decimals__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1366,44 +1362,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapV2Pool.__factory__">
 <span class="sig-name descname"><span class="pre">__factory__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><span class="pre">HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><span class="pre">AnyAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><span class="pre">Address</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">EthAddress</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__factory__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1416,44 +1411,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapV2Pool.__scale__">
 <span class="sig-name descname"><span class="pre">__scale__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HiddenMethodDescriptor</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__scale__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1461,44 +1455,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapV2Pool.__symbol__">
 <span class="sig-name descname"><span class="pre">__symbol__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HiddenMethodDescriptor</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__symbol__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1506,44 +1499,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapV2Pool.__token0__">
 <span class="sig-name descname"><span class="pre">__token0__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><span class="pre">ERC20</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__token0__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1551,44 +1543,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapV2Pool.__token1__">
 <span class="sig-name descname"><span class="pre">__token1__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><span class="pre">ERC20</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__token1__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1596,44 +1587,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.UniswapV2Pool.__tokens__">
 <span class="sig-name descname"><span class="pre">__tokens__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><span class="pre">ERC20</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><span class="pre">ERC20</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__tokens__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2222,7 +2212,7 @@ of the two tokens in the pool.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools.__await__">
-<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.__await__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.__await__" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously iterate through the {cls} and return all {obj}.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2256,7 +2246,7 @@ of the two tokens in the pool.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.__iter__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ASyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.__iter__" title="Link to this definition"></a></dt>
 <dd><p>Return an iterator that yields {obj} from the {cls}.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2553,7 +2543,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.__await__">
-<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.__await__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.__await__" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously iterate through the {cls} and return all {obj}.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2587,7 +2577,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.__iter__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ASyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.__iter__" title="Link to this definition"></a></dt>
 <dd><p>Return an iterator that yields {obj} from the {cls}.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2935,44 +2925,43 @@ internal addresses for Uniswap V3 operations.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniswapV3.__factory__">
 <span class="sig-name descname"><span class="pre">__factory__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniswapV3.__factory__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2980,44 +2969,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniswapV3.__pools__">
 <span class="sig-name descname"><span class="pre">__pools__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools" title="y.prices.dex.uniswap.v3.UniV3Pools"><span class="pre">UniV3Pools</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniswapV3.__pools__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3025,44 +3013,43 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniswapV3.__quoter__">
 <span class="sig-name descname"><span class="pre">__quoter__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniswapV3.__quoter__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3379,44 +3366,43 @@ block: The block number to check liquidity at.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniswapV3Pool.__build_name__">
 <span class="sig-name descname"><span class="pre">__build_name__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__build_name__" title="Link to this definition"></a></dt>
-<dd><p>Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
-Asynchronously retrieves the property value.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
-owner: The owner class of the property.</p>
-</dd>
-<dt>Returns:</dt><dd><p>The property value.</p>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
+</dd>
+</dl>
+<p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T</p>
+<p>Asynchronously retrieves the property value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>) – The instance from which the property is accessed.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>) – The owner class of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property value.</p>
+</dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
 </dd>
 <dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>I, owner</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.13)"><em>Type</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
 </dd></dl>
