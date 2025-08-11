@@ -304,9 +304,7 @@ class UniswapV2Pool(ERC20):
                 raise Exception("how did we get here?") from None
 
     @stuck_coro_debugger
-    @a_sync.a_sync(
-        ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60, semaphore=10_000
-    )  # lets try a semaphore here
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60, semaphore=25_000)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         """
         Check the liquidity of a specific token in the pool at a given block.
