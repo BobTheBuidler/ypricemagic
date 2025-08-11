@@ -194,7 +194,7 @@ class UniswapV3Pool(ContractBase):
         return ERC20(token, asynchronous=self.asynchronous)
 
     # DEBUG: lets try a semaphore here
-    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60, semaphore=10000)
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60, semaphore=25_000)
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
         """
         Check the liquidity of a token in the pool at a specific block.
