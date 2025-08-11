@@ -209,7 +209,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True) if balance
         ]
 
-    @a_sync.Semaphore(100)  # some arbitrary number to keep the loop unclogged
+    @a_sync.Semaphore(250)  # some arbitrary number to keep the loop unclogged
     @stuck_coro_debugger
     async def check_liquidity(
         self,
@@ -230,7 +230,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
 
         Note:
             - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.
-            - A semaphore is used to limit the number of concurrent checks to 100.
+            - A semaphore is used to limit the number of concurrent checks to 250.
 
         Examples:
             >>> multiplexer = UniswapMultiplexer(asynchronous=True)
