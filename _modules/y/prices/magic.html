@@ -417,6 +417,9 @@
 <span class="sd">        The price of the token in USD, or None if the price couldn&#39;t be determined and fail_to_None is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span>
+            <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;[ZERO_ADDRESS]&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;magic&quot;</span><span class="p">,</span> <span class="n">start_task</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
         <span class="n">_fail_appropriately</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">fail_to_None</span><span class="p">,</span> <span class="n">silent</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
