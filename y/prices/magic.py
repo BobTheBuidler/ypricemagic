@@ -334,7 +334,9 @@ async def _get_price(
         The price of the token in USD, or None if the price couldn't be determined and fail_to_None is True.
     """
     if token == ZERO_ADDRESS:
-        logger = get_price_logger(token, block, symbol="[ZERO_ADDRESS]", extra="magic", start_task=True)
+        logger = get_price_logger(
+            token, block, symbol="[ZERO_ADDRESS]", extra="magic", start_task=True
+        )
         _fail_appropriately(logger, symbol, fail_to_None, silent)
         return None
 
