@@ -337,7 +337,7 @@ async def _get_price(
         logger = get_price_logger(
             token, block, symbol="[ZERO_ADDRESS]", extra="magic", start_task=True
         )
-        _fail_appropriately(logger, symbol, fail_to_None, silent)
+        _fail_appropriately(logger, "[ZERO_ADDRESS]", fail_to_None, silent)
         return None
 
     try:
