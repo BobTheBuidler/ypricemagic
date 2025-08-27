@@ -1,7 +1,7 @@
 # ypricemagic
 
-![PyPI](https://img.shields.io/pypi/v/ypricemagic.svg?logo=Python&logoColor=white)
-![Monthly Downloads](https://img.shields.io/pypi/dm/ypricemagic)
+[![PyPI](https://img.shields.io/pypi/v/ypricemagic.svg?logo=Python&logoColor=white)](https://pypi.org/project/ypricemagic/)
+[![Monthly Downloads](https://img.shields.io/pypi/dm/ypricemagic)](https://pypistats.org/packages/ypricemagic/)
 
 Use this tool to extract historical on-chain price data from an archive node.
 
