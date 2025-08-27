@@ -1,4 +1,8 @@
-## Summary
+# ypricemagic
+
+![PyPI](https://img.shields.io/pypi/v/ypricemagic.svg?logo=Python&logoColor=white)
+![Monthly Downloads](https://img.shields.io/pypi/dm/ypricemagic)
+
 Use this tool to extract historical on-chain price data from an archive node.
 
 ypricemagic is built to work seamlessly with both sync and async Python codebases using the [ez-a-sync framework](https://github.com/BobTheBuidler/ez-a-sync).
