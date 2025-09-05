@@ -3,6 +3,7 @@ import os
 
 _asyncpg_pool = None
 
+
 async def get_asyncpg_pool():
     """
     Get or create a global asyncpg connection pool using environment/config variables.

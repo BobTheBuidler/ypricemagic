@@ -20,6 +20,7 @@ from y._db.asyncpg_pool import get_asyncpg_pool
 logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
 
+
 @a_sync_read_db_session
 def get_price(address: ChecksumAddress, block: BlockNumber) -> Optional[Decimal]:
     """
@@ -93,10 +94,7 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
     try:
         async with pool.acquire() as conn:
             await conn.execute(
-                insert_sql,
-                block_pk[0], block_pk[1],
-                token_pk[0], token_pk[1],
-                str(price)
+                insert_sql, block_pk[0], block_pk[1], token_pk[0], token_pk[1], str(price)
             )
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
     except InvalidOperation:
@@ -104,6 +102,7 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
         pass
     except Exception as e:
         logger.warning("asyncpg insert price failed: %s", e)
+
 
 def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> None:
     """
