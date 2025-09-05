@@ -1,9 +1,10 @@
 import logging
 import threading
 from decimal import Decimal, InvalidOperation
-from typing import Dict, Optional
+from typing import Dict, Final, Optional
 
 from a_sync import ProcessingQueue
+from asyncpg import Connection
 from cachetools import TTLCache, cached
 from eth_typing import BlockNumber, ChecksumAddress
 from pony.orm import select
@@ -19,6 +20,12 @@ from y._db.asyncpg_pool import get_asyncpg_pool
 
 logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
+
+_INSERT_SQL: Final = """
+    INSERT INTO price (block_chain, block_number, token_chain, token_address, price)
+    VALUES ($1, $2, $3, $4, $5)
+    ON CONFLICT DO NOTHING
+"""
 
 
 @a_sync_read_db_session
@@ -83,18 +90,11 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
 
     pool = await get_asyncpg_pool()
 
-    block_pk = (CHAINID, block)
-    token_pk = (CHAINID, address)
-
-    insert_sql = """
-        INSERT INTO price (block_chain, block_number, token_chain, token_address, price)
-        VALUES ($1, $2, $3, $4, $5)
-        ON CONFLICT DO NOTHING
-    """
     try:
+        conn: Connection
         async with pool.acquire() as conn:
             await conn.execute(
-                insert_sql, block_pk[0], block_pk[1], token_pk[0], token_pk[1], str(price)
+                _INSERT_SQL, CHAINID, block, CHAINID, address, str(price)
             )
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
     except InvalidOperation:

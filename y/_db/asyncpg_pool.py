@@ -5,7 +5,7 @@ from async_lru import alru_cache
 
 
 @alru_cache(maxsize=None)
-async def get_asyncpg_pool():
+async def get_asyncpg_pool() -> asyncpg.Pool:
     """
     Get or create a global asyncpg connection pool using environment/config variables.
     """
