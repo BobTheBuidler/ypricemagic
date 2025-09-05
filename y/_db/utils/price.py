@@ -1,14 +1,17 @@
 import logging
 import threading
 from decimal import Decimal, InvalidOperation
-from typing import Dict, Optional
+from typing import Dict, Final, Optional
 
 from a_sync import ProcessingQueue
+from asyncpg import Connection
 from cachetools import TTLCache, cached
 from eth_typing import BlockNumber, ChecksumAddress
 from pony.orm import select
 
 from y import constants
+from y import ENVIRONMENT_VARIABLES as ENVS
+from y._db.asyncpg_pool import get_asyncpg_pool
 from y._db.decorators import a_sync_read_db_session, log_result_count, retry_locked
 from y._db.entities import Price, insert_nowait
 from y._db.utils.token import ensure_token
@@ -18,6 +21,12 @@ from y.constants import CHAINID
 
 logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
+
+_INSERT_SQL: Final = """
+    INSERT INTO price (block_chain, block_number, token_chain, token_address, price)
+    VALUES ($1, $2, $3, $4, $5)
+    ON CONFLICT DO NOTHING
+"""
 
 
 @a_sync_read_db_session
@@ -60,8 +69,8 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
     Set the price of a token at a specific block in the database.
 
     This function ensures the block and token are present in the database and
-    inserts the price information. It handles large numbers by suppressing
-    `InvalidOperation` exceptions.
+    inserts the price information using asyncpg (for Postgres) or Pony ORM (for SQLite).
+    It handles large numbers by suppressing `InvalidOperation` exceptions.
 
     Args:
         address: The address of the token.
@@ -74,23 +83,40 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
     See Also:
         - :func:`ensure_block`
         - :func:`ensure_token`
-        - :func:`insert`
     """
     await ensure_block(block, sync=False)
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     await ensure_token(str(address), sync=False)  # force to string for cache key
+
+    if ENVS.DB_PROVIDER == "sqlite":
+        # Fallback to Pony ORM logic for SQLite (sync, run in thread)
+        try:
+            insert_nowait(
+                type=Price,
+                block=(CHAINID, block),
+                token=(CHAINID, address),
+                price=Decimal(price),
+            )        _logger_debug("queued insert %s block %s price to ydb: %s", address, block, price)
+        except InvalidOperation:
+            # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
+            pass
+        except Exception as e:
+            logger.warning("Pony ORM insert price failed (sqlite): %s", e)
+        return
+
+    pool = await get_asyncpg_pool()
+
     try:
-        insert_nowait(
-            type=Price,
-            block=(CHAINID, block),
-            token=(CHAINID, address),
-            price=Decimal(price),
-        )
-        _logger_debug("queued insert %s block %s price to ydb: %s", address, block, price)
+        conn: Connection
+        async with pool.acquire() as conn:
+            await conn.execute(_INSERT_SQL, CHAINID, block, CHAINID, address, str(price))
+        logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
     except InvalidOperation:
         # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         pass
+    except Exception as e:
+        logger.warning("asyncpg insert price failed: %s", e)
 
 
 def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> None:
@@ -114,7 +140,6 @@ def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> N
     See Also:
         - :func:`ensure_block`
         - :func:`ensure_token`
-        - :func:`insert`
     """
 
 
