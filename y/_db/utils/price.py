@@ -94,12 +94,15 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
         try:
             from pony.orm import db_session, commit
             from y._db.entities import Price, Block, Token, Chain
+
             with db_session:
                 chain = Chain.get(id=CHAINID)
                 block_obj = Block.get(chain=chain, number=block)
                 token_obj = Token.get(chain=chain, address=str(address))
                 if not block_obj or not token_obj:
-                    logger.warning("Block or Token not found for SQLite insert: %s %s", block, address)
+                    logger.warning(
+                        "Block or Token not found for SQLite insert: %s %s", block, address
+                    )
                     return
                 price_obj = Price.get(block=block_obj, token=token_obj)
                 if price_obj:
@@ -107,7 +110,9 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
                 else:
                     Price(block=block_obj, token=token_obj, price=price)
                 commit()
-                logger.debug("inserted %s block %s price to ydb (sqlite): %s", address, block, price)
+                logger.debug(
+                    "inserted %s block %s price to ydb (sqlite): %s", address, block, price
+                )
         except InvalidOperation:
             pass
         except Exception as e:
