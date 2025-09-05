@@ -1,4 +1,4 @@
-import asyncpg
+import asyncpg  # type: ignore [import-untyped]
 import os
 
 from async_lru import alru_cache

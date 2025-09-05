@@ -3,8 +3,9 @@ import threading
 from decimal import Decimal, InvalidOperation
 from typing import Dict, Final, Optional
 
+import aiosqlite
 from a_sync import ProcessingQueue
-from asyncpg import Connection
+from asyncpg import Connection  # type: ignore [import-untyped]
 from cachetools import TTLCache, cached
 from eth_typing import BlockNumber, ChecksumAddress
 from pony.orm import select
@@ -18,7 +19,6 @@ from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 from y.constants import CHAINID
 
-import aiosqlite
 
 logger: Final = logging.getLogger(__name__)
 _logger_debug: Final = logger.debug
