@@ -1,4 +1,5 @@
 aiosqlite
+asyncpg
 bobs_lazy_logging==0.0.4
 cchecksum>=0.0.3
 checksum_dict>=2.1.10.dev0,<3
