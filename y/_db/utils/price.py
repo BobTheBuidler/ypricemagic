@@ -93,9 +93,7 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
     try:
         conn: Connection
         async with pool.acquire() as conn:
-            await conn.execute(
-                _INSERT_SQL, CHAINID, block, CHAINID, address, str(price)
-            )
+            await conn.execute(_INSERT_SQL, CHAINID, block, CHAINID, address, str(price))
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
     except InvalidOperation:
         # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
