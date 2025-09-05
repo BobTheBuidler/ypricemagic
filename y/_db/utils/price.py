@@ -13,7 +13,7 @@ from y import constants
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.asyncpg_pool import get_asyncpg_pool
 from y._db.decorators import a_sync_read_db_session, log_result_count, retry_locked
-from y._db.entities import Price
+from y._db.entities import Price, insert_nowait
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 from y.constants import CHAINID
@@ -92,23 +92,14 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
     if ENVS.DB_PROVIDER == "sqlite":
         # Fallback to Pony ORM logic for SQLite (sync, run in thread)
         try:
-            from pony.orm import db_session, commit
-            from y._db.entities import Price, Block, Token, Chain
-            with db_session:
-                chain = Chain.get(id=CHAINID)
-                block_obj = Block.get(chain=chain, number=block)
-                token_obj = Token.get(chain=chain, address=str(address))
-                if not block_obj or not token_obj:
-                    logger.warning("Block or Token not found for SQLite insert: %s %s", block, address)
-                    return
-                price_obj = Price.get(block=block_obj, token=token_obj)
-                if price_obj:
-                    price_obj.price = price
-                else:
-                    Price(block=block_obj, token=token_obj, price=price)
-                commit()
-                logger.debug("inserted %s block %s price to ydb (sqlite): %s", address, block, price)
+            insert_nowait(
+                type=Price,
+                block=(CHAINID, block),
+                token=(CHAINID, address),
+                price=Decimal(price),
+            )        _logger_debug("queued insert %s block %s price to ydb: %s", address, block, price)
         except InvalidOperation:
+            # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
             pass
         except Exception as e:
             logger.warning("Pony ORM insert price failed (sqlite): %s", e)
