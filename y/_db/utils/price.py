@@ -10,15 +10,15 @@ from pony.orm import select
 
 from y import constants
 from y._db.decorators import a_sync_read_db_session, log_result_count, retry_locked
-from y._db.entities import Price, insert_nowait
+from y._db.entities import Price
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 from y.constants import CHAINID
 
+from y._db.asyncpg_pool import get_asyncpg_pool
 
 logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
-
 
 @a_sync_read_db_session
 def get_price(address: ChecksumAddress, block: BlockNumber) -> Optional[Decimal]:
@@ -60,7 +60,7 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
     Set the price of a token at a specific block in the database.
 
     This function ensures the block and token are present in the database and
-    inserts the price information. It handles large numbers by suppressing
+    inserts the price information using asyncpg. It handles large numbers by suppressing
     `InvalidOperation` exceptions.
 
     Args:
@@ -74,24 +74,36 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
     See Also:
         - :func:`ensure_block`
         - :func:`ensure_token`
-        - :func:`insert`
     """
     await ensure_block(block, sync=False)
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     await ensure_token(str(address), sync=False)  # force to string for cache key
+
+    pool = await get_asyncpg_pool()
+
+    block_pk = (CHAINID, block)
+    token_pk = (CHAINID, address)
+
+    insert_sql = """
+        INSERT INTO price (block_chain, block_number, token_chain, token_address, price)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT DO NOTHING
+    """
     try:
-        insert_nowait(
-            type=Price,
-            block=(CHAINID, block),
-            token=(CHAINID, address),
-            price=Decimal(price),
-        )
-        _logger_debug("queued insert %s block %s price to ydb: %s", address, block, price)
+        async with pool.acquire() as conn:
+            await conn.execute(
+                insert_sql,
+                block_pk[0], block_pk[1],
+                token_pk[0], token_pk[1],
+                str(price)
+            )
+        logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
     except InvalidOperation:
         # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         pass
-
+    except Exception as e:
+        logger.warning("asyncpg insert price failed: %s", e)
 
 def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> None:
     """
@@ -114,7 +126,6 @@ def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> N
     See Also:
         - :func:`ensure_block`
         - :func:`ensure_token`
-        - :func:`insert`
     """
 
 
