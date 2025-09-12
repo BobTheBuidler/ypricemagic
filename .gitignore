@@ -2,6 +2,7 @@ build/
 /dist
 /env
 .hypothesis
+
 ypricemagic/old
 /ypricemagic.egg-info
 /.eggs
