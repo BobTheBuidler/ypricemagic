@@ -1,8 +1,12 @@
-build/
+/build/**/*.o
+/build/**/*.so
+/build/**/*.py
+/build/**/*.typed
+/build/ops.txt
+/build/deployments
 /dist
 /env
 .hypothesis
-
 ypricemagic/old
 /ypricemagic.egg-info
 /.eggs
