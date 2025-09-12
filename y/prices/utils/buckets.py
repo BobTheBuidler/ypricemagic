@@ -179,7 +179,7 @@ string_matchers = {
 
 # these just require calls
 calls_only = {
-    "atoken": aave.is_atoken,
+    "atoken": lambda address: aave.is_atoken(address),
     "balancer pool": balancer_multiplexer.is_balancer_pool,
     "ib token": ib.is_ib_token,
     "gelato": gelato.is_gelato_pool,

@@ -175,6 +175,15 @@ FEEDS = {
         "0x4200000000000000000000000000000000000006": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",  # weth -> ETH
         "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb": "0x591e79239a7d679378eC8c847e5038150364C78F",  # dai -> DAI
     },
+    # Network.Katana: {
+    #     # https://docs.chain.link/data-feeds/price-feeds/addresses?page=1&network=katana&testnetPage=1&search=
+    #     "": "",  # BTC -> USD
+    #     "": "",  # dai -> DAI
+    # },
+    # Network.Berachain: {
+    #     "": "",  # weth -> ETH
+    #     "": "",  # dai -> DAI
+    # },
 }.get(CHAINID, {})
 
 ONE_DAY = 24 * 60 * 60
