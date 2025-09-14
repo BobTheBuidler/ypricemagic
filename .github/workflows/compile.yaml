@@ -19,10 +19,10 @@ jobs:
           # Check out the PR branch
           ref: ${{ github.head_ref }}
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.13
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           
       - name: Install Requirements
         run: pip install -r requirements.txt

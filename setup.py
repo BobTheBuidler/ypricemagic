@@ -69,7 +69,7 @@ setup(
     author_email="bobthebuidlerdefi@gmail.com",
     url="https://github.com/BobTheBuidler/ypricemagic",
     license="MIT",
-    python_requires=">=3.10,<3.13",
+    python_requires=">=3.10,<3.14",
     classifiers=[
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
@@ -77,6 +77,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: Implementation :: CPython",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries",
