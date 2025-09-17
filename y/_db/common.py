@@ -429,6 +429,21 @@ def make_executor(small: int, big: int, name: Optional[str] = None) -> PruningTh
     return PruningThreadPoolExecutor(big if ENVS.DB_PROVIDER == "postgres" else small, name)
 
 
+def make_processing_queue(
+    func: Callable[P, T],
+    small: int,
+    big: int,
+    return_data: bool = True,
+    name: str = "",
+) -> ProcessingQueue[P, T]:
+    return ProcessingQueue(
+        func,
+        big if ENVS.DB_PROVIDER == "postgres" else small,
+        return_data=return_data,
+        name=name,
+    )
+
+
 _E = TypeVar("_E", bound=AsyncThreadPoolExecutor)
 _MAX_LONG_LONG = 9223372036854775807
 
