@@ -28,6 +28,7 @@ from a_sync import (
     ASyncIterator,
     AsyncThreadPoolExecutor,
     CounterLock,
+    ProcessingQueue,
     PruningThreadPoolExecutor,
 )
 from async_property import async_property  # type: ignore [import-untyped]
@@ -36,6 +37,7 @@ from dank_mids import BlockSemaphore
 from evmspec.data import Address, HexBytes32
 from hexbytes import HexBytes
 from pony.orm import OptimisticCheckError, TransactionIntegrityError, db_session
+from typing_extensions import ParamSpec
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
@@ -53,6 +55,7 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 S = TypeVar("S")
 M = TypeVar("M")
+P = ParamSpec("P")
 
 Checkpoints = Dict["Block", int]
 
@@ -427,6 +430,22 @@ def make_executor(small: int, big: int, name: Optional[str] = None) -> PruningTh
         A PruningThreadPoolExecutor instance based on the environment configuration.
     """
     return PruningThreadPoolExecutor(big if ENVS.DB_PROVIDER == "postgres" else small, name)
+
+
+def make_processing_queue(
+    func: Callable[P, T],
+    small: int,
+    big: int,
+    *,
+    name: str = "",
+    return_data: bool = True,
+) -> ProcessingQueue[P, T]:
+    return ProcessingQueue(
+        func,
+        big if ENVS.DB_PROVIDER == "postgres" else small,
+        name=name,
+        return_data=return_data,
+    )
 
 
 _E = TypeVar("_E", bound=AsyncThreadPoolExecutor)
