@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from dateutil import parser
 from functools import lru_cache
 from logging import getLogger
-from typing import Dict, Optional, Set
+from typing import Dict, Final, Optional, Set
 
 from a_sync import ProcessingQueue, a_sync
 from brownie import chain
@@ -19,15 +19,15 @@ from y._db.decorators import (
 from y._db.entities import Block, BlockAtTimestamp, Chain, insert
 
 
-logger = getLogger(__name__)
-_logger_debug = logger.debug
+logger: Final = getLogger(__name__)
+_logger_debug: Final = logger.debug
 
 CHAINID = chain.id
 del chain
 
 
-_block_executor = make_executor(4, 8, "ypricemagic db executor [block]")
-_timestamp_executor = make_executor(1, 4, "ypricemagic db executor [timestamp]")
+_block_executor: Final = make_executor(4, 8, "ypricemagic db executor [block]")
+_timestamp_executor: Final = make_executor(1, 4, "ypricemagic db executor [timestamp]")
 
 
 @a_sync_read_db_session
@@ -219,7 +219,7 @@ def set_block_timestamp(block: int, timestamp: int) -> None:
     """
 
 
-set_block_timestamp = ProcessingQueue(_set_block_timestamp, num_workers=10, return_data=False)
+set_block_timestamp: Final = make_processing_queue(_set_block_timestamp, 1, 10, name="y.set_block_timestamp", return_data=False)
 
 
 @a_sync(default="async", executor=_timestamp_executor)
@@ -241,7 +241,8 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     _logger_debug("inserted block %s for %s", block, timestamp)
 
 
-set_block_at_timestamp = ProcessingQueue(_set_block_at_timestamp, num_workers=10, return_data=False)
+set_block_at_timestamp: Final = make_processing_queue(_set_block_at_timestamp, 1, 10, name="y.set_block_at_timestamp", return_data=False)
+
 
 # startup caches
 
