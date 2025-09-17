@@ -9,7 +9,7 @@ from brownie import chain
 from eth_typing import BlockNumber
 from pony.orm import commit, select
 
-from y._db.common import make_executor
+from y._db.common import make_executor, make_processing_queue
 from y._db.decorators import (
     a_sync_read_db_session,
     db_session_cached,
