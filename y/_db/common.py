@@ -435,14 +435,15 @@ def make_processing_queue(
     func: Callable[P, T],
     small: int,
     big: int,
-    return_data: bool = True,
+    *,
     name: str = "",
+    return_data: bool = True,
 ) -> ProcessingQueue[P, T]:
     return ProcessingQueue(
         func,
         big if ENVS.DB_PROVIDER == "postgres" else small,
-        return_data=return_data,
         name=name,
+        return_data=return_data,
     )
 
 
