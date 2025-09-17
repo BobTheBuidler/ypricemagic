@@ -28,6 +28,7 @@ from a_sync import (
     ASyncIterator,
     AsyncThreadPoolExecutor,
     CounterLock,
+    ProcessingQueue,
     PruningThreadPoolExecutor,
 )
 from async_property import async_property  # type: ignore [import-untyped]
