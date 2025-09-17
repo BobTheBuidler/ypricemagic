@@ -36,6 +36,7 @@ from dank_mids import BlockSemaphore
 from evmspec.data import Address, HexBytes32
 from hexbytes import HexBytes
 from pony.orm import OptimisticCheckError, TransactionIntegrityError, db_session
+from typing_extensions import ParamSpec
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
@@ -53,6 +54,7 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 S = TypeVar("S")
 M = TypeVar("M")
+P = ParamSpec("P")
 
 Checkpoints = Dict["Block", int]
 
