@@ -219,7 +219,9 @@ def set_block_timestamp(block: int, timestamp: int) -> None:
     """
 
 
-set_block_timestamp: Final = make_processing_queue(_set_block_timestamp, 1, 10, name="y.set_block_timestamp", return_data=False)
+set_block_timestamp: Final = make_processing_queue(
+    _set_block_timestamp, 1, 10, name="y.set_block_timestamp", return_data=False
+)
 
 
 @a_sync(default="async", executor=_timestamp_executor)
@@ -241,7 +243,9 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     _logger_debug("inserted block %s for %s", block, timestamp)
 
 
-set_block_at_timestamp: Final = make_processing_queue(_set_block_at_timestamp, 1, 10, name="y.set_block_at_timestamp", return_data=False)
+set_block_at_timestamp: Final = make_processing_queue(
+    _set_block_at_timestamp, 1, 10, name="y.set_block_at_timestamp", return_data=False
+)
 
 
 # startup caches
