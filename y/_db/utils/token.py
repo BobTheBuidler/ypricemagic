@@ -9,6 +9,7 @@ from cachetools import TTLCache, cached
 from pony.orm import commit, db_session, select
 
 from y import constants, convert
+from y._db.common import make_executor
 from y._db.decorators import (
     a_sync_read_db_session,
     db_session_retry_locked,
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
 
 
-_token_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [token]")
+_token_executor = make_executor(2, 10, "ypricemagic db executor [token]")
 
 
 @a_sync.a_sync(default="async", executor=_token_executor)
