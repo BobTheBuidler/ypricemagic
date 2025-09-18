@@ -26,7 +26,7 @@ CHAINID = chain.id
 del chain
 
 
-_block_executor = make_executor(4, 8, "ypricemagic db executor [block]")
+_block_executor = make_executor(2, 8, "ypricemagic db executor [block]")
 _timestamp_executor = make_executor(1, 4, "ypricemagic db executor [timestamp]")
 
 
