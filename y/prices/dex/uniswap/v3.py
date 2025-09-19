@@ -22,7 +22,7 @@ import eth_retry
 from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
-from eth_typing import ChecksumAddress, HexAddress
+from eth_typing import BlockNumber, ChecksumAddress, HexAddress
 from faster_eth_abi.packed import encode_packed
 from typing_extensions import Self
 
@@ -115,7 +115,7 @@ class UniswapV3Pool(ContractBase):
         token1: Address,
         tick_spacing: int,
         fee: int,
-        deploy_block: int,
+        deploy_block: BlockNumber,
         asynchronous: bool = False,
     ) -> None:
         """
@@ -666,7 +666,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
 
     @stuck_coro_debugger
     @eth_retry.auto_retry
-    async def _quote_exact_input(self, path: Path, amount_in: int, block: int) -> Optional[Decimal]:
+    async def _quote_exact_input(self, path: Path, amount_in: int, block: BlockNumber) -> Optional[Decimal]:
         """
         Quote the exact input for a given path and amount.
 
@@ -690,15 +690,23 @@ class UniswapV3(a_sync.ASyncGenericBase):
             amount = await quoter.quoteExactInput.coroutine(
                 _encode_path(path), amount_in, block_identifier=block
             )
-            return (
-                # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
-                (amount if isinstance(amount, int) else amount[0])
-                / _undo_fees(path)
-                / _FEE_DENOMINATOR
-            )
         except Exception as e:
-            if not call_reverted(e):
-                raise
+            if call_reverted(e):
+                return None
+            raise
+            
+        scaled = (
+            # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
+            (amount if isinstance(amount, int) else amount[0])
+            / _undo_fees(path)
+            / _FEE_DENOMINATOR
+        )
+        if scaled > 100_000_000:
+            # this is a totally arbitrary value used as a sense check,
+            # we were getting crazy prices from some pools on occasion
+            # but not sure why
+            return None
+        return round(scaled, 18)
 
 
 def _encode_path(path: Path) -> bytes:
