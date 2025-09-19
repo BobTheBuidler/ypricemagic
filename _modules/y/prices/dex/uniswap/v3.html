@@ -96,7 +96,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">igather</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">a_sync.a_sync</span><span class="w"> </span><span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.network.event</span><span class="w"> </span><span class="kn">import</span> <span class="n">_EventItem</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexAddress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockNumber</span><span class="p">,</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexAddress</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_abi.packed</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_packed</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
@@ -193,7 +193,7 @@
         <span class="n">token1</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span>
         <span class="n">tick_spacing</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">fee</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">deploy_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">deploy_block</span><span class="p">:</span> <span class="n">BlockNumber</span><span class="p">,</span>
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -784,7 +784,9 @@
 
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_quote_exact_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">amount_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_quote_exact_input</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">amount_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">BlockNumber</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Quote the exact input for a given path and amount.</span>
 
@@ -808,15 +810,23 @@
             <span class="n">amount</span> <span class="o">=</span> <span class="k">await</span> <span class="n">quoter</span><span class="o">.</span><span class="n">quoteExactInput</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
                 <span class="n">_encode_path</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">amount_in</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="c1"># Quoter v2 uses this weird return struct, we must unpack it to get amount out.</span>
-                <span class="p">(</span><span class="n">amount</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">amount</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="o">/</span> <span class="n">_undo_fees</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-                <span class="o">/</span> <span class="n">_FEE_DENOMINATOR</span>
-            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-                <span class="k">raise</span></div>
+            <span class="k">if</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">raise</span>
+
+        <span class="n">scaled</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="c1"># Quoter v2 uses this weird return struct, we must unpack it to get amount out.</span>
+            <span class="p">(</span><span class="n">amount</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">amount</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="o">/</span> <span class="n">_undo_fees</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="o">/</span> <span class="n">_FEE_DENOMINATOR</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">scaled</span> <span class="o">&gt;</span> <span class="mi">100_000_000</span><span class="p">:</span>
+            <span class="c1"># this is a totally arbitrary value used as a sense check,</span>
+            <span class="c1"># we were getting crazy prices from some pools on occasion</span>
+            <span class="c1"># but not sure why</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">scaled</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span></div>
 
 
 
