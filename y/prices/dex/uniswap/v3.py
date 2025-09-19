@@ -666,7 +666,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
 
     @stuck_coro_debugger
     @eth_retry.auto_retry
-    async def _quote_exact_input(self, path: Path, amount_in: int, block: BlockNumber) -> Optional[Decimal]:
+    async def _quote_exact_input(
+        self, path: Path, amount_in: int, block: BlockNumber
+    ) -> Optional[Decimal]:
         """
         Quote the exact input for a given path and amount.
 
@@ -694,7 +696,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
             if call_reverted(e):
                 return None
             raise
-            
+
         scaled = (
             # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
             (amount if isinstance(amount, int) else amount[0])
