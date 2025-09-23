@@ -220,7 +220,9 @@ class CToken(ERC20):
             self.troller.oracle(block, asynchronous=True), self.__underlying__
         )
         if oracle is None:
-            return await magic.get_price(underlying.address, block, skip_cache=skip_cache, sync=False)
+            return await magic.get_price(
+                underlying.address, block, skip_cache=skip_cache, sync=False
+            )
 
         price, underlying_decimals = await cgather(
             oracle.getUnderlyingPrice.coroutine(self.address, block_identifier=block),
