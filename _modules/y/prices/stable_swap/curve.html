@@ -88,7 +88,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.convert.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">EthAddress</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">EventLookupError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.network.event</span><span class="w"> </span><span class="kn">import</span> <span class="n">_EventItem</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_abi.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidPointer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_abi.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsufficientDataBytes</span><span class="p">,</span> <span class="n">InvalidPointer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">web3.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractLogicError</span>
 
@@ -601,8 +601,11 @@
             <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>
             <span class="n">source</span> <span class="o">=</span> <span class="n">factory</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">curve</span><span class="o">.</span><span class="n">__registry__</span>
             <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">source</span><span class="o">.</span><span class="n">get_balances</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">ContractLogicError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-            <span class="c1"># ContractLogicError in web3&gt;=6.0, ValueError in &lt;6.0</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">ContractLogicError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">InsufficientDataBytes</span><span class="p">):</span>
+            <span class="c1"># ContractLogicError in web3&gt;=6.0, ValueError in &lt;6.0,</span>
+            <span class="c1"># InsufficientDataBytes sometimes too, not sure why.</span>
+            <span class="c1"># Potentially related to https://github.com/ethereum/eth-abi/pull/247</span>
+
             <span class="c1"># fallback for historical queries where registry was not yet deployed</span>
             <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_balance</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coins</span><span class="p">)),</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span>
                 <span class="n">pop</span><span class="o">=</span><span class="kc">True</span>
