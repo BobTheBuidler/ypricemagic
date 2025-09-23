@@ -461,7 +461,7 @@ class CurvePool(ERC20):
             # ContractLogicError in web3>=6.0, ValueError in <6.0,
             # InsufficientDataBytes sometimes too, not sure why.
             # Potentially related to https://github.com/ethereum/eth-abi/pull/247
-            
+
             # fallback for historical queries where registry was not yet deployed
             balances = await a_sync.map(self._get_balance, range(len(coins)), block=block).values(
                 pop=True
