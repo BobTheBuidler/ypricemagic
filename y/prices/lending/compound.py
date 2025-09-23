@@ -213,12 +213,15 @@ class CToken(ERC20):
             >>> price = await ctoken.get_underlying_price()
             >>> price_at_block = await ctoken.get_underlying_price(block=12345678)
         """
-        oracle: Contract
+        oracle: Optional[Contract]
         underlying: ERC20
         # always query the oracle in case it was changed
         oracle, underlying = await cgather(
             self.troller.oracle(block, asynchronous=True), self.__underlying__
         )
+        if oracle is None:
+            return await magic.get_price(underlying.address, block, skip_cache=skip_cache, sync=False)
+
         price, underlying_decimals = await cgather(
             oracle.getUnderlyingPrice.coroutine(self.address, block_identifier=block),
             underlying.__decimals__,
@@ -323,7 +326,7 @@ class Comptroller(ContractBase):
 
     __markets__ = HiddenMethodDescriptor[Self, Tuple[CToken]]
 
-    async def oracle(self, block: Optional[Block] = None) -> Contract:
+    async def oracle(self, block: Optional[Block] = None) -> Optional[Contract]:
         """
         Get the oracle contract associated with this Comptroller.
 
@@ -342,6 +345,8 @@ class Comptroller(ContractBase):
             if not call_reverted(e):
                 raise
             oracle = contract.oracle(block_identifier=block)
+        if oracle == ZERO_ADDRESS:
+            return None
         try:
             return await Contract.coroutine(oracle)
         except ContractNotVerified:
