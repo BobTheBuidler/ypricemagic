@@ -17,5 +17,3 @@ __pycache__/
 .coverage
 .pytest_cache
 *.log*
-*.so
-y/_db/
