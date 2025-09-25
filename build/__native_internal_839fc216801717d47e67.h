@@ -6,7 +6,7 @@
 
 int CPyGlobalsInit(void);
 
-extern PyObject *CPyStatics[651];
+extern PyObject *CPyStatics[654];
 extern const char * const CPyLit_Str[];
 extern const char * const CPyLit_Bytes[];
 extern const char * const CPyLit_Int[];
@@ -403,6 +403,7 @@ extern PyObject *CPyStatic_networks___Network___Arbitrum;
 extern PyObject *CPyStatic_networks___Network___Avalanche;
 extern PyObject *CPyStatic_networks___Network___Harmony;
 extern PyObject *CPyStatic_networks___Network___Aurora;
+extern PyObject *CPyStatic_networks___Network___Berachain;
 extern PyObject *CPyStatic_networks___NETWORK_NAME;
 extern PyTypeObject *CPyType_networks___Network;
 extern PyTypeObject *CPyType_networks___label_Network_obj;
