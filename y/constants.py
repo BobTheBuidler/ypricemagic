@@ -299,8 +299,7 @@ elif CHAINID == Network.Katana:
     wbtc = Contract("0x0913DA6Da4b42f538B445599b46Bb4622342Cf52")
     """Wrapped Bitcoin (WBTC) contract on Katana."""
 
-    dai = Contract("0x62D6A123E8D19d06d68cf0d2294F9A3A0362c6b3")
-    """Dai Stablecoin (DAI) contract on Katana."""
+    dai = None
 
 elif CHAINID == Network.Berachain:
 
