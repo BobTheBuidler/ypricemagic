@@ -285,6 +285,23 @@ elif CHAINID == Network.Base:
         This is a temporary placeholder and may not represent the actual WBTC contract on Base.
     """
 
+elif CHAINID == Network.Katana:
+
+    weth = Contract("0xEE7D8BCFb72bC1880D0Cf19822eB0A2e6577aB62")
+    """Wrapped Ether (WETH) contract on Katana."""
+
+    usdc = Contract("0x203A662b0BD271A6ed5a60EdFbd04bFce608FD36")  # usdbc
+    """USD Coin (USDC) contract on Katana."""
+
+    usdt = Contract("0x2DCa96907fde857dd3D816880A0df407eeB2D2F2")
+    """Tether USD (USDT) contract on Katana."""
+
+    wbtc = Contract("0x0913DA6Da4b42f538B445599b46Bb4622342Cf52")
+    """Wrapped Bitcoin (WBTC) contract on Katana."""
+
+    dai = Contract("0x62D6A123E8D19d06d68cf0d2294F9A3A0362c6b3")
+    """Dai Stablecoin (DAI) contract on Katana."""
+
 elif CHAINID == Network.Berachain:
 
     weth = Contract("0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590")
@@ -369,6 +386,9 @@ _STABLECOINS: Final[Dict[Network, Dict[ChecksumAddress, str]]] = {
         "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA": "usdbc",
         "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913": "usdc",
     },
+    Network.Katana: {
+        "0x203A662b0BD271A6ed5a60EdFbd04bFce608FD36": "usdc",
+    },
     Network.Berachain: {
         "0x549943e04f40284185054145c6E4e9568C1D3241": "usdc",
     },
@@ -400,6 +420,7 @@ WRAPPED_GAS_COINS: Final[Dict[Network, ChecksumAddress]] = {
     Network.Cronos: "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
     Network.Optimism: "0x4200000000000000000000000000000000000006",
     Network.Base: "0x4200000000000000000000000000000000000006",
+    Network.Katana: "0xEE7D8BCFb72bC1880D0Cf19822eB0A2e6577aB62",
     Network.Berachain: "0x6969696969696969696969696969696969696969",
 }
 

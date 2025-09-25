@@ -253,6 +253,7 @@ class ERC20(ContractBase):
                 Network.Arbitrum: "ETH",
                 Network.Optimism: "ETH",
                 Network.Base: "ETH",
+                Network.Katana: "ETH",
                 Network.Berachain: "BERA",
             }.get(chain.id, "ETH")
         import y._db.utils.token as db
