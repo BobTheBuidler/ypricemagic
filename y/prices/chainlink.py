@@ -177,7 +177,7 @@ FEEDS = {
     },
     Network.Katana: {
         # https://docs.chain.link/data-feeds/price-feeds/addresses?page=1&network=katana&testnetPage=1&search=
-        "": "0x7BdBDB772f4a073BadD676A567C6ED82049a8eEE",  # WETH -> ETH
+        "0xEE7D8BCFb72bC1880D0Cf19822eB0A2e6577aB62": "0x7BdBDB772f4a073BadD676A567C6ED82049a8eEE",  # WETH -> ETH
         "": "0x41DdB7F8F5e1b2bD28193B84C1C36Be698dEd162",  # WBTC -> BTC
     },
 }.get(CHAINID, {})
