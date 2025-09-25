@@ -285,6 +285,19 @@ elif CHAINID == Network.Base:
         This is a temporary placeholder and may not represent the actual WBTC contract on Base.
     """
 
+elif CHAINID == Network.Berachain:
+
+    weth = Contract("0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590")
+    """Wrapped Ether (WETH) contract on Berachain."""
+
+    usdc = Contract("0x549943e04f40284185054145c6E4e9568C1D3241")  # usdbc
+    """USD Coin (USDC) contract on Berachain."""
+
+    wbtc = Contract("0x0555E30da8f98308EdB960aa94C0Db47230d2B9c")
+    """Wrapped Bitcoin (WBTC) contract on Berachain."""
+
+    usdt, dai = None, None
+
 else:
     weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
@@ -356,6 +369,9 @@ _STABLECOINS: Final[Dict[Network, Dict[ChecksumAddress, str]]] = {
         "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA": "usdbc",
         "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913": "usdc",
     },
+    Network.Berachain: {
+        "0x549943e04f40284185054145c6E4e9568C1D3241": "usdc",
+    },
 }
 
 STABLECOINS: Final[Dict[ChecksumAddress, str]] = _STABLECOINS.get(CHAINID, {})
@@ -384,6 +400,7 @@ WRAPPED_GAS_COINS: Final[Dict[Network, ChecksumAddress]] = {
     Network.Cronos: "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
     Network.Optimism: "0x4200000000000000000000000000000000000006",
     Network.Base: "0x4200000000000000000000000000000000000006",
+    Network.Berachain: "0x6969696969696969696969696969696969696969",
 }
 
 WRAPPED_GAS_COIN: Final[ChecksumAddress] = WRAPPED_GAS_COINS[CHAINID]

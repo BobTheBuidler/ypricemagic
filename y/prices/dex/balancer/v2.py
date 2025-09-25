@@ -58,6 +58,9 @@ BALANCER_V2_VAULTS = {
     Network.Base: [
         "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
     ],
+    Network.Berachain: [
+        "0x4Be03f781C497A489E3cB0287833452cA9B9E80B",  # BEX Exchange https://docs.bex.berachain.com/developers/
+    ],
 }.get(CHAINID, [])
 
 MESSED_UP_POOLS = {

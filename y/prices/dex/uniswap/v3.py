@@ -93,6 +93,14 @@ forked_deployments: Final = {
             "fee_tiers": (3000, 500, 10_000, 100),
         },
     ],
+    Network.Berachain: [
+        {
+            # kodiak exchange https://documentation.kodiak.finance/overview/kodiak-contracts
+            "factory": "0xD84CBf0B02636E7f53dB9E5e45A616E05d710990",
+            "quoter": "0x644C8D6E501f7C994B74F5ceA96abe65d0BA662B",  # quoter v2
+            "fee_tiers": (3000, 500, 10_000, 20_000),
+        },
+    ],
 }
 
 _FEE_DENOMINATOR: Final = Decimal(1_000_000)
