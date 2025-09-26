@@ -26,7 +26,6 @@ try:
             "--install-types",
             "--disable-error-code=import-not-found",
             "--disable-error-code=misc",
-            "--disable-error-code=attr-defined",
             "--disable-error-code=return-value",
             "--disable-error-code=operator",
             "--disable-error-code=override",
