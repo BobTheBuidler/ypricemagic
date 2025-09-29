@@ -101,6 +101,14 @@ forked_deployments: Final = {
             "fee_tiers": (3000, 500, 10_000, 20_000),
         },
     ],
+    Network.Katana: [
+        {
+            # sushiswap
+            "factory": "0x203e8740894c8955cB8950759876d7E7E45E04c1",
+            "quoter": "",  # TODO figure out how to get this
+            "fee_tiers": (3000, 500, 10_000, 100),
+        },
+    ],
 }
 
 _FEE_DENOMINATOR: Final = Decimal(1_000_000)
