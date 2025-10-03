@@ -105,7 +105,7 @@ forked_deployments: Final = {
         {
             # sushiswap
             "factory": "0x203e8740894c8955cB8950759876d7E7E45E04c1",
-            "quoter": "",  # TODO figure out how to get this
+            "quoter": "0x92dea23ED1C683940fF1a2f8fE23FE98C5d3041c",
             "fee_tiers": (3000, 500, 10_000, 100),
         },
     ],
