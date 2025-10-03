@@ -3,7 +3,6 @@
 /build/**/*.py
 /build/**/*.typed
 /build/ops.txt
-/build/deployments
 /dist
 /env
 .hypothesis
