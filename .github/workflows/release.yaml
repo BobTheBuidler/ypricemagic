@@ -113,6 +113,8 @@ jobs:
           CIBW_BUILD: ${{ matrix.cibw_build || '' }}
           # Use version from git tag (stripped 'v')
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.get_version.outputs.version }}
+          # Pass version into Docker for Linux builds
+          CIBW_ENVIRONMENT: "SETUPTOOLS_SCM_PRETEND_VERSION=${{ steps.get_version.outputs.version }}"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
 
@@ -202,7 +204,7 @@ jobs:
           path: wheelhouse/windows-x86
 
       # ----------------------------------------------------
-      # Publish all built artifacts to PyPI
+      # Publish sdist and wheels to PyPI
       # ----------------------------------------------------
       - name: Publish sdist and wheels to PyPI
         if: ${{ github.event_name != 'workflow_dispatch' }}
