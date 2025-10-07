@@ -74,6 +74,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      # ----------------------------------------------------
+      # Extract version from git tag (strip leading 'v')
+      # ----------------------------------------------------
+      - name: Extract version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -93,6 +100,8 @@ jobs:
           CIBW_ARCHS_WINDOWS: ${{ matrix.cibw_archs_windows || '' }}
           # Which wheels to build for Linux (manylinux vs. musllinux)
           CIBW_BUILD: ${{ matrix.cibw_build || '' }}
+          # Use version from git tag (stripped 'v')
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.get_version.outputs.version }}
         run: |
           python -m cibuildwheel --output-dir wheelhouse
 
@@ -112,6 +121,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      # ----------------------------------------------------
+      # Extract version from git tag (strip leading 'v')
+      # ----------------------------------------------------
+      - name: Extract version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -123,6 +139,9 @@ jobs:
           pip install setuptools wheel twine mypy[mypyc] pony-stubs types-cachetools types-python-dateutil types-requests
 
       - name: Build sdist
+        env:
+          # Use version from git tag (stripped 'v')
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.get_version.outputs.version }}
         run: |
           python setup.py sdist
 
