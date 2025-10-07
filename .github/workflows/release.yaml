@@ -84,6 +84,7 @@ jobs:
       # ----------------------------------------------------
       - name: Extract version from tag
         id: get_version
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "version=$(echo '${{ github.event.inputs.fake_tag }}' | sed 's/^v//')" >> $GITHUB_OUTPUT
@@ -136,6 +137,7 @@ jobs:
       # ----------------------------------------------------
       - name: Extract version from tag
         id: get_version
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "version=$(echo '${{ github.event.inputs.fake_tag }}' | sed 's/^v//')" >> $GITHUB_OUTPUT
