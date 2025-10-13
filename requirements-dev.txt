@@ -2,5 +2,7 @@
 
 wheel
 pytest
-pytest-asyncio-cooperative
 numpy
+# ypricemagic uses a global event loop which is not compatable with pytest-asyncio-cooperative
+# so we use this patched version for testing instead
+git+https://github.com/BobTheBuidler/pytest-asyncio-cooperative@patch-1
