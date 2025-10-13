@@ -25,11 +25,11 @@ jobs:
         network: [ mainnet, bsc-main, polygon-main, ftm-main, arbitrum-main, optimism-main ]
         include:
         - os: ubuntu-latest
-          path: ~/.cache/pip
+          home: /home/runner
         - os: macos-latest
-          path: ~/Library/Caches/pip
+          home: /Users/runner
         - os: windows-latest
-          path: ~\AppData\Local\pip\Cache
+          home: C:\Users\runner
         - network: mainnet
           provider: WEB3_PROVIDER
         - network: bsc-main
@@ -59,7 +59,7 @@ jobs:
       - name: Restore ydb cache
         uses: actions/cache/restore@v4
         with:
-          path: $HOME/.ypricemagic/ypricemagic.sqlite
+          path: ${{ matrix.home }}/.ypricemagic/ypricemagic.sqlite
           key: ydb-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
 
       - name: Restore joblib middleware cache
@@ -73,14 +73,14 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            $HOME/.solcx
-            $HOME/.vvm
+            ${{ matrix.home }}/.solcx
+            ${{ matrix.home }}/.vvm
           key: compilers-${{ runner.os }}
       
       - name: Restore brownie contracts db
         uses: actions/cache/restore@v4
         with:
-          path: $HOME/.brownie/deployments.db
+          path: ${{ matrix.home }}/.brownie/deployments.db
           key: brownie-${{ runner.os }}
 
       - name: Install dependencies
@@ -107,7 +107,7 @@ jobs:
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: $HOME/.ypricemagic/ypricemagic.sqlite
+          path: ${{ matrix.home }}/.ypricemagic/ypricemagic.sqlite
           key: ydb-${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/requirements.txt') }}
 
       - name: Save joblib middleware cache
@@ -123,13 +123,13 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-            $HOME/.solcx
-            $HOME/.vvm
+            ${{ matrix.home }}/.solcx
+            ${{ matrix.home }}/.vvm
           key: compilers-${{ runner.os }}
       
       - name: Save brownie contracts db
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: $HOME/.brownie/deployments.db
+          path: ${{ matrix.home }}/.brownie/deployments.db
           key: brownie-${{ runner.os }}
