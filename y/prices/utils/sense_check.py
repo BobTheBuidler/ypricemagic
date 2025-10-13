@@ -262,8 +262,10 @@ async def sense_check(
         msg = f"unusually high price (${price_readable}) returned for {symbol} {token_address} on {NETWORK_NAME} block {block}."
     except NonStandardERC20:
         msg = f"unusually high price (${price_readable}) returned for {token_address} on {NETWORK_NAME} block {block}."
-    
-    logger.warning(f"{msg} This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.")
+
+    logger.warning(
+        f"{msg} This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
+    )
 
 
 # yLazyLogger(logger)
