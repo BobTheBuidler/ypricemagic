@@ -74,7 +74,9 @@ def get_token(address: str) -> Token:
                 try:
                     addr = Address[CHAINID, address]
                 except ObjectNotFound:
-                    raise RuntimeError("you probably have an eth-portfolio enhanced db but no eth-portfolio in your env")
+                    raise RuntimeError(
+                        "you probably have an eth-portfolio enhanced db but no eth-portfolio in your env"
+                    )
                 # TODO handle this more gracefully, instead of just
                 #      dropping the address and re-adding as a Token
                 addr.delete()
