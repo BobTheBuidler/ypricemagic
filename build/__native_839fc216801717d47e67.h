@@ -442,6 +442,7 @@ typedef struct {
     PyObject *___mypyc_temp__2;
     tuple_T3OOO ___mypyc_temp__3;
     PyObject *___mypyc_generator_attribute__symbol;
+    PyObject *___mypyc_generator_attribute__msg;
     tuple_T3OOO ___mypyc_temp__4;
 } y___prices___utils___sense_check___sense_check_genObject;
 

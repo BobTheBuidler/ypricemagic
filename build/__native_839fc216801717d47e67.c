@@ -17607,6 +17607,8 @@ int CPyExec_y___ENVIRONMENT_VARIABLES(PyObject *module)
     CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = NULL;
     CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI);
     CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE);
+    CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = NULL;
     return -1;
 }
 static struct PyModuleDef ENVIRONMENT_VARIABLESmodule = {
@@ -17871,7 +17873,21 @@ char CPyDef_ENVIRONMENT_VARIABLES_____top_level__(void) {
     PyObject *cpy_r_r250;
     int32_t cpy_r_r251;
     char cpy_r_r252;
-    char cpy_r_r253;
+    PyObject *cpy_r_r253;
+    char cpy_r_r254;
+    PyObject *cpy_r_r255;
+    PyObject *cpy_r_r256;
+    PyObject *cpy_r_r257;
+    PyObject *cpy_r_r258;
+    PyObject *cpy_r_r259;
+    PyObject **cpy_r_r261;
+    PyObject *cpy_r_r262;
+    PyObject *cpy_r_r263;
+    PyObject *cpy_r_r264;
+    PyObject *cpy_r_r265;
+    int32_t cpy_r_r266;
+    char cpy_r_r267;
+    char cpy_r_r268;
     cpy_r_r0 = CPyModule_builtins;
     cpy_r_r1 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r2 = cpy_r_r0 != cpy_r_r1;
@@ -17880,7 +17896,7 @@ char CPyDef_ENVIRONMENT_VARIABLES_____top_level__(void) {
     cpy_r_r4 = PyImport_Import(cpy_r_r3);
     if (unlikely(cpy_r_r4 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", -1, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyModule_builtins = cpy_r_r4;
     CPy_INCREF(CPyModule_builtins);
@@ -17892,7 +17908,7 @@ CPyL3: ;
     cpy_r_r8 = CPyImport_ImportFromMany(cpy_r_r6, cpy_r_r5, cpy_r_r5, cpy_r_r7);
     if (unlikely(cpy_r_r8 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyModule_os = cpy_r_r8;
     CPy_INCREF(CPyModule_os);
@@ -17903,7 +17919,7 @@ CPyL3: ;
     cpy_r_r12 = CPyImport_ImportFromMany(cpy_r_r10, cpy_r_r9, cpy_r_r9, cpy_r_r11);
     if (unlikely(cpy_r_r12 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyModule_typing = cpy_r_r12;
     CPy_INCREF(CPyModule_typing);
@@ -17914,7 +17930,7 @@ CPyL3: ;
     cpy_r_r16 = CPyImport_ImportFromMany(cpy_r_r14, cpy_r_r13, cpy_r_r13, cpy_r_r15);
     if (unlikely(cpy_r_r16 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyModule_typed_envs = cpy_r_r16;
     CPy_INCREF(CPyModule_typed_envs);
@@ -17925,7 +17941,7 @@ CPyL3: ;
     cpy_r_r20 = CPyDict_GetItem(cpy_r_r18, cpy_r_r19);
     if (unlikely(cpy_r_r20 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     PyObject *cpy_r_r21[1] = {cpy_r_r17};
     cpy_r_r22 = (PyObject **)&cpy_r_r21;
@@ -17933,7 +17949,7 @@ CPyL3: ;
     CPy_DECREF(cpy_r_r20);
     if (unlikely(cpy_r_r23 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES____envs = cpy_r_r23;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES____envs);
@@ -17944,7 +17960,7 @@ CPyL3: ;
     cpy_r_r27 = cpy_r_r26 >= 0;
     if (unlikely(!cpy_r_r27)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r28 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r28 != NULL)) goto CPyL12;
@@ -17952,7 +17968,7 @@ CPyL3: ;
     cpy_r_r29 = 0;
     if (unlikely(!cpy_r_r29)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL12: ;
@@ -17967,7 +17983,7 @@ CPyL12: ;
     cpy_r_r38 = PyObject_VectorcallMethod(cpy_r_r32, cpy_r_r36, 9223372036854775811ULL, cpy_r_r37);
     if (unlikely(cpy_r_r38 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL = cpy_r_r38;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL);
@@ -17978,7 +17994,7 @@ CPyL12: ;
     cpy_r_r42 = cpy_r_r41 >= 0;
     if (unlikely(!cpy_r_r42)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r43 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r43 != NULL)) goto CPyL17;
@@ -17986,7 +18002,7 @@ CPyL12: ;
     cpy_r_r44 = 0;
     if (unlikely(!cpy_r_r44)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL17: ;
@@ -17998,7 +18014,7 @@ CPyL17: ;
     cpy_r_r48 = 0;
     if (unlikely(!cpy_r_r48)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL20: ;
@@ -18008,7 +18024,7 @@ CPyL20: ;
     cpy_r_r52 = PyObject_Vectorcall(cpy_r_r49, cpy_r_r51, 1, 0);
     if (unlikely(cpy_r_r52 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r53 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
     cpy_r_r54 = 0 ? Py_True : Py_False;
@@ -18018,7 +18034,7 @@ CPyL20: ;
     cpy_r_r58 = PyObject_VectorcallMethod(cpy_r_r53, cpy_r_r56, 9223372036854775811ULL, cpy_r_r57);
     if (unlikely(cpy_r_r58 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL88;
+        goto CPyL93;
     }
     CPy_DECREF(cpy_r_r52);
     CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL = cpy_r_r58;
@@ -18030,7 +18046,7 @@ CPyL20: ;
     cpy_r_r62 = cpy_r_r61 >= 0;
     if (unlikely(!cpy_r_r62)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r63 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r63 != NULL)) goto CPyL26;
@@ -18038,7 +18054,7 @@ CPyL20: ;
     cpy_r_r64 = 0;
     if (unlikely(!cpy_r_r64)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL26: ;
@@ -18052,7 +18068,7 @@ CPyL26: ;
     cpy_r_r72 = PyObject_VectorcallMethod(cpy_r_r67, cpy_r_r70, 9223372036854775811ULL, cpy_r_r71);
     if (unlikely(cpy_r_r72 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE = cpy_r_r72;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE);
@@ -18063,7 +18079,7 @@ CPyL26: ;
     cpy_r_r76 = cpy_r_r75 >= 0;
     if (unlikely(!cpy_r_r76)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r77 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r77 != NULL)) goto CPyL31;
@@ -18071,7 +18087,7 @@ CPyL26: ;
     cpy_r_r78 = 0;
     if (unlikely(!cpy_r_r78)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL31: ;
@@ -18086,7 +18102,7 @@ CPyL31: ;
     cpy_r_r87 = PyObject_VectorcallMethod(cpy_r_r81, cpy_r_r85, 9223372036854775811ULL, cpy_r_r86);
     if (unlikely(cpy_r_r87 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP = cpy_r_r87;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP);
@@ -18097,7 +18113,7 @@ CPyL31: ;
     cpy_r_r91 = cpy_r_r90 >= 0;
     if (unlikely(!cpy_r_r91)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r92 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r92 != NULL)) goto CPyL36;
@@ -18105,7 +18121,7 @@ CPyL31: ;
     cpy_r_r93 = 0;
     if (unlikely(!cpy_r_r93)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL36: ;
@@ -18120,7 +18136,7 @@ CPyL36: ;
     cpy_r_r102 = PyObject_VectorcallMethod(cpy_r_r96, cpy_r_r100, 9223372036854775811ULL, cpy_r_r101);
     if (unlikely(cpy_r_r102 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE = cpy_r_r102;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE);
@@ -18131,7 +18147,7 @@ CPyL36: ;
     cpy_r_r106 = cpy_r_r105 >= 0;
     if (unlikely(!cpy_r_r106)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r107 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r107 != NULL)) goto CPyL41;
@@ -18139,7 +18155,7 @@ CPyL36: ;
     cpy_r_r108 = 0;
     if (unlikely(!cpy_r_r108)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL41: ;
@@ -18154,7 +18170,7 @@ CPyL41: ;
     cpy_r_r117 = PyObject_VectorcallMethod(cpy_r_r112, cpy_r_r115, 9223372036854775811ULL, cpy_r_r116);
     if (unlikely(cpy_r_r117 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER = cpy_r_r117;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER);
@@ -18165,7 +18181,7 @@ CPyL41: ;
     cpy_r_r121 = cpy_r_r120 >= 0;
     if (unlikely(!cpy_r_r121)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r122 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r122 != NULL)) goto CPyL46;
@@ -18173,7 +18189,7 @@ CPyL41: ;
     cpy_r_r123 = 0;
     if (unlikely(!cpy_r_r123)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL46: ;
@@ -18185,14 +18201,14 @@ CPyL46: ;
     cpy_r_r129 = CPyDict_GetItem(cpy_r_r127, cpy_r_r128);
     if (unlikely(cpy_r_r129 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r130 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'expanduser' */
     cpy_r_r131 = CPyObject_GetAttr(cpy_r_r129, cpy_r_r130);
     CPy_DECREF(cpy_r_r129);
     if (unlikely(cpy_r_r131 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     PyObject *cpy_r_r132[1] = {cpy_r_r126};
     cpy_r_r133 = (PyObject **)&cpy_r_r132;
@@ -18200,20 +18216,20 @@ CPyL46: ;
     CPy_DECREF(cpy_r_r131);
     if (unlikely(cpy_r_r134 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     if (likely(PyUnicode_Check(cpy_r_r134)))
         cpy_r_r135 = cpy_r_r134;
     else {
         CPy_TypeErrorTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", 34, CPyStatic_ENVIRONMENT_VARIABLES___globals, "str", cpy_r_r134);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r136 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '/.ypricemagic/ypricemagic.sqlite' */
     cpy_r_r137 = CPyStr_Build(2, cpy_r_r135, cpy_r_r136);
     CPy_DECREF(cpy_r_r135);
     if (unlikely(cpy_r_r137 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r138 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
     cpy_r_r139 = 0 ? Py_True : Py_False;
@@ -18223,7 +18239,7 @@ CPyL46: ;
     cpy_r_r143 = PyObject_VectorcallMethod(cpy_r_r138, cpy_r_r141, 9223372036854775811ULL, cpy_r_r142);
     if (unlikely(cpy_r_r143 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL89;
+        goto CPyL94;
     }
     CPy_DECREF(cpy_r_r137);
     CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH = cpy_r_r143;
@@ -18235,7 +18251,7 @@ CPyL46: ;
     cpy_r_r147 = cpy_r_r146 >= 0;
     if (unlikely(!cpy_r_r147)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r148 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r148 != NULL)) goto CPyL56;
@@ -18243,7 +18259,7 @@ CPyL46: ;
     cpy_r_r149 = 0;
     if (unlikely(!cpy_r_r149)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL56: ;
@@ -18258,7 +18274,7 @@ CPyL56: ;
     cpy_r_r158 = PyObject_VectorcallMethod(cpy_r_r153, cpy_r_r156, 9223372036854775811ULL, cpy_r_r157);
     if (unlikely(cpy_r_r158 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST = cpy_r_r158;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST);
@@ -18269,7 +18285,7 @@ CPyL56: ;
     cpy_r_r162 = cpy_r_r161 >= 0;
     if (unlikely(!cpy_r_r162)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r163 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r163 != NULL)) goto CPyL61;
@@ -18277,7 +18293,7 @@ CPyL56: ;
     cpy_r_r164 = 0;
     if (unlikely(!cpy_r_r164)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL61: ;
@@ -18292,7 +18308,7 @@ CPyL61: ;
     cpy_r_r173 = PyObject_VectorcallMethod(cpy_r_r168, cpy_r_r171, 9223372036854775811ULL, cpy_r_r172);
     if (unlikely(cpy_r_r173 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT = cpy_r_r173;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT);
@@ -18303,7 +18319,7 @@ CPyL61: ;
     cpy_r_r177 = cpy_r_r176 >= 0;
     if (unlikely(!cpy_r_r177)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r178 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r178 != NULL)) goto CPyL66;
@@ -18311,7 +18327,7 @@ CPyL61: ;
     cpy_r_r179 = 0;
     if (unlikely(!cpy_r_r179)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL66: ;
@@ -18326,7 +18342,7 @@ CPyL66: ;
     cpy_r_r188 = PyObject_VectorcallMethod(cpy_r_r183, cpy_r_r186, 9223372036854775811ULL, cpy_r_r187);
     if (unlikely(cpy_r_r188 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___DB_USER = cpy_r_r188;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_USER);
@@ -18337,7 +18353,7 @@ CPyL66: ;
     cpy_r_r192 = cpy_r_r191 >= 0;
     if (unlikely(!cpy_r_r192)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r193 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r193 != NULL)) goto CPyL71;
@@ -18345,7 +18361,7 @@ CPyL66: ;
     cpy_r_r194 = 0;
     if (unlikely(!cpy_r_r194)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL71: ;
@@ -18360,7 +18376,7 @@ CPyL71: ;
     cpy_r_r203 = PyObject_VectorcallMethod(cpy_r_r198, cpy_r_r201, 9223372036854775811ULL, cpy_r_r202);
     if (unlikely(cpy_r_r203 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD = cpy_r_r203;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD);
@@ -18371,7 +18387,7 @@ CPyL71: ;
     cpy_r_r207 = cpy_r_r206 >= 0;
     if (unlikely(!cpy_r_r207)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r208 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r208 != NULL)) goto CPyL76;
@@ -18379,7 +18395,7 @@ CPyL71: ;
     cpy_r_r209 = 0;
     if (unlikely(!cpy_r_r209)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL76: ;
@@ -18394,7 +18410,7 @@ CPyL76: ;
     cpy_r_r218 = PyObject_VectorcallMethod(cpy_r_r213, cpy_r_r216, 9223372036854775811ULL, cpy_r_r217);
     if (unlikely(cpy_r_r218 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE = cpy_r_r218;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE);
@@ -18405,7 +18421,7 @@ CPyL76: ;
     cpy_r_r222 = cpy_r_r221 >= 0;
     if (unlikely(!cpy_r_r222)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r223 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
     if (likely(cpy_r_r223 != NULL)) goto CPyL81;
@@ -18413,7 +18429,7 @@ CPyL76: ;
     cpy_r_r224 = 0;
     if (unlikely(!cpy_r_r224)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPy_Unreachable();
 CPyL81: ;
@@ -18428,7 +18444,7 @@ CPyL81: ;
     cpy_r_r233 = PyObject_VectorcallMethod(cpy_r_r227, cpy_r_r231, 9223372036854775811ULL, cpy_r_r232);
     if (unlikely(cpy_r_r233 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = cpy_r_r233;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE);
@@ -18439,7 +18455,7 @@ CPyL81: ;
     cpy_r_r237 = cpy_r_r236 >= 0;
     if (unlikely(!cpy_r_r237)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r238 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_YPRICEAPI' */
     cpy_r_r239 = (PyObject *)&PyBool_Type;
@@ -18448,7 +18464,7 @@ CPyL81: ;
     cpy_r_r242 = CPyDict_GetItem(cpy_r_r240, cpy_r_r241);
     if (unlikely(cpy_r_r242 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     cpy_r_r243 = 0 ? Py_True : Py_False;
     cpy_r_r244 = 0 ? Py_True : Py_False;
@@ -18459,7 +18475,7 @@ CPyL81: ;
     CPy_DECREF(cpy_r_r242);
     if (unlikely(cpy_r_r248 == NULL)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
     }
     CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = cpy_r_r248;
     CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI);
@@ -18470,18 +18486,52 @@ CPyL81: ;
     cpy_r_r252 = cpy_r_r251 >= 0;
     if (unlikely(!cpy_r_r252)) {
         CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL87;
+        goto CPyL92;
+    }
+    cpy_r_r253 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r253 != NULL)) goto CPyL89;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r254 = 0;
+    if (unlikely(!cpy_r_r254)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL92;
+    }
+    CPy_Unreachable();
+CPyL89: ;
+    cpy_r_r255 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SENSE_CHECK_FILE' */
+    cpy_r_r256 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r257 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
+    cpy_r_r258 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r259 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r260[5] = {cpy_r_r253, cpy_r_r255, cpy_r_r256, cpy_r_r257, cpy_r_r259};
+    cpy_r_r261 = (PyObject **)&cpy_r_r260;
+    cpy_r_r262 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r263 = PyObject_VectorcallMethod(cpy_r_r258, cpy_r_r261, 9223372036854775811ULL, cpy_r_r262);
+    if (unlikely(cpy_r_r263 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL92;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = cpy_r_r263;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE);
+    cpy_r_r264 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r265 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SENSE_CHECK_FILE' */
+    cpy_r_r266 = CPyDict_SetItem(cpy_r_r264, cpy_r_r265, cpy_r_r263);
+    CPy_DECREF(cpy_r_r263);
+    cpy_r_r267 = cpy_r_r266 >= 0;
+    if (unlikely(!cpy_r_r267)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL92;
     }
     return 1;
-CPyL87: ;
-    cpy_r_r253 = 2;
-    return cpy_r_r253;
-CPyL88: ;
+CPyL92: ;
+    cpy_r_r268 = 2;
+    return cpy_r_r268;
+CPyL93: ;
     CPy_DecRef(cpy_r_r52);
-    goto CPyL87;
-CPyL89: ;
+    goto CPyL92;
+CPyL94: ;
     CPy_DecRef(cpy_r_r137);
-    goto CPyL87;
+    goto CPyL92;
 }
 
 static PyAsyncMethods convert___to_address_async_gen_as_async = {
@@ -29446,6 +29496,7 @@ sense_check___sense_check_gen_traverse(y___prices___utils___sense_check___sense_
     Py_VISIT(self->___mypyc_temp__3.f1);
     Py_VISIT(self->___mypyc_temp__3.f2);
     Py_VISIT(self->___mypyc_generator_attribute__symbol);
+    Py_VISIT(self->___mypyc_generator_attribute__msg);
     Py_VISIT(self->___mypyc_temp__4.f0);
     Py_VISIT(self->___mypyc_temp__4.f1);
     Py_VISIT(self->___mypyc_temp__4.f2);
@@ -29468,6 +29519,7 @@ sense_check___sense_check_gen_clear(y___prices___utils___sense_check___sense_che
     Py_CLEAR(self->___mypyc_temp__3.f1);
     Py_CLEAR(self->___mypyc_temp__3.f2);
     Py_CLEAR(self->___mypyc_generator_attribute__symbol);
+    Py_CLEAR(self->___mypyc_generator_attribute__msg);
     Py_CLEAR(self->___mypyc_temp__4.f0);
     Py_CLEAR(self->___mypyc_temp__4.f1);
     Py_CLEAR(self->___mypyc_temp__4.f2);
@@ -29494,6 +29546,7 @@ sense_check___sense_check_gen_dealloc(y___prices___utils___sense_check___sense_c
         Py_CLEAR(self->___mypyc_temp__3.f1);
         Py_CLEAR(self->___mypyc_temp__3.f2);
         Py_CLEAR(self->___mypyc_generator_attribute__symbol);
+        Py_CLEAR(self->___mypyc_generator_attribute__msg);
         Py_CLEAR(self->___mypyc_temp__4.f0);
         Py_CLEAR(self->___mypyc_temp__4.f1);
         Py_CLEAR(self->___mypyc_temp__4.f2);
@@ -30038,7 +30091,7 @@ PyObject *CPyDef_sense_check___sense_check_gen_____mypyc_generator_helper__(PyOb
     PyObject *cpy_r_r97;
     char cpy_r_r98;
     PyObject *cpy_r_r99;
-    char cpy_r_r100;
+    PyObject *cpy_r_r100;
     PyObject *cpy_r_r101;
     PyObject *cpy_r_r102;
     PyObject *cpy_r_r103;
@@ -30055,17 +30108,18 @@ PyObject *CPyDef_sense_check___sense_check_gen_____mypyc_generator_helper__(PyOb
     PyObject *cpy_r_r114;
     PyObject *cpy_r_r115;
     PyObject *cpy_r_r116;
-    PyObject *cpy_r_r117;
-    PyObject *cpy_r_r118;
-    PyObject *cpy_r_r119;
-    PyObject **cpy_r_r121;
+    char cpy_r_r117;
+    tuple_T3OOO cpy_r_r118;
+    char cpy_r_r119;
+    PyObject *cpy_r_r120;
+    char cpy_r_r121;
     PyObject *cpy_r_r122;
-    tuple_T3OOO cpy_r_r123;
-    char cpy_r_r124;
+    PyObject *cpy_r_r123;
+    PyObject *cpy_r_r124;
     PyObject *cpy_r_r125;
-    char cpy_r_r126;
+    PyObject *cpy_r_r126;
     PyObject *cpy_r_r127;
-    char cpy_r_r128;
+    PyObject *cpy_r_r128;
     PyObject *cpy_r_r129;
     PyObject *cpy_r_r130;
     PyObject *cpy_r_r131;
@@ -30074,26 +30128,25 @@ PyObject *CPyDef_sense_check___sense_check_gen_____mypyc_generator_helper__(PyOb
     PyObject *cpy_r_r134;
     PyObject *cpy_r_r135;
     PyObject *cpy_r_r136;
-    PyObject *cpy_r_r137;
-    PyObject *cpy_r_r138;
-    PyObject *cpy_r_r139;
-    PyObject *cpy_r_r140;
+    char cpy_r_r137;
+    tuple_T3OOO cpy_r_r138;
+    tuple_T3OOO cpy_r_r139;
+    char cpy_r_r140;
     PyObject *cpy_r_r141;
-    PyObject *cpy_r_r142;
+    char cpy_r_r142;
     PyObject *cpy_r_r143;
     PyObject *cpy_r_r144;
-    PyObject **cpy_r_r146;
-    PyObject *cpy_r_r147;
-    tuple_T3OOO cpy_r_r148;
-    tuple_T3OOO cpy_r_r149;
-    char cpy_r_r150;
-    PyObject *cpy_r_r151;
+    PyObject *cpy_r_r145;
+    PyObject *cpy_r_r146;
+    PyObject **cpy_r_r148;
+    PyObject *cpy_r_r149;
+    PyObject *cpy_r_r150;
+    char cpy_r_r151;
     char cpy_r_r152;
     char cpy_r_r153;
     char cpy_r_r154;
     char cpy_r_r155;
-    char cpy_r_r156;
-    PyObject *cpy_r_r157;
+    PyObject *cpy_r_r156;
     cpy_r_r0 = NULL;
     cpy_r_r1 = cpy_r_r0;
     CPy_XDECREF(cpy_r_r1);
@@ -30102,7 +30155,7 @@ PyObject *CPyDef_sense_check___sense_check_gen_____mypyc_generator_helper__(PyOb
     cpy_r_r4 = NULL;
     cpy_r_r5 = cpy_r_r4;
     cpy_r_r6 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__;
-    goto CPyL139;
+    goto CPyL137;
 CPyL1: ;
     cpy_r_r7 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r8 = cpy_r_type != cpy_r_r7;
@@ -30110,14 +30163,14 @@ CPyL1: ;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     CPy_Unreachable();
 CPyL4: ;
     cpy_r_r9 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__price;
     if (unlikely(cpy_r_r9 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "price", 237, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "price", 246, CPyStatic_sense_check___globals);
+        goto CPyL142;
     }
     CPy_INCREF(cpy_r_r9);
 CPyL5: ;
@@ -30126,7 +30179,7 @@ CPyL5: ;
     CPy_DECREF(cpy_r_r9);
     if (unlikely(cpy_r_r11 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     if (unlikely(!PyBool_Check(cpy_r_r11))) {
         CPy_TypeError("bool", cpy_r_r11); cpy_r_r12 = 2;
@@ -30135,14 +30188,14 @@ CPyL5: ;
     CPy_DECREF(cpy_r_r11);
     if (unlikely(cpy_r_r12 == 2)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     if (!cpy_r_r12) goto CPyL13;
     cpy_r_r13 = Py_None;
     ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
     if (cpy_r_stop_iter_ptr != NULL) goto CPyL12;
     CPyGen_SetStopIterationValue(cpy_r_r13);
-    if (!0) goto CPyL144;
+    if (!0) goto CPyL142;
     CPy_Unreachable();
 CPyL12: ;
     *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r13;
@@ -30150,14 +30203,14 @@ CPyL12: ;
 CPyL13: ;
     cpy_r_r15 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r15 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 241, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 250, CPyStatic_sense_check___globals);
+        goto CPyL142;
     }
     CPy_INCREF(cpy_r_r15);
 CPyL14: ;
     cpy_r_r16 = CPyStatic_sense_check___ACCEPTABLE_HIGH_PRICES;
     if (unlikely(cpy_r_r16 == NULL)) {
-        goto CPyL145;
+        goto CPyL143;
     } else
         goto CPyL17;
 CPyL15: ;
@@ -30165,7 +30218,7 @@ CPyL15: ;
     cpy_r_r17 = 0;
     if (unlikely(!cpy_r_r17)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     CPy_Unreachable();
 CPyL17: ;
@@ -30174,7 +30227,7 @@ CPyL17: ;
     cpy_r_r19 = cpy_r_r18 >= 0;
     if (unlikely(!cpy_r_r19)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     cpy_r_r20 = cpy_r_r18;
     if (!cpy_r_r20) goto CPyL24;
@@ -30182,7 +30235,7 @@ CPyL17: ;
     ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
     if (cpy_r_stop_iter_ptr != NULL) goto CPyL23;
     CPyGen_SetStopIterationValue(cpy_r_r21);
-    if (!0) goto CPyL144;
+    if (!0) goto CPyL142;
     CPy_Unreachable();
 CPyL23: ;
     *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r21;
@@ -30190,8 +30243,8 @@ CPyL23: ;
 CPyL24: ;
     cpy_r_r23 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r23 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 246, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 255, CPyStatic_sense_check___globals);
+        goto CPyL142;
     }
     CPy_INCREF(cpy_r_r23);
 CPyL25: ;
@@ -30199,7 +30252,7 @@ CPyL25: ;
     CPy_DECREF(cpy_r_r23);
     if (unlikely(cpy_r_r24 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     if (((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0 != NULL) {
         CPy_DECREF_NO_IMM(((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0);
@@ -30208,12 +30261,12 @@ CPyL25: ;
     cpy_r_r25 = 1;
     if (unlikely(!cpy_r_r25)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", -1, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     cpy_r_r26 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
     if (unlikely(cpy_r_r26 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__0", -1, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     CPy_INCREF_NO_IMM(cpy_r_r26);
 CPyL28: ;
@@ -30223,11 +30276,11 @@ CPyL28: ;
     cpy_r_r29 = (PyObject **)&cpy_r_r1;
     cpy_r_r30 = CPyDef_sense_check____exit_sense_check_gen_____mypyc_generator_helper__(cpy_r_r26, cpy_r_r27, cpy_r_r27, cpy_r_r27, cpy_r_r27, cpy_r_r29);
     CPy_DECREF_NO_IMM(cpy_r_r26);
-    if (cpy_r_r30 != NULL) goto CPyL146;
+    if (cpy_r_r30 != NULL) goto CPyL144;
     cpy_r_r31 = cpy_r_r1 != 0;
     if (unlikely(!cpy_r_r31)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", -1, CPyStatic_sense_check___globals);
-        goto CPyL147;
+        goto CPyL145;
     }
     cpy_r_r32 = cpy_r_r1;
     cpy_r_r33 = NULL;
@@ -30238,7 +30291,7 @@ CPyL28: ;
     cpy_r_r34 = 1;
     if (unlikely(!cpy_r_r34)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL148;
+        goto CPyL146;
     } else
         goto CPyL53;
 CPyL31: ;
@@ -30249,13 +30302,13 @@ CPyL32: ;
 CPyL33: ;
     cpy_r_r37 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r38 = cpy_r_type != cpy_r_r37;
-    if (!cpy_r_r38) goto CPyL149;
+    if (!cpy_r_r38) goto CPyL147;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
         goto CPyL37;
     } else
-        goto CPyL150;
+        goto CPyL148;
 CPyL35: ;
     CPy_Unreachable();
 CPyL36: ;
@@ -30272,13 +30325,13 @@ CPyL37: ;
     cpy_r_r40 = 1;
     if (unlikely(!cpy_r_r40)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", -1, CPyStatic_sense_check___globals);
-        goto CPyL151;
+        goto CPyL149;
     }
     cpy_r_r41 = (PyObject **)&cpy_r_r3;
     cpy_r_r42 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
     if (unlikely(cpy_r_r42 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__0", -1, CPyStatic_sense_check___globals);
-        goto CPyL151;
+        goto CPyL149;
     }
     CPy_INCREF_NO_IMM(cpy_r_r42);
 CPyL39: ;
@@ -30286,14 +30339,14 @@ CPyL39: ;
     CPy_DecRef(cpy_r_r42);
     if (unlikely(cpy_r_r43 == 2)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL151;
+        goto CPyL149;
     }
     if (cpy_r_r43) goto CPyL43;
     cpy_r_r35 = cpy_r_r3;
     cpy_r_r44 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
     if (unlikely(cpy_r_r44.f0 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__1", -1, CPyStatic_sense_check___globals);
-        goto CPyL152;
+        goto CPyL150;
     }
     CPy_INCREF(cpy_r_r44.f0);
     CPy_INCREF(cpy_r_r44.f1);
@@ -30309,7 +30362,7 @@ CPyL43: ;
     cpy_r_r45 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
     if (unlikely(cpy_r_r45.f0 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__1", -1, CPyStatic_sense_check___globals);
-        goto CPyL153;
+        goto CPyL151;
     }
     CPy_INCREF(cpy_r_r45.f0);
     CPy_INCREF(cpy_r_r45.f1);
@@ -30324,7 +30377,7 @@ CPyL45: ;
     cpy_r_r46 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__1;
     if (unlikely(cpy_r_r46.f0 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__1", -1, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     CPy_INCREF(cpy_r_r46.f0);
     CPy_INCREF(cpy_r_r46.f1);
@@ -30335,13 +30388,13 @@ CPyL46: ;
     CPy_DecRef(cpy_r_r46.f1);
     CPy_DecRef(cpy_r_r46.f2);
     cpy_r_r47 = CPy_KeepPropagating();
-    if (!cpy_r_r47) goto CPyL144;
+    if (!cpy_r_r47) goto CPyL142;
     CPy_Unreachable();
 CPyL48: ;
     cpy_r_r48 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__0;
     if (unlikely(cpy_r_r48 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__0", -1, CPyStatic_sense_check___globals);
-        goto CPyL154;
+        goto CPyL152;
     }
     CPy_INCREF_NO_IMM(cpy_r_r48);
 CPyL49: ;
@@ -30355,7 +30408,7 @@ CPyL51: ;
     cpy_r_r50 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r50 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     cpy_r_r32 = cpy_r_r50;
 CPyL53: ;
@@ -30366,14 +30419,14 @@ CPyL53: ;
     CPy_DECREF(cpy_r_r32);
     if (unlikely(cpy_r_r51 == 2)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     if (!cpy_r_r51) goto CPyL60;
     cpy_r_r52 = Py_None;
     ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
     if (cpy_r_stop_iter_ptr != NULL) goto CPyL59;
     CPyGen_SetStopIterationValue(cpy_r_r52);
-    if (!0) goto CPyL144;
+    if (!0) goto CPyL142;
     CPy_Unreachable();
 CPyL59: ;
     *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r52;
@@ -30381,8 +30434,8 @@ CPyL59: ;
 CPyL60: ;
     cpy_r_r54 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__price;
     if (unlikely(cpy_r_r54 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "price", 250, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "price", 259, CPyStatic_sense_check___globals);
+        goto CPyL142;
     }
     CPy_INCREF(cpy_r_r54);
 CPyL61: ;
@@ -30391,7 +30444,7 @@ CPyL61: ;
     cpy_r_r57 = CPyObject_GetAttr(cpy_r_r55, cpy_r_r56);
     if (unlikely(cpy_r_r57 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL155;
+        goto CPyL153;
     }
     cpy_r_r58 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 4 */
     PyObject *cpy_r_r59[2] = {cpy_r_r54, cpy_r_r58};
@@ -30400,7 +30453,7 @@ CPyL61: ;
     CPy_DECREF(cpy_r_r57);
     if (unlikely(cpy_r_r61 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL155;
+        goto CPyL153;
     }
     CPy_DECREF(cpy_r_r54);
     if (((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__price_readable != NULL) {
@@ -30410,12 +30463,12 @@ CPyL61: ;
     cpy_r_r62 = 1;
     if (unlikely(!cpy_r_r62)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     cpy_r_r63 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r63 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 252, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 261, CPyStatic_sense_check___globals);
+        goto CPyL108;
     }
     CPy_INCREF(cpy_r_r63);
 CPyL65: ;
@@ -30424,7 +30477,7 @@ CPyL65: ;
     cpy_r_r66 = CPyDict_GetItem(cpy_r_r64, cpy_r_r65);
     if (unlikely(cpy_r_r66 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL156;
+        goto CPyL154;
     }
     cpy_r_r67 = 1 ? Py_True : Py_False;
     PyObject *cpy_r_r68[2] = {cpy_r_r63, cpy_r_r67};
@@ -30434,7 +30487,7 @@ CPyL65: ;
     CPy_DECREF(cpy_r_r66);
     if (unlikely(cpy_r_r71 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL156;
+        goto CPyL154;
     }
     CPy_DECREF(cpy_r_r63);
     cpy_r_r72 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'symbol' */
@@ -30442,13 +30495,13 @@ CPyL65: ;
     CPy_DECREF(cpy_r_r71);
     if (unlikely(cpy_r_r73 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
     cpy_r_r74 = CPy_GetCoro(cpy_r_r73);
     CPy_DECREF(cpy_r_r73);
     if (unlikely(cpy_r_r74 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
     if (((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2 != NULL) {
         CPy_DECREF(((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2);
@@ -30457,12 +30510,12 @@ CPyL65: ;
     cpy_r_r75 = 1;
     if (unlikely(!cpy_r_r75)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", -1, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
     cpy_r_r76 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2;
     if (unlikely(cpy_r_r76 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__2", -1, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
     CPy_INCREF(cpy_r_r76);
 CPyL71: ;
@@ -30472,7 +30525,7 @@ CPyL71: ;
     cpy_r_r78 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r78 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
     cpy_r_r79 = cpy_r_r78;
     cpy_r_r80 = NULL;
@@ -30483,7 +30536,7 @@ CPyL71: ;
     cpy_r_r81 = 1;
     if (unlikely(!cpy_r_r81)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL157;
+        goto CPyL155;
     } else
         goto CPyL96;
 CPyL74: ;
@@ -30494,13 +30547,13 @@ CPyL75: ;
 CPyL76: ;
     cpy_r_r84 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r85 = cpy_r_type != cpy_r_r84;
-    if (!cpy_r_r85) goto CPyL158;
+    if (!cpy_r_r85) goto CPyL156;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
         goto CPyL80;
     } else
-        goto CPyL159;
+        goto CPyL157;
 CPyL78: ;
     CPy_Unreachable();
 CPyL79: ;
@@ -30517,13 +30570,13 @@ CPyL80: ;
     cpy_r_r87 = 1;
     if (unlikely(!cpy_r_r87)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", -1, CPyStatic_sense_check___globals);
-        goto CPyL160;
+        goto CPyL158;
     }
     cpy_r_r88 = (PyObject **)&cpy_r_r5;
     cpy_r_r89 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2;
     if (unlikely(cpy_r_r89 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__2", -1, CPyStatic_sense_check___globals);
-        goto CPyL160;
+        goto CPyL158;
     }
     CPy_INCREF(cpy_r_r89);
 CPyL82: ;
@@ -30531,14 +30584,14 @@ CPyL82: ;
     CPy_DecRef(cpy_r_r89);
     if (unlikely(cpy_r_r90 == 2)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL160;
+        goto CPyL158;
     }
     if (cpy_r_r90) goto CPyL86;
     cpy_r_r82 = cpy_r_r5;
     cpy_r_r91 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
     if (unlikely(cpy_r_r91.f0 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__3", -1, CPyStatic_sense_check___globals);
-        goto CPyL161;
+        goto CPyL159;
     }
     CPy_INCREF(cpy_r_r91.f0);
     CPy_INCREF(cpy_r_r91.f1);
@@ -30554,7 +30607,7 @@ CPyL86: ;
     cpy_r_r92 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
     if (unlikely(cpy_r_r92.f0 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__3", -1, CPyStatic_sense_check___globals);
-        goto CPyL162;
+        goto CPyL160;
     }
     CPy_INCREF(cpy_r_r92.f0);
     CPy_INCREF(cpy_r_r92.f1);
@@ -30569,7 +30622,7 @@ CPyL88: ;
     cpy_r_r93 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__3;
     if (unlikely(cpy_r_r93.f0 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__3", -1, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
     CPy_INCREF(cpy_r_r93.f0);
     CPy_INCREF(cpy_r_r93.f1);
@@ -30580,13 +30633,13 @@ CPyL89: ;
     CPy_DecRef(cpy_r_r93.f1);
     CPy_DecRef(cpy_r_r93.f2);
     cpy_r_r94 = CPy_KeepPropagating();
-    if (!cpy_r_r94) goto CPyL112;
+    if (!cpy_r_r94) goto CPyL108;
     CPy_Unreachable();
 CPyL91: ;
     cpy_r_r95 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__2;
     if (unlikely(cpy_r_r95 == NULL)) {
         CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__2", -1, CPyStatic_sense_check___globals);
-        goto CPyL163;
+        goto CPyL161;
     }
     CPy_INCREF(cpy_r_r95);
 CPyL92: ;
@@ -30600,7 +30653,7 @@ CPyL94: ;
     cpy_r_r97 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r97 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
     cpy_r_r79 = cpy_r_r97;
 CPyL96: ;
@@ -30611,390 +30664,392 @@ CPyL96: ;
     cpy_r_r98 = 1;
     if (unlikely(!cpy_r_r98)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
-    cpy_r_r99 = CPyStatic_sense_check___logger;
-    if (likely(cpy_r_r99 != NULL)) goto CPyL100;
-    PyErr_SetString(PyExc_NameError, "value for final name \"logger\" was not set");
-    cpy_r_r100 = 0;
-    if (unlikely(!cpy_r_r100)) {
+    cpy_r_r99 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'unusually high price ($' */
+    cpy_r_r100 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__price_readable;
+    if (unlikely(cpy_r_r100 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "price_readable", 262, CPyStatic_sense_check___globals);
+        goto CPyL108;
+    }
+    CPy_INCREF(cpy_r_r100);
+CPyL98: ;
+    cpy_r_r101 = PyObject_Str(cpy_r_r100);
+    CPy_DECREF(cpy_r_r100);
+    if (unlikely(cpy_r_r101 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL108;
     }
-    CPy_Unreachable();
-CPyL100: ;
-    cpy_r_r101 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'unusually high price ($' */
-    cpy_r_r102 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__price_readable;
-    if (unlikely(cpy_r_r102 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "price_readable", 254, CPyStatic_sense_check___globals);
-        goto CPyL112;
-    }
-    CPy_INCREF(cpy_r_r102);
-CPyL101: ;
-    cpy_r_r103 = PyObject_Str(cpy_r_r102);
-    CPy_DECREF(cpy_r_r102);
+    cpy_r_r102 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ') returned for ' */
+    cpy_r_r103 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__symbol;
     if (unlikely(cpy_r_r103 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "symbol", 262, CPyStatic_sense_check___globals);
+        goto CPyL162;
+    }
+    CPy_INCREF(cpy_r_r103);
+CPyL100: ;
+    cpy_r_r104 = PyObject_Str(cpy_r_r103);
+    CPy_DECREF(cpy_r_r103);
+    if (unlikely(cpy_r_r104 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL112;
+        goto CPyL162;
     }
-    cpy_r_r104 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ') returned for ' */
-    cpy_r_r105 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__symbol;
-    if (unlikely(cpy_r_r105 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "symbol", 254, CPyStatic_sense_check___globals);
-        goto CPyL164;
-    }
-    CPy_INCREF(cpy_r_r105);
-CPyL103: ;
-    cpy_r_r106 = PyObject_Str(cpy_r_r105);
-    CPy_DECREF(cpy_r_r105);
+    cpy_r_r105 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' ' */
+    cpy_r_r106 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r106 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 262, CPyStatic_sense_check___globals);
+        goto CPyL163;
+    }
+    CPy_INCREF(cpy_r_r106);
+CPyL102: ;
+    cpy_r_r107 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' on ' */
+    cpy_r_r108 = CPyStatic_sense_check___globals;
+    cpy_r_r109 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'NETWORK_NAME' */
+    cpy_r_r110 = CPyDict_GetItem(cpy_r_r108, cpy_r_r109);
+    if (unlikely(cpy_r_r110 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
         goto CPyL164;
     }
-    cpy_r_r107 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' ' */
-    cpy_r_r108 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
-    if (unlikely(cpy_r_r108 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 254, CPyStatic_sense_check___globals);
+    if (likely(PyUnicode_Check(cpy_r_r110)))
+        cpy_r_r111 = cpy_r_r110;
+    else {
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "sense_check", 262, CPyStatic_sense_check___globals, "str", cpy_r_r110);
+        goto CPyL164;
+    }
+    cpy_r_r112 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' block ' */
+    cpy_r_r113 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__block;
+    if (unlikely(cpy_r_r113 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "block", 262, CPyStatic_sense_check___globals);
         goto CPyL165;
     }
-    CPy_INCREF(cpy_r_r108);
+    CPy_INCREF(cpy_r_r113);
 CPyL105: ;
-    cpy_r_r109 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' on ' */
-    cpy_r_r110 = CPyStatic_sense_check___globals;
-    cpy_r_r111 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'NETWORK_NAME' */
-    cpy_r_r112 = CPyDict_GetItem(cpy_r_r110, cpy_r_r111);
-    if (unlikely(cpy_r_r112 == NULL)) {
+    cpy_r_r114 = PyObject_Str(cpy_r_r113);
+    CPy_DECREF(cpy_r_r113);
+    if (unlikely(cpy_r_r114 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL166;
+        goto CPyL165;
     }
-    if (likely(PyUnicode_Check(cpy_r_r112)))
-        cpy_r_r113 = cpy_r_r112;
-    else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "sense_check", 254, CPyStatic_sense_check___globals, "str", cpy_r_r112);
-        goto CPyL166;
-    }
-    cpy_r_r114 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' block ' */
-    cpy_r_r115 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__block;
-    if (unlikely(cpy_r_r115 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "block", 254, CPyStatic_sense_check___globals);
-        goto CPyL167;
-    }
-    CPy_INCREF(cpy_r_r115);
-CPyL108: ;
-    cpy_r_r116 = PyObject_Str(cpy_r_r115);
-    CPy_DECREF(cpy_r_r115);
+    cpy_r_r115 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '.' */
+    cpy_r_r116 = CPyStr_Build(11, cpy_r_r99, cpy_r_r101, cpy_r_r102, cpy_r_r104, cpy_r_r105, cpy_r_r106, cpy_r_r107, cpy_r_r111, cpy_r_r112, cpy_r_r114, cpy_r_r115);
+    CPy_DECREF(cpy_r_r101);
+    CPy_DECREF(cpy_r_r104);
+    CPy_DECREF(cpy_r_r106);
+    CPy_DECREF(cpy_r_r111);
+    CPy_DECREF(cpy_r_r114);
     if (unlikely(cpy_r_r116 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL167;
+        goto CPyL108;
     }
-    cpy_r_r117 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('. This does not necessarily mean that the price is '
-                                     'wrong, but you may want to validate the price for '
-                                     'yourself before proceeding.') */
-    cpy_r_r118 = CPyStr_Build(11, cpy_r_r101, cpy_r_r103, cpy_r_r104, cpy_r_r106, cpy_r_r107, cpy_r_r108, cpy_r_r109, cpy_r_r113, cpy_r_r114, cpy_r_r116, cpy_r_r117);
-    CPy_DECREF(cpy_r_r103);
-    CPy_DECREF(cpy_r_r106);
-    CPy_DECREF(cpy_r_r108);
-    CPy_DECREF(cpy_r_r113);
-    CPy_DECREF(cpy_r_r116);
-    if (unlikely(cpy_r_r118 == NULL)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL112;
+    if (((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__msg != NULL) {
+        CPy_DECREF(((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__msg);
     }
-    cpy_r_r119 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'warning' */
-    PyObject *cpy_r_r120[2] = {cpy_r_r99, cpy_r_r118};
-    cpy_r_r121 = (PyObject **)&cpy_r_r120;
-    cpy_r_r122 = PyObject_VectorcallMethod(cpy_r_r119, cpy_r_r121, 9223372036854775810ULL, 0);
-    if (unlikely(cpy_r_r122 == NULL)) {
+    ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__msg = cpy_r_r116;
+    cpy_r_r117 = 1;
+    if (unlikely(!cpy_r_r117)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL168;
     } else
-        goto CPyL169;
-CPyL111: ;
-    CPy_DECREF(cpy_r_r118);
-    goto CPyL134;
-CPyL112: ;
-    cpy_r_r123 = CPy_CatchError();
+        goto CPyL126;
+CPyL108: ;
+    cpy_r_r118 = CPy_CatchError();
     if (((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4.f0 != NULL) {
         CPy_DECREF(((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4.f0);
         CPy_DECREF(((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4.f1);
         CPy_DECREF(((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4.f2);
     }
-    ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4 = cpy_r_r123;
-    cpy_r_r124 = 1;
-    if (unlikely(!cpy_r_r124)) {
+    ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4 = cpy_r_r118;
+    cpy_r_r119 = 1;
+    if (unlikely(!cpy_r_r119)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", -1, CPyStatic_sense_check___globals);
-        goto CPyL131;
+        goto CPyL123;
     }
-    cpy_r_r125 = (PyObject *)CPyType_exceptions___NonStandardERC20;
-    cpy_r_r126 = CPy_ExceptionMatches(cpy_r_r125);
-    if (!cpy_r_r126) goto CPyL127;
-    cpy_r_r127 = CPyStatic_sense_check___logger;
-    if (likely(cpy_r_r127 != NULL)) goto CPyL117;
-    PyErr_SetString(PyExc_NameError, "value for final name \"logger\" was not set");
-    cpy_r_r128 = 0;
-    if (unlikely(!cpy_r_r128)) {
+    cpy_r_r120 = (PyObject *)CPyType_exceptions___NonStandardERC20;
+    cpy_r_r121 = CPy_ExceptionMatches(cpy_r_r120);
+    if (!cpy_r_r121) goto CPyL119;
+    cpy_r_r122 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'unusually high price ($' */
+    cpy_r_r123 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__price_readable;
+    if (unlikely(cpy_r_r123 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "price_readable", 264, CPyStatic_sense_check___globals);
+        goto CPyL123;
+    }
+    CPy_INCREF(cpy_r_r123);
+CPyL111: ;
+    cpy_r_r124 = PyObject_Str(cpy_r_r123);
+    CPy_DecRef(cpy_r_r123);
+    if (unlikely(cpy_r_r124 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL131;
+        goto CPyL123;
     }
-    CPy_Unreachable();
-CPyL117: ;
-    cpy_r_r129 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'unusually high price ($' */
-    cpy_r_r130 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__price_readable;
+    cpy_r_r125 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ') returned for ' */
+    cpy_r_r126 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
+    if (unlikely(cpy_r_r126 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 264, CPyStatic_sense_check___globals);
+        goto CPyL166;
+    }
+    CPy_INCREF(cpy_r_r126);
+CPyL113: ;
+    cpy_r_r127 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' on ' */
+    cpy_r_r128 = CPyStatic_sense_check___globals;
+    cpy_r_r129 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'NETWORK_NAME' */
+    cpy_r_r130 = CPyDict_GetItem(cpy_r_r128, cpy_r_r129);
     if (unlikely(cpy_r_r130 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "price_readable", 258, CPyStatic_sense_check___globals);
-        goto CPyL131;
-    }
-    CPy_INCREF(cpy_r_r130);
-CPyL118: ;
-    cpy_r_r131 = PyObject_Str(cpy_r_r130);
-    CPy_DecRef(cpy_r_r130);
-    if (unlikely(cpy_r_r131 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL131;
+        goto CPyL167;
     }
-    cpy_r_r132 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ') returned for ' */
-    cpy_r_r133 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
+    if (likely(PyUnicode_Check(cpy_r_r130)))
+        cpy_r_r131 = cpy_r_r130;
+    else {
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "sense_check", 264, CPyStatic_sense_check___globals, "str", cpy_r_r130);
+        goto CPyL167;
+    }
+    cpy_r_r132 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' block ' */
+    cpy_r_r133 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__block;
     if (unlikely(cpy_r_r133 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "token_address", 258, CPyStatic_sense_check___globals);
-        goto CPyL170;
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "block", 264, CPyStatic_sense_check___globals);
+        goto CPyL168;
     }
     CPy_INCREF(cpy_r_r133);
-CPyL120: ;
-    cpy_r_r134 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' on ' */
-    cpy_r_r135 = CPyStatic_sense_check___globals;
-    cpy_r_r136 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'NETWORK_NAME' */
-    cpy_r_r137 = CPyDict_GetItem(cpy_r_r135, cpy_r_r136);
-    if (unlikely(cpy_r_r137 == NULL)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL171;
-    }
-    if (likely(PyUnicode_Check(cpy_r_r137)))
-        cpy_r_r138 = cpy_r_r137;
-    else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "sense_check", 258, CPyStatic_sense_check___globals, "str", cpy_r_r137);
-        goto CPyL171;
-    }
-    cpy_r_r139 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ' block ' */
-    cpy_r_r140 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__block;
-    if (unlikely(cpy_r_r140 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "block", 258, CPyStatic_sense_check___globals);
-        goto CPyL172;
-    }
-    CPy_INCREF(cpy_r_r140);
-CPyL123: ;
-    cpy_r_r141 = PyObject_Str(cpy_r_r140);
-    CPy_DecRef(cpy_r_r140);
-    if (unlikely(cpy_r_r141 == NULL)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL172;
-    }
-    cpy_r_r142 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('. This does not necessarily mean that the price is '
-                                     'wrong, but you may want to validate the price for '
-                                     'yourself before proceeding.') */
-    cpy_r_r143 = CPyStr_Build(9, cpy_r_r129, cpy_r_r131, cpy_r_r132, cpy_r_r133, cpy_r_r134, cpy_r_r138, cpy_r_r139, cpy_r_r141, cpy_r_r142);
-    CPy_DecRef(cpy_r_r131);
+CPyL116: ;
+    cpy_r_r134 = PyObject_Str(cpy_r_r133);
     CPy_DecRef(cpy_r_r133);
-    CPy_DecRef(cpy_r_r138);
-    CPy_DecRef(cpy_r_r141);
-    if (unlikely(cpy_r_r143 == NULL)) {
+    if (unlikely(cpy_r_r134 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL131;
+        goto CPyL168;
     }
-    cpy_r_r144 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'warning' */
-    PyObject *cpy_r_r145[2] = {cpy_r_r127, cpy_r_r143};
-    cpy_r_r146 = (PyObject **)&cpy_r_r145;
-    cpy_r_r147 = PyObject_VectorcallMethod(cpy_r_r144, cpy_r_r146, 9223372036854775810ULL, 0);
-    if (unlikely(cpy_r_r147 == NULL)) {
+    cpy_r_r135 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '.' */
+    cpy_r_r136 = CPyStr_Build(9, cpy_r_r122, cpy_r_r124, cpy_r_r125, cpy_r_r126, cpy_r_r127, cpy_r_r131, cpy_r_r132, cpy_r_r134, cpy_r_r135);
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r126);
+    CPy_DecRef(cpy_r_r131);
+    CPy_DecRef(cpy_r_r134);
+    if (unlikely(cpy_r_r136 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL173;
+        goto CPyL123;
+    }
+    if (((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__msg != NULL) {
+        CPy_DECREF(((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__msg);
+    }
+    ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__msg = cpy_r_r136;
+    cpy_r_r137 = 1;
+    if (unlikely(!cpy_r_r137)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL123;
     } else
-        goto CPyL174;
-CPyL126: ;
-    CPy_DecRef(cpy_r_r143);
-    goto CPyL129;
-CPyL127: ;
+        goto CPyL121;
+CPyL119: ;
     CPy_Reraise();
-    if (!0) goto CPyL131;
+    if (!0) goto CPyL123;
+    CPy_Unreachable();
+CPyL121: ;
+    cpy_r_r138 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
+    if (unlikely(cpy_r_r138.f0 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__4", -1, CPyStatic_sense_check___globals);
+        goto CPyL142;
+    }
+    CPy_INCREF(cpy_r_r138.f0);
+    CPy_INCREF(cpy_r_r138.f1);
+    CPy_INCREF(cpy_r_r138.f2);
+CPyL122: ;
+    CPy_RestoreExcInfo(cpy_r_r138);
+    CPy_DecRef(cpy_r_r138.f0);
+    CPy_DecRef(cpy_r_r138.f1);
+    CPy_DecRef(cpy_r_r138.f2);
+    goto CPyL126;
+CPyL123: ;
+    cpy_r_r139 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
+    if (unlikely(cpy_r_r139.f0 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__4", -1, CPyStatic_sense_check___globals);
+        goto CPyL142;
+    }
+    CPy_INCREF(cpy_r_r139.f0);
+    CPy_INCREF(cpy_r_r139.f1);
+    CPy_INCREF(cpy_r_r139.f2);
+CPyL124: ;
+    CPy_RestoreExcInfo(cpy_r_r139);
+    CPy_DecRef(cpy_r_r139.f0);
+    CPy_DecRef(cpy_r_r139.f1);
+    CPy_DecRef(cpy_r_r139.f2);
+    cpy_r_r140 = CPy_KeepPropagating();
+    if (!cpy_r_r140) goto CPyL142;
+    CPy_Unreachable();
+CPyL126: ;
+    cpy_r_r141 = CPyStatic_sense_check___logger;
+    if (likely(cpy_r_r141 != NULL)) goto CPyL129;
+    PyErr_SetString(PyExc_NameError, "value for final name \"logger\" was not set");
+    cpy_r_r142 = 0;
+    if (unlikely(!cpy_r_r142)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL142;
+    }
     CPy_Unreachable();
 CPyL129: ;
-    cpy_r_r148 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
-    if (unlikely(cpy_r_r148.f0 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__4", -1, CPyStatic_sense_check___globals);
-        goto CPyL144;
+    cpy_r_r143 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__msg;
+    if (unlikely(cpy_r_r143 == NULL)) {
+        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "msg", 267, CPyStatic_sense_check___globals);
+        goto CPyL142;
     }
-    CPy_INCREF(cpy_r_r148.f0);
-    CPy_INCREF(cpy_r_r148.f1);
-    CPy_INCREF(cpy_r_r148.f2);
+    CPy_INCREF(cpy_r_r143);
 CPyL130: ;
-    CPy_RestoreExcInfo(cpy_r_r148);
-    CPy_DecRef(cpy_r_r148.f0);
-    CPy_DecRef(cpy_r_r148.f1);
-    CPy_DecRef(cpy_r_r148.f2);
-    goto CPyL134;
-CPyL131: ;
-    cpy_r_r149 = ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
-    if (unlikely(cpy_r_r149.f0 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "sense_check", "sense_check_gen", "__mypyc_temp__4", -1, CPyStatic_sense_check___globals);
-        goto CPyL144;
+    cpy_r_r144 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* (' This does not necessarily mean that the price is '
+                                     'wrong, but you may want to validate the price for '
+                                     'yourself before proceeding.') */
+    cpy_r_r145 = CPyStr_Build(2, cpy_r_r143, cpy_r_r144);
+    CPy_DECREF(cpy_r_r143);
+    if (unlikely(cpy_r_r145 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL142;
     }
-    CPy_INCREF(cpy_r_r149.f0);
-    CPy_INCREF(cpy_r_r149.f1);
-    CPy_INCREF(cpy_r_r149.f2);
-CPyL132: ;
-    CPy_RestoreExcInfo(cpy_r_r149);
-    CPy_DecRef(cpy_r_r149.f0);
-    CPy_DecRef(cpy_r_r149.f1);
-    CPy_DecRef(cpy_r_r149.f2);
-    cpy_r_r150 = CPy_KeepPropagating();
-    if (!cpy_r_r150) goto CPyL144;
-    CPy_Unreachable();
-CPyL134: ;
-    cpy_r_r151 = Py_None;
-    ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
-    if (cpy_r_stop_iter_ptr != NULL) goto CPyL138;
-    CPyGen_SetStopIterationValue(cpy_r_r151);
-    if (!0) goto CPyL144;
-    CPy_Unreachable();
-CPyL138: ;
-    *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r151;
-    return 0;
-CPyL139: ;
-    cpy_r_r153 = cpy_r_r6 == 0;
-    if (cpy_r_r153) goto CPyL175;
-    cpy_r_r154 = cpy_r_r6 == 1;
-    if (cpy_r_r154) {
-        goto CPyL176;
+    cpy_r_r146 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'warning' */
+    PyObject *cpy_r_r147[2] = {cpy_r_r141, cpy_r_r145};
+    cpy_r_r148 = (PyObject **)&cpy_r_r147;
+    cpy_r_r149 = PyObject_VectorcallMethod(cpy_r_r146, cpy_r_r148, 9223372036854775810ULL, 0);
+    if (unlikely(cpy_r_r149 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL169;
     } else
-        goto CPyL177;
-CPyL141: ;
-    cpy_r_r155 = cpy_r_r6 == 2;
-    if (cpy_r_r155) {
+        goto CPyL170;
+CPyL132: ;
+    CPy_DECREF(cpy_r_r145);
+    cpy_r_r150 = Py_None;
+    ((y___prices___utils___sense_check___sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
+    if (cpy_r_stop_iter_ptr != NULL) goto CPyL136;
+    CPyGen_SetStopIterationValue(cpy_r_r150);
+    if (!0) goto CPyL142;
+    CPy_Unreachable();
+CPyL136: ;
+    *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r150;
+    return 0;
+CPyL137: ;
+    cpy_r_r152 = cpy_r_r6 == 0;
+    if (cpy_r_r152) goto CPyL171;
+    cpy_r_r153 = cpy_r_r6 == 1;
+    if (cpy_r_r153) {
+        goto CPyL172;
+    } else
+        goto CPyL173;
+CPyL139: ;
+    cpy_r_r154 = cpy_r_r6 == 2;
+    if (cpy_r_r154) {
         goto CPyL76;
     } else
-        goto CPyL178;
-CPyL142: ;
+        goto CPyL174;
+CPyL140: ;
     PyErr_SetNone(PyExc_StopIteration);
-    cpy_r_r156 = 0;
-    if (unlikely(!cpy_r_r156)) {
+    cpy_r_r155 = 0;
+    if (unlikely(!cpy_r_r155)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "sense_check", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL144;
+        goto CPyL142;
     }
     CPy_Unreachable();
-CPyL144: ;
-    cpy_r_r157 = NULL;
-    return cpy_r_r157;
-CPyL145: ;
+CPyL142: ;
+    cpy_r_r156 = NULL;
+    return cpy_r_r156;
+CPyL143: ;
     CPy_DecRef(cpy_r_r15);
     goto CPyL15;
-CPyL146: ;
+CPyL144: ;
     CPy_XDECREF(cpy_r_r1);
     goto CPyL31;
-CPyL147: ;
+CPyL145: ;
     CPy_XDecRef(cpy_r_r1);
-    goto CPyL144;
-CPyL148: ;
+    goto CPyL142;
+CPyL146: ;
     CPy_DecRef(cpy_r_r32);
-    goto CPyL144;
-CPyL149: ;
+    goto CPyL142;
+CPyL147: ;
     CPy_XDECREF(cpy_r_r3);
     goto CPyL36;
-CPyL150: ;
+CPyL148: ;
     CPy_XDECREF(cpy_r_r3);
     goto CPyL35;
-CPyL151: ;
+CPyL149: ;
     CPy_XDecRef(cpy_r_r3);
     goto CPyL45;
-CPyL152: ;
+CPyL150: ;
     CPy_DecRef(cpy_r_r35);
     goto CPyL45;
-CPyL153: ;
+CPyL151: ;
     CPy_DecRef(cpy_r_r32);
     goto CPyL45;
-CPyL154: ;
+CPyL152: ;
     CPy_DecRef(cpy_r_arg);
-    goto CPyL144;
-CPyL155: ;
+    goto CPyL142;
+CPyL153: ;
     CPy_DecRef(cpy_r_r54);
-    goto CPyL144;
-CPyL156: ;
+    goto CPyL142;
+CPyL154: ;
     CPy_DecRef(cpy_r_r63);
-    goto CPyL112;
-CPyL157: ;
+    goto CPyL108;
+CPyL155: ;
     CPy_DecRef(cpy_r_r79);
-    goto CPyL112;
-CPyL158: ;
+    goto CPyL108;
+CPyL156: ;
     CPy_XDECREF(cpy_r_r5);
     goto CPyL79;
-CPyL159: ;
+CPyL157: ;
     CPy_XDECREF(cpy_r_r5);
     goto CPyL78;
-CPyL160: ;
+CPyL158: ;
     CPy_XDecRef(cpy_r_r5);
     goto CPyL88;
-CPyL161: ;
+CPyL159: ;
     CPy_DecRef(cpy_r_r82);
     goto CPyL88;
-CPyL162: ;
+CPyL160: ;
     CPy_DecRef(cpy_r_r79);
     goto CPyL88;
-CPyL163: ;
+CPyL161: ;
     CPy_DecRef(cpy_r_arg);
-    goto CPyL112;
+    goto CPyL108;
+CPyL162: ;
+    CPy_DecRef(cpy_r_r101);
+    goto CPyL108;
+CPyL163: ;
+    CPy_DecRef(cpy_r_r101);
+    CPy_DecRef(cpy_r_r104);
+    goto CPyL108;
 CPyL164: ;
-    CPy_DecRef(cpy_r_r103);
-    goto CPyL112;
+    CPy_DecRef(cpy_r_r101);
+    CPy_DecRef(cpy_r_r104);
+    CPy_DecRef(cpy_r_r106);
+    goto CPyL108;
 CPyL165: ;
-    CPy_DecRef(cpy_r_r103);
+    CPy_DecRef(cpy_r_r101);
+    CPy_DecRef(cpy_r_r104);
     CPy_DecRef(cpy_r_r106);
-    goto CPyL112;
+    CPy_DecRef(cpy_r_r111);
+    goto CPyL108;
 CPyL166: ;
-    CPy_DecRef(cpy_r_r103);
-    CPy_DecRef(cpy_r_r106);
-    CPy_DecRef(cpy_r_r108);
-    goto CPyL112;
+    CPy_DecRef(cpy_r_r124);
+    goto CPyL123;
 CPyL167: ;
-    CPy_DecRef(cpy_r_r103);
-    CPy_DecRef(cpy_r_r106);
-    CPy_DecRef(cpy_r_r108);
-    CPy_DecRef(cpy_r_r113);
-    goto CPyL112;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r126);
+    goto CPyL123;
 CPyL168: ;
-    CPy_DecRef(cpy_r_r118);
-    goto CPyL112;
+    CPy_DecRef(cpy_r_r124);
+    CPy_DecRef(cpy_r_r126);
+    CPy_DecRef(cpy_r_r131);
+    goto CPyL123;
 CPyL169: ;
-    CPy_DECREF(cpy_r_r122);
-    goto CPyL111;
+    CPy_DecRef(cpy_r_r145);
+    goto CPyL142;
 CPyL170: ;
-    CPy_DecRef(cpy_r_r131);
-    goto CPyL131;
+    CPy_DECREF(cpy_r_r149);
+    goto CPyL132;
 CPyL171: ;
-    CPy_DecRef(cpy_r_r131);
-    CPy_DecRef(cpy_r_r133);
-    goto CPyL131;
-CPyL172: ;
-    CPy_DecRef(cpy_r_r131);
-    CPy_DecRef(cpy_r_r133);
-    CPy_DecRef(cpy_r_r138);
-    goto CPyL131;
-CPyL173: ;
-    CPy_DecRef(cpy_r_r143);
-    goto CPyL131;
-CPyL174: ;
-    CPy_DecRef(cpy_r_r147);
-    goto CPyL126;
-CPyL175: ;
     CPy_XDECREF(cpy_r_r3);
     CPy_XDECREF(cpy_r_r5);
     goto CPyL1;
-CPyL176: ;
+CPyL172: ;
     CPy_XDECREF(cpy_r_r5);
     goto CPyL33;
-CPyL177: ;
+CPyL173: ;
     CPy_XDECREF(cpy_r_r3);
-    goto CPyL141;
-CPyL178: ;
+    goto CPyL139;
+CPyL174: ;
     CPy_XDECREF(cpy_r_r5);
-    goto CPyL142;
+    goto CPyL140;
 }
 
 PyObject *CPyDef_sense_check___sense_check_gen_____next__(PyObject *cpy_r___mypyc_self__) {
@@ -31854,7 +31909,7 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r23 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r23 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 283, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 292, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r23);
@@ -32048,7 +32103,7 @@ CPyL35: ;
     }
     cpy_r_r57 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__bucket;
     if (unlikely(cpy_r_r57 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 285, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 294, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r57);
@@ -32103,7 +32158,7 @@ CPyL49: ;
 CPyL50: ;
     cpy_r_r70 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__bucket;
     if (unlikely(cpy_r_r70 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 288, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 297, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r70);
@@ -32126,7 +32181,7 @@ CPyL51: ;
     if (!cpy_r_r75) goto CPyL155;
     cpy_r_r76 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r76 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 289, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 298, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r76);
@@ -32341,7 +32396,7 @@ CPyL86: ;
     }
     cpy_r_r114 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__underlyings;
     if (unlikely(cpy_r_r114 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "underlyings", 291, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "underlyings", 300, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r114);
@@ -32372,7 +32427,7 @@ CPyL90: ;
 CPyL93: ;
     cpy_r_r118 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11;
     if (unlikely(cpy_r_r118 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "__mypyc_temp__11", 290, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "__mypyc_temp__11", 299, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r118);
@@ -32391,7 +32446,7 @@ CPyL94: ;
     }
     cpy_r_r121 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__und;
     if (unlikely(cpy_r_r121 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "und", 291, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "und", 300, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r121);
@@ -32429,7 +32484,7 @@ CPyL101: ;
     if (!cpy_r_r129) goto CPyL93;
     cpy_r_r130 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__und;
     if (unlikely(cpy_r_r130 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "und", 291, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "und", 300, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r130);
@@ -32495,7 +32550,7 @@ CPyL109: ;
     }
     cpy_r_r146 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__questionable_underlyings;
     if (unlikely(cpy_r_r146 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "questionable_underlyings", 293, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "questionable_underlyings", 302, CPyStatic_sense_check___globals);
         goto CPyL421;
     }
     CPy_INCREF_NO_IMM(cpy_r_r146);
@@ -32520,7 +32575,7 @@ CPyL113: ;
     if (likely(PyDict_Check(cpy_r_r152)))
         cpy_r_r153 = cpy_r_r152;
     else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "_exit_sense_check", 293, CPyStatic_sense_check___globals, "dict", cpy_r_r152);
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "_exit_sense_check", 302, CPyStatic_sense_check___globals, "dict", cpy_r_r152);
         goto CPyL397;
     }
     cpy_r_r154 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'all' */
@@ -32716,7 +32771,7 @@ CPyL154: ;
 CPyL155: ;
     cpy_r_r187 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__bucket;
     if (unlikely(cpy_r_r187 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 298, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 307, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r187);
@@ -32746,7 +32801,7 @@ CPyL156: ;
     }
     cpy_r_r196 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r196 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 299, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 308, CPyStatic_sense_check___globals);
         goto CPyL431;
     }
     CPy_INCREF(cpy_r_r196);
@@ -32936,7 +32991,7 @@ CPyL190: ;
 CPyL191: ;
     cpy_r_r228 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__bucket;
     if (unlikely(cpy_r_r228 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 300, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 309, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r228);
@@ -32959,7 +33014,7 @@ CPyL192: ;
     if (!cpy_r_r233) goto CPyL228;
     cpy_r_r234 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r234 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 301, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 310, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r234);
@@ -33162,7 +33217,7 @@ CPyL227: ;
 CPyL228: ;
     cpy_r_r270 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__bucket;
     if (unlikely(cpy_r_r270 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 302, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 311, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r270);
@@ -33192,7 +33247,7 @@ CPyL229: ;
     }
     cpy_r_r279 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r279 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 303, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 312, CPyStatic_sense_check___globals);
         goto CPyL448;
     }
     CPy_INCREF(cpy_r_r279);
@@ -33370,7 +33425,7 @@ CPyL263: ;
     if (likely(PyList_Check(cpy_r_r289)))
         cpy_r_r308 = cpy_r_r289;
     else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "_exit_sense_check", 303, CPyStatic_sense_check___globals, "list", cpy_r_r289);
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "_exit_sense_check", 312, CPyStatic_sense_check___globals, "list", cpy_r_r289);
         goto CPyL397;
     }
     if (((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__contract != NULL) {
@@ -33384,7 +33439,7 @@ CPyL263: ;
     }
     cpy_r_r310 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__contract;
     if (unlikely(cpy_r_r310 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "contract", 304, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "contract", 313, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF_NO_IMM(cpy_r_r310);
@@ -33569,7 +33624,7 @@ CPyL295: ;
 CPyL296: ;
     cpy_r_r338 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__bucket;
     if (unlikely(cpy_r_r338 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 305, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "bucket", 314, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r338);
@@ -33592,7 +33647,7 @@ CPyL297: ;
     if (!cpy_r_r343) goto CPyL333;
     cpy_r_r344 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__token_address;
     if (unlikely(cpy_r_r344 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 307, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "token_address", 316, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r344);
@@ -33805,7 +33860,7 @@ CPyL337: ;
 CPyL338: ;
     cpy_r_r382 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__underlying;
     if (unlikely(cpy_r_r382 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "underlying", 312, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "underlying", 321, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r382);
@@ -33828,7 +33883,7 @@ CPyL339: ;
     }
     cpy_r_r386 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__underlying_addr;
     if (unlikely(cpy_r_r386 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "underlying_addr", 313, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "underlying_addr", 322, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r386);
@@ -33861,7 +33916,7 @@ CPyL345: ;
 CPyL348: ;
     cpy_r_r393 = ((y___prices___utils___sense_check____exit_sense_check_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__underlying_addr;
     if (unlikely(cpy_r_r393 == NULL)) {
-        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "underlying_addr", 313, CPyStatic_sense_check___globals);
+        CPy_AttributeError("y/prices/utils/sense_check.py", "_exit_sense_check", "_exit_sense_check_gen", "underlying_addr", 322, CPyStatic_sense_check___globals);
         goto CPyL397;
     }
     CPy_INCREF(cpy_r_r393);
@@ -33869,7 +33924,7 @@ CPyL349: ;
     if (likely(PyUnicode_Check(cpy_r_r393)))
         cpy_r_r394 = cpy_r_r393;
     else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "_exit_sense_check", 313, CPyStatic_sense_check___globals, "str", cpy_r_r393);
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "_exit_sense_check", 322, CPyStatic_sense_check___globals, "str", cpy_r_r393);
         goto CPyL397;
     }
     cpy_r_r395 = CPyDef_sense_check____exit_sense_check(cpy_r_r394);
@@ -34890,56 +34945,53 @@ char CPyDef_sense_check_____top_level__(void) {
     PyObject *cpy_r_r81;
     PyObject *cpy_r_r82;
     PyObject *cpy_r_r83;
-    PyObject **cpy_r_r85;
+    PyObject *cpy_r_r84;
+    PyObject *cpy_r_r85;
     PyObject *cpy_r_r86;
     PyObject *cpy_r_r87;
     PyObject *cpy_r_r88;
-    int32_t cpy_r_r89;
-    char cpy_r_r90;
+    PyObject **cpy_r_r90;
     PyObject *cpy_r_r91;
     PyObject *cpy_r_r92;
     PyObject *cpy_r_r93;
-    PyObject *cpy_r_r94;
-    PyObject *cpy_r_r95;
+    int32_t cpy_r_r94;
+    char cpy_r_r95;
     PyObject *cpy_r_r96;
-    PyObject *cpy_r_r97;
-    PyObject *cpy_r_r98;
-    PyObject *cpy_r_r99;
-    PyObject *cpy_r_r100;
+    char cpy_r_r97;
+    int32_t cpy_r_r98;
+    char cpy_r_r99;
+    char cpy_r_r100;
     PyObject *cpy_r_r101;
-    PyObject *cpy_r_r102;
+    char cpy_r_r102;
     PyObject *cpy_r_r103;
-    int32_t cpy_r_r104;
-    char cpy_r_r105;
-    int32_t cpy_r_r106;
-    char cpy_r_r107;
-    PyObject *cpy_r_r108;
-    PyObject *cpy_r_r109;
-    int32_t cpy_r_r110;
-    char cpy_r_r111;
+    PyObject *cpy_r_r104;
+    PyObject *cpy_r_r105;
+    PyObject *cpy_r_r106;
+    PyObject *cpy_r_r107;
+    PyObject **cpy_r_r109;
+    PyObject *cpy_r_r110;
+    PyObject *cpy_r_r111;
     PyObject *cpy_r_r112;
-    char cpy_r_r113;
-    PyObject *cpy_r_r114;
-    PyObject *cpy_r_r115;
+    PyObject *cpy_r_r113;
+    int32_t cpy_r_r114;
+    char cpy_r_r115;
     PyObject *cpy_r_r116;
     PyObject *cpy_r_r117;
     PyObject *cpy_r_r118;
     PyObject *cpy_r_r119;
     PyObject *cpy_r_r120;
-    PyObject *cpy_r_r121;
-    PyObject *cpy_r_r122;
+    PyObject **cpy_r_r122;
     PyObject *cpy_r_r123;
     PyObject *cpy_r_r124;
     PyObject *cpy_r_r125;
     PyObject *cpy_r_r126;
     PyObject *cpy_r_r127;
-    PyObject *cpy_r_r128;
-    PyObject *cpy_r_r129;
+    PyObject **cpy_r_r129;
     PyObject *cpy_r_r130;
     PyObject *cpy_r_r131;
     PyObject *cpy_r_r132;
-    PyObject *cpy_r_r133;
-    PyObject *cpy_r_r134;
+    int32_t cpy_r_r133;
+    char cpy_r_r134;
     PyObject *cpy_r_r135;
     PyObject *cpy_r_r136;
     PyObject *cpy_r_r137;
@@ -34947,8 +34999,7 @@ char CPyDef_sense_check_____top_level__(void) {
     PyObject *cpy_r_r139;
     PyObject *cpy_r_r140;
     PyObject *cpy_r_r141;
-    PyObject *cpy_r_r142;
-    PyObject *cpy_r_r143;
+    PyObject **cpy_r_r143;
     PyObject *cpy_r_r144;
     PyObject *cpy_r_r145;
     PyObject *cpy_r_r146;
@@ -34963,16 +35014,16 @@ char CPyDef_sense_check_____top_level__(void) {
     PyObject *cpy_r_r155;
     PyObject *cpy_r_r156;
     PyObject *cpy_r_r157;
-    PyObject *cpy_r_r158;
-    PyObject *cpy_r_r159;
-    PyObject *cpy_r_r160;
-    PyObject *cpy_r_r161;
+    int32_t cpy_r_r158;
+    char cpy_r_r159;
+    int32_t cpy_r_r160;
+    char cpy_r_r161;
     PyObject *cpy_r_r162;
     PyObject *cpy_r_r163;
-    PyObject *cpy_r_r164;
-    PyObject *cpy_r_r165;
+    int32_t cpy_r_r164;
+    char cpy_r_r165;
     PyObject *cpy_r_r166;
-    PyObject *cpy_r_r167;
+    char cpy_r_r167;
     PyObject *cpy_r_r168;
     PyObject *cpy_r_r169;
     PyObject *cpy_r_r170;
@@ -35018,60 +35069,60 @@ char CPyDef_sense_check_____top_level__(void) {
     PyObject *cpy_r_r210;
     PyObject *cpy_r_r211;
     PyObject *cpy_r_r212;
-    int32_t cpy_r_r213;
-    char cpy_r_r214;
-    int32_t cpy_r_r215;
-    char cpy_r_r216;
-    int32_t cpy_r_r217;
-    char cpy_r_r218;
-    int32_t cpy_r_r219;
-    char cpy_r_r220;
-    int32_t cpy_r_r221;
-    char cpy_r_r222;
-    int32_t cpy_r_r223;
-    char cpy_r_r224;
-    int32_t cpy_r_r225;
-    char cpy_r_r226;
-    int32_t cpy_r_r227;
-    char cpy_r_r228;
-    int32_t cpy_r_r229;
-    char cpy_r_r230;
-    int32_t cpy_r_r231;
-    char cpy_r_r232;
-    int32_t cpy_r_r233;
-    char cpy_r_r234;
-    int32_t cpy_r_r235;
-    char cpy_r_r236;
-    int32_t cpy_r_r237;
-    char cpy_r_r238;
-    int32_t cpy_r_r239;
-    char cpy_r_r240;
-    int32_t cpy_r_r241;
-    char cpy_r_r242;
-    int32_t cpy_r_r243;
-    char cpy_r_r244;
-    int32_t cpy_r_r245;
-    char cpy_r_r246;
-    int32_t cpy_r_r247;
-    char cpy_r_r248;
-    int32_t cpy_r_r249;
-    char cpy_r_r250;
-    int32_t cpy_r_r251;
-    char cpy_r_r252;
-    int32_t cpy_r_r253;
-    char cpy_r_r254;
-    int32_t cpy_r_r255;
-    char cpy_r_r256;
-    int32_t cpy_r_r257;
-    char cpy_r_r258;
-    int32_t cpy_r_r259;
-    char cpy_r_r260;
-    int32_t cpy_r_r261;
-    char cpy_r_r262;
-    int32_t cpy_r_r263;
-    char cpy_r_r264;
-    int32_t cpy_r_r265;
-    char cpy_r_r266;
+    PyObject *cpy_r_r213;
+    PyObject *cpy_r_r214;
+    PyObject *cpy_r_r215;
+    PyObject *cpy_r_r216;
+    PyObject *cpy_r_r217;
+    PyObject *cpy_r_r218;
+    PyObject *cpy_r_r219;
+    PyObject *cpy_r_r220;
+    PyObject *cpy_r_r221;
+    PyObject *cpy_r_r222;
+    PyObject *cpy_r_r223;
+    PyObject *cpy_r_r224;
+    PyObject *cpy_r_r225;
+    PyObject *cpy_r_r226;
+    PyObject *cpy_r_r227;
+    PyObject *cpy_r_r228;
+    PyObject *cpy_r_r229;
+    PyObject *cpy_r_r230;
+    PyObject *cpy_r_r231;
+    PyObject *cpy_r_r232;
+    PyObject *cpy_r_r233;
+    PyObject *cpy_r_r234;
+    PyObject *cpy_r_r235;
+    PyObject *cpy_r_r236;
+    PyObject *cpy_r_r237;
+    PyObject *cpy_r_r238;
+    PyObject *cpy_r_r239;
+    PyObject *cpy_r_r240;
+    PyObject *cpy_r_r241;
+    PyObject *cpy_r_r242;
+    PyObject *cpy_r_r243;
+    PyObject *cpy_r_r244;
+    PyObject *cpy_r_r245;
+    PyObject *cpy_r_r246;
+    PyObject *cpy_r_r247;
+    PyObject *cpy_r_r248;
+    PyObject *cpy_r_r249;
+    PyObject *cpy_r_r250;
+    PyObject *cpy_r_r251;
+    PyObject *cpy_r_r252;
+    PyObject *cpy_r_r253;
+    PyObject *cpy_r_r254;
+    PyObject *cpy_r_r255;
+    PyObject *cpy_r_r256;
+    PyObject *cpy_r_r257;
+    PyObject *cpy_r_r258;
+    PyObject *cpy_r_r259;
+    PyObject *cpy_r_r260;
+    PyObject *cpy_r_r261;
+    PyObject *cpy_r_r262;
+    PyObject *cpy_r_r263;
+    PyObject *cpy_r_r264;
+    PyObject *cpy_r_r265;
+    PyObject *cpy_r_r266;
     int32_t cpy_r_r267;
     char cpy_r_r268;
     int32_t cpy_r_r269;
@@ -35214,30 +35265,30 @@ char CPyDef_sense_check_____top_level__(void) {
     char cpy_r_r406;
     int32_t cpy_r_r407;
     char cpy_r_r408;
-    PyObject *cpy_r_r409;
+    int32_t cpy_r_r409;
     char cpy_r_r410;
-    PyObject *cpy_r_r411;
-    PyObject *cpy_r_r412;
-    PyObject *cpy_r_r413;
-    PyObject *cpy_r_r414;
-    PyObject *cpy_r_r415;
-    int32_t cpy_r_r416;
-    char cpy_r_r417;
-    int32_t cpy_r_r418;
-    char cpy_r_r419;
-    int32_t cpy_r_r420;
-    char cpy_r_r421;
-    int32_t cpy_r_r422;
-    char cpy_r_r423;
-    PyObject *cpy_r_r424;
-    char cpy_r_r425;
-    PyObject *cpy_r_r426;
-    PyObject *cpy_r_r427;
-    PyObject *cpy_r_r428;
-    PyObject *cpy_r_r429;
-    PyObject *cpy_r_r430;
-    PyObject *cpy_r_r431;
-    PyObject *cpy_r_r432;
+    int32_t cpy_r_r411;
+    char cpy_r_r412;
+    int32_t cpy_r_r413;
+    char cpy_r_r414;
+    int32_t cpy_r_r415;
+    char cpy_r_r416;
+    int32_t cpy_r_r417;
+    char cpy_r_r418;
+    int32_t cpy_r_r419;
+    char cpy_r_r420;
+    int32_t cpy_r_r421;
+    char cpy_r_r422;
+    int32_t cpy_r_r423;
+    char cpy_r_r424;
+    int32_t cpy_r_r425;
+    char cpy_r_r426;
+    int32_t cpy_r_r427;
+    char cpy_r_r428;
+    int32_t cpy_r_r429;
+    char cpy_r_r430;
+    int32_t cpy_r_r431;
+    char cpy_r_r432;
     int32_t cpy_r_r433;
     char cpy_r_r434;
     int32_t cpy_r_r435;
@@ -35250,26 +35301,26 @@ char CPyDef_sense_check_____top_level__(void) {
     char cpy_r_r442;
     int32_t cpy_r_r443;
     char cpy_r_r444;
-    PyObject *cpy_r_r445;
+    int32_t cpy_r_r445;
     char cpy_r_r446;
-    PyObject *cpy_r_r447;
-    PyObject *cpy_r_r448;
-    PyObject *cpy_r_r449;
-    int32_t cpy_r_r450;
-    char cpy_r_r451;
-    int32_t cpy_r_r452;
-    char cpy_r_r453;
-    PyObject *cpy_r_r454;
-    char cpy_r_r455;
-    PyObject *cpy_r_r456;
-    PyObject *cpy_r_r457;
-    PyObject *cpy_r_r458;
-    PyObject *cpy_r_r459;
-    PyObject *cpy_r_r460;
-    PyObject *cpy_r_r461;
-    PyObject *cpy_r_r462;
+    int32_t cpy_r_r447;
+    char cpy_r_r448;
+    int32_t cpy_r_r449;
+    char cpy_r_r450;
+    int32_t cpy_r_r451;
+    char cpy_r_r452;
+    int32_t cpy_r_r453;
+    char cpy_r_r454;
+    int32_t cpy_r_r455;
+    char cpy_r_r456;
+    int32_t cpy_r_r457;
+    char cpy_r_r458;
+    int32_t cpy_r_r459;
+    char cpy_r_r460;
+    int32_t cpy_r_r461;
+    char cpy_r_r462;
     PyObject *cpy_r_r463;
-    PyObject *cpy_r_r464;
+    char cpy_r_r464;
     PyObject *cpy_r_r465;
     PyObject *cpy_r_r466;
     PyObject *cpy_r_r467;
@@ -35283,68 +35334,122 @@ char CPyDef_sense_check_____top_level__(void) {
     char cpy_r_r475;
     int32_t cpy_r_r476;
     char cpy_r_r477;
-    int32_t cpy_r_r478;
+    PyObject *cpy_r_r478;
     char cpy_r_r479;
-    int32_t cpy_r_r480;
-    char cpy_r_r481;
-    int32_t cpy_r_r482;
-    char cpy_r_r483;
-    int32_t cpy_r_r484;
-    char cpy_r_r485;
-    int32_t cpy_r_r486;
-    char cpy_r_r487;
-    int32_t cpy_r_r488;
-    char cpy_r_r489;
-    int32_t cpy_r_r490;
-    char cpy_r_r491;
-    int32_t cpy_r_r492;
-    char cpy_r_r493;
-    int32_t cpy_r_r494;
-    char cpy_r_r495;
-    PyObject *cpy_r_r496;
-    char cpy_r_r497;
-    PyObject *cpy_r_r498;
+    PyObject *cpy_r_r480;
+    PyObject *cpy_r_r481;
+    PyObject *cpy_r_r482;
+    PyObject *cpy_r_r483;
+    PyObject *cpy_r_r484;
+    PyObject *cpy_r_r485;
+    PyObject *cpy_r_r486;
+    int32_t cpy_r_r487;
+    char cpy_r_r488;
+    int32_t cpy_r_r489;
+    char cpy_r_r490;
+    int32_t cpy_r_r491;
+    char cpy_r_r492;
+    int32_t cpy_r_r493;
+    char cpy_r_r494;
+    int32_t cpy_r_r495;
+    char cpy_r_r496;
+    int32_t cpy_r_r497;
+    char cpy_r_r498;
     PyObject *cpy_r_r499;
-    int32_t cpy_r_r500;
-    char cpy_r_r501;
+    char cpy_r_r500;
+    PyObject *cpy_r_r501;
     PyObject *cpy_r_r502;
-    char cpy_r_r503;
-    PyObject *cpy_r_r504;
-    PyObject *cpy_r_r505;
-    PyObject *cpy_r_r506;
-    PyObject *cpy_r_r507;
+    PyObject *cpy_r_r503;
+    int32_t cpy_r_r504;
+    char cpy_r_r505;
+    int32_t cpy_r_r506;
+    char cpy_r_r507;
     PyObject *cpy_r_r508;
-    PyObject *cpy_r_r509;
+    char cpy_r_r509;
     PyObject *cpy_r_r510;
-    int32_t cpy_r_r511;
-    char cpy_r_r512;
-    int32_t cpy_r_r513;
-    char cpy_r_r514;
-    int32_t cpy_r_r515;
-    char cpy_r_r516;
-    int32_t cpy_r_r517;
-    char cpy_r_r518;
-    int32_t cpy_r_r519;
-    char cpy_r_r520;
-    int32_t cpy_r_r521;
-    char cpy_r_r522;
+    PyObject *cpy_r_r511;
+    PyObject *cpy_r_r512;
+    PyObject *cpy_r_r513;
+    PyObject *cpy_r_r514;
+    PyObject *cpy_r_r515;
+    PyObject *cpy_r_r516;
+    PyObject *cpy_r_r517;
+    PyObject *cpy_r_r518;
+    PyObject *cpy_r_r519;
+    PyObject *cpy_r_r520;
+    PyObject *cpy_r_r521;
+    PyObject *cpy_r_r522;
     PyObject *cpy_r_r523;
-    PyObject *cpy_r_r524;
-    PyObject *cpy_r_r525;
-    PyObject *cpy_r_r526;
-    CPyTagged cpy_r_r527;
-    PyObject *cpy_r_r528;
-    PyObject *cpy_r_r529;
-    PyObject *cpy_r_r530;
-    PyObject *cpy_r_r531;
-    char cpy_r_r532;
-    PyObject *cpy_r_r533;
-    PyObject *cpy_r_r534;
-    PyObject *cpy_r_r535;
-    PyObject *cpy_r_r536;
-    int32_t cpy_r_r537;
-    char cpy_r_r538;
+    int32_t cpy_r_r524;
+    char cpy_r_r525;
+    int32_t cpy_r_r526;
+    char cpy_r_r527;
+    int32_t cpy_r_r528;
+    char cpy_r_r529;
+    int32_t cpy_r_r530;
+    char cpy_r_r531;
+    int32_t cpy_r_r532;
+    char cpy_r_r533;
+    int32_t cpy_r_r534;
+    char cpy_r_r535;
+    int32_t cpy_r_r536;
+    char cpy_r_r537;
+    int32_t cpy_r_r538;
     char cpy_r_r539;
+    int32_t cpy_r_r540;
+    char cpy_r_r541;
+    int32_t cpy_r_r542;
+    char cpy_r_r543;
+    int32_t cpy_r_r544;
+    char cpy_r_r545;
+    int32_t cpy_r_r546;
+    char cpy_r_r547;
+    int32_t cpy_r_r548;
+    char cpy_r_r549;
+    PyObject *cpy_r_r550;
+    char cpy_r_r551;
+    PyObject *cpy_r_r552;
+    PyObject *cpy_r_r553;
+    int32_t cpy_r_r554;
+    char cpy_r_r555;
+    PyObject *cpy_r_r556;
+    char cpy_r_r557;
+    PyObject *cpy_r_r558;
+    PyObject *cpy_r_r559;
+    PyObject *cpy_r_r560;
+    PyObject *cpy_r_r561;
+    PyObject *cpy_r_r562;
+    PyObject *cpy_r_r563;
+    PyObject *cpy_r_r564;
+    int32_t cpy_r_r565;
+    char cpy_r_r566;
+    int32_t cpy_r_r567;
+    char cpy_r_r568;
+    int32_t cpy_r_r569;
+    char cpy_r_r570;
+    int32_t cpy_r_r571;
+    char cpy_r_r572;
+    int32_t cpy_r_r573;
+    char cpy_r_r574;
+    int32_t cpy_r_r575;
+    char cpy_r_r576;
+    PyObject *cpy_r_r577;
+    PyObject *cpy_r_r578;
+    PyObject *cpy_r_r579;
+    PyObject *cpy_r_r580;
+    CPyTagged cpy_r_r581;
+    PyObject *cpy_r_r582;
+    PyObject *cpy_r_r583;
+    PyObject *cpy_r_r584;
+    PyObject *cpy_r_r585;
+    char cpy_r_r586;
+    PyObject *cpy_r_r587;
+    PyObject *cpy_r_r588;
+    PyObject *cpy_r_r589;
+    PyObject *cpy_r_r590;
+    int32_t cpy_r_r591;
+    char cpy_r_r592;
+    char cpy_r_r593;
     cpy_r_r0 = CPyModule_builtins;
     cpy_r_r1 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r2 = cpy_r_r0 != cpy_r_r1;
@@ -35353,7 +35458,7 @@ char CPyDef_sense_check_____top_level__(void) {
     cpy_r_r4 = PyImport_Import(cpy_r_r3);
     if (unlikely(cpy_r_r4 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", -1, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPyModule_builtins = cpy_r_r4;
     CPy_INCREF(CPyModule_builtins);
@@ -35369,14 +35474,14 @@ CPyL3: ;
     cpy_r_r12 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y/prices/utils/sense_check.py' */
     cpy_r_r13 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '<module>' */
     cpy_r_r14 = CPyImport_ImportMany(cpy_r_r10, cpy_r_r7, cpy_r_r11, cpy_r_r12, cpy_r_r13, cpy_r_r9);
-    if (!cpy_r_r14) goto CPyL203;
+    if (!cpy_r_r14) goto CPyL224;
     cpy_r_r15 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Decimal',) */
     cpy_r_r16 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'decimal' */
     cpy_r_r17 = CPyStatic_sense_check___globals;
     cpy_r_r18 = CPyImport_ImportFromMany(cpy_r_r16, cpy_r_r15, cpy_r_r15, cpy_r_r17);
     if (unlikely(cpy_r_r18 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPyModule_decimal = cpy_r_r18;
     CPy_INCREF(CPyModule_decimal);
@@ -35387,7 +35492,7 @@ CPyL3: ;
     cpy_r_r22 = CPyImport_ImportFromMany(cpy_r_r20, cpy_r_r19, cpy_r_r19, cpy_r_r21);
     if (unlikely(cpy_r_r22 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPyModule_typing = cpy_r_r22;
     CPy_INCREF(CPyModule_typing);
@@ -35402,1468 +35507,1622 @@ CPyL3: ;
     cpy_r_r30 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y/prices/utils/sense_check.py' */
     cpy_r_r31 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '<module>' */
     cpy_r_r32 = CPyImport_ImportMany(cpy_r_r28, cpy_r_r25, cpy_r_r29, cpy_r_r30, cpy_r_r31, cpy_r_r27);
-    if (!cpy_r_r32) goto CPyL203;
+    if (!cpy_r_r32) goto CPyL224;
     cpy_r_r33 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('BlockNumber', 'ChecksumAddress') */
     cpy_r_r34 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'eth_typing' */
     cpy_r_r35 = CPyStatic_sense_check___globals;
     cpy_r_r36 = CPyImport_ImportFromMany(cpy_r_r34, cpy_r_r33, cpy_r_r33, cpy_r_r35);
     if (unlikely(cpy_r_r36 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPyModule_eth_typing = cpy_r_r36;
     CPy_INCREF(CPyModule_eth_typing);
     CPy_DECREF(cpy_r_r36);
-    cpy_r_r37 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('ERC20',) */
-    cpy_r_r38 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.classes.common' */
-    cpy_r_r39 = CPyStatic_sense_check___globals;
-    cpy_r_r40 = CPyImport_ImportFromMany(cpy_r_r38, cpy_r_r37, cpy_r_r37, cpy_r_r39);
-    if (unlikely(cpy_r_r40 == NULL)) {
+    cpy_r_r37 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('ENVIRONMENT_VARIABLES',) */
+    cpy_r_r38 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('ENVS',) */
+    cpy_r_r39 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y' */
+    cpy_r_r40 = CPyStatic_sense_check___globals;
+    cpy_r_r41 = CPyImport_ImportFromMany(cpy_r_r39, cpy_r_r37, cpy_r_r38, cpy_r_r40);
+    if (unlikely(cpy_r_r41 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___classes___common = cpy_r_r40;
+    CPyModule_y = cpy_r_r41;
+    CPy_INCREF(CPyModule_y);
+    CPy_DECREF(cpy_r_r41);
+    cpy_r_r42 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('ERC20',) */
+    cpy_r_r43 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.classes.common' */
+    cpy_r_r44 = CPyStatic_sense_check___globals;
+    cpy_r_r45 = CPyImport_ImportFromMany(cpy_r_r43, cpy_r_r42, cpy_r_r42, cpy_r_r44);
+    if (unlikely(cpy_r_r45 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL224;
+    }
+    CPyModule_y___classes___common = cpy_r_r45;
     CPy_INCREF(CPyModule_y___classes___common);
-    CPy_DECREF(cpy_r_r40);
-    cpy_r_r41 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('CHAINID', 'NETWORK_NAME', 'wbtc', 'weth') */
-    cpy_r_r42 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.constants' */
-    cpy_r_r43 = CPyStatic_sense_check___globals;
-    cpy_r_r44 = CPyImport_ImportFromMany(cpy_r_r42, cpy_r_r41, cpy_r_r41, cpy_r_r43);
-    if (unlikely(cpy_r_r44 == NULL)) {
+    CPy_DECREF(cpy_r_r45);
+    cpy_r_r46 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('CHAINID', 'NETWORK_NAME', 'wbtc', 'weth') */
+    cpy_r_r47 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.constants' */
+    cpy_r_r48 = CPyStatic_sense_check___globals;
+    cpy_r_r49 = CPyImport_ImportFromMany(cpy_r_r47, cpy_r_r46, cpy_r_r46, cpy_r_r48);
+    if (unlikely(cpy_r_r49 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___constants = cpy_r_r44;
+    CPyModule_y___constants = cpy_r_r49;
     CPy_INCREF(CPyModule_y___constants);
-    CPy_DECREF(cpy_r_r44);
-    cpy_r_r45 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Contract',) */
-    cpy_r_r46 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.contracts' */
-    cpy_r_r47 = CPyStatic_sense_check___globals;
-    cpy_r_r48 = CPyImport_ImportFromMany(cpy_r_r46, cpy_r_r45, cpy_r_r45, cpy_r_r47);
-    if (unlikely(cpy_r_r48 == NULL)) {
+    CPy_DECREF(cpy_r_r49);
+    cpy_r_r50 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Contract',) */
+    cpy_r_r51 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.contracts' */
+    cpy_r_r52 = CPyStatic_sense_check___globals;
+    cpy_r_r53 = CPyImport_ImportFromMany(cpy_r_r51, cpy_r_r50, cpy_r_r50, cpy_r_r52);
+    if (unlikely(cpy_r_r53 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___contracts = cpy_r_r48;
+    CPyModule_y___contracts = cpy_r_r53;
     CPy_INCREF(CPyModule_y___contracts);
-    CPy_DECREF(cpy_r_r48);
-    cpy_r_r49 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('NonStandardERC20',) */
-    cpy_r_r50 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.exceptions' */
-    cpy_r_r51 = CPyStatic_sense_check___globals;
-    cpy_r_r52 = CPyImport_ImportFromMany(cpy_r_r50, cpy_r_r49, cpy_r_r49, cpy_r_r51);
-    if (unlikely(cpy_r_r52 == NULL)) {
+    CPy_DECREF(cpy_r_r53);
+    cpy_r_r54 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('NonStandardERC20',) */
+    cpy_r_r55 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.exceptions' */
+    cpy_r_r56 = CPyStatic_sense_check___globals;
+    cpy_r_r57 = CPyImport_ImportFromMany(cpy_r_r55, cpy_r_r54, cpy_r_r54, cpy_r_r56);
+    if (unlikely(cpy_r_r57 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___exceptions = cpy_r_r52;
+    CPyModule_y___exceptions = cpy_r_r57;
     CPy_INCREF(CPyModule_y___exceptions);
-    CPy_DECREF(cpy_r_r52);
-    cpy_r_r53 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Network',) */
-    cpy_r_r54 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.networks' */
-    cpy_r_r55 = CPyStatic_sense_check___globals;
-    cpy_r_r56 = CPyImport_ImportFromMany(cpy_r_r54, cpy_r_r53, cpy_r_r53, cpy_r_r55);
-    if (unlikely(cpy_r_r56 == NULL)) {
+    CPy_DECREF(cpy_r_r57);
+    cpy_r_r58 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Network',) */
+    cpy_r_r59 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.networks' */
+    cpy_r_r60 = CPyStatic_sense_check___globals;
+    cpy_r_r61 = CPyImport_ImportFromMany(cpy_r_r59, cpy_r_r58, cpy_r_r58, cpy_r_r60);
+    if (unlikely(cpy_r_r61 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___networks = cpy_r_r56;
+    CPyModule_y___networks = cpy_r_r61;
     CPy_INCREF(CPyModule_y___networks);
-    CPy_DECREF(cpy_r_r56);
-    cpy_r_r57 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('aave',) */
-    cpy_r_r58 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.lending.aave' */
-    cpy_r_r59 = CPyStatic_sense_check___globals;
-    cpy_r_r60 = CPyImport_ImportFromMany(cpy_r_r58, cpy_r_r57, cpy_r_r57, cpy_r_r59);
-    if (unlikely(cpy_r_r60 == NULL)) {
+    CPy_DECREF(cpy_r_r61);
+    cpy_r_r62 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('aave',) */
+    cpy_r_r63 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.lending.aave' */
+    cpy_r_r64 = CPyStatic_sense_check___globals;
+    cpy_r_r65 = CPyImport_ImportFromMany(cpy_r_r63, cpy_r_r62, cpy_r_r62, cpy_r_r64);
+    if (unlikely(cpy_r_r65 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___prices___lending___aave = cpy_r_r60;
+    CPyModule_y___prices___lending___aave = cpy_r_r65;
     CPy_INCREF(CPyModule_y___prices___lending___aave);
-    CPy_DECREF(cpy_r_r60);
-    cpy_r_r61 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('CToken',) */
-    cpy_r_r62 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.lending.compound' */
-    cpy_r_r63 = CPyStatic_sense_check___globals;
-    cpy_r_r64 = CPyImport_ImportFromMany(cpy_r_r62, cpy_r_r61, cpy_r_r61, cpy_r_r63);
-    if (unlikely(cpy_r_r64 == NULL)) {
+    CPy_DECREF(cpy_r_r65);
+    cpy_r_r66 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('CToken',) */
+    cpy_r_r67 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.lending.compound' */
+    cpy_r_r68 = CPyStatic_sense_check___globals;
+    cpy_r_r69 = CPyImport_ImportFromMany(cpy_r_r67, cpy_r_r66, cpy_r_r66, cpy_r_r68);
+    if (unlikely(cpy_r_r69 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___prices___lending___compound = cpy_r_r64;
+    CPyModule_y___prices___lending___compound = cpy_r_r69;
     CPy_INCREF(CPyModule_y___prices___lending___compound);
-    CPy_DECREF(cpy_r_r64);
-    cpy_r_r65 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('CurvePool',) */
-    cpy_r_r66 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.stable_swap.curve' */
-    cpy_r_r67 = CPyStatic_sense_check___globals;
-    cpy_r_r68 = CPyImport_ImportFromMany(cpy_r_r66, cpy_r_r65, cpy_r_r65, cpy_r_r67);
-    if (unlikely(cpy_r_r68 == NULL)) {
+    CPy_DECREF(cpy_r_r69);
+    cpy_r_r70 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('CurvePool',) */
+    cpy_r_r71 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.stable_swap.curve' */
+    cpy_r_r72 = CPyStatic_sense_check___globals;
+    cpy_r_r73 = CPyImport_ImportFromMany(cpy_r_r71, cpy_r_r70, cpy_r_r70, cpy_r_r72);
+    if (unlikely(cpy_r_r73 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___prices___stable_swap___curve = cpy_r_r68;
+    CPyModule_y___prices___stable_swap___curve = cpy_r_r73;
     CPy_INCREF(CPyModule_y___prices___stable_swap___curve);
-    CPy_DECREF(cpy_r_r68);
-    cpy_r_r69 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('check_bucket',) */
-    cpy_r_r70 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.utils' */
-    cpy_r_r71 = CPyStatic_sense_check___globals;
-    cpy_r_r72 = CPyImport_ImportFromMany(cpy_r_r70, cpy_r_r69, cpy_r_r69, cpy_r_r71);
-    if (unlikely(cpy_r_r72 == NULL)) {
+    CPy_DECREF(cpy_r_r73);
+    cpy_r_r74 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('check_bucket',) */
+    cpy_r_r75 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.utils' */
+    cpy_r_r76 = CPyStatic_sense_check___globals;
+    cpy_r_r77 = CPyImport_ImportFromMany(cpy_r_r75, cpy_r_r74, cpy_r_r74, cpy_r_r76);
+    if (unlikely(cpy_r_r77 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___prices___utils = cpy_r_r72;
+    CPyModule_y___prices___utils = cpy_r_r77;
     CPy_INCREF(CPyModule_y___prices___utils);
-    CPy_DECREF(cpy_r_r72);
-    cpy_r_r73 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('YearnInspiredVault',) */
-    cpy_r_r74 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.yearn' */
-    cpy_r_r75 = CPyStatic_sense_check___globals;
-    cpy_r_r76 = CPyImport_ImportFromMany(cpy_r_r74, cpy_r_r73, cpy_r_r73, cpy_r_r75);
-    if (unlikely(cpy_r_r76 == NULL)) {
+    CPy_DECREF(cpy_r_r77);
+    cpy_r_r78 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('YearnInspiredVault',) */
+    cpy_r_r79 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'y.prices.yearn' */
+    cpy_r_r80 = CPyStatic_sense_check___globals;
+    cpy_r_r81 = CPyImport_ImportFromMany(cpy_r_r79, cpy_r_r78, cpy_r_r78, cpy_r_r80);
+    if (unlikely(cpy_r_r81 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    CPyModule_y___prices___yearn = cpy_r_r76;
+    CPyModule_y___prices___yearn = cpy_r_r81;
     CPy_INCREF(CPyModule_y___prices___yearn);
-    CPy_DECREF(cpy_r_r76);
-    cpy_r_r77 = CPyStatic_sense_check___globals;
-    cpy_r_r78 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__name__' */
-    cpy_r_r79 = CPyDict_GetItem(cpy_r_r77, cpy_r_r78);
-    if (unlikely(cpy_r_r79 == NULL)) {
+    CPy_DECREF(cpy_r_r81);
+    cpy_r_r82 = CPyStatic_sense_check___globals;
+    cpy_r_r83 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '__name__' */
+    cpy_r_r84 = CPyDict_GetItem(cpy_r_r82, cpy_r_r83);
+    if (unlikely(cpy_r_r84 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    if (likely(PyUnicode_Check(cpy_r_r79)))
-        cpy_r_r80 = cpy_r_r79;
+    if (likely(PyUnicode_Check(cpy_r_r84)))
+        cpy_r_r85 = cpy_r_r84;
     else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "<module>", 30, CPyStatic_sense_check___globals, "str", cpy_r_r79);
-        goto CPyL203;
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "<module>", 31, CPyStatic_sense_check___globals, "str", cpy_r_r84);
+        goto CPyL224;
     }
-    cpy_r_r81 = CPyModule_logging;
-    cpy_r_r82 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'getLogger' */
-    cpy_r_r83 = CPyObject_GetAttr(cpy_r_r81, cpy_r_r82);
-    if (unlikely(cpy_r_r83 == NULL)) {
+    cpy_r_r86 = CPyModule_logging;
+    cpy_r_r87 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'getLogger' */
+    cpy_r_r88 = CPyObject_GetAttr(cpy_r_r86, cpy_r_r87);
+    if (unlikely(cpy_r_r88 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL204;
+        goto CPyL225;
     }
-    PyObject *cpy_r_r84[1] = {cpy_r_r80};
-    cpy_r_r85 = (PyObject **)&cpy_r_r84;
-    cpy_r_r86 = PyObject_Vectorcall(cpy_r_r83, cpy_r_r85, 1, 0);
-    CPy_DECREF(cpy_r_r83);
-    if (unlikely(cpy_r_r86 == NULL)) {
+    PyObject *cpy_r_r89[1] = {cpy_r_r85};
+    cpy_r_r90 = (PyObject **)&cpy_r_r89;
+    cpy_r_r91 = PyObject_Vectorcall(cpy_r_r88, cpy_r_r90, 1, 0);
+    CPy_DECREF(cpy_r_r88);
+    if (unlikely(cpy_r_r91 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL204;
+        goto CPyL225;
     }
-    CPy_DECREF(cpy_r_r80);
-    CPyStatic_sense_check___logger = cpy_r_r86;
+    CPy_DECREF(cpy_r_r85);
+    CPyStatic_sense_check___logger = cpy_r_r91;
     CPy_INCREF(CPyStatic_sense_check___logger);
-    cpy_r_r87 = CPyStatic_sense_check___globals;
-    cpy_r_r88 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'logger' */
-    cpy_r_r89 = CPyDict_SetItem(cpy_r_r87, cpy_r_r88, cpy_r_r86);
-    CPy_DECREF(cpy_r_r86);
-    cpy_r_r90 = cpy_r_r89 >= 0;
-    if (unlikely(!cpy_r_r90)) {
+    cpy_r_r92 = CPyStatic_sense_check___globals;
+    cpy_r_r93 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'logger' */
+    cpy_r_r94 = CPyDict_SetItem(cpy_r_r92, cpy_r_r93, cpy_r_r91);
+    CPy_DECREF(cpy_r_r91);
+    cpy_r_r95 = cpy_r_r94 >= 0;
+    if (unlikely(!cpy_r_r95)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    cpy_r_r91 = CPyStatic_sense_check___globals;
-    cpy_r_r92 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'weth' */
-    cpy_r_r93 = CPyDict_GetItem(cpy_r_r91, cpy_r_r92);
-    if (unlikely(cpy_r_r93 == NULL)) {
+    cpy_r_r96 = CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE;
+    if (likely(cpy_r_r96 != NULL)) goto CPyL27;
+    PyErr_SetString(PyExc_NameError, "value for final name \"SENSE_CHECK_FILE\" was not set");
+    cpy_r_r97 = 0;
+    if (unlikely(!cpy_r_r97)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
-    }
-    cpy_r_r94 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'address' */
-    cpy_r_r95 = CPyObject_GetAttr(cpy_r_r93, cpy_r_r94);
-    CPy_DECREF(cpy_r_r93);
-    if (unlikely(cpy_r_r95 == NULL)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
-    }
-    if (likely(PyUnicode_Check(cpy_r_r95)))
-        cpy_r_r96 = cpy_r_r95;
-    else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "<module>", 35, CPyStatic_sense_check___globals, "str", cpy_r_r95);
-        goto CPyL203;
-    }
-    cpy_r_r97 = CPyStatic_sense_check___globals;
-    cpy_r_r98 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'wbtc' */
-    cpy_r_r99 = CPyDict_GetItem(cpy_r_r97, cpy_r_r98);
-    if (unlikely(cpy_r_r99 == NULL)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL205;
-    }
-    cpy_r_r100 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'address' */
-    cpy_r_r101 = CPyObject_GetAttr(cpy_r_r99, cpy_r_r100);
-    CPy_DECREF(cpy_r_r99);
-    if (unlikely(cpy_r_r101 == NULL)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL205;
-    }
-    if (likely(PyUnicode_Check(cpy_r_r101)))
-        cpy_r_r102 = cpy_r_r101;
-    else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "<module>", 36, CPyStatic_sense_check___globals, "str", cpy_r_r101);
-        goto CPyL205;
-    }
-    cpy_r_r103 = PySet_New(NULL);
-    if (unlikely(cpy_r_r103 == NULL)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL206;
-    }
-    cpy_r_r104 = PySet_Add(cpy_r_r103, cpy_r_r96);
-    CPy_DECREF(cpy_r_r96);
-    cpy_r_r105 = cpy_r_r104 >= 0;
-    if (unlikely(!cpy_r_r105)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL207;
-    }
-    cpy_r_r106 = PySet_Add(cpy_r_r103, cpy_r_r102);
-    CPy_DECREF(cpy_r_r102);
-    cpy_r_r107 = cpy_r_r106 >= 0;
-    if (unlikely(!cpy_r_r107)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL208;
-    }
-    CPyStatic_sense_check___acceptable_all_chains = cpy_r_r103;
-    CPy_INCREF(CPyStatic_sense_check___acceptable_all_chains);
-    cpy_r_r108 = CPyStatic_sense_check___globals;
-    cpy_r_r109 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'acceptable_all_chains' */
-    cpy_r_r110 = CPyDict_SetItem(cpy_r_r108, cpy_r_r109, cpy_r_r103);
-    CPy_DECREF(cpy_r_r103);
-    cpy_r_r111 = cpy_r_r110 >= 0;
-    if (unlikely(!cpy_r_r111)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
-    }
-    cpy_r_r112 = CPyStatic_networks___Network___Mainnet;
-    if (likely(cpy_r_r112 != NULL)) goto CPyL36;
-    PyErr_SetString(PyExc_NameError, "value for final name \"Mainnet\" was not set");
-    cpy_r_r113 = 0;
-    if (unlikely(!cpy_r_r113)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPy_Unreachable();
-CPyL36: ;
-    cpy_r_r114 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' */
-    cpy_r_r115 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0' */
-    cpy_r_r116 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c' */
-    cpy_r_r117 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xaA17A236F2bAdc98DDc0Cf999AbB47D47Fc0A6Cf' */
-    cpy_r_r118 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x53a901d48795C58f485cBB38df08FA96a24669D5' */
-    cpy_r_r119 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e' */
-    cpy_r_r120 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x06325440D014e39736583c165C2963BA99fAf14E' */
-    cpy_r_r121 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb' */
-    cpy_r_r122 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xae78736Cd615f374D3085123A210448E74Fc6393' */
-    cpy_r_r123 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb' */
-    cpy_r_r124 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84' */
-    cpy_r_r125 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593' */
-    cpy_r_r126 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x836A808d4828586A69364065A1e064609F5078c7' */
-    cpy_r_r127 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xc3D088842DcF02C13699F936BB83DFBBc6f721Ab' */
-    cpy_r_r128 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xC1330aCBbcE97cb9695B7ee161c0F95B875a8b0F' */
-    cpy_r_r129 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x5E8422345238F34275888049021821E8E08CAa1f' */
-    cpy_r_r130 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3' */
-    cpy_r_r131 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xE72B141DF173b999AE7c1aDcbF60Cc9833Ce56a8' */
-    cpy_r_r132 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5' */
-    cpy_r_r133 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6' */
-    cpy_r_r134 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704' */
-    cpy_r_r135 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x7C07F7aBe10CE8e33DC6C5aD68FE033085256A84' */
-    cpy_r_r136 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xA35b1B31Ce002FBF2058D22F30f95D405200A15b' */
-    cpy_r_r137 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x64351fC9810aDAd17A690E4e1717Df5e7e085160' */
-    cpy_r_r138 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x821A278dFff762c76410264303F25bF42e195C0C' */
-    cpy_r_r139 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xa2E3356610840701BDf5611a53974510Ae27E2e1' */
-    cpy_r_r140 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1BED97CBC3c24A4fb5C069C6E311a967386131f7' */
-    cpy_r_r141 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3A65cbaebBFecbeA5D0CB523ab56fDbda7fF9aAA' */
-    cpy_r_r142 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x6951bDC4734b9f7F3E1B74afeBC670c736A0EDB6' */
-    cpy_r_r143 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38' */
-    cpy_r_r144 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee' */
-    cpy_r_r145 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6' */
-    cpy_r_r146 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x005F893EcD7bF9667195642f7649DA8163e23658' */
-    cpy_r_r147 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xc2e660C62F72c2ad35AcE6DB78a616215E2F2222' */
-    cpy_r_r148 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7' */
-    cpy_r_r149 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x09db87A538BD693E9d08544577d5cCfAA6373A48' */
-    cpy_r_r150 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x35Ec69A77B79c255e5d47D5A3BdbEFEfE342630c' */
-    cpy_r_r151 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xbf5495Efe5DB9ce00f80364C8B423567e58d2110' */
-    cpy_r_r152 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0' */
-    cpy_r_r153 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D' */
-    cpy_r_r154 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6' */
-    cpy_r_r155 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x49849C98ae39Fff122806C06791Fa73784FB3675' */
-    cpy_r_r156 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3' */
-    cpy_r_r157 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xb19059ebb43466C323583928285a49f558E572Fd' */
-    cpy_r_r158 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x64eda51d3Ad40D56b9dFc5554E06F94e1Dd786Fd' */
-    cpy_r_r159 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xDE5331AC4B3630f94853Ff322B66407e0D6331E8' */
-    cpy_r_r160 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x410e3E86ef427e30B9235497143881f717d93c2A' */
-    cpy_r_r161 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x2fE94ea3d5d4a175184081439753DE15AeF9d614' */
-    cpy_r_r162 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd' */
-    cpy_r_r163 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3212b29E33587A00FB1C83346f5dBFA69A458923' */
-    cpy_r_r164 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x5228a22e72ccC52d415EcFd199F99D0665E7733b' */
-    cpy_r_r165 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xFbdCA68601f835b27790D98bbb8eC7f05FDEaA9B' */
-    cpy_r_r166 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0316EB71485b0Ab14103307bf65a021042c6d380' */
-    cpy_r_r167 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9BE89D2a4cd102D8Fecc6BF9dA793be995C22541' */
-    cpy_r_r168 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68' */
-    cpy_r_r169 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa' */
-    cpy_r_r170 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8751D4196027d4e6DA63716fA7786B5174F04C15' */
-    cpy_r_r171 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x66eFF5221ca926636224650Fd3B9c497FF828F7D' */
-    cpy_r_r172 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x18084fbA666a33d37592fA2633fD49a74DD93a88' */
-    cpy_r_r173 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x661c70333AA1850CcDBAe82776Bb436A0fCfeEfB' */
-    cpy_r_r174 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf' */
-    cpy_r_r175 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x45804880De22913dAFE09f4980848ECE6EcbAf78' */
-    cpy_r_r176 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x4922a015c4407F87432B179bb209e125432E4a2A' */
-    cpy_r_r177 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e' */
-    cpy_r_r178 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xFf71841EeFca78a64421db28060855036765c248' */
-    cpy_r_r179 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xa3f152837492340dAAf201F4dFeC6cD73A8a9760' */
-    cpy_r_r180 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x41252E8691e964f7DE35156B68493bAb6797a275' */
-    cpy_r_r181 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44' */
-    cpy_r_r182 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xD5525D397898e5502075Ea5E830d8914f6F0affe' */
-    cpy_r_r183 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2' */
-    cpy_r_r184 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3A283D9c08E8b55966afb64C515f5143cf907611' */
-    cpy_r_r185 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x23B608675a2B2fB1890d3ABBd85c5775c51691d5' */
-    cpy_r_r186 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF' */
-    cpy_r_r187 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xc4AD29ba4B3c580e6D59105FFf484999997675Ff' */
-    cpy_r_r188 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xd075e95423C5c4BA1E122CaE0f4CdFA19b82881b' */
-    cpy_r_r189 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xe9F84dE264E91529aF07Fa2C746e934397810334' */
-    cpy_r_r190 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83' */
-    cpy_r_r191 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0fe629d1E84E171f8fF0C1Ded2Cc2221Caa48a3f' */
-    cpy_r_r192 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x5F0E628B693018f639D10e4A4F59BD4d8B2B6B44' */
-    cpy_r_r193 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF' */
-    cpy_r_r194 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3aaDA3e213aBf8529606924d8D1c55CbDc70Bf74' */
-    cpy_r_r195 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x892A6f9dF0147e5f079b0993F486F9acA3c87881' */
-    cpy_r_r196 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f' */
-    cpy_r_r197 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x97983236bE88107Cc8998733Ef73D8d969c52E37' */
-    cpy_r_r198 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x68749665FF8D2d112Fa859AA293F07A622782F38' */
-    cpy_r_r199 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4' */
-    cpy_r_r200 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B' */
-    cpy_r_r201 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x2889302a794dA87fBF1D6Db415C1492194663D13' */
-    cpy_r_r202 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xBfAb6FA95E0091ed66058ad493189D2cB29385E6' */
-    cpy_r_r203 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8a4f252812dFF2A8636E4F7EB249d8FC2E3bd77f' */
-    cpy_r_r204 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xa1d65E8fB6e87b60FECCBc582F7f97804B725521' */
-    cpy_r_r205 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x641927E970222B10b2E8CDBC96b1B4F427316f16' */
-    cpy_r_r206 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5' */
-    cpy_r_r207 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x269616D549D7e8Eaa82DFb17028d0B212D11232A' */
-    cpy_r_r208 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x69BbE2FA02b4D90A944fF328663667DC32786385' */
-    cpy_r_r209 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xD70240Dd62F4ea9a6A2416e0073D72139489d2AA' */
-    cpy_r_r210 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x114f1388fAB456c4bA31B1850b244Eedcd024136' */
-    cpy_r_r211 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xEA47B64e1BFCCb773A0420247C0aa0a3C1D2E5C5' */
-    cpy_r_r212 = PySet_New(NULL);
-    if (unlikely(cpy_r_r212 == NULL)) {
+CPyL27: ;
+    cpy_r_r98 = PyObject_IsTrue(cpy_r_r96);
+    cpy_r_r99 = cpy_r_r98 >= 0;
+    if (unlikely(!cpy_r_r99)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
-    cpy_r_r213 = PySet_Add(cpy_r_r212, cpy_r_r114);
-    cpy_r_r214 = cpy_r_r213 >= 0;
-    if (unlikely(!cpy_r_r214)) {
+    cpy_r_r100 = cpy_r_r98;
+    if (!cpy_r_r100) goto CPyL44;
+    cpy_r_r101 = CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE;
+    if (likely(cpy_r_r101 != NULL)) goto CPyL32;
+    PyErr_SetString(PyExc_NameError, "value for final name \"SENSE_CHECK_FILE\" was not set");
+    cpy_r_r102 = 0;
+    if (unlikely(!cpy_r_r102)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r215 = PySet_Add(cpy_r_r212, cpy_r_r115);
-    cpy_r_r216 = cpy_r_r215 >= 0;
-    if (unlikely(!cpy_r_r216)) {
+    CPy_Unreachable();
+CPyL32: ;
+    cpy_r_r103 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'a' */
+    cpy_r_r104 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'utf-8' */
+    cpy_r_r105 = CPyModule_logging;
+    cpy_r_r106 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'FileHandler' */
+    cpy_r_r107 = CPyObject_GetAttr(cpy_r_r105, cpy_r_r106);
+    if (unlikely(cpy_r_r107 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r217 = PySet_Add(cpy_r_r212, cpy_r_r116);
-    cpy_r_r218 = cpy_r_r217 >= 0;
-    if (unlikely(!cpy_r_r218)) {
+    PyObject *cpy_r_r108[3] = {cpy_r_r101, cpy_r_r103, cpy_r_r104};
+    cpy_r_r109 = (PyObject **)&cpy_r_r108;
+    cpy_r_r110 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('mode', 'encoding') */
+    cpy_r_r111 = PyObject_Vectorcall(cpy_r_r107, cpy_r_r109, 1, cpy_r_r110);
+    CPy_DECREF(cpy_r_r107);
+    if (unlikely(cpy_r_r111 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r219 = PySet_Add(cpy_r_r212, cpy_r_r117);
-    cpy_r_r220 = cpy_r_r219 >= 0;
-    if (unlikely(!cpy_r_r220)) {
+    cpy_r_r112 = CPyStatic_sense_check___globals;
+    cpy_r_r113 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'file_handler' */
+    cpy_r_r114 = CPyDict_SetItem(cpy_r_r112, cpy_r_r113, cpy_r_r111);
+    CPy_DECREF(cpy_r_r111);
+    cpy_r_r115 = cpy_r_r114 >= 0;
+    if (unlikely(!cpy_r_r115)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r221 = PySet_Add(cpy_r_r212, cpy_r_r118);
-    cpy_r_r222 = cpy_r_r221 >= 0;
-    if (unlikely(!cpy_r_r222)) {
+    cpy_r_r116 = CPyStatic_sense_check___globals;
+    cpy_r_r117 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'file_handler' */
+    cpy_r_r118 = CPyDict_GetItem(cpy_r_r116, cpy_r_r117);
+    if (unlikely(cpy_r_r118 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r223 = PySet_Add(cpy_r_r212, cpy_r_r119);
-    cpy_r_r224 = cpy_r_r223 >= 0;
-    if (unlikely(!cpy_r_r224)) {
+    cpy_r_r119 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'setLevel' */
+    cpy_r_r120 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 30 */
+    PyObject *cpy_r_r121[2] = {cpy_r_r118, cpy_r_r120};
+    cpy_r_r122 = (PyObject **)&cpy_r_r121;
+    cpy_r_r123 = PyObject_VectorcallMethod(cpy_r_r119, cpy_r_r122, 9223372036854775810ULL, 0);
+    if (unlikely(cpy_r_r123 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
-    }
-    cpy_r_r225 = PySet_Add(cpy_r_r212, cpy_r_r120);
-    cpy_r_r226 = cpy_r_r225 >= 0;
-    if (unlikely(!cpy_r_r226)) {
+        goto CPyL226;
+    } else
+        goto CPyL227;
+CPyL37: ;
+    CPy_DECREF(cpy_r_r118);
+    cpy_r_r124 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '%(asctime)s %(levelname)s: %(message)s' */
+    cpy_r_r125 = CPyModule_logging;
+    cpy_r_r126 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'Formatter' */
+    cpy_r_r127 = CPyObject_GetAttr(cpy_r_r125, cpy_r_r126);
+    if (unlikely(cpy_r_r127 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r227 = PySet_Add(cpy_r_r212, cpy_r_r121);
-    cpy_r_r228 = cpy_r_r227 >= 0;
-    if (unlikely(!cpy_r_r228)) {
+    PyObject *cpy_r_r128[1] = {cpy_r_r124};
+    cpy_r_r129 = (PyObject **)&cpy_r_r128;
+    cpy_r_r130 = PyObject_Vectorcall(cpy_r_r127, cpy_r_r129, 1, 0);
+    CPy_DECREF(cpy_r_r127);
+    if (unlikely(cpy_r_r130 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r229 = PySet_Add(cpy_r_r212, cpy_r_r122);
-    cpy_r_r230 = cpy_r_r229 >= 0;
-    if (unlikely(!cpy_r_r230)) {
+    cpy_r_r131 = CPyStatic_sense_check___globals;
+    cpy_r_r132 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'formatter' */
+    cpy_r_r133 = CPyDict_SetItem(cpy_r_r131, cpy_r_r132, cpy_r_r130);
+    CPy_DECREF(cpy_r_r130);
+    cpy_r_r134 = cpy_r_r133 >= 0;
+    if (unlikely(!cpy_r_r134)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r231 = PySet_Add(cpy_r_r212, cpy_r_r123);
-    cpy_r_r232 = cpy_r_r231 >= 0;
-    if (unlikely(!cpy_r_r232)) {
+    cpy_r_r135 = CPyStatic_sense_check___globals;
+    cpy_r_r136 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'file_handler' */
+    cpy_r_r137 = CPyDict_GetItem(cpy_r_r135, cpy_r_r136);
+    if (unlikely(cpy_r_r137 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r233 = PySet_Add(cpy_r_r212, cpy_r_r124);
-    cpy_r_r234 = cpy_r_r233 >= 0;
-    if (unlikely(!cpy_r_r234)) {
+    cpy_r_r138 = CPyStatic_sense_check___globals;
+    cpy_r_r139 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'formatter' */
+    cpy_r_r140 = CPyDict_GetItem(cpy_r_r138, cpy_r_r139);
+    if (unlikely(cpy_r_r140 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL228;
     }
-    cpy_r_r235 = PySet_Add(cpy_r_r212, cpy_r_r125);
-    cpy_r_r236 = cpy_r_r235 >= 0;
-    if (unlikely(!cpy_r_r236)) {
+    cpy_r_r141 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'setFormatter' */
+    PyObject *cpy_r_r142[2] = {cpy_r_r137, cpy_r_r140};
+    cpy_r_r143 = (PyObject **)&cpy_r_r142;
+    cpy_r_r144 = PyObject_VectorcallMethod(cpy_r_r141, cpy_r_r143, 9223372036854775810ULL, 0);
+    if (unlikely(cpy_r_r144 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
-    }
-    cpy_r_r237 = PySet_Add(cpy_r_r212, cpy_r_r126);
-    cpy_r_r238 = cpy_r_r237 >= 0;
-    if (unlikely(!cpy_r_r238)) {
+        goto CPyL229;
+    } else
+        goto CPyL230;
+CPyL43: ;
+    CPy_DECREF(cpy_r_r137);
+    CPy_DECREF(cpy_r_r140);
+CPyL44: ;
+    cpy_r_r145 = CPyStatic_sense_check___globals;
+    cpy_r_r146 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'weth' */
+    cpy_r_r147 = CPyDict_GetItem(cpy_r_r145, cpy_r_r146);
+    if (unlikely(cpy_r_r147 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r239 = PySet_Add(cpy_r_r212, cpy_r_r127);
-    cpy_r_r240 = cpy_r_r239 >= 0;
-    if (unlikely(!cpy_r_r240)) {
+    cpy_r_r148 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'address' */
+    cpy_r_r149 = CPyObject_GetAttr(cpy_r_r147, cpy_r_r148);
+    CPy_DECREF(cpy_r_r147);
+    if (unlikely(cpy_r_r149 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r241 = PySet_Add(cpy_r_r212, cpy_r_r128);
-    cpy_r_r242 = cpy_r_r241 >= 0;
-    if (unlikely(!cpy_r_r242)) {
+    if (likely(PyUnicode_Check(cpy_r_r149)))
+        cpy_r_r150 = cpy_r_r149;
+    else {
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "<module>", 44, CPyStatic_sense_check___globals, "str", cpy_r_r149);
+        goto CPyL224;
+    }
+    cpy_r_r151 = CPyStatic_sense_check___globals;
+    cpy_r_r152 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'wbtc' */
+    cpy_r_r153 = CPyDict_GetItem(cpy_r_r151, cpy_r_r152);
+    if (unlikely(cpy_r_r153 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL231;
     }
-    cpy_r_r243 = PySet_Add(cpy_r_r212, cpy_r_r129);
-    cpy_r_r244 = cpy_r_r243 >= 0;
-    if (unlikely(!cpy_r_r244)) {
+    cpy_r_r154 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'address' */
+    cpy_r_r155 = CPyObject_GetAttr(cpy_r_r153, cpy_r_r154);
+    CPy_DECREF(cpy_r_r153);
+    if (unlikely(cpy_r_r155 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL231;
     }
-    cpy_r_r245 = PySet_Add(cpy_r_r212, cpy_r_r130);
-    cpy_r_r246 = cpy_r_r245 >= 0;
-    if (unlikely(!cpy_r_r246)) {
+    if (likely(PyUnicode_Check(cpy_r_r155)))
+        cpy_r_r156 = cpy_r_r155;
+    else {
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "<module>", 45, CPyStatic_sense_check___globals, "str", cpy_r_r155);
+        goto CPyL231;
+    }
+    cpy_r_r157 = PySet_New(NULL);
+    if (unlikely(cpy_r_r157 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL232;
     }
-    cpy_r_r247 = PySet_Add(cpy_r_r212, cpy_r_r131);
-    cpy_r_r248 = cpy_r_r247 >= 0;
-    if (unlikely(!cpy_r_r248)) {
+    cpy_r_r158 = PySet_Add(cpy_r_r157, cpy_r_r150);
+    CPy_DECREF(cpy_r_r150);
+    cpy_r_r159 = cpy_r_r158 >= 0;
+    if (unlikely(!cpy_r_r159)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL233;
     }
-    cpy_r_r249 = PySet_Add(cpy_r_r212, cpy_r_r132);
-    cpy_r_r250 = cpy_r_r249 >= 0;
-    if (unlikely(!cpy_r_r250)) {
+    cpy_r_r160 = PySet_Add(cpy_r_r157, cpy_r_r156);
+    CPy_DECREF(cpy_r_r156);
+    cpy_r_r161 = cpy_r_r160 >= 0;
+    if (unlikely(!cpy_r_r161)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL234;
     }
-    cpy_r_r251 = PySet_Add(cpy_r_r212, cpy_r_r133);
-    cpy_r_r252 = cpy_r_r251 >= 0;
-    if (unlikely(!cpy_r_r252)) {
+    CPyStatic_sense_check___acceptable_all_chains = cpy_r_r157;
+    CPy_INCREF(CPyStatic_sense_check___acceptable_all_chains);
+    cpy_r_r162 = CPyStatic_sense_check___globals;
+    cpy_r_r163 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'acceptable_all_chains' */
+    cpy_r_r164 = CPyDict_SetItem(cpy_r_r162, cpy_r_r163, cpy_r_r157);
+    CPy_DECREF(cpy_r_r157);
+    cpy_r_r165 = cpy_r_r164 >= 0;
+    if (unlikely(!cpy_r_r165)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r253 = PySet_Add(cpy_r_r212, cpy_r_r134);
-    cpy_r_r254 = cpy_r_r253 >= 0;
-    if (unlikely(!cpy_r_r254)) {
+    cpy_r_r166 = CPyStatic_networks___Network___Mainnet;
+    if (likely(cpy_r_r166 != NULL)) goto CPyL57;
+    PyErr_SetString(PyExc_NameError, "value for final name \"Mainnet\" was not set");
+    cpy_r_r167 = 0;
+    if (unlikely(!cpy_r_r167)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r255 = PySet_Add(cpy_r_r212, cpy_r_r135);
-    cpy_r_r256 = cpy_r_r255 >= 0;
-    if (unlikely(!cpy_r_r256)) {
+    CPy_Unreachable();
+CPyL57: ;
+    cpy_r_r168 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' */
+    cpy_r_r169 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0' */
+    cpy_r_r170 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c' */
+    cpy_r_r171 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xaA17A236F2bAdc98DDc0Cf999AbB47D47Fc0A6Cf' */
+    cpy_r_r172 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x53a901d48795C58f485cBB38df08FA96a24669D5' */
+    cpy_r_r173 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e' */
+    cpy_r_r174 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x06325440D014e39736583c165C2963BA99fAf14E' */
+    cpy_r_r175 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb' */
+    cpy_r_r176 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xae78736Cd615f374D3085123A210448E74Fc6393' */
+    cpy_r_r177 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb' */
+    cpy_r_r178 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84' */
+    cpy_r_r179 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593' */
+    cpy_r_r180 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x836A808d4828586A69364065A1e064609F5078c7' */
+    cpy_r_r181 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xc3D088842DcF02C13699F936BB83DFBBc6f721Ab' */
+    cpy_r_r182 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xC1330aCBbcE97cb9695B7ee161c0F95B875a8b0F' */
+    cpy_r_r183 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x5E8422345238F34275888049021821E8E08CAa1f' */
+    cpy_r_r184 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3' */
+    cpy_r_r185 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xE72B141DF173b999AE7c1aDcbF60Cc9833Ce56a8' */
+    cpy_r_r186 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5' */
+    cpy_r_r187 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6' */
+    cpy_r_r188 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704' */
+    cpy_r_r189 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x7C07F7aBe10CE8e33DC6C5aD68FE033085256A84' */
+    cpy_r_r190 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xA35b1B31Ce002FBF2058D22F30f95D405200A15b' */
+    cpy_r_r191 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x64351fC9810aDAd17A690E4e1717Df5e7e085160' */
+    cpy_r_r192 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x821A278dFff762c76410264303F25bF42e195C0C' */
+    cpy_r_r193 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xa2E3356610840701BDf5611a53974510Ae27E2e1' */
+    cpy_r_r194 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1BED97CBC3c24A4fb5C069C6E311a967386131f7' */
+    cpy_r_r195 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3A65cbaebBFecbeA5D0CB523ab56fDbda7fF9aAA' */
+    cpy_r_r196 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x6951bDC4734b9f7F3E1B74afeBC670c736A0EDB6' */
+    cpy_r_r197 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38' */
+    cpy_r_r198 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee' */
+    cpy_r_r199 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6' */
+    cpy_r_r200 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x005F893EcD7bF9667195642f7649DA8163e23658' */
+    cpy_r_r201 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xc2e660C62F72c2ad35AcE6DB78a616215E2F2222' */
+    cpy_r_r202 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7' */
+    cpy_r_r203 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x09db87A538BD693E9d08544577d5cCfAA6373A48' */
+    cpy_r_r204 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x35Ec69A77B79c255e5d47D5A3BdbEFEfE342630c' */
+    cpy_r_r205 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xbf5495Efe5DB9ce00f80364C8B423567e58d2110' */
+    cpy_r_r206 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0' */
+    cpy_r_r207 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D' */
+    cpy_r_r208 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6' */
+    cpy_r_r209 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x49849C98ae39Fff122806C06791Fa73784FB3675' */
+    cpy_r_r210 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3' */
+    cpy_r_r211 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xb19059ebb43466C323583928285a49f558E572Fd' */
+    cpy_r_r212 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x64eda51d3Ad40D56b9dFc5554E06F94e1Dd786Fd' */
+    cpy_r_r213 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xDE5331AC4B3630f94853Ff322B66407e0D6331E8' */
+    cpy_r_r214 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x410e3E86ef427e30B9235497143881f717d93c2A' */
+    cpy_r_r215 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x2fE94ea3d5d4a175184081439753DE15AeF9d614' */
+    cpy_r_r216 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd' */
+    cpy_r_r217 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3212b29E33587A00FB1C83346f5dBFA69A458923' */
+    cpy_r_r218 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x5228a22e72ccC52d415EcFd199F99D0665E7733b' */
+    cpy_r_r219 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xFbdCA68601f835b27790D98bbb8eC7f05FDEaA9B' */
+    cpy_r_r220 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0316EB71485b0Ab14103307bf65a021042c6d380' */
+    cpy_r_r221 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9BE89D2a4cd102D8Fecc6BF9dA793be995C22541' */
+    cpy_r_r222 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68' */
+    cpy_r_r223 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa' */
+    cpy_r_r224 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8751D4196027d4e6DA63716fA7786B5174F04C15' */
+    cpy_r_r225 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x66eFF5221ca926636224650Fd3B9c497FF828F7D' */
+    cpy_r_r226 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x18084fbA666a33d37592fA2633fD49a74DD93a88' */
+    cpy_r_r227 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x661c70333AA1850CcDBAe82776Bb436A0fCfeEfB' */
+    cpy_r_r228 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf' */
+    cpy_r_r229 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x45804880De22913dAFE09f4980848ECE6EcbAf78' */
+    cpy_r_r230 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x4922a015c4407F87432B179bb209e125432E4a2A' */
+    cpy_r_r231 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e' */
+    cpy_r_r232 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xFf71841EeFca78a64421db28060855036765c248' */
+    cpy_r_r233 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xa3f152837492340dAAf201F4dFeC6cD73A8a9760' */
+    cpy_r_r234 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x41252E8691e964f7DE35156B68493bAb6797a275' */
+    cpy_r_r235 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44' */
+    cpy_r_r236 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xD5525D397898e5502075Ea5E830d8914f6F0affe' */
+    cpy_r_r237 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2' */
+    cpy_r_r238 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3A283D9c08E8b55966afb64C515f5143cf907611' */
+    cpy_r_r239 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x23B608675a2B2fB1890d3ABBd85c5775c51691d5' */
+    cpy_r_r240 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF' */
+    cpy_r_r241 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xc4AD29ba4B3c580e6D59105FFf484999997675Ff' */
+    cpy_r_r242 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xd075e95423C5c4BA1E122CaE0f4CdFA19b82881b' */
+    cpy_r_r243 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xe9F84dE264E91529aF07Fa2C746e934397810334' */
+    cpy_r_r244 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83' */
+    cpy_r_r245 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0fe629d1E84E171f8fF0C1Ded2Cc2221Caa48a3f' */
+    cpy_r_r246 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x5F0E628B693018f639D10e4A4F59BD4d8B2B6B44' */
+    cpy_r_r247 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF' */
+    cpy_r_r248 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3aaDA3e213aBf8529606924d8D1c55CbDc70Bf74' */
+    cpy_r_r249 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x892A6f9dF0147e5f079b0993F486F9acA3c87881' */
+    cpy_r_r250 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f' */
+    cpy_r_r251 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x97983236bE88107Cc8998733Ef73D8d969c52E37' */
+    cpy_r_r252 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x68749665FF8D2d112Fa859AA293F07A622782F38' */
+    cpy_r_r253 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4' */
+    cpy_r_r254 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B' */
+    cpy_r_r255 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x2889302a794dA87fBF1D6Db415C1492194663D13' */
+    cpy_r_r256 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xBfAb6FA95E0091ed66058ad493189D2cB29385E6' */
+    cpy_r_r257 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8a4f252812dFF2A8636E4F7EB249d8FC2E3bd77f' */
+    cpy_r_r258 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xa1d65E8fB6e87b60FECCBc582F7f97804B725521' */
+    cpy_r_r259 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x641927E970222B10b2E8CDBC96b1B4F427316f16' */
+    cpy_r_r260 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5' */
+    cpy_r_r261 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x269616D549D7e8Eaa82DFb17028d0B212D11232A' */
+    cpy_r_r262 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x69BbE2FA02b4D90A944fF328663667DC32786385' */
+    cpy_r_r263 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xD70240Dd62F4ea9a6A2416e0073D72139489d2AA' */
+    cpy_r_r264 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x114f1388fAB456c4bA31B1850b244Eedcd024136' */
+    cpy_r_r265 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xEA47B64e1BFCCb773A0420247C0aa0a3C1D2E5C5' */
+    cpy_r_r266 = PySet_New(NULL);
+    if (unlikely(cpy_r_r266 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL224;
     }
-    cpy_r_r257 = PySet_Add(cpy_r_r212, cpy_r_r136);
-    cpy_r_r258 = cpy_r_r257 >= 0;
-    if (unlikely(!cpy_r_r258)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
-    }
-    cpy_r_r259 = PySet_Add(cpy_r_r212, cpy_r_r137);
-    cpy_r_r260 = cpy_r_r259 >= 0;
-    if (unlikely(!cpy_r_r260)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
-    }
-    cpy_r_r261 = PySet_Add(cpy_r_r212, cpy_r_r138);
-    cpy_r_r262 = cpy_r_r261 >= 0;
-    if (unlikely(!cpy_r_r262)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
-    }
-    cpy_r_r263 = PySet_Add(cpy_r_r212, cpy_r_r139);
-    cpy_r_r264 = cpy_r_r263 >= 0;
-    if (unlikely(!cpy_r_r264)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
-    }
-    cpy_r_r265 = PySet_Add(cpy_r_r212, cpy_r_r140);
-    cpy_r_r266 = cpy_r_r265 >= 0;
-    if (unlikely(!cpy_r_r266)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
-    }
-    cpy_r_r267 = PySet_Add(cpy_r_r212, cpy_r_r141);
+    cpy_r_r267 = PySet_Add(cpy_r_r266, cpy_r_r168);
     cpy_r_r268 = cpy_r_r267 >= 0;
     if (unlikely(!cpy_r_r268)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r269 = PySet_Add(cpy_r_r212, cpy_r_r142);
+    cpy_r_r269 = PySet_Add(cpy_r_r266, cpy_r_r169);
     cpy_r_r270 = cpy_r_r269 >= 0;
     if (unlikely(!cpy_r_r270)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r271 = PySet_Add(cpy_r_r212, cpy_r_r143);
+    cpy_r_r271 = PySet_Add(cpy_r_r266, cpy_r_r170);
     cpy_r_r272 = cpy_r_r271 >= 0;
     if (unlikely(!cpy_r_r272)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r273 = PySet_Add(cpy_r_r212, cpy_r_r144);
+    cpy_r_r273 = PySet_Add(cpy_r_r266, cpy_r_r171);
     cpy_r_r274 = cpy_r_r273 >= 0;
     if (unlikely(!cpy_r_r274)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r275 = PySet_Add(cpy_r_r212, cpy_r_r145);
+    cpy_r_r275 = PySet_Add(cpy_r_r266, cpy_r_r172);
     cpy_r_r276 = cpy_r_r275 >= 0;
     if (unlikely(!cpy_r_r276)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r277 = PySet_Add(cpy_r_r212, cpy_r_r146);
+    cpy_r_r277 = PySet_Add(cpy_r_r266, cpy_r_r173);
     cpy_r_r278 = cpy_r_r277 >= 0;
     if (unlikely(!cpy_r_r278)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r279 = PySet_Add(cpy_r_r212, cpy_r_r147);
+    cpy_r_r279 = PySet_Add(cpy_r_r266, cpy_r_r174);
     cpy_r_r280 = cpy_r_r279 >= 0;
     if (unlikely(!cpy_r_r280)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r281 = PySet_Add(cpy_r_r212, cpy_r_r148);
+    cpy_r_r281 = PySet_Add(cpy_r_r266, cpy_r_r175);
     cpy_r_r282 = cpy_r_r281 >= 0;
     if (unlikely(!cpy_r_r282)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r283 = PySet_Add(cpy_r_r212, cpy_r_r149);
+    cpy_r_r283 = PySet_Add(cpy_r_r266, cpy_r_r176);
     cpy_r_r284 = cpy_r_r283 >= 0;
     if (unlikely(!cpy_r_r284)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r285 = PySet_Add(cpy_r_r212, cpy_r_r150);
+    cpy_r_r285 = PySet_Add(cpy_r_r266, cpy_r_r177);
     cpy_r_r286 = cpy_r_r285 >= 0;
     if (unlikely(!cpy_r_r286)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r287 = PySet_Add(cpy_r_r212, cpy_r_r151);
+    cpy_r_r287 = PySet_Add(cpy_r_r266, cpy_r_r178);
     cpy_r_r288 = cpy_r_r287 >= 0;
     if (unlikely(!cpy_r_r288)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r289 = PySet_Add(cpy_r_r212, cpy_r_r152);
+    cpy_r_r289 = PySet_Add(cpy_r_r266, cpy_r_r179);
     cpy_r_r290 = cpy_r_r289 >= 0;
     if (unlikely(!cpy_r_r290)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r291 = PySet_Add(cpy_r_r212, cpy_r_r153);
+    cpy_r_r291 = PySet_Add(cpy_r_r266, cpy_r_r180);
     cpy_r_r292 = cpy_r_r291 >= 0;
     if (unlikely(!cpy_r_r292)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r293 = PySet_Add(cpy_r_r212, cpy_r_r154);
+    cpy_r_r293 = PySet_Add(cpy_r_r266, cpy_r_r181);
     cpy_r_r294 = cpy_r_r293 >= 0;
     if (unlikely(!cpy_r_r294)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r295 = PySet_Add(cpy_r_r212, cpy_r_r155);
+    cpy_r_r295 = PySet_Add(cpy_r_r266, cpy_r_r182);
     cpy_r_r296 = cpy_r_r295 >= 0;
     if (unlikely(!cpy_r_r296)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r297 = PySet_Add(cpy_r_r212, cpy_r_r156);
+    cpy_r_r297 = PySet_Add(cpy_r_r266, cpy_r_r183);
     cpy_r_r298 = cpy_r_r297 >= 0;
     if (unlikely(!cpy_r_r298)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r299 = PySet_Add(cpy_r_r212, cpy_r_r157);
+    cpy_r_r299 = PySet_Add(cpy_r_r266, cpy_r_r184);
     cpy_r_r300 = cpy_r_r299 >= 0;
     if (unlikely(!cpy_r_r300)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r301 = PySet_Add(cpy_r_r212, cpy_r_r158);
+    cpy_r_r301 = PySet_Add(cpy_r_r266, cpy_r_r185);
     cpy_r_r302 = cpy_r_r301 >= 0;
     if (unlikely(!cpy_r_r302)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r303 = PySet_Add(cpy_r_r212, cpy_r_r159);
+    cpy_r_r303 = PySet_Add(cpy_r_r266, cpy_r_r186);
     cpy_r_r304 = cpy_r_r303 >= 0;
     if (unlikely(!cpy_r_r304)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r305 = PySet_Add(cpy_r_r212, cpy_r_r160);
+    cpy_r_r305 = PySet_Add(cpy_r_r266, cpy_r_r187);
     cpy_r_r306 = cpy_r_r305 >= 0;
     if (unlikely(!cpy_r_r306)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r307 = PySet_Add(cpy_r_r212, cpy_r_r161);
+    cpy_r_r307 = PySet_Add(cpy_r_r266, cpy_r_r188);
     cpy_r_r308 = cpy_r_r307 >= 0;
     if (unlikely(!cpy_r_r308)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r309 = PySet_Add(cpy_r_r212, cpy_r_r162);
+    cpy_r_r309 = PySet_Add(cpy_r_r266, cpy_r_r189);
     cpy_r_r310 = cpy_r_r309 >= 0;
     if (unlikely(!cpy_r_r310)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r311 = PySet_Add(cpy_r_r212, cpy_r_r163);
+    cpy_r_r311 = PySet_Add(cpy_r_r266, cpy_r_r190);
     cpy_r_r312 = cpy_r_r311 >= 0;
     if (unlikely(!cpy_r_r312)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r313 = PySet_Add(cpy_r_r212, cpy_r_r164);
+    cpy_r_r313 = PySet_Add(cpy_r_r266, cpy_r_r191);
     cpy_r_r314 = cpy_r_r313 >= 0;
     if (unlikely(!cpy_r_r314)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r315 = PySet_Add(cpy_r_r212, cpy_r_r165);
+    cpy_r_r315 = PySet_Add(cpy_r_r266, cpy_r_r192);
     cpy_r_r316 = cpy_r_r315 >= 0;
     if (unlikely(!cpy_r_r316)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r317 = PySet_Add(cpy_r_r212, cpy_r_r166);
+    cpy_r_r317 = PySet_Add(cpy_r_r266, cpy_r_r193);
     cpy_r_r318 = cpy_r_r317 >= 0;
     if (unlikely(!cpy_r_r318)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r319 = PySet_Add(cpy_r_r212, cpy_r_r167);
+    cpy_r_r319 = PySet_Add(cpy_r_r266, cpy_r_r194);
     cpy_r_r320 = cpy_r_r319 >= 0;
     if (unlikely(!cpy_r_r320)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r321 = PySet_Add(cpy_r_r212, cpy_r_r168);
+    cpy_r_r321 = PySet_Add(cpy_r_r266, cpy_r_r195);
     cpy_r_r322 = cpy_r_r321 >= 0;
     if (unlikely(!cpy_r_r322)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r323 = PySet_Add(cpy_r_r212, cpy_r_r169);
+    cpy_r_r323 = PySet_Add(cpy_r_r266, cpy_r_r196);
     cpy_r_r324 = cpy_r_r323 >= 0;
     if (unlikely(!cpy_r_r324)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r325 = PySet_Add(cpy_r_r212, cpy_r_r170);
+    cpy_r_r325 = PySet_Add(cpy_r_r266, cpy_r_r197);
     cpy_r_r326 = cpy_r_r325 >= 0;
     if (unlikely(!cpy_r_r326)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r327 = PySet_Add(cpy_r_r212, cpy_r_r171);
+    cpy_r_r327 = PySet_Add(cpy_r_r266, cpy_r_r198);
     cpy_r_r328 = cpy_r_r327 >= 0;
     if (unlikely(!cpy_r_r328)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r329 = PySet_Add(cpy_r_r212, cpy_r_r172);
+    cpy_r_r329 = PySet_Add(cpy_r_r266, cpy_r_r199);
     cpy_r_r330 = cpy_r_r329 >= 0;
     if (unlikely(!cpy_r_r330)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r331 = PySet_Add(cpy_r_r212, cpy_r_r173);
+    cpy_r_r331 = PySet_Add(cpy_r_r266, cpy_r_r200);
     cpy_r_r332 = cpy_r_r331 >= 0;
     if (unlikely(!cpy_r_r332)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r333 = PySet_Add(cpy_r_r212, cpy_r_r174);
+    cpy_r_r333 = PySet_Add(cpy_r_r266, cpy_r_r201);
     cpy_r_r334 = cpy_r_r333 >= 0;
     if (unlikely(!cpy_r_r334)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r335 = PySet_Add(cpy_r_r212, cpy_r_r175);
+    cpy_r_r335 = PySet_Add(cpy_r_r266, cpy_r_r202);
     cpy_r_r336 = cpy_r_r335 >= 0;
     if (unlikely(!cpy_r_r336)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r337 = PySet_Add(cpy_r_r212, cpy_r_r176);
+    cpy_r_r337 = PySet_Add(cpy_r_r266, cpy_r_r203);
     cpy_r_r338 = cpy_r_r337 >= 0;
     if (unlikely(!cpy_r_r338)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r339 = PySet_Add(cpy_r_r212, cpy_r_r177);
+    cpy_r_r339 = PySet_Add(cpy_r_r266, cpy_r_r204);
     cpy_r_r340 = cpy_r_r339 >= 0;
     if (unlikely(!cpy_r_r340)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r341 = PySet_Add(cpy_r_r212, cpy_r_r178);
+    cpy_r_r341 = PySet_Add(cpy_r_r266, cpy_r_r205);
     cpy_r_r342 = cpy_r_r341 >= 0;
     if (unlikely(!cpy_r_r342)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r343 = PySet_Add(cpy_r_r212, cpy_r_r179);
+    cpy_r_r343 = PySet_Add(cpy_r_r266, cpy_r_r206);
     cpy_r_r344 = cpy_r_r343 >= 0;
     if (unlikely(!cpy_r_r344)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r345 = PySet_Add(cpy_r_r212, cpy_r_r180);
+    cpy_r_r345 = PySet_Add(cpy_r_r266, cpy_r_r207);
     cpy_r_r346 = cpy_r_r345 >= 0;
     if (unlikely(!cpy_r_r346)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r347 = PySet_Add(cpy_r_r212, cpy_r_r181);
+    cpy_r_r347 = PySet_Add(cpy_r_r266, cpy_r_r208);
     cpy_r_r348 = cpy_r_r347 >= 0;
     if (unlikely(!cpy_r_r348)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r349 = PySet_Add(cpy_r_r212, cpy_r_r182);
+    cpy_r_r349 = PySet_Add(cpy_r_r266, cpy_r_r209);
     cpy_r_r350 = cpy_r_r349 >= 0;
     if (unlikely(!cpy_r_r350)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r351 = PySet_Add(cpy_r_r212, cpy_r_r183);
+    cpy_r_r351 = PySet_Add(cpy_r_r266, cpy_r_r210);
     cpy_r_r352 = cpy_r_r351 >= 0;
     if (unlikely(!cpy_r_r352)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r353 = PySet_Add(cpy_r_r212, cpy_r_r184);
+    cpy_r_r353 = PySet_Add(cpy_r_r266, cpy_r_r211);
     cpy_r_r354 = cpy_r_r353 >= 0;
     if (unlikely(!cpy_r_r354)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r355 = PySet_Add(cpy_r_r212, cpy_r_r185);
+    cpy_r_r355 = PySet_Add(cpy_r_r266, cpy_r_r212);
     cpy_r_r356 = cpy_r_r355 >= 0;
     if (unlikely(!cpy_r_r356)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r357 = PySet_Add(cpy_r_r212, cpy_r_r186);
+    cpy_r_r357 = PySet_Add(cpy_r_r266, cpy_r_r213);
     cpy_r_r358 = cpy_r_r357 >= 0;
     if (unlikely(!cpy_r_r358)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r359 = PySet_Add(cpy_r_r212, cpy_r_r187);
+    cpy_r_r359 = PySet_Add(cpy_r_r266, cpy_r_r214);
     cpy_r_r360 = cpy_r_r359 >= 0;
     if (unlikely(!cpy_r_r360)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r361 = PySet_Add(cpy_r_r212, cpy_r_r188);
+    cpy_r_r361 = PySet_Add(cpy_r_r266, cpy_r_r215);
     cpy_r_r362 = cpy_r_r361 >= 0;
     if (unlikely(!cpy_r_r362)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r363 = PySet_Add(cpy_r_r212, cpy_r_r189);
+    cpy_r_r363 = PySet_Add(cpy_r_r266, cpy_r_r216);
     cpy_r_r364 = cpy_r_r363 >= 0;
     if (unlikely(!cpy_r_r364)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r365 = PySet_Add(cpy_r_r212, cpy_r_r190);
+    cpy_r_r365 = PySet_Add(cpy_r_r266, cpy_r_r217);
     cpy_r_r366 = cpy_r_r365 >= 0;
     if (unlikely(!cpy_r_r366)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r367 = PySet_Add(cpy_r_r212, cpy_r_r191);
+    cpy_r_r367 = PySet_Add(cpy_r_r266, cpy_r_r218);
     cpy_r_r368 = cpy_r_r367 >= 0;
     if (unlikely(!cpy_r_r368)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r369 = PySet_Add(cpy_r_r212, cpy_r_r192);
+    cpy_r_r369 = PySet_Add(cpy_r_r266, cpy_r_r219);
     cpy_r_r370 = cpy_r_r369 >= 0;
     if (unlikely(!cpy_r_r370)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r371 = PySet_Add(cpy_r_r212, cpy_r_r193);
+    cpy_r_r371 = PySet_Add(cpy_r_r266, cpy_r_r220);
     cpy_r_r372 = cpy_r_r371 >= 0;
     if (unlikely(!cpy_r_r372)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r373 = PySet_Add(cpy_r_r212, cpy_r_r194);
+    cpy_r_r373 = PySet_Add(cpy_r_r266, cpy_r_r221);
     cpy_r_r374 = cpy_r_r373 >= 0;
     if (unlikely(!cpy_r_r374)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r375 = PySet_Add(cpy_r_r212, cpy_r_r195);
+    cpy_r_r375 = PySet_Add(cpy_r_r266, cpy_r_r222);
     cpy_r_r376 = cpy_r_r375 >= 0;
     if (unlikely(!cpy_r_r376)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r377 = PySet_Add(cpy_r_r212, cpy_r_r196);
+    cpy_r_r377 = PySet_Add(cpy_r_r266, cpy_r_r223);
     cpy_r_r378 = cpy_r_r377 >= 0;
     if (unlikely(!cpy_r_r378)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r379 = PySet_Add(cpy_r_r212, cpy_r_r197);
+    cpy_r_r379 = PySet_Add(cpy_r_r266, cpy_r_r224);
     cpy_r_r380 = cpy_r_r379 >= 0;
     if (unlikely(!cpy_r_r380)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r381 = PySet_Add(cpy_r_r212, cpy_r_r198);
+    cpy_r_r381 = PySet_Add(cpy_r_r266, cpy_r_r225);
     cpy_r_r382 = cpy_r_r381 >= 0;
     if (unlikely(!cpy_r_r382)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r383 = PySet_Add(cpy_r_r212, cpy_r_r199);
+    cpy_r_r383 = PySet_Add(cpy_r_r266, cpy_r_r226);
     cpy_r_r384 = cpy_r_r383 >= 0;
     if (unlikely(!cpy_r_r384)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r385 = PySet_Add(cpy_r_r212, cpy_r_r200);
+    cpy_r_r385 = PySet_Add(cpy_r_r266, cpy_r_r227);
     cpy_r_r386 = cpy_r_r385 >= 0;
     if (unlikely(!cpy_r_r386)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r387 = PySet_Add(cpy_r_r212, cpy_r_r201);
+    cpy_r_r387 = PySet_Add(cpy_r_r266, cpy_r_r228);
     cpy_r_r388 = cpy_r_r387 >= 0;
     if (unlikely(!cpy_r_r388)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r389 = PySet_Add(cpy_r_r212, cpy_r_r202);
+    cpy_r_r389 = PySet_Add(cpy_r_r266, cpy_r_r229);
     cpy_r_r390 = cpy_r_r389 >= 0;
     if (unlikely(!cpy_r_r390)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r391 = PySet_Add(cpy_r_r212, cpy_r_r203);
+    cpy_r_r391 = PySet_Add(cpy_r_r266, cpy_r_r230);
     cpy_r_r392 = cpy_r_r391 >= 0;
     if (unlikely(!cpy_r_r392)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r393 = PySet_Add(cpy_r_r212, cpy_r_r204);
+    cpy_r_r393 = PySet_Add(cpy_r_r266, cpy_r_r231);
     cpy_r_r394 = cpy_r_r393 >= 0;
     if (unlikely(!cpy_r_r394)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r395 = PySet_Add(cpy_r_r212, cpy_r_r205);
+    cpy_r_r395 = PySet_Add(cpy_r_r266, cpy_r_r232);
     cpy_r_r396 = cpy_r_r395 >= 0;
     if (unlikely(!cpy_r_r396)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r397 = PySet_Add(cpy_r_r212, cpy_r_r206);
+    cpy_r_r397 = PySet_Add(cpy_r_r266, cpy_r_r233);
     cpy_r_r398 = cpy_r_r397 >= 0;
     if (unlikely(!cpy_r_r398)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r399 = PySet_Add(cpy_r_r212, cpy_r_r207);
+    cpy_r_r399 = PySet_Add(cpy_r_r266, cpy_r_r234);
     cpy_r_r400 = cpy_r_r399 >= 0;
     if (unlikely(!cpy_r_r400)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r401 = PySet_Add(cpy_r_r212, cpy_r_r208);
+    cpy_r_r401 = PySet_Add(cpy_r_r266, cpy_r_r235);
     cpy_r_r402 = cpy_r_r401 >= 0;
     if (unlikely(!cpy_r_r402)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r403 = PySet_Add(cpy_r_r212, cpy_r_r209);
+    cpy_r_r403 = PySet_Add(cpy_r_r266, cpy_r_r236);
     cpy_r_r404 = cpy_r_r403 >= 0;
     if (unlikely(!cpy_r_r404)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r405 = PySet_Add(cpy_r_r212, cpy_r_r210);
+    cpy_r_r405 = PySet_Add(cpy_r_r266, cpy_r_r237);
     cpy_r_r406 = cpy_r_r405 >= 0;
     if (unlikely(!cpy_r_r406)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r407 = PySet_Add(cpy_r_r212, cpy_r_r211);
+    cpy_r_r407 = PySet_Add(cpy_r_r266, cpy_r_r238);
     cpy_r_r408 = cpy_r_r407 >= 0;
     if (unlikely(!cpy_r_r408)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r409 = CPyStatic_networks___Network___BinanceSmartChain;
-    if (unlikely(cpy_r_r409 == NULL)) {
-        goto CPyL210;
-    } else
-        goto CPyL138;
-CPyL136: ;
-    PyErr_SetString(PyExc_NameError, "value for final name \"BinanceSmartChain\" was not set");
-    cpy_r_r410 = 0;
+    cpy_r_r409 = PySet_Add(cpy_r_r266, cpy_r_r239);
+    cpy_r_r410 = cpy_r_r409 >= 0;
     if (unlikely(!cpy_r_r410)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL235;
     }
-    CPy_Unreachable();
-CPyL138: ;
-    cpy_r_r411 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8d0e18c97e5dd8ee2b539ae8cd3a3654df5d79e5' */
-    cpy_r_r412 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xbfF4a34A4644a113E8200D7F1D79b3555f723AfE' */
-    cpy_r_r413 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c' */
-    cpy_r_r414 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x08FC9Ba2cAc74742177e0afC3dC8Aed6961c24e7' */
-    cpy_r_r415 = PySet_New(NULL);
-    if (unlikely(cpy_r_r415 == NULL)) {
+    cpy_r_r411 = PySet_Add(cpy_r_r266, cpy_r_r240);
+    cpy_r_r412 = cpy_r_r411 >= 0;
+    if (unlikely(!cpy_r_r412)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL209;
+        goto CPyL235;
     }
-    cpy_r_r416 = PySet_Add(cpy_r_r415, cpy_r_r411);
-    cpy_r_r417 = cpy_r_r416 >= 0;
-    if (unlikely(!cpy_r_r417)) {
+    cpy_r_r413 = PySet_Add(cpy_r_r266, cpy_r_r241);
+    cpy_r_r414 = cpy_r_r413 >= 0;
+    if (unlikely(!cpy_r_r414)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL211;
+        goto CPyL235;
     }
-    cpy_r_r418 = PySet_Add(cpy_r_r415, cpy_r_r412);
-    cpy_r_r419 = cpy_r_r418 >= 0;
-    if (unlikely(!cpy_r_r419)) {
+    cpy_r_r415 = PySet_Add(cpy_r_r266, cpy_r_r242);
+    cpy_r_r416 = cpy_r_r415 >= 0;
+    if (unlikely(!cpy_r_r416)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL211;
+        goto CPyL235;
     }
-    cpy_r_r420 = PySet_Add(cpy_r_r415, cpy_r_r413);
-    cpy_r_r421 = cpy_r_r420 >= 0;
-    if (unlikely(!cpy_r_r421)) {
+    cpy_r_r417 = PySet_Add(cpy_r_r266, cpy_r_r243);
+    cpy_r_r418 = cpy_r_r417 >= 0;
+    if (unlikely(!cpy_r_r418)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL211;
+        goto CPyL235;
     }
-    cpy_r_r422 = PySet_Add(cpy_r_r415, cpy_r_r414);
-    cpy_r_r423 = cpy_r_r422 >= 0;
-    if (unlikely(!cpy_r_r423)) {
+    cpy_r_r419 = PySet_Add(cpy_r_r266, cpy_r_r244);
+    cpy_r_r420 = cpy_r_r419 >= 0;
+    if (unlikely(!cpy_r_r420)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL211;
+        goto CPyL235;
     }
-    cpy_r_r424 = CPyStatic_networks___Network___Fantom;
-    if (unlikely(cpy_r_r424 == NULL)) {
-        goto CPyL212;
-    } else
-        goto CPyL146;
-CPyL144: ;
-    PyErr_SetString(PyExc_NameError, "value for final name \"Fantom\" was not set");
-    cpy_r_r425 = 0;
-    if (unlikely(!cpy_r_r425)) {
+    cpy_r_r421 = PySet_Add(cpy_r_r266, cpy_r_r245);
+    cpy_r_r422 = cpy_r_r421 >= 0;
+    if (unlikely(!cpy_r_r422)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL235;
     }
-    CPy_Unreachable();
-CPyL146: ;
-    cpy_r_r426 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xBDC8fd437C489Ca3c6DA3B5a336D11532a532303' */
-    cpy_r_r427 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501' */
-    cpy_r_r428 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x2406dCe4dA5aB125A18295f4fB9FD36a0f7879A2' */
-    cpy_r_r429 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x29b0Da86e484E1C0029B56e817912d778aC0EC69' */
-    cpy_r_r430 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xf43Cc235E686d7BC513F53Fbffb61F760c3a1882' */
-    cpy_r_r431 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x58e57cA18B7A47112b877E31929798Cd3D703b0f' */
-    cpy_r_r432 = PySet_New(NULL);
-    if (unlikely(cpy_r_r432 == NULL)) {
+    cpy_r_r423 = PySet_Add(cpy_r_r266, cpy_r_r246);
+    cpy_r_r424 = cpy_r_r423 >= 0;
+    if (unlikely(!cpy_r_r424)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL211;
+        goto CPyL235;
     }
-    cpy_r_r433 = PySet_Add(cpy_r_r432, cpy_r_r426);
+    cpy_r_r425 = PySet_Add(cpy_r_r266, cpy_r_r247);
+    cpy_r_r426 = cpy_r_r425 >= 0;
+    if (unlikely(!cpy_r_r426)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r427 = PySet_Add(cpy_r_r266, cpy_r_r248);
+    cpy_r_r428 = cpy_r_r427 >= 0;
+    if (unlikely(!cpy_r_r428)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r429 = PySet_Add(cpy_r_r266, cpy_r_r249);
+    cpy_r_r430 = cpy_r_r429 >= 0;
+    if (unlikely(!cpy_r_r430)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r431 = PySet_Add(cpy_r_r266, cpy_r_r250);
+    cpy_r_r432 = cpy_r_r431 >= 0;
+    if (unlikely(!cpy_r_r432)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r433 = PySet_Add(cpy_r_r266, cpy_r_r251);
     cpy_r_r434 = cpy_r_r433 >= 0;
     if (unlikely(!cpy_r_r434)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL213;
+        goto CPyL235;
     }
-    cpy_r_r435 = PySet_Add(cpy_r_r432, cpy_r_r427);
+    cpy_r_r435 = PySet_Add(cpy_r_r266, cpy_r_r252);
     cpy_r_r436 = cpy_r_r435 >= 0;
     if (unlikely(!cpy_r_r436)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL213;
+        goto CPyL235;
     }
-    cpy_r_r437 = PySet_Add(cpy_r_r432, cpy_r_r428);
+    cpy_r_r437 = PySet_Add(cpy_r_r266, cpy_r_r253);
     cpy_r_r438 = cpy_r_r437 >= 0;
     if (unlikely(!cpy_r_r438)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL213;
+        goto CPyL235;
     }
-    cpy_r_r439 = PySet_Add(cpy_r_r432, cpy_r_r429);
+    cpy_r_r439 = PySet_Add(cpy_r_r266, cpy_r_r254);
     cpy_r_r440 = cpy_r_r439 >= 0;
     if (unlikely(!cpy_r_r440)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL213;
+        goto CPyL235;
     }
-    cpy_r_r441 = PySet_Add(cpy_r_r432, cpy_r_r430);
+    cpy_r_r441 = PySet_Add(cpy_r_r266, cpy_r_r255);
     cpy_r_r442 = cpy_r_r441 >= 0;
     if (unlikely(!cpy_r_r442)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL213;
+        goto CPyL235;
     }
-    cpy_r_r443 = PySet_Add(cpy_r_r432, cpy_r_r431);
+    cpy_r_r443 = PySet_Add(cpy_r_r266, cpy_r_r256);
     cpy_r_r444 = cpy_r_r443 >= 0;
     if (unlikely(!cpy_r_r444)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL213;
+        goto CPyL235;
     }
-    cpy_r_r445 = CPyStatic_networks___Network___Avalanche;
-    if (unlikely(cpy_r_r445 == NULL)) {
-        goto CPyL214;
-    } else
-        goto CPyL156;
-CPyL154: ;
-    PyErr_SetString(PyExc_NameError, "value for final name \"Avalanche\" was not set");
-    cpy_r_r446 = 0;
+    cpy_r_r445 = PySet_Add(cpy_r_r266, cpy_r_r257);
+    cpy_r_r446 = cpy_r_r445 >= 0;
     if (unlikely(!cpy_r_r446)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL235;
     }
-    CPy_Unreachable();
-CPyL156: ;
-    cpy_r_r447 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501' */
-    cpy_r_r448 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xd6070ae98b8069de6B494332d1A1a81B6179D960' */
-    cpy_r_r449 = PySet_New(NULL);
-    if (unlikely(cpy_r_r449 == NULL)) {
+    cpy_r_r447 = PySet_Add(cpy_r_r266, cpy_r_r258);
+    cpy_r_r448 = cpy_r_r447 >= 0;
+    if (unlikely(!cpy_r_r448)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL213;
+        goto CPyL235;
     }
-    cpy_r_r450 = PySet_Add(cpy_r_r449, cpy_r_r447);
-    cpy_r_r451 = cpy_r_r450 >= 0;
-    if (unlikely(!cpy_r_r451)) {
+    cpy_r_r449 = PySet_Add(cpy_r_r266, cpy_r_r259);
+    cpy_r_r450 = cpy_r_r449 >= 0;
+    if (unlikely(!cpy_r_r450)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL215;
+        goto CPyL235;
     }
-    cpy_r_r452 = PySet_Add(cpy_r_r449, cpy_r_r448);
-    cpy_r_r453 = cpy_r_r452 >= 0;
-    if (unlikely(!cpy_r_r453)) {
+    cpy_r_r451 = PySet_Add(cpy_r_r266, cpy_r_r260);
+    cpy_r_r452 = cpy_r_r451 >= 0;
+    if (unlikely(!cpy_r_r452)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL215;
+        goto CPyL235;
     }
-    cpy_r_r454 = CPyStatic_networks___Network___Optimism;
-    if (unlikely(cpy_r_r454 == NULL)) {
-        goto CPyL216;
+    cpy_r_r453 = PySet_Add(cpy_r_r266, cpy_r_r261);
+    cpy_r_r454 = cpy_r_r453 >= 0;
+    if (unlikely(!cpy_r_r454)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r455 = PySet_Add(cpy_r_r266, cpy_r_r262);
+    cpy_r_r456 = cpy_r_r455 >= 0;
+    if (unlikely(!cpy_r_r456)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r457 = PySet_Add(cpy_r_r266, cpy_r_r263);
+    cpy_r_r458 = cpy_r_r457 >= 0;
+    if (unlikely(!cpy_r_r458)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r459 = PySet_Add(cpy_r_r266, cpy_r_r264);
+    cpy_r_r460 = cpy_r_r459 >= 0;
+    if (unlikely(!cpy_r_r460)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r461 = PySet_Add(cpy_r_r266, cpy_r_r265);
+    cpy_r_r462 = cpy_r_r461 >= 0;
+    if (unlikely(!cpy_r_r462)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL235;
+    }
+    cpy_r_r463 = CPyStatic_networks___Network___BinanceSmartChain;
+    if (unlikely(cpy_r_r463 == NULL)) {
+        goto CPyL236;
     } else
-        goto CPyL162;
-CPyL160: ;
-    PyErr_SetString(PyExc_NameError, "value for final name \"Optimism\" was not set");
-    cpy_r_r455 = 0;
-    if (unlikely(!cpy_r_r455)) {
+        goto CPyL159;
+CPyL157: ;
+    PyErr_SetString(PyExc_NameError, "value for final name \"BinanceSmartChain\" was not set");
+    cpy_r_r464 = 0;
+    if (unlikely(!cpy_r_r464)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPy_Unreachable();
-CPyL162: ;
-    cpy_r_r456 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' */
-    cpy_r_r457 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9Bcef72be871e61ED4fBbc7630889beE758eb81D' */
-    cpy_r_r458 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb' */
-    cpy_r_r459 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x6806411765Af15Bddd26f8f544A34cC40cb9838B' */
-    cpy_r_r460 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x484c2D6e3cDd945a8B2DF735e079178C1036578c' */
-    cpy_r_r461 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1610e3c85dd44Af31eD7f33a63642012Dca0C5A5' */
-    cpy_r_r462 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3E29D3A9316dAB217754d13b28646B76607c5f04' */
-    cpy_r_r463 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xE405de8F52ba7559f9df3C368500B6E6ae6Cee49' */
-    cpy_r_r464 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x300d2c875C6fb8Ce4bf5480B4d34b7c9ea8a33A4' */
-    cpy_r_r465 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x298B9B95708152ff6968aafd889c6586e9169f1D' */
-    cpy_r_r466 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40' */
-    cpy_r_r467 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xd62C9D8a3D4fd98b27CaaEfE3571782a3aF0a737' */
-    cpy_r_r468 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x6C5019D345Ec05004A7E7B0623A91a0D9B8D590d' */
+CPyL159: ;
+    cpy_r_r465 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8d0e18c97e5dd8ee2b539ae8cd3a3654df5d79e5' */
+    cpy_r_r466 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xbfF4a34A4644a113E8200D7F1D79b3555f723AfE' */
+    cpy_r_r467 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c' */
+    cpy_r_r468 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x08FC9Ba2cAc74742177e0afC3dC8Aed6961c24e7' */
     cpy_r_r469 = PySet_New(NULL);
     if (unlikely(cpy_r_r469 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL215;
+        goto CPyL235;
     }
-    cpy_r_r470 = PySet_Add(cpy_r_r469, cpy_r_r456);
+    cpy_r_r470 = PySet_Add(cpy_r_r469, cpy_r_r465);
     cpy_r_r471 = cpy_r_r470 >= 0;
     if (unlikely(!cpy_r_r471)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
+        goto CPyL237;
     }
-    cpy_r_r472 = PySet_Add(cpy_r_r469, cpy_r_r457);
+    cpy_r_r472 = PySet_Add(cpy_r_r469, cpy_r_r466);
     cpy_r_r473 = cpy_r_r472 >= 0;
     if (unlikely(!cpy_r_r473)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
+        goto CPyL237;
     }
-    cpy_r_r474 = PySet_Add(cpy_r_r469, cpy_r_r458);
+    cpy_r_r474 = PySet_Add(cpy_r_r469, cpy_r_r467);
     cpy_r_r475 = cpy_r_r474 >= 0;
     if (unlikely(!cpy_r_r475)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
+        goto CPyL237;
     }
-    cpy_r_r476 = PySet_Add(cpy_r_r469, cpy_r_r459);
+    cpy_r_r476 = PySet_Add(cpy_r_r469, cpy_r_r468);
     cpy_r_r477 = cpy_r_r476 >= 0;
     if (unlikely(!cpy_r_r477)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
+        goto CPyL237;
     }
-    cpy_r_r478 = PySet_Add(cpy_r_r469, cpy_r_r460);
-    cpy_r_r479 = cpy_r_r478 >= 0;
+    cpy_r_r478 = CPyStatic_networks___Network___Fantom;
+    if (unlikely(cpy_r_r478 == NULL)) {
+        goto CPyL238;
+    } else
+        goto CPyL167;
+CPyL165: ;
+    PyErr_SetString(PyExc_NameError, "value for final name \"Fantom\" was not set");
+    cpy_r_r479 = 0;
     if (unlikely(!cpy_r_r479)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r480 = PySet_Add(cpy_r_r469, cpy_r_r461);
-    cpy_r_r481 = cpy_r_r480 >= 0;
-    if (unlikely(!cpy_r_r481)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r482 = PySet_Add(cpy_r_r469, cpy_r_r462);
-    cpy_r_r483 = cpy_r_r482 >= 0;
-    if (unlikely(!cpy_r_r483)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r484 = PySet_Add(cpy_r_r469, cpy_r_r463);
-    cpy_r_r485 = cpy_r_r484 >= 0;
-    if (unlikely(!cpy_r_r485)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r486 = PySet_Add(cpy_r_r469, cpy_r_r464);
-    cpy_r_r487 = cpy_r_r486 >= 0;
-    if (unlikely(!cpy_r_r487)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r488 = PySet_Add(cpy_r_r469, cpy_r_r465);
-    cpy_r_r489 = cpy_r_r488 >= 0;
-    if (unlikely(!cpy_r_r489)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r490 = PySet_Add(cpy_r_r469, cpy_r_r466);
-    cpy_r_r491 = cpy_r_r490 >= 0;
-    if (unlikely(!cpy_r_r491)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r492 = PySet_Add(cpy_r_r469, cpy_r_r467);
-    cpy_r_r493 = cpy_r_r492 >= 0;
-    if (unlikely(!cpy_r_r493)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r494 = PySet_Add(cpy_r_r469, cpy_r_r468);
-    cpy_r_r495 = cpy_r_r494 >= 0;
-    if (unlikely(!cpy_r_r495)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r496 = CPyStatic_networks___Network___Arbitrum;
-    if (unlikely(cpy_r_r496 == NULL)) {
-        goto CPyL218;
-    } else
-        goto CPyL179;
-CPyL177: ;
-    PyErr_SetString(PyExc_NameError, "value for final name \"Arbitrum\" was not set");
-    cpy_r_r497 = 0;
-    if (unlikely(!cpy_r_r497)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPy_Unreachable();
-CPyL179: ;
-    cpy_r_r498 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8e0B8c8BB9db49a46697F3a5Bb8A308e744821D2' */
-    cpy_r_r499 = PySet_New(NULL);
+CPyL167: ;
+    cpy_r_r480 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xBDC8fd437C489Ca3c6DA3B5a336D11532a532303' */
+    cpy_r_r481 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501' */
+    cpy_r_r482 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x2406dCe4dA5aB125A18295f4fB9FD36a0f7879A2' */
+    cpy_r_r483 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x29b0Da86e484E1C0029B56e817912d778aC0EC69' */
+    cpy_r_r484 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xf43Cc235E686d7BC513F53Fbffb61F760c3a1882' */
+    cpy_r_r485 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x58e57cA18B7A47112b877E31929798Cd3D703b0f' */
+    cpy_r_r486 = PySet_New(NULL);
+    if (unlikely(cpy_r_r486 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL237;
+    }
+    cpy_r_r487 = PySet_Add(cpy_r_r486, cpy_r_r480);
+    cpy_r_r488 = cpy_r_r487 >= 0;
+    if (unlikely(!cpy_r_r488)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL239;
+    }
+    cpy_r_r489 = PySet_Add(cpy_r_r486, cpy_r_r481);
+    cpy_r_r490 = cpy_r_r489 >= 0;
+    if (unlikely(!cpy_r_r490)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL239;
+    }
+    cpy_r_r491 = PySet_Add(cpy_r_r486, cpy_r_r482);
+    cpy_r_r492 = cpy_r_r491 >= 0;
+    if (unlikely(!cpy_r_r492)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL239;
+    }
+    cpy_r_r493 = PySet_Add(cpy_r_r486, cpy_r_r483);
+    cpy_r_r494 = cpy_r_r493 >= 0;
+    if (unlikely(!cpy_r_r494)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL239;
+    }
+    cpy_r_r495 = PySet_Add(cpy_r_r486, cpy_r_r484);
+    cpy_r_r496 = cpy_r_r495 >= 0;
+    if (unlikely(!cpy_r_r496)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL239;
+    }
+    cpy_r_r497 = PySet_Add(cpy_r_r486, cpy_r_r485);
+    cpy_r_r498 = cpy_r_r497 >= 0;
+    if (unlikely(!cpy_r_r498)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL239;
+    }
+    cpy_r_r499 = CPyStatic_networks___Network___Avalanche;
     if (unlikely(cpy_r_r499 == NULL)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL217;
-    }
-    cpy_r_r500 = PySet_Add(cpy_r_r499, cpy_r_r498);
-    cpy_r_r501 = cpy_r_r500 >= 0;
-    if (unlikely(!cpy_r_r501)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL219;
-    }
-    cpy_r_r502 = CPyStatic_networks___Network___Base;
-    if (unlikely(cpy_r_r502 == NULL)) {
-        goto CPyL220;
+        goto CPyL240;
     } else
-        goto CPyL184;
-CPyL182: ;
-    PyErr_SetString(PyExc_NameError, "value for final name \"Base\" was not set");
-    cpy_r_r503 = 0;
-    if (unlikely(!cpy_r_r503)) {
+        goto CPyL177;
+CPyL175: ;
+    PyErr_SetString(PyExc_NameError, "value for final name \"Avalanche\" was not set");
+    cpy_r_r500 = 0;
+    if (unlikely(!cpy_r_r500)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPy_Unreachable();
-CPyL184: ;
-    cpy_r_r504 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22' */
-    cpy_r_r505 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452' */
-    cpy_r_r506 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1f55a02A049033E3419a8E2975cF3F572F4e6E9A' */
-    cpy_r_r507 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xCb327b99fF831bF8223cCEd12B1338FF3aA322Ff' */
-    cpy_r_r508 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b' */
-    cpy_r_r509 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xcb327b99ff831bf8223cced12b1338ff3aa322ff' */
-    cpy_r_r510 = PySet_New(NULL);
-    if (unlikely(cpy_r_r510 == NULL)) {
+CPyL177: ;
+    cpy_r_r501 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501' */
+    cpy_r_r502 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xd6070ae98b8069de6B494332d1A1a81B6179D960' */
+    cpy_r_r503 = PySet_New(NULL);
+    if (unlikely(cpy_r_r503 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL219;
+        goto CPyL239;
     }
-    cpy_r_r511 = PySet_Add(cpy_r_r510, cpy_r_r504);
-    cpy_r_r512 = cpy_r_r511 >= 0;
-    if (unlikely(!cpy_r_r512)) {
+    cpy_r_r504 = PySet_Add(cpy_r_r503, cpy_r_r501);
+    cpy_r_r505 = cpy_r_r504 >= 0;
+    if (unlikely(!cpy_r_r505)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL221;
+        goto CPyL241;
     }
-    cpy_r_r513 = PySet_Add(cpy_r_r510, cpy_r_r505);
-    cpy_r_r514 = cpy_r_r513 >= 0;
-    if (unlikely(!cpy_r_r514)) {
+    cpy_r_r506 = PySet_Add(cpy_r_r503, cpy_r_r502);
+    cpy_r_r507 = cpy_r_r506 >= 0;
+    if (unlikely(!cpy_r_r507)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL221;
+        goto CPyL241;
     }
-    cpy_r_r515 = PySet_Add(cpy_r_r510, cpy_r_r506);
-    cpy_r_r516 = cpy_r_r515 >= 0;
-    if (unlikely(!cpy_r_r516)) {
+    cpy_r_r508 = CPyStatic_networks___Network___Optimism;
+    if (unlikely(cpy_r_r508 == NULL)) {
+        goto CPyL242;
+    } else
+        goto CPyL183;
+CPyL181: ;
+    PyErr_SetString(PyExc_NameError, "value for final name \"Optimism\" was not set");
+    cpy_r_r509 = 0;
+    if (unlikely(!cpy_r_r509)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL221;
+        goto CPyL224;
     }
-    cpy_r_r517 = PySet_Add(cpy_r_r510, cpy_r_r507);
-    cpy_r_r518 = cpy_r_r517 >= 0;
-    if (unlikely(!cpy_r_r518)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL221;
-    }
-    cpy_r_r519 = PySet_Add(cpy_r_r510, cpy_r_r508);
-    cpy_r_r520 = cpy_r_r519 >= 0;
-    if (unlikely(!cpy_r_r520)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL221;
-    }
-    cpy_r_r521 = PySet_Add(cpy_r_r510, cpy_r_r509);
-    cpy_r_r522 = cpy_r_r521 >= 0;
-    if (unlikely(!cpy_r_r522)) {
-        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL221;
-    }
-    cpy_r_r523 = CPyDict_Build(7, cpy_r_r112, cpy_r_r212, cpy_r_r409, cpy_r_r415, cpy_r_r424, cpy_r_r432, cpy_r_r445, cpy_r_r449, cpy_r_r454, cpy_r_r469, cpy_r_r496, cpy_r_r499, cpy_r_r502, cpy_r_r510);
-    CPy_DECREF(cpy_r_r212);
-    CPy_DECREF(cpy_r_r415);
-    CPy_DECREF(cpy_r_r432);
-    CPy_DECREF(cpy_r_r449);
-    CPy_DECREF(cpy_r_r469);
-    CPy_DECREF(cpy_r_r499);
-    CPy_DECREF(cpy_r_r510);
+    CPy_Unreachable();
+CPyL183: ;
+    cpy_r_r510 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' */
+    cpy_r_r511 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x9Bcef72be871e61ED4fBbc7630889beE758eb81D' */
+    cpy_r_r512 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb' */
+    cpy_r_r513 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x6806411765Af15Bddd26f8f544A34cC40cb9838B' */
+    cpy_r_r514 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x484c2D6e3cDd945a8B2DF735e079178C1036578c' */
+    cpy_r_r515 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1610e3c85dd44Af31eD7f33a63642012Dca0C5A5' */
+    cpy_r_r516 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x3E29D3A9316dAB217754d13b28646B76607c5f04' */
+    cpy_r_r517 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xE405de8F52ba7559f9df3C368500B6E6ae6Cee49' */
+    cpy_r_r518 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x300d2c875C6fb8Ce4bf5480B4d34b7c9ea8a33A4' */
+    cpy_r_r519 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x298B9B95708152ff6968aafd889c6586e9169f1D' */
+    cpy_r_r520 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40' */
+    cpy_r_r521 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xd62C9D8a3D4fd98b27CaaEfE3571782a3aF0a737' */
+    cpy_r_r522 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x6C5019D345Ec05004A7E7B0623A91a0D9B8D590d' */
+    cpy_r_r523 = PySet_New(NULL);
     if (unlikely(cpy_r_r523 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL241;
     }
-    cpy_r_r524 = CPyStatic_sense_check___globals;
-    cpy_r_r525 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CHAINID' */
-    cpy_r_r526 = CPyDict_GetItem(cpy_r_r524, cpy_r_r525);
-    if (unlikely(cpy_r_r526 == NULL)) {
+    cpy_r_r524 = PySet_Add(cpy_r_r523, cpy_r_r510);
+    cpy_r_r525 = cpy_r_r524 >= 0;
+    if (unlikely(!cpy_r_r525)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL222;
+        goto CPyL243;
     }
-    if (likely(PyLong_Check(cpy_r_r526)))
-        cpy_r_r527 = CPyTagged_FromObject(cpy_r_r526);
-    else {
-        CPy_TypeError("int", cpy_r_r526); cpy_r_r527 = CPY_INT_TAG;
-    }
-    CPy_DECREF(cpy_r_r526);
-    if (unlikely(cpy_r_r527 == CPY_INT_TAG)) {
+    cpy_r_r526 = PySet_Add(cpy_r_r523, cpy_r_r511);
+    cpy_r_r527 = cpy_r_r526 >= 0;
+    if (unlikely(!cpy_r_r527)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL222;
+        goto CPyL243;
     }
-    cpy_r_r528 = PySet_New(NULL);
-    if (unlikely(cpy_r_r528 == NULL)) {
+    cpy_r_r528 = PySet_Add(cpy_r_r523, cpy_r_r512);
+    cpy_r_r529 = cpy_r_r528 >= 0;
+    if (unlikely(!cpy_r_r529)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL223;
+        goto CPyL243;
     }
-    cpy_r_r529 = CPyTagged_StealAsObject(cpy_r_r527);
-    cpy_r_r530 = CPyDict_Get(cpy_r_r523, cpy_r_r529, cpy_r_r528);
-    CPy_DECREF(cpy_r_r523);
-    CPy_DECREF(cpy_r_r529);
-    CPy_DECREF(cpy_r_r528);
-    if (unlikely(cpy_r_r530 == NULL)) {
+    cpy_r_r530 = PySet_Add(cpy_r_r523, cpy_r_r513);
+    cpy_r_r531 = cpy_r_r530 >= 0;
+    if (unlikely(!cpy_r_r531)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL243;
     }
-    cpy_r_r531 = CPyStatic_sense_check___acceptable_all_chains;
-    if (unlikely(cpy_r_r531 == NULL)) {
-        goto CPyL224;
+    cpy_r_r532 = PySet_Add(cpy_r_r523, cpy_r_r514);
+    cpy_r_r533 = cpy_r_r532 >= 0;
+    if (unlikely(!cpy_r_r533)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r534 = PySet_Add(cpy_r_r523, cpy_r_r515);
+    cpy_r_r535 = cpy_r_r534 >= 0;
+    if (unlikely(!cpy_r_r535)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r536 = PySet_Add(cpy_r_r523, cpy_r_r516);
+    cpy_r_r537 = cpy_r_r536 >= 0;
+    if (unlikely(!cpy_r_r537)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r538 = PySet_Add(cpy_r_r523, cpy_r_r517);
+    cpy_r_r539 = cpy_r_r538 >= 0;
+    if (unlikely(!cpy_r_r539)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r540 = PySet_Add(cpy_r_r523, cpy_r_r518);
+    cpy_r_r541 = cpy_r_r540 >= 0;
+    if (unlikely(!cpy_r_r541)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r542 = PySet_Add(cpy_r_r523, cpy_r_r519);
+    cpy_r_r543 = cpy_r_r542 >= 0;
+    if (unlikely(!cpy_r_r543)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r544 = PySet_Add(cpy_r_r523, cpy_r_r520);
+    cpy_r_r545 = cpy_r_r544 >= 0;
+    if (unlikely(!cpy_r_r545)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r546 = PySet_Add(cpy_r_r523, cpy_r_r521);
+    cpy_r_r547 = cpy_r_r546 >= 0;
+    if (unlikely(!cpy_r_r547)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r548 = PySet_Add(cpy_r_r523, cpy_r_r522);
+    cpy_r_r549 = cpy_r_r548 >= 0;
+    if (unlikely(!cpy_r_r549)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL243;
+    }
+    cpy_r_r550 = CPyStatic_networks___Network___Arbitrum;
+    if (unlikely(cpy_r_r550 == NULL)) {
+        goto CPyL244;
     } else
-        goto CPyL199;
-CPyL197: ;
-    PyErr_SetString(PyExc_NameError, "value for final name \"acceptable_all_chains\" was not set");
-    cpy_r_r532 = 0;
-    if (unlikely(!cpy_r_r532)) {
+        goto CPyL200;
+CPyL198: ;
+    PyErr_SetString(PyExc_NameError, "value for final name \"Arbitrum\" was not set");
+    cpy_r_r551 = 0;
+    if (unlikely(!cpy_r_r551)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL224;
     }
     CPy_Unreachable();
-CPyL199: ;
-    cpy_r_r533 = PyNumber_Or(cpy_r_r530, cpy_r_r531);
-    CPy_DECREF(cpy_r_r530);
-    if (unlikely(cpy_r_r533 == NULL)) {
+CPyL200: ;
+    cpy_r_r552 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x8e0B8c8BB9db49a46697F3a5Bb8A308e744821D2' */
+    cpy_r_r553 = PySet_New(NULL);
+    if (unlikely(cpy_r_r553 == NULL)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL243;
     }
-    CPy_INCREF(cpy_r_r533);
-    if (likely(PySet_Check(cpy_r_r533)))
-        cpy_r_r534 = cpy_r_r533;
+    cpy_r_r554 = PySet_Add(cpy_r_r553, cpy_r_r552);
+    cpy_r_r555 = cpy_r_r554 >= 0;
+    if (unlikely(!cpy_r_r555)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL245;
+    }
+    cpy_r_r556 = CPyStatic_networks___Network___Base;
+    if (unlikely(cpy_r_r556 == NULL)) {
+        goto CPyL246;
+    } else
+        goto CPyL205;
+CPyL203: ;
+    PyErr_SetString(PyExc_NameError, "value for final name \"Base\" was not set");
+    cpy_r_r557 = 0;
+    if (unlikely(!cpy_r_r557)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL224;
+    }
+    CPy_Unreachable();
+CPyL205: ;
+    cpy_r_r558 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22' */
+    cpy_r_r559 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452' */
+    cpy_r_r560 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x1f55a02A049033E3419a8E2975cF3F572F4e6E9A' */
+    cpy_r_r561 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xCb327b99fF831bF8223cCEd12B1338FF3aA322Ff' */
+    cpy_r_r562 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b' */
+    cpy_r_r563 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '0xcb327b99ff831bf8223cced12b1338ff3aa322ff' */
+    cpy_r_r564 = PySet_New(NULL);
+    if (unlikely(cpy_r_r564 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL245;
+    }
+    cpy_r_r565 = PySet_Add(cpy_r_r564, cpy_r_r558);
+    cpy_r_r566 = cpy_r_r565 >= 0;
+    if (unlikely(!cpy_r_r566)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL247;
+    }
+    cpy_r_r567 = PySet_Add(cpy_r_r564, cpy_r_r559);
+    cpy_r_r568 = cpy_r_r567 >= 0;
+    if (unlikely(!cpy_r_r568)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL247;
+    }
+    cpy_r_r569 = PySet_Add(cpy_r_r564, cpy_r_r560);
+    cpy_r_r570 = cpy_r_r569 >= 0;
+    if (unlikely(!cpy_r_r570)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL247;
+    }
+    cpy_r_r571 = PySet_Add(cpy_r_r564, cpy_r_r561);
+    cpy_r_r572 = cpy_r_r571 >= 0;
+    if (unlikely(!cpy_r_r572)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL247;
+    }
+    cpy_r_r573 = PySet_Add(cpy_r_r564, cpy_r_r562);
+    cpy_r_r574 = cpy_r_r573 >= 0;
+    if (unlikely(!cpy_r_r574)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL247;
+    }
+    cpy_r_r575 = PySet_Add(cpy_r_r564, cpy_r_r563);
+    cpy_r_r576 = cpy_r_r575 >= 0;
+    if (unlikely(!cpy_r_r576)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL247;
+    }
+    cpy_r_r577 = CPyDict_Build(7, cpy_r_r166, cpy_r_r266, cpy_r_r463, cpy_r_r469, cpy_r_r478, cpy_r_r486, cpy_r_r499, cpy_r_r503, cpy_r_r508, cpy_r_r523, cpy_r_r550, cpy_r_r553, cpy_r_r556, cpy_r_r564);
+    CPy_DECREF(cpy_r_r266);
+    CPy_DECREF(cpy_r_r469);
+    CPy_DECREF(cpy_r_r486);
+    CPy_DECREF(cpy_r_r503);
+    CPy_DECREF(cpy_r_r523);
+    CPy_DECREF(cpy_r_r553);
+    CPy_DECREF(cpy_r_r564);
+    if (unlikely(cpy_r_r577 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL224;
+    }
+    cpy_r_r578 = CPyStatic_sense_check___globals;
+    cpy_r_r579 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CHAINID' */
+    cpy_r_r580 = CPyDict_GetItem(cpy_r_r578, cpy_r_r579);
+    if (unlikely(cpy_r_r580 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL248;
+    }
+    if (likely(PyLong_Check(cpy_r_r580)))
+        cpy_r_r581 = CPyTagged_FromObject(cpy_r_r580);
     else {
-        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "<module>", 39, CPyStatic_sense_check___globals, "set", cpy_r_r533);
-        goto CPyL225;
+        CPy_TypeError("int", cpy_r_r580); cpy_r_r581 = CPY_INT_TAG;
     }
-    CPyStatic_sense_check___ACCEPTABLE_HIGH_PRICES = cpy_r_r534;
-    CPy_INCREF(CPyStatic_sense_check___ACCEPTABLE_HIGH_PRICES);
-    CPy_DECREF(cpy_r_r534);
-    cpy_r_r535 = CPyStatic_sense_check___globals;
-    cpy_r_r536 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'ACCEPTABLE_HIGH_PRICES' */
-    cpy_r_r537 = CPyDict_SetItem(cpy_r_r535, cpy_r_r536, cpy_r_r533);
-    CPy_DECREF(cpy_r_r533);
-    cpy_r_r538 = cpy_r_r537 >= 0;
-    if (unlikely(!cpy_r_r538)) {
+    CPy_DECREF(cpy_r_r580);
+    if (unlikely(cpy_r_r581 == CPY_INT_TAG)) {
         CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
-        goto CPyL203;
+        goto CPyL248;
+    }
+    cpy_r_r582 = PySet_New(NULL);
+    if (unlikely(cpy_r_r582 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL249;
+    }
+    cpy_r_r583 = CPyTagged_StealAsObject(cpy_r_r581);
+    cpy_r_r584 = CPyDict_Get(cpy_r_r577, cpy_r_r583, cpy_r_r582);
+    CPy_DECREF(cpy_r_r577);
+    CPy_DECREF(cpy_r_r583);
+    CPy_DECREF(cpy_r_r582);
+    if (unlikely(cpy_r_r584 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL224;
+    }
+    cpy_r_r585 = CPyStatic_sense_check___acceptable_all_chains;
+    if (unlikely(cpy_r_r585 == NULL)) {
+        goto CPyL250;
+    } else
+        goto CPyL220;
+CPyL218: ;
+    PyErr_SetString(PyExc_NameError, "value for final name \"acceptable_all_chains\" was not set");
+    cpy_r_r586 = 0;
+    if (unlikely(!cpy_r_r586)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL224;
+    }
+    CPy_Unreachable();
+CPyL220: ;
+    cpy_r_r587 = PyNumber_Or(cpy_r_r584, cpy_r_r585);
+    CPy_DECREF(cpy_r_r584);
+    if (unlikely(cpy_r_r587 == NULL)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL224;
+    }
+    CPy_INCREF(cpy_r_r587);
+    if (likely(PySet_Check(cpy_r_r587)))
+        cpy_r_r588 = cpy_r_r587;
+    else {
+        CPy_TypeErrorTraceback("y/prices/utils/sense_check.py", "<module>", 48, CPyStatic_sense_check___globals, "set", cpy_r_r587);
+        goto CPyL251;
+    }
+    CPyStatic_sense_check___ACCEPTABLE_HIGH_PRICES = cpy_r_r588;
+    CPy_INCREF(CPyStatic_sense_check___ACCEPTABLE_HIGH_PRICES);
+    CPy_DECREF(cpy_r_r588);
+    cpy_r_r589 = CPyStatic_sense_check___globals;
+    cpy_r_r590 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'ACCEPTABLE_HIGH_PRICES' */
+    cpy_r_r591 = CPyDict_SetItem(cpy_r_r589, cpy_r_r590, cpy_r_r587);
+    CPy_DECREF(cpy_r_r587);
+    cpy_r_r592 = cpy_r_r591 >= 0;
+    if (unlikely(!cpy_r_r592)) {
+        CPy_AddTraceback("y/prices/utils/sense_check.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_sense_check___globals);
+        goto CPyL224;
     }
     return 1;
-CPyL203: ;
-    cpy_r_r539 = 2;
-    return cpy_r_r539;
-CPyL204: ;
-    CPy_DecRef(cpy_r_r80);
-    goto CPyL203;
-CPyL205: ;
-    CPy_DecRef(cpy_r_r96);
-    goto CPyL203;
-CPyL206: ;
-    CPy_DecRef(cpy_r_r96);
-    CPy_DecRef(cpy_r_r102);
-    goto CPyL203;
-CPyL207: ;
-    CPy_DecRef(cpy_r_r102);
-    CPy_DecRef(cpy_r_r103);
-    goto CPyL203;
-CPyL208: ;
-    CPy_DecRef(cpy_r_r103);
-    goto CPyL203;
-CPyL209: ;
-    CPy_DecRef(cpy_r_r212);
-    goto CPyL203;
-CPyL210: ;
-    CPy_DecRef(cpy_r_r212);
-    goto CPyL136;
-CPyL211: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    goto CPyL203;
-CPyL212: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    goto CPyL144;
-CPyL213: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    goto CPyL203;
-CPyL214: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    goto CPyL154;
-CPyL215: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    CPy_DecRef(cpy_r_r449);
-    goto CPyL203;
-CPyL216: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    CPy_DecRef(cpy_r_r449);
-    goto CPyL160;
-CPyL217: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    CPy_DecRef(cpy_r_r449);
-    CPy_DecRef(cpy_r_r469);
-    goto CPyL203;
-CPyL218: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    CPy_DecRef(cpy_r_r449);
-    CPy_DecRef(cpy_r_r469);
-    goto CPyL177;
-CPyL219: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    CPy_DecRef(cpy_r_r449);
-    CPy_DecRef(cpy_r_r469);
-    CPy_DecRef(cpy_r_r499);
-    goto CPyL203;
-CPyL220: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    CPy_DecRef(cpy_r_r449);
-    CPy_DecRef(cpy_r_r469);
-    CPy_DecRef(cpy_r_r499);
-    goto CPyL182;
-CPyL221: ;
-    CPy_DecRef(cpy_r_r212);
-    CPy_DecRef(cpy_r_r415);
-    CPy_DecRef(cpy_r_r432);
-    CPy_DecRef(cpy_r_r449);
-    CPy_DecRef(cpy_r_r469);
-    CPy_DecRef(cpy_r_r499);
-    CPy_DecRef(cpy_r_r510);
-    goto CPyL203;
-CPyL222: ;
-    CPy_DecRef(cpy_r_r523);
-    goto CPyL203;
-CPyL223: ;
-    CPy_DecRef(cpy_r_r523);
-    CPyTagged_DecRef(cpy_r_r527);
-    goto CPyL203;
 CPyL224: ;
-    CPy_DecRef(cpy_r_r530);
-    goto CPyL197;
+    cpy_r_r593 = 2;
+    return cpy_r_r593;
 CPyL225: ;
-    CPy_DecRef(cpy_r_r533);
+    CPy_DecRef(cpy_r_r85);
+    goto CPyL224;
+CPyL226: ;
+    CPy_DecRef(cpy_r_r118);
+    goto CPyL224;
+CPyL227: ;
+    CPy_DECREF(cpy_r_r123);
+    goto CPyL37;
+CPyL228: ;
+    CPy_DecRef(cpy_r_r137);
+    goto CPyL224;
+CPyL229: ;
+    CPy_DecRef(cpy_r_r137);
+    CPy_DecRef(cpy_r_r140);
+    goto CPyL224;
+CPyL230: ;
+    CPy_DECREF(cpy_r_r144);
+    goto CPyL43;
+CPyL231: ;
+    CPy_DecRef(cpy_r_r150);
+    goto CPyL224;
+CPyL232: ;
+    CPy_DecRef(cpy_r_r150);
+    CPy_DecRef(cpy_r_r156);
+    goto CPyL224;
+CPyL233: ;
+    CPy_DecRef(cpy_r_r156);
+    CPy_DecRef(cpy_r_r157);
+    goto CPyL224;
+CPyL234: ;
+    CPy_DecRef(cpy_r_r157);
+    goto CPyL224;
+CPyL235: ;
+    CPy_DecRef(cpy_r_r266);
+    goto CPyL224;
+CPyL236: ;
+    CPy_DecRef(cpy_r_r266);
+    goto CPyL157;
+CPyL237: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    goto CPyL224;
+CPyL238: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    goto CPyL165;
+CPyL239: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    goto CPyL224;
+CPyL240: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    goto CPyL175;
+CPyL241: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    CPy_DecRef(cpy_r_r503);
+    goto CPyL224;
+CPyL242: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    CPy_DecRef(cpy_r_r503);
+    goto CPyL181;
+CPyL243: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    CPy_DecRef(cpy_r_r503);
+    CPy_DecRef(cpy_r_r523);
+    goto CPyL224;
+CPyL244: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    CPy_DecRef(cpy_r_r503);
+    CPy_DecRef(cpy_r_r523);
+    goto CPyL198;
+CPyL245: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    CPy_DecRef(cpy_r_r503);
+    CPy_DecRef(cpy_r_r523);
+    CPy_DecRef(cpy_r_r553);
+    goto CPyL224;
+CPyL246: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    CPy_DecRef(cpy_r_r503);
+    CPy_DecRef(cpy_r_r523);
+    CPy_DecRef(cpy_r_r553);
     goto CPyL203;
+CPyL247: ;
+    CPy_DecRef(cpy_r_r266);
+    CPy_DecRef(cpy_r_r469);
+    CPy_DecRef(cpy_r_r486);
+    CPy_DecRef(cpy_r_r503);
+    CPy_DecRef(cpy_r_r523);
+    CPy_DecRef(cpy_r_r553);
+    CPy_DecRef(cpy_r_r564);
+    goto CPyL224;
+CPyL248: ;
+    CPy_DecRef(cpy_r_r577);
+    goto CPyL224;
+CPyL249: ;
+    CPy_DecRef(cpy_r_r577);
+    CPyTagged_DecRef(cpy_r_r581);
+    goto CPyL224;
+CPyL250: ;
+    CPy_DecRef(cpy_r_r584);
+    goto CPyL218;
+CPyL251: ;
+    CPy_DecRef(cpy_r_r587);
+    goto CPyL224;
 }
 
 static PyAsyncMethods gather___gather_methods_gen_as_async = {
@@ -41126,6 +41385,7 @@ int CPyGlobalsInit(void)
     CPyModule_typing = Py_None;
     CPyModule_a_sync = Py_None;
     CPyModule_eth_typing = Py_None;
+    CPyModule_y = Py_None;
     CPyModule_y___classes___common = Py_None;
     CPyModule_y___constants = Py_None;
     CPyModule_y___contracts = Py_None;
@@ -41196,7 +41456,7 @@ const char * const CPyLit_Str[] = {
     "\005\005_envs\tCACHE_TTL\averbose\022CONTRACT_CACHE_TTL\022GETLOGS_BATCH_SIZE",
     "\004\vGETLOGS_DOP\026CHECKSUM_CACHE_MAXSIZE\vDB_PROVIDER\vSQLITE_PATH",
     "\006 /.ypricemagic/ypricemagic.sqlite\aDB_HOST\000\aDB_PORT\aDB_USER\vDB_PASSWORD",
-    "\004\vDB_DATABASE\vypricemagic\nSKIP_CACHE\016SKIP_YPRICEAPI",
+    "\005\vDB_DATABASE\vypricemagic\nSKIP_CACHE\016SKIP_YPRICEAPI\020SENSE_CHECK_FILE",
     "\b\033 is not a valid ETH address\bchecksum\003run\nissubclass\bHexBytes\0010\0020x\003Set",
     "\006\tcchecksum\bhexbytes\fy/convert.py\nAnyAddress\017ChecksumAddress\nHexAddress",
     "\004\neth_typing\016AnyAddressType\023to_checksum_address\022ThreadPoolExecutor",
@@ -41230,15 +41490,17 @@ const char * const CPyLit_Str[] = {
     "\006\021BinanceSmartChain\004xDai\aHarmony\fstaticmethod\005label\017__annotations__",
     "\006\026mypyc filler docstring\a__doc__\ny.networks\fNETWORK_NAME\005round\005ERC20",
     "\005\fasynchronous\006symbol\027unusually high price ($\017) returned for \004 on ",
-    "\001\a block ",
-    "\001\201\000. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.",
+    "\002\a block \001.",
+    "\001\177 This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.",
     "\006\fcheck_bucket\004sync\022uni or uni-like lp\rbalancer pool\bcurve lp\tCurvePool",
     "\b\005coins\021_exit_sense_check\003map\003all\006atoken\004aave\nunderlying\bcompound",
     "\006\006CToken\asolidex\tcoroutine\004pool\023yearn or yearn-like\022YearnInspiredVault",
     "\005\035y/prices/utils/sense_check.py\005Union\020y.classes.common\004wbtc\004weth",
     "\003\vy.constants\vy.contracts\025y.prices.lending.aave",
     "\003\031y.prices.lending.compound\032y.prices.stable_swap.curve\016y.prices.utils",
-    "\002\016y.prices.yearn\025acceptable_all_chains",
+    "\a\016y.prices.yearn\001a\005utf-8\vFileHandler\004mode\bencoding\ffile_handler",
+    "\004\bsetLevel&%(asctime)s %(levelname)s: %(message)s\tFormatter\tformatter",
+    "\002\fsetFormatter\025acceptable_all_chains",
     "\001*0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     "\001*0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
     "\001*0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c",
@@ -41377,27 +41639,27 @@ const char * const CPyLit_Bytes[] = {
 };
 const char * const CPyLit_Int[] = {
     "\0221\0000\00032\00010\0003600\000100000\00025\00056\00066\000100\000128\000137\000250\0001285\0008453\00042161\00043114\0001666600000",
-    "\0051313161554\000747474\00080094\0001000\0004",
+    "\0061313161554\000747474\00080094\0001000\0004\00030",
     "",
 };
 const double CPyLit_Float[] = {0};
 const double CPyLit_Complex[] = {0};
 const int CPyLit_Tuple[] = {
-    82, 1, 8, 3, 38, 38, 38, 3, 39, 39, 39, 2, 576, 577, 1, 42, 1, 44,
-    9, 46, 47, 48, 49, 50, 51, 52, 53, 54, 3, 56, 56, 56, 1, 582, 1, 57,
+    83, 1, 8, 3, 38, 38, 38, 3, 39, 39, 39, 2, 590, 591, 1, 42, 1, 44,
+    9, 46, 47, 48, 49, 50, 51, 52, 53, 54, 3, 56, 56, 56, 1, 596, 1, 57,
     2, 17, 59, 1, 22, 1, 25, 1, 63, 1, 65, 2, 67, 30, 1, 69, 1, 105, 1,
-    106, 3, 107, 107, 107, 1, 594, 2, 109, 110, 1, 50, 1, 112, 1, 113, 2,
-    147, 148, 3, 152, 152, 152, 3, 153, 153, 153, 2, 601, 602, 2, 65, 143,
+    106, 3, 107, 107, 107, 1, 608, 2, 109, 110, 1, 50, 1, 112, 1, 113, 2,
+    147, 148, 3, 152, 152, 152, 3, 153, 153, 153, 2, 615, 616, 2, 65, 143,
     4, 47, 50, 155, 156, 1, 157, 2, 159, 58, 1, 160, 1, 162, 6, 135, 30,
     141, 136, 134, 145, 2, 195, 204, 1, 194, 3, 46, 50, 155, 1, 110, 2,
-    210, 211, 2, 147, 216, 1, 147, 3, 50, 52, 240, 3, 58, 58, 58, 3, 241,
-    241, 241, 3, 242, 242, 242, 3, 619, 620, 621, 3, 244, 245, 246, 1,
-    248, 1, 258, 1, 277, 1, 601, 1, 291, 5, 293, 46, 50, 52, 54, 1, 294,
-    1, 267, 1, 269, 2, 295, 245, 1, 281, 1, 355, 3, 50, 52, 54, 1, 371, 1,
-    379, 4, 50, 52, 240, 399, 1, 619, 1, 370, 4, 357, 368, 401, 402, 1,
-    302, 1, 389, 1, 392, 1, 383, 1, 378, 1, 397, 2, 255, 541, 1, 543, 1,
-    541, 1, 544, 6, 46, 50, 155, 545, 52, 53, 3, 546, 546, 546, 2, 619,
-    654, 1, 548
+    210, 211, 2, 147, 216, 1, 147, 3, 50, 52, 241, 3, 58, 58, 58, 3, 242,
+    242, 242, 3, 243, 243, 243, 3, 633, 634, 635, 3, 245, 246, 247, 1,
+    249, 1, 259, 1, 278, 1, 615, 1, 292, 5, 294, 46, 50, 52, 54, 1, 295,
+    1, 268, 1, 270, 2, 296, 246, 1, 282, 1, 356, 3, 50, 52, 54, 1, 372, 1,
+    381, 4, 50, 52, 241, 401, 1, 633, 1, 371, 4, 358, 369, 403, 404, 1,
+    303, 1, 391, 1, 394, 1, 385, 1, 380, 1, 399, 2, 415, 416, 2, 256, 554,
+    1, 556, 1, 554, 1, 557, 6, 46, 50, 155, 558, 52, 53, 3, 559, 559, 559,
+    2, 633, 669, 1, 561
 };
 const int CPyLit_FrozenSet[] = {0};
 CPyModule *CPyModule_y____db___brownie__internal = NULL;
@@ -41677,6 +41939,7 @@ PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD = NULL;
 PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE = NULL;
 PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = NULL;
 PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = NULL;
+PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = NULL;
 char CPyDef_ENVIRONMENT_VARIABLES_____top_level__(void);
 PyObject *CPyStatic_convert___HexBytes = NULL;
 PyObject *CPyStatic_convert___to_checksum_address = NULL;

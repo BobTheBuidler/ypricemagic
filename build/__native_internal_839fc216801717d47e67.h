@@ -6,7 +6,7 @@
 
 int CPyGlobalsInit(void);
 
-extern PyObject *CPyStatics[657];
+extern PyObject *CPyStatics[672];
 extern const char * const CPyLit_Str[];
 extern const char * const CPyLit_Bytes[];
 extern const char * const CPyLit_Int[];
@@ -291,6 +291,7 @@ extern PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD;
 extern PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE;
 extern PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE;
 extern PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI;
+extern PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE;
 extern char CPyDef_ENVIRONMENT_VARIABLES_____top_level__(void);
 extern PyObject *CPyStatic_convert___HexBytes;
 extern PyObject *CPyStatic_convert___to_checksum_address;
