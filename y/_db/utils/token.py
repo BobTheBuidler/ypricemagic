@@ -72,7 +72,7 @@ def get_token(address: str) -> Token:
         except TransactionIntegrityError as e:
             if "Address.chain, Address.address" in str(e).split(":")[-1]:
                 try:
-                    addr = Address[CHAINID, address]
+                    addr = Address[CHAINID, address]  # type: ignore [type-arg]
                 except ObjectNotFound:
                     raise RuntimeError(
                         "you probably have an eth-portfolio enhanced db but no eth-portfolio in your env"

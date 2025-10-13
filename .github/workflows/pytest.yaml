@@ -56,13 +56,6 @@ jobs:
             requirements.txt
             requirements-dev.txt
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
-          path: |
-            ${{ matrix.path }}
-      
       - name: Cache joblib middleware cache
         uses: actions/cache@v4
         with:
