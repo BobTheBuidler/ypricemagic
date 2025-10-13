@@ -63,3 +63,7 @@ SKIP_CACHE: Final = _envs.create_env("SKIP_CACHE", bool, default=False, verbose=
 # ypriceapi
 SKIP_YPRICEAPI: Final = create_env("SKIP_YPRICEAPI", bool, default=False, verbose=False)
 """Flag to skip using ypriceapi"""
+
+# sense checker
+SENSE_CHECK_FILE: Final = _envs.create_env("SENSE_CHECK_FILE", str, default="", verbose=False)
+"""If set, sense checker will log all erroneous price messages to this file path using aiofiles."""
