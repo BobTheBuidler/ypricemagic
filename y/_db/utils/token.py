@@ -1,12 +1,12 @@
 import logging
 import threading
+import time
 from functools import lru_cache
 from typing import Dict, Optional, Set
 
 import a_sync
-from a_sync import PruningThreadPoolExecutor
 from cachetools import TTLCache, cached
-from pony.orm import commit, db_session, select
+from pony.orm import ObjectNotFound, TransactionIntegrityError, commit, select
 
 from y import constants, convert
 from y._db.common import make_executor
@@ -65,9 +65,24 @@ def get_token(address: str) -> Token:
                 return entity
             entity.delete()
             commit()
-        return insert(type=Token, chain=CHAINID, address=address) or Token.get(
-            chain=CHAINID, address=address
-        )
+        try:
+            return insert(type=Token, chain=CHAINID, address=address) or Token.get(
+                chain=CHAINID, address=address
+            )
+        except TransactionIntegrityError as e:
+            if "Address.chain, Address.address" in str(e).split(":")[-1]:
+                try:
+                    addr = Address[CHAINID, address]
+                except ObjectNotFound:
+                    raise RuntimeError("you probably have an eth-portfolio enhanced db but no eth-portfolio in your env")
+                # TODO handle this more gracefully, instead of just
+                #      dropping the address and re-adding as a Token
+                addr.delete()
+                commit()
+                continue
+        if entity is not None:
+            return entity
+        time.sleep(1)
 
 
 @a_sync.a_sync(default="sync", ram_cache_maxsize=None)

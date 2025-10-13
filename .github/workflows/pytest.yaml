@@ -68,9 +68,11 @@ jobs:
             ./cache/*/joblib/web3/middleware/filter/middleware
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
-          pip install -r requirements.txt
+        run: pip install -r requirements-dev.txt
+
+      - name: Install Patched pytest-asyncio-cooperative
+        # ypricemagic uses a global event loop which is not compatable with pytest-asyncio-cooperative
+        run: pip install https://github.com/BobTheBuidler/pytest-asyncio-cooperative@patch-1
       
       - name: Setup brownie networks
         run: |
