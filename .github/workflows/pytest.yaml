@@ -83,6 +83,9 @@ jobs:
           path: ${{ matrix.home }}/.brownie/deployments.db
           key: brownie-${{ runner.os }}
 
+      - name: Update Pip and Setuptools
+        run: pip install -U pip setuptools
+        
       - name: Install dependencies
         run: pip install . -r requirements-dev.txt
       
