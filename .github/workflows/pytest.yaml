@@ -56,6 +56,12 @@ jobs:
             requirements.txt
             requirements-dev.txt
 
+      - name: Cache .mypy_cache
+        uses: actions/cache@v4
+        with:
+          path: .mypy_cache
+          key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
+
       - name: Restore ydb cache
         uses: actions/cache/restore@v4
         with:
