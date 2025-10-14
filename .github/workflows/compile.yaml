@@ -29,9 +29,6 @@ jobs:
           
       - name: Install Requirements
         run: pip install -r requirements.txt
-
-      - name: Install ccache
-        run: sudo apt-get update && sudo apt-get install -y ccache
         
       - name: Install ypricemagic
         run: pip install .
