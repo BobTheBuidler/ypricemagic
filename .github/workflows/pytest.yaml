@@ -25,11 +25,11 @@ jobs:
         network: [ mainnet, bsc-main, polygon-main, ftm-main, arbitrum-main, optimism-main ]
         include:
         - os: ubuntu-latest
-          path: ~/.cache/pip
+          home: /home/runner
         - os: macos-latest
-          path: ~/Library/Caches/pip
+          home: /Users/runner
         - os: windows-latest
-          path: ~\AppData\Local\pip\Cache
+          home: C:\Users\runner
         - network: mainnet
           provider: WEB3_PROVIDER
         - network: bsc-main
@@ -62,30 +62,42 @@ jobs:
           path: .mypy_cache
           key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
 
-      - name: Cache joblib middleware cache
-        uses: actions/cache@v4
+      - name: Restore ydb cache
+        uses: actions/cache/restore@v4
         with:
-          # Include requirements.txt so we recache if web3 version changes
-          key: forceupdatedeletethislater3-${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
-          path: |
-            ./cache/*/joblib/web3/middleware/filter/middleware
+          path: ${{ matrix.home }}/.ypricemagic/ypricemagic.sqlite
+          key: ydb-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
 
+      - name: Restore joblib middleware cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ./cache/*/joblib/web3/middleware/filter/middleware
+          # Include requirements.txt so we recache if web3 version changes
+          key: ${{ runner.os }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
+      
+      - name: Restore compilers cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ${{ matrix.home }}/.solcx
+            ${{ matrix.home }}/.vvm
+          key: compilers-${{ runner.os }}
+      
+      - name: Restore brownie contracts db
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ matrix.home }}/.brownie/deployments.db
+          key: brownie-${{ runner.os }}
+
+      - name: Update Pip and Setuptools
+        run: pip install -U pip setuptools
+        
       - name: Install dependencies
         run: pip install . -r requirements-dev.txt
       
       - name: Setup brownie networks
-        run: |
-          brownie networks modify ${{ matrix.network }} host=${{ secrets[matrix.provider] }}
+        run: brownie networks modify ${{ matrix.network }} host=${{ secrets[matrix.provider] }}
         continue-on-error: true
-
-      - name: Cache compilers and brownie deployments
-        uses: actions/cache@v4
-        with:
-          key: forceupdatedeletethislater3-${{ runner.os }}-brownie-cache-${{ matrix.network }}
-          path: |
-            ~/.brownie/deployments.db
-            ~/.solcx
-            ~/.vvm
       
       - name: Run test suite
         env:
@@ -98,4 +110,35 @@ jobs:
           ARBISCAN_TOKEN: ${{ secrets.ARBISCAN_TOKEN }}
           OPTISCAN_TOKEN: ${{ secrets.OPTISCAN_TOKEN }}
         run: make test
+        timeout-minutes: 180
       
+      - name: Save ydb cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ matrix.home }}/.ypricemagic/ypricemagic.sqlite
+          key: ydb-${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Save joblib middleware cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ./cache/*/joblib/web3/middleware/filter/middleware
+          # Include requirements.txt so we recache if web3 version changes
+          key: ${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
+      
+      - name: Save compilers cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ matrix.home }}/.solcx
+            ${{ matrix.home }}/.vvm
+          key: compilers-${{ runner.os }}
+      
+      - name: Save brownie contracts db
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ matrix.home }}/.brownie/deployments.db
+          key: brownie-${{ runner.os }}
