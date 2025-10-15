@@ -1,12 +1,12 @@
-#ifndef MYPYC_NATIVE_INTERNAL_839fc216801717d47e67_H
-#define MYPYC_NATIVE_INTERNAL_839fc216801717d47e67_H
+#ifndef MYPYC_NATIVE_INTERNAL_ypricemagic_H
+#define MYPYC_NATIVE_INTERNAL_ypricemagic_H
 #include <Python.h>
 #include <CPy.h>
-#include "__native_839fc216801717d47e67.h"
+#include "__native_ypricemagic.h"
 
 int CPyGlobalsInit(void);
 
-extern PyObject *CPyStatics[672];
+extern PyObject *CPyStatics[673];
 extern const char * const CPyLit_Str[];
 extern const char * const CPyLit_Bytes[];
 extern const char * const CPyLit_Int[];
@@ -208,7 +208,7 @@ extern PyObject *CPyStatic_decorators___db_session_cached;
 extern PyObject *CPyStatic_decorators____result_count_logger;
 extern PyObject *CPyStatic_decorators____result_count_logger_debug;
 extern PyObject *CPyStatic_decorators____result_count_logger_is_enabled_for;
-extern tuple_T2OI CPyStatic_decorators____CHAIN_INFO;
+extern tuple_T2OO CPyStatic_decorators____CHAIN_INFO;
 extern PyObject *CPyStatic_decorators___y____db___decorators___log_result_count___arg_names;
 extern PyTypeObject *CPyType_decorators___retry_locked_env;
 extern PyObject *CPyDef_decorators___retry_locked_env(void);

@@ -4,11 +4,11 @@ PyMODINIT_FUNC
 PyInit_ENVIRONMENT_VARIABLES(void)
 {
     PyObject *tmp;
-    if (!(tmp = PyImport_ImportModule("839fc216801717d47e67__mypyc"))) return NULL;
+    if (!(tmp = PyImport_ImportModule("ypricemagic__mypyc"))) return NULL;
     PyObject *capsule = PyObject_GetAttrString(tmp, "init_y___ENVIRONMENT_VARIABLES");
     Py_DECREF(tmp);
     if (capsule == NULL) return NULL;
-    void *init_func = PyCapsule_GetPointer(capsule, "839fc216801717d47e67__mypyc.init_y___ENVIRONMENT_VARIABLES");
+    void *init_func = PyCapsule_GetPointer(capsule, "ypricemagic__mypyc.init_y___ENVIRONMENT_VARIABLES");
     Py_DECREF(capsule);
     if (!init_func) {
         return NULL;
