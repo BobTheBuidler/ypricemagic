@@ -71,9 +71,8 @@ jobs:
       - name: Restore joblib middleware cache
         uses: actions/cache/restore@v4
         with:
-          path: ./cache/*/joblib/web3/middleware/filter/middleware
-          # Include requirements.txt so we recache if web3 version changes
-          key: ${{ runner.os }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
+          path: ./cache/**/joblib/
+          key: ${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**.py', 'requirements.txt') }}
       
       - name: Restore compilers cache
         uses: actions/cache/restore@v4
@@ -81,13 +80,13 @@ jobs:
           path: |
             ${{ matrix.home }}/.solcx
             ${{ matrix.home }}/.vvm
-          key: compilers-${{ runner.os }}
+          key: compilers-${{ runner.os }}-${{ matrix.network }}
       
       - name: Restore brownie contracts db
         uses: actions/cache/restore@v4
         with:
           path: ${{ matrix.home }}/.brownie/deployments.db
-          key: brownie-${{ runner.os }}
+          key: brownie-${{ runner.os }}-${{ matrix.network }}
 
       - name: Update Pip and Setuptools
         run: pip install -U pip setuptools
@@ -119,13 +118,12 @@ jobs:
           path: ${{ matrix.home }}/.ypricemagic/ypricemagic.sqlite
           key: ydb-${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/requirements.txt') }}
 
-      - name: Save joblib middleware cache
+      - name: Save joblib cache
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: ./cache/*/joblib/web3/middleware/filter/middleware
-          # Include requirements.txt so we recache if web3 version changes
-          key: ${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
+          path: ./cache/**/joblib/
+          key: ${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**.py', 'requirements.txt') }}
       
       - name: Save compilers cache
         if: always()
@@ -134,11 +132,11 @@ jobs:
           path: |
             ${{ matrix.home }}/.solcx
             ${{ matrix.home }}/.vvm
-          key: compilers-${{ runner.os }}
+          key: compilers-${{ runner.os }}-${{ matrix.network }}
       
       - name: Save brownie contracts db
         if: always()
         uses: actions/cache/save@v4
         with:
           path: ${{ matrix.home }}/.brownie/deployments.db
-          key: brownie-${{ runner.os }}
+          key: brownie-${{ runner.os }}-${{ matrix.network }}
