@@ -48,7 +48,8 @@ try:
             "--disable-error-code=var-annotated",
             "--disable-error-code=typeddict-item",
             "--disable-error-code=type-var",
-        ]
+        ],
+        group_name="ypricemagic",
     )
 except ImportError:
     ext_modules = []
