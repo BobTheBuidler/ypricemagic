@@ -7,8 +7,9 @@ requires = [
   "types-python-dateutil",
   "types-cachetools",
   "types-requests",
-  "faster-eth-abi>=5.2.1,<6",
-  "eth-typing==4.4.0",
+  "faster-eth-abi>=5.2.12,<6",
+  "eth-brownie==1.22.0.dev0",
+  "eth-typing==5.2.1",
 ]
 
 [tool.black]
