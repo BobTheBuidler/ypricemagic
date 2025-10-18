@@ -76,19 +76,19 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">textwrap</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextWrapper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ident</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Coroutine</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Final</span><span class="p">,</span>
     <span class="n">Iterator</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Match</span><span class="p">,</span>
@@ -98,18 +98,27 @@
     <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">eth_abi</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">solcx</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">eth_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">combomethod</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">hexbytes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HexBytes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">semantic_version</span><span class="w"> </span><span class="kn">import</span> <span class="n">Version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">eth_typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABIConstructor</span><span class="p">,</span> <span class="n">ABIElement</span><span class="p">,</span> <span class="n">ABIFunction</span><span class="p">,</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexAddress</span><span class="p">,</span> <span class="n">HexStr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_abi</span><span class="w"> </span><span class="kn">import</span> <span class="n">decode</span> <span class="k">as</span> <span class="n">decode_abi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_abi</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">encode_abi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">combomethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">vvm</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_installable_vyper_versions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">vvm.utils.convert</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_vyper_version</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">web3._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">filters</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">web3.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">web3.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogReceipt</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie._c_constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">HexBytes</span><span class="p">,</span>
+    <span class="n">Version</span><span class="p">,</span>
+    <span class="n">regex_findall</span><span class="p">,</span>
+    <span class="n">ujson_dump</span><span class="p">,</span>
+    <span class="n">ujson_dumps</span><span class="p">,</span>
+    <span class="n">ujson_load</span><span class="p">,</span>
+    <span class="n">ujson_loads</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie._config</span><span class="w"> </span><span class="kn">import</span> <span class="n">BROWNIE_FOLDER</span><span class="p">,</span> <span class="n">CONFIG</span><span class="p">,</span> <span class="n">REQUEST_HEADERS</span><span class="p">,</span> <span class="n">_load_project_compiler_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.convert.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Wei</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.convert.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_input</span><span class="p">,</span> <span class="n">format_output</span>
@@ -130,8 +139,22 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">compiler</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.project.flattener</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flattener</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccountsType</span><span class="p">,</span> <span class="n">TransactionReceiptType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AccountsType</span><span class="p">,</span>
+    <span class="n">ContractBuildJson</span><span class="p">,</span>
+    <span class="n">ContractName</span><span class="p">,</span>
+    <span class="n">FunctionName</span><span class="p">,</span>
+    <span class="n">Language</span><span class="p">,</span>
+    <span class="n">Selector</span><span class="p">,</span>
+    <span class="n">TransactionReceiptType</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">color</span><span class="p">,</span> <span class="n">hexbytes_to_hexstring</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">brownie.utils._color</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">bright_blue</span><span class="p">,</span>
+    <span class="n">bright_green</span><span class="p">,</span>
+    <span class="n">bright_magenta</span><span class="p">,</span>
+    <span class="n">bright_red</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">accounts</span><span class="p">,</span> <span class="n">chain</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.event</span><span class="w"> </span><span class="kn">import</span> <span class="n">_add_deployment_topics</span><span class="p">,</span> <span class="n">_get_topics</span><span class="p">,</span> <span class="n">event_watcher</span>
@@ -146,40 +169,54 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.web3</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContractEvent</span><span class="p">,</span> <span class="n">_ContractEvents</span><span class="p">,</span> <span class="n">_resolve_address</span><span class="p">,</span> <span class="n">web3</span>
 
-<span class="n">_unverified_addresses</span><span class="p">:</span> <span class="n">Set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.project.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">TempProject</span>
+
+<span class="n">AnyContractMethod</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;ContractCall&quot;</span><span class="p">,</span> <span class="s2">&quot;ContractTx&quot;</span><span class="p">,</span> <span class="s2">&quot;OverloadedMethod&quot;</span><span class="p">]</span>
+
+<span class="n">_unverified_addresses</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ChecksumAddress</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_ContractBase</span><span class="p">:</span>
-    <span class="n">_dir_color</span> <span class="o">=</span> <span class="s2">&quot;bright magenta&quot;</span>
+    <span class="n">_dir_color</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="s2">&quot;bright magenta&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Project&quot;</span><span class="p">,</span> <span class="s2">&quot;TempProject&quot;</span><span class="p">]],</span>
+        <span class="n">build</span><span class="p">:</span> <span class="n">ContractBuildJson</span><span class="p">,</span>
+        <span class="n">sources</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_project</span> <span class="o">=</span> <span class="n">project</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">build</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span> <span class="o">=</span> <span class="n">sources</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="n">_get_topics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">selectors</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">build_function_selector</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">build</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">sources</span>
+
+        <span class="n">abi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">_get_topics</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectors</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Selector</span><span class="p">,</span> <span class="n">FunctionName</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">build_function_selector</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="n">FunctionName</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">abi</span>
+            <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
         <span class="p">}</span>
         <span class="c1"># this isn&#39;t fully accurate because of overloaded methods - will be removed in `v2.0.0`</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">signatures</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="n">build_function_selector</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signatures</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">FunctionName</span><span class="p">,</span> <span class="n">Selector</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectors</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
-        <span class="n">parse_errors_from_abi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span>
+        <span class="n">parse_errors_from_abi</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">abi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">abi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ABIElement</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">[</span><span class="s2">&quot;abi&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContractName</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">[</span><span class="s2">&quot;contractName&quot;</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display NatSpec documentation for this contract.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;natspec&quot;</span><span class="p">):</span>
-            <span class="n">_print_natspec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">[</span><span class="s2">&quot;natspec&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">natspec</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;natspec&quot;</span><span class="p">):</span>
+            <span class="n">_print_natspec</span><span class="p">(</span><span class="n">natspec</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calldata</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">sig</span> <span class="o">=</span> <span class="n">calldata</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -206,21 +243,19 @@
 
         <span class="n">fn_selector</span> <span class="o">=</span> <span class="n">hexbytes_to_hexstring</span><span class="p">(</span><span class="n">calldata</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
 
-        <span class="n">abi</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">i</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
-                <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span> <span class="ow">and</span> <span class="n">build_function_selector</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="n">fn_selector</span>
-            <span class="p">),</span>
-            <span class="kc">None</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">abi</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ABIFunction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span> <span class="ow">and</span> <span class="n">build_function_selector</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="n">fn_selector</span><span class="p">:</span>
+                <span class="n">abi</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="k">break</span>
+
         <span class="k">if</span> <span class="n">abi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Four byte selector does not match the ABI for this contract&quot;</span><span class="p">)</span>
 
         <span class="n">function_sig</span> <span class="o">=</span> <span class="n">build_function_signature</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
 
         <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">eth_abi</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">calldata</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">decode_abi</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">calldata</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
         <span class="n">input_args</span> <span class="o">=</span> <span class="n">format_input</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">function_sig</span><span class="p">,</span> <span class="n">input_args</span>
@@ -236,19 +271,19 @@
 <span class="sd">        signatures: Dictionary of {&#39;function name&#39;: &quot;bytes4 signature&quot;}</span>
 <span class="sd">        topics: Dictionary of {&#39;event name&#39;: &quot;bytes32 topic&quot;}&quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">ContractBuildJson</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bytecode</span> <span class="o">=</span> <span class="n">build</span><span class="p">[</span><span class="s2">&quot;bytecode&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;ProjectContract&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bytecode</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">build</span><span class="p">[</span><span class="s2">&quot;bytecode&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s2">&quot;ProjectContract&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">build</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">_sources</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deploy</span> <span class="o">=</span> <span class="n">ContractConstructor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deploy</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">ContractConstructor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
         <span class="n">_revert_register</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="c1"># messes with tests if it is created on init</span>
         <span class="c1"># instead we create when it&#39;s requested, but still define it here</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_flattener</span><span class="p">:</span> <span class="n">Flattener</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="s2">&quot;ProjectContract&quot;</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ProjectContract&quot;</span><span class="p">:</span>
@@ -277,7 +312,7 @@
             <span class="n">i</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contracts</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">tx</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">block_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">i</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">block_number</span> <span class="o">&gt;</span> <span class="n">height</span><span class="p">)</span>
-            <span class="c1"># removeprefix is used for compatability with both hexbytes&lt;1 and &gt;=1</span>
+            <span class="c1"># removeprefix is used for compatibility with both hexbytes&lt;1 and &gt;=1</span>
             <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">2</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">contract</span> <span class="ow">in</span> <span class="n">reverted</span><span class="p">:</span>
@@ -297,7 +332,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">at</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">HexAddress</span><span class="p">,</span>
         <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionReceiptType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">persist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -368,7 +403,7 @@
                         <span class="n">compiler</span><span class="o">.</span><span class="n">_get_solc_remappings</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;solc&quot;</span><span class="p">][</span><span class="s2">&quot;remappings&quot;</span><span class="p">]),</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
-                <span class="n">libs</span> <span class="o">=</span> <span class="p">{</span><span class="n">lib</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">lib</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;_{1,}[^_]*_{1,}&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bytecode</span><span class="p">)}</span>
+                <span class="n">libs</span> <span class="o">=</span> <span class="p">{</span><span class="n">lib</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">lib</span> <span class="ow">in</span> <span class="n">regex_findall</span><span class="p">(</span><span class="s2">&quot;_{1,}[^_]*_{1,}&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bytecode</span><span class="p">)}</span>
                 <span class="n">compiler_settings</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s2">&quot;evmVersion&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">[</span><span class="s2">&quot;compiler&quot;</span><span class="p">][</span><span class="s2">&quot;evm_version&quot;</span><span class="p">],</span>
                     <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;solc&quot;</span><span class="p">][</span><span class="s2">&quot;optimizer&quot;</span><span class="p">],</span>
@@ -392,7 +427,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported language for source verification: </span><span class="si">{</span><span class="n">language</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">publish_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contract</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">publish_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contract</span><span class="p">:</span> <span class="s2">&quot;Contract&quot;</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten contract and publish source on the selected explorer&quot;&quot;&quot;</span>
 
         <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ETHERSCAN_TOKEN&quot;</span><span class="p">)</span>
@@ -483,12 +518,14 @@
             <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">,</span>
             <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;verifysourcecode&quot;</span><span class="p">,</span>
             <span class="s2">&quot;contractaddress&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span>
-            <span class="s2">&quot;sourceCode&quot;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flattener</span><span class="o">.</span><span class="n">standard_input_json</span><span class="p">)),</span>
+            <span class="s2">&quot;sourceCode&quot;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">ujson_dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flattener</span><span class="o">.</span><span class="n">standard_input_json</span><span class="p">)),</span>
             <span class="s2">&quot;codeformat&quot;</span><span class="p">:</span> <span class="s2">&quot;solidity-standard-json-input&quot;</span><span class="p">,</span>
             <span class="s2">&quot;contractname&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_flattener</span><span class="o">.</span><span class="n">contract_file</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_flattener</span><span class="o">.</span><span class="n">contract_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;compilerversion&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">contract_info</span><span class="p">[</span><span class="s1">&#39;compiler_version&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="s2">&quot;optimizationUsed&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">contract_info</span><span class="p">[</span><span class="s2">&quot;optimizer_enabled&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;runs&quot;</span><span class="p">:</span> <span class="n">contract_info</span><span class="p">[</span><span class="s2">&quot;optimizer_runs&quot;</span><span class="p">],</span>
+            <span class="c1"># NOTE: This typo is intentional. https://docs.etherscan.io/etherscan-v2/common-verification-errors</span>
+            <span class="c1"># &quot;There is an easter egg 🐣 on the constructorArguements field spelling, using it as the &quot;correct&quot; spelling may miss your submission!&quot;</span>
             <span class="s2">&quot;constructorArguements&quot;</span><span class="p">:</span> <span class="n">constructor_arguments</span><span class="p">,</span>
             <span class="s2">&quot;licenseType&quot;</span><span class="p">:</span> <span class="n">license_code</span><span class="p">,</span>
         <span class="p">}</span>
@@ -527,8 +564,8 @@
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Verification pending...&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
-                    <span class="n">col</span> <span class="o">=</span> <span class="s2">&quot;bright green&quot;</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span> <span class="k">else</span> <span class="s2">&quot;bright red&quot;</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Verification complete. Result: </span><span class="si">{</span><span class="n">color</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="si">}{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">bright_green</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span> <span class="k">else</span> <span class="n">bright_red</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Verification complete. Result: </span><span class="si">{</span><span class="n">color</span><span class="si">}{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span><span class="si">}{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 
@@ -559,29 +596,32 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ContractConstructor</span><span class="p">:</span>
-    <span class="n">_dir_color</span> <span class="o">=</span> <span class="s2">&quot;bright magenta&quot;</span>
+    <span class="n">_dir_color</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="s2">&quot;bright magenta&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="s2">&quot;ContractContainer&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="s2">&quot;ContractContainer&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">ContractName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">parent</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">parent</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;constructor&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;constructor&quot;</span>
+            <span class="n">abi</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">parent</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;constructor&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;constructor&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;constructor&quot;</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="n">abi</span><span class="p">:</span> <span class="n">ABIConstructor</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;constructor&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;constructor&quot;</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;constructor&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">abi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">payable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;payable&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;payable&quot;</span><span class="p">]</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
+        <span class="k">if</span> <span class="s2">&quot;payable&quot;</span> <span class="ow">in</span> <span class="n">abi</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;payable&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;stateMutability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;payable&quot;</span>
+            <span class="k">return</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;stateMutability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;payable&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">.constructor(</span><span class="si">{</span><span class="n">_inputs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span><span class="si">}</span><span class="s2">)&#39;&gt;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">publish_source</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">publish_source</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Contract&quot;</span><span class="p">,</span> <span class="n">TransactionReceiptType</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Deploys a contract.</span>
 
@@ -616,13 +656,13 @@
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_autosuggest</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="s2">&quot;ContractConstructor&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_autosuggest</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="s2">&quot;ContractConstructor&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">_contract_method_autosuggest</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">payable</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">encode_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">bytecode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">bytecode</span>
         <span class="c1"># find and replace unlinked library pointers in bytecode</span>
-        <span class="k">for</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;_{1,}[^_]*_{1,}&quot;</span><span class="p">,</span> <span class="n">bytecode</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">regex_findall</span><span class="p">(</span><span class="s2">&quot;_{1,}[^_]*_{1,}&quot;</span><span class="p">,</span> <span class="n">bytecode</span><span class="p">):</span>
             <span class="n">library</span> <span class="o">=</span> <span class="n">marker</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">_project</span><span class="p">[</span><span class="n">library</span><span class="p">]:</span>
                 <span class="k">raise</span> <span class="n">UndeployedLibrary</span><span class="p">(</span>
@@ -631,11 +671,12 @@
             <span class="n">address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">_project</span><span class="p">[</span><span class="n">library</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">address</span><span class="p">[</span><span class="o">-</span><span class="mi">40</span><span class="p">:]</span>
             <span class="n">bytecode</span> <span class="o">=</span> <span class="n">bytecode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
 
-        <span class="n">data</span> <span class="o">=</span> <span class="n">format_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-        <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">bytecode</span> <span class="o">+</span> <span class="n">eth_abi</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">format_input</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">bytecode</span> <span class="o">+</span> <span class="n">encode_abi</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">estimate_gas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">estimate_gas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Estimate the gas cost for the deployment.</span>
 
@@ -675,10 +716,10 @@
         <span class="c1"># overwritten if a project contains an interface with the same name</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">BROWNIE_FOLDER</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;data/interfaces/*.json&quot;</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                <span class="n">abi</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+                <span class="n">abi</span> <span class="o">=</span> <span class="n">ujson_load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span> <span class="n">abi</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">abi</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">ContractName</span><span class="p">,</span> <span class="n">abi</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ABIElement</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">constructor</span> <span class="o">=</span> <span class="n">InterfaceConstructor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">abi</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">constructor</span><span class="p">)</span>
 
@@ -688,11 +729,13 @@
 <span class="sd">    Constructor used to create Contract objects from a project interface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">abi</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="o">=</span> <span class="n">abi</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">selectors</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">build_function_selector</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">ContractName</span><span class="p">,</span> <span class="n">abi</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ABIElement</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">abi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectors</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Selector</span><span class="p">,</span> <span class="n">FunctionName</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">build_function_selector</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="n">FunctionName</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">abi</span>
+            <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Contract&quot;</span><span class="p">:</span>
@@ -722,21 +765,19 @@
 
         <span class="n">fn_selector</span> <span class="o">=</span> <span class="n">hexbytes_to_hexstring</span><span class="p">(</span><span class="n">calldata</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
 
-        <span class="n">abi</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">i</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
-                <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span> <span class="ow">and</span> <span class="n">build_function_selector</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="n">fn_selector</span>
-            <span class="p">),</span>
-            <span class="kc">None</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">abi</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ABIFunction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">_abi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_abi</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span> <span class="ow">and</span> <span class="n">build_function_selector</span><span class="p">(</span><span class="n">_abi</span><span class="p">)</span> <span class="o">==</span> <span class="n">fn_selector</span><span class="p">:</span>
+                <span class="n">abi</span> <span class="o">=</span> <span class="n">_abi</span>
+                <span class="k">break</span>
+
         <span class="k">if</span> <span class="n">abi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Four byte selector does not match the ABI for this contract&quot;</span><span class="p">)</span>
 
         <span class="n">function_sig</span> <span class="o">=</span> <span class="n">build_function_signature</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
 
         <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">eth_abi</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">calldata</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">decode_abi</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">calldata</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
         <span class="n">input_args</span> <span class="o">=</span> <span class="n">format_input</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">function_sig</span><span class="p">,</span> <span class="n">input_args</span>
@@ -756,40 +797,46 @@
     <span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span> <span class="n">TransactionReceiptType</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">HexAddress</span><span class="p">,</span>
+        <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tx</span><span class="p">:</span> <span class="n">TransactionReceiptType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">address</span> <span class="o">=</span> <span class="n">_resolve_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bytecode</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="c1"># removeprefix is used for compatability with both hexbytes&lt;1 and &gt;=1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bytecode</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">HexStr</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>  <span class="c1"># type: ignore [assignment]</span>
+            <span class="c1"># removeprefix is used for compatibility with both hexbytes&lt;1 and &gt;=1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deployedBytecode&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="ow">or</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">bytecode</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No contract deployed at </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="n">owner</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">=</span> <span class="n">tx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">owner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">tx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">address</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">ContractEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">_add_deployment_topics</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span>
 
-        <span class="n">fn_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">]:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">abi</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">sig</span> <span class="o">=</span> <span class="n">build_function_signature</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
-            <span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;natspec&quot;</span><span class="p">):</span>
-                <span class="n">natspec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">[</span><span class="s2">&quot;natspec&quot;</span><span class="p">][</span><span class="s2">&quot;methods&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">fn_abis</span> <span class="o">=</span> <span class="p">[</span><span class="n">abi</span> <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">]</span>
+        <span class="n">fn_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="n">fn_abis</span><span class="p">]</span>
 
-            <span class="k">if</span> <span class="n">fn_names</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">contract_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+        <span class="n">contract_natspec</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;natspec&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">methods_natspec</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">contract_natspec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;methods&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">abi</span><span class="p">,</span> <span class="n">abi_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fn_abis</span><span class="p">,</span> <span class="n">fn_names</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">contract_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">abi_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">build_function_signature</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
+            <span class="n">natspec</span> <span class="o">=</span> <span class="n">methods_natspec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="p">{})</span>
+
+            <span class="k">if</span> <span class="n">fn_names</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">abi_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">fn</span> <span class="o">=</span> <span class="n">_get_method_object</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">natspec</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_set</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">fn</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_set</span><span class="p">(</span><span class="n">abi_name</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># special logic to handle function overloading</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abi_name</span><span class="p">):</span>
                 <span class="n">overloaded</span> <span class="o">=</span> <span class="n">OverloadedMethod</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">owner</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_set</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">overloaded</span><span class="p">)</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">_add_fn</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">natspec</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_and_set</span><span class="p">(</span><span class="n">abi_name</span><span class="p">,</span> <span class="n">overloaded</span><span class="p">)</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abi_name</span><span class="p">)</span><span class="o">.</span><span class="n">_add_fn</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">natspec</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -834,7 +881,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyContractMethod</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s2">&quot;_reverted&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="s2">&quot;This contract no longer exists.&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -891,7 +938,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">_add_to_deployment_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
                 <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">deployment_build</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+                    <span class="n">ujson_dump</span><span class="p">(</span><span class="n">deployment_build</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_delete_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">path</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_path</span><span class="p">():</span>
@@ -906,7 +953,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">address_or_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">address_or_alias</span><span class="p">:</span> <span class="n">HexAddress</span> <span class="o">|</span> <span class="n">ContractName</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Recreate a `Contract` object from the local database.</span>
@@ -960,9 +1011,9 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_deprecated_init</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">abi</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">ContractName</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HexAddress</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">abi</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ABIElement</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">manifest_uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -979,9 +1030,9 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_abi</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">abi</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">ContractName</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">HexAddress</span><span class="p">,</span>
+        <span class="n">abi</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ABIElement</span><span class="p">],</span>
         <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">persist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Contract&quot;</span><span class="p">:</span>
@@ -1006,7 +1057,7 @@
             <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span>
             <span class="s2">&quot;contractName&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">,</span>
-            <span class="c1"># removeprefix is used for compatability with both hexbytes&lt;1 and &gt;=1</span>
+            <span class="c1"># removeprefix is used for compatibility with both hexbytes&lt;1 and &gt;=1</span>
             <span class="s2">&quot;deployedBytecode&quot;</span><span class="p">:</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">),</span>
         <span class="p">}</span>
 
@@ -1020,7 +1071,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_explorer</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">HexAddress</span><span class="p">,</span>
         <span class="n">as_proxy_for</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1047,7 +1098,7 @@
         <span class="n">is_verified</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SourceCode&quot;</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">is_verified</span><span class="p">:</span>
-            <span class="n">abi</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span>
+            <span class="n">abi</span> <span class="o">=</span> <span class="n">ujson_loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ContractName&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># if the source is not available, try to fetch only the ABI</span>
@@ -1056,7 +1107,7 @@
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="n">_unverified_addresses</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">exc</span>
-            <span class="n">abi</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data_abi</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">abi</span> <span class="o">=</span> <span class="n">ujson_loads</span><span class="p">(</span><span class="n">data_abi</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;UnknownContractName&quot;</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -1148,7 +1199,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">source_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;{{&quot;</span><span class="p">):</span>
                 <span class="c1"># source was verified using compiler standard JSON</span>
-                <span class="n">input_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">source_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">input_json</span> <span class="o">=</span> <span class="n">ujson_loads</span><span class="p">(</span><span class="n">source_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">sources</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_json</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
                 <span class="n">evm_version</span> <span class="o">=</span> <span class="n">input_json</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;evmVersion&quot;</span><span class="p">,</span> <span class="n">evm_version</span><span class="p">)</span>
                 <span class="n">remappings</span> <span class="o">=</span> <span class="n">input_json</span><span class="p">[</span><span class="s2">&quot;settings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;remappings&quot;</span><span class="p">,</span> <span class="p">[])</span>
@@ -1164,7 +1215,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">source_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">):</span>
                     <span class="c1"># source was submitted as multiple files</span>
-                    <span class="n">sources</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">source_str</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                    <span class="n">sources</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ujson_loads</span><span class="p">(</span><span class="n">source_str</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># source was submitted as a single file</span>
                     <span class="k">if</span> <span class="n">compiler_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;vyper&quot;</span><span class="p">):</span>
@@ -1250,7 +1301,9 @@
 <a class="viewcode-back" href="../../../source/y.html#y.contracts.Contract.remove_deployment">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_deployment</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ChecksumAddress</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">alias</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ContractName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes this contract from the internal deployments db</span>
@@ -1306,8 +1359,8 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">project</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-        <span class="n">build</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">build</span><span class="p">:</span> <span class="n">ContractBuildJson</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
         <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tx</span><span class="p">:</span> <span class="n">TransactionReceiptType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1390,7 +1443,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a listening Coroutine object ending whenever an event matching</span>
 <span class="sd">        &#39;event_name&#39; occurs. If timeout is superior to zero and no event matching</span>
-<span class="sd">        &#39;event_name&#39; has occured, the Coroutine ends when the timeout is reached.</span>
+<span class="sd">        &#39;event_name&#39; has occurred, the Coroutine ends when the timeout is reached.</span>
 
 <span class="sd">        The Coroutine return value is an AttributeDict filled with the following fields :</span>
 <span class="sd">            - &#39;event_data&#39; (AttributeDict): The event log receipt that was caught.</span>
@@ -1411,7 +1464,7 @@
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_event_callback</span><span class="p">(</span><span class="n">event_data</span><span class="p">:</span> <span class="n">AttributeDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Fills the nonlocal varialbe &#39;_received_data&#39; with the received</span>
+<span class="sd">            Fills the nonlocal variable &#39;_received_data&#39; with the received</span>
 <span class="sd">            argument &#39;event_data&#39; and sets the nonlocal &#39;_triggered&#39; variable to True</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">nonlocal</span> <span class="n">_triggered</span><span class="p">,</span> <span class="n">_received_data</span>
@@ -1458,14 +1511,14 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">OverloadedMethod</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_address</span> <span class="o">=</span> <span class="n">address</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="n">owner</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">owner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">ContractCall</span> <span class="o">|</span> <span class="n">ContractTx</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natspec</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abi</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abi</span><span class="p">:</span> <span class="n">ABIFunction</span><span class="p">,</span> <span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">fn</span> <span class="o">=</span> <span class="n">_get_method_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_address</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">,</span> <span class="n">natspec</span><span class="p">)</span>
         <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;256&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fn</span>
@@ -1486,9 +1539,9 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;_ContractMethod&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;ContractCall&quot;</span><span class="p">,</span> <span class="s2">&quot;ContractTx&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
 
         <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;256&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">key</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -1500,7 +1553,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">block_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">block_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fn_from_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;block_identifier&quot;</span><span class="p">:</span> <span class="n">block_identifier</span><span class="p">,</span> <span class="s2">&quot;override&quot;</span><span class="p">:</span> <span class="n">override</span><span class="p">}</span>
@@ -1508,7 +1561,7 @@
         <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">block_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">block_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the contract method without broadcasting a transaction.</span>
@@ -1537,7 +1590,7 @@
         <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fn_from_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block_identifier</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="n">override</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">transact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionReceiptType</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionReceiptType</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Broadcast a transaction that calls this contract method.</span>
 
@@ -1559,7 +1612,7 @@
         <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fn_from_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fn</span><span class="o">.</span><span class="n">transact</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">encode_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate encoded ABI data to call the method with the given arguments.</span>
 
@@ -1590,13 +1643,12 @@
 <span class="sd">        Decoded values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">selector</span> <span class="o">=</span> <span class="n">hexbytes_to_hexstring</span><span class="p">(</span><span class="n">HexBytes</span><span class="p">(</span><span class="n">hexstr</span><span class="p">)[:</span><span class="mi">4</span><span class="p">])</span>
-
-        <span class="n">fn</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">selector</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">fn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Data cannot be decoded using any input signatures of functions of this name&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">fn</span><span class="o">.</span><span class="n">decode_input</span><span class="p">(</span><span class="n">hexstr</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">fn</span> <span class="o">==</span> <span class="n">selector</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">fn</span><span class="o">.</span><span class="n">decode_input</span><span class="p">(</span><span class="n">hexstr</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Data cannot be decoded using any input signatures of functions of this name&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">decode_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hexstr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1631,23 +1683,23 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_ContractMethod</span><span class="p">:</span>
-    <span class="n">_dir_color</span> <span class="o">=</span> <span class="s2">&quot;bright magenta&quot;</span>
+    <span class="n">_dir_color</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="s2">&quot;bright magenta&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">abi</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
+        <span class="n">abi</span><span class="p">:</span> <span class="n">ABIFunction</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">],</span>
-        <span class="n">natspec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">natspec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_address</span> <span class="o">=</span> <span class="n">address</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="o">=</span> <span class="n">abi</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="n">owner</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">signature</span> <span class="o">=</span> <span class="n">build_function_selector</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_input_sig</span> <span class="o">=</span> <span class="n">build_function_signature</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">natspec</span> <span class="o">=</span> <span class="n">natspec</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_address</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">abi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">owner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signature</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">build_function_selector</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_sig</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">build_function_signature</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">natspec</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">natspec</span> <span class="ow">or</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">pay</span> <span class="o">=</span> <span class="s2">&quot;payable &quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">payable</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -1655,13 +1707,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">payable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;payable&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;payable&quot;</span><span class="p">]</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
+        <span class="k">if</span> <span class="s2">&quot;payable&quot;</span> <span class="ow">in</span> <span class="n">abi</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;payable&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;stateMutability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;payable&quot;</span>
+            <span class="k">return</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;stateMutability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;payable&quot;</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_autosuggest</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="s2">&quot;_ContractMethod&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_autosuggest</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="s2">&quot;_ContractMethod&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="c1"># this is a staticmethod to be compatible with `_call_suggest` and `_transact_suggest`</span>
         <span class="k">return</span> <span class="n">_contract_method_autosuggest</span><span class="p">(</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">],</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ContractTx</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">payable</span>
@@ -1671,11 +1724,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display NatSpec documentation for this method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">_inputs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">abi</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">_inputs</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
         <span class="n">_print_natspec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">natspec</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">block_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">block_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the contract method without broadcasting a transaction.</span>
@@ -1716,7 +1770,7 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Call reverted: </span><span class="si">{</span><span class="n">decode_typed_error</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">transact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionReceiptType</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionReceiptType</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Broadcast a transaction that calls this contract method.</span>
 
@@ -1767,11 +1821,12 @@
 <span class="sd">        -------</span>
 <span class="sd">        Decoded values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">eth_abi</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">(</span><span class="n">hexstr</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
-        <span class="k">return</span> <span class="n">format_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
+        <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">decode_abi</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">(</span><span class="n">hexstr</span><span class="p">)[</span><span class="mi">4</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">format_input</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">encode_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate encoded ABI data to call the method with the given arguments.</span>
 
@@ -1785,9 +1840,10 @@
 <span class="sd">        str</span>
 <span class="sd">            Hexstring of encoded ABI data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">format_input</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-        <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature</span> <span class="o">+</span> <span class="n">eth_abi</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">format_input</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature</span> <span class="o">+</span> <span class="n">encode_abi</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">decode_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hexstr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1802,14 +1858,15 @@
 <span class="sd">        -------</span>
 <span class="sd">        Decoded values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">])</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">eth_abi</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">(</span><span class="n">hexstr</span><span class="p">))</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">format_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span>
+        <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">decode_abi</span><span class="p">(</span><span class="n">types_list</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">(</span><span class="n">hexstr</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">format_output</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">estimate_gas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">estimate_gas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Estimate the gas cost for a transaction.</span>
 
@@ -1851,7 +1908,7 @@
 <span class="sd">        Bytes4 method signature.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionReceiptType</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransactionReceiptType</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Broadcast a transaction that calls this contract method.</span>
 
@@ -1883,7 +1940,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">block_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">block_identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the contract method without broadcasting a transaction.</span>
@@ -1939,7 +1996,7 @@
     <span class="k">if</span> <span class="n">CONFIG</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span> <span class="ow">and</span> <span class="n">default_owner</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="n">owner</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="c1"># seperate contract inputs from tx dict and set default tx values</span>
+    <span class="c1"># separate contract inputs from tx dict and set default tx values</span>
     <span class="n">tx</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">owner</span><span class="p">,</span>
         <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -1967,8 +2024,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_method_object</span><span class="p">(</span>
-    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">abi</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">],</span> <span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;ContractCall&quot;</span><span class="p">,</span> <span class="s2">&quot;ContractTx&quot;</span><span class="p">]:</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
+    <span class="n">abi</span><span class="p">:</span> <span class="n">ABIFunction</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">],</span>
+    <span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContractCall</span> <span class="o">|</span> <span class="n">ContractTx</span><span class="p">:</span>
     <span class="k">if</span> <span class="s2">&quot;constant&quot;</span> <span class="ow">in</span> <span class="n">abi</span><span class="p">:</span>
         <span class="n">constant</span> <span class="o">=</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;constant&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1979,16 +2040,22 @@
     <span class="k">return</span> <span class="n">ContractTx</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">natspec</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_inputs</span><span class="p">(</span><span class="n">abi</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;fixed168x10&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">})</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">]],</span> <span class="n">types_list</span><span class="p">)</span>
+<span class="n">_fixed168x10</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fixed168x10&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_inputs</span><span class="p">(</span><span class="n">abi</span><span class="p">:</span> <span class="n">ABIFunction</span> <span class="o">|</span> <span class="n">ABIConstructor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">abi_inputs</span> <span class="o">=</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">]</span>
+    <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">abi_inputs</span><span class="p">,</span> <span class="n">_fixed168x10</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}{</span><span class="n">color</span><span class="p">(</span><span class="s1">&#39;bright blue&#39;</span><span class="p">)</span><span class="si">}{</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">params</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">types</span><span class="si">}{</span><span class="n">bright_blue</span><span class="si">}{</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">color</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">types</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">abi_inputs</span><span class="p">),</span> <span class="n">types_list</span><span class="p">)</span>
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_verify_deployed_code</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expected_bytecode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">language</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="c1"># removeprefix is used for compatability with both hexbytes&lt;1 and &gt;=1</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_verify_deployed_code</span><span class="p">(</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">expected_bytecode</span><span class="p">:</span> <span class="n">HexStr</span><span class="p">,</span> <span class="n">language</span><span class="p">:</span> <span class="n">Language</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="c1"># removeprefix is used for compatibility with both hexbytes&lt;1 and &gt;=1</span>
     <span class="n">actual_bytecode</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">)</span>
     <span class="n">expected_bytecode</span> <span class="o">=</span> <span class="n">expected_bytecode</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">)</span>
 
@@ -2000,7 +2067,7 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">&quot;_&quot;</span> <span class="ow">in</span> <span class="n">expected_bytecode</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;_{1,}[^_]*_{1,}&quot;</span><span class="p">,</span> <span class="n">expected_bytecode</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">regex_findall</span><span class="p">(</span><span class="s2">&quot;_{1,}[^_]*_{1,}&quot;</span><span class="p">,</span> <span class="n">expected_bytecode</span><span class="p">):</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">expected_bytecode</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
             <span class="n">actual_bytecode</span> <span class="o">=</span> <span class="n">actual_bytecode</span><span class="p">[:</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">actual_bytecode</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">40</span> <span class="p">:]</span>
             <span class="n">expected_bytecode</span> <span class="o">=</span> <span class="n">expected_bytecode</span><span class="p">[:</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">expected_bytecode</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">40</span> <span class="p">:]</span>
@@ -2020,15 +2087,16 @@
     <span class="k">return</span> <span class="n">actual_bytecode</span> <span class="o">==</span> <span class="n">expected_bytecode</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_print_natspec</span><span class="p">(</span><span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">wrapper</span> <span class="o">=</span> <span class="n">TextWrapper</span><span class="p">(</span><span class="n">initial_indent</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">color</span><span class="p">(</span><span class="s1">&#39;bright magenta&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;notice&quot;</span><span class="p">,</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;details&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">natspec</span><span class="p">]:</span>
-        <span class="n">wrapper</span><span class="o">.</span><span class="n">subsequent_indent</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">color</span><span class="si">}{</span><span class="n">natspec</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_print_natspec</span><span class="p">(</span><span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">wrapper</span> <span class="o">=</span> <span class="n">TextWrapper</span><span class="p">(</span><span class="n">initial_indent</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">bright_magenta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;notice&quot;</span><span class="p">,</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;details&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">natspec</span><span class="p">:</span>
+            <span class="n">wrapper</span><span class="o">.</span><span class="n">subsequent_indent</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">color</span><span class="si">}{</span><span class="n">natspec</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">natspec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">wrapper</span><span class="o">.</span><span class="n">subsequent_indent</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">9</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@param </span><span class="si">{</span><span class="n">color</span><span class="p">(</span><span class="s1">&#39;bright blue&#39;</span><span class="p">)</span><span class="si">}{</span><span class="n">key</span><span class="si">}{</span><span class="n">color</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@param </span><span class="si">{</span><span class="n">bright_blue</span><span class="si">}{</span><span class="n">key</span><span class="si">}{</span><span class="n">color</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="s2">&quot;return&quot;</span> <span class="ow">in</span> <span class="n">natspec</span><span class="p">:</span>
         <span class="n">wrapper</span><span class="o">.</span><span class="n">subsequent_indent</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">10</span>
@@ -2041,11 +2109,11 @@
     <span class="nb">print</span><span class="p">()</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_fetch_from_explorer</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_fetch_from_explorer</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">if</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">_unverified_addresses</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source for </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> has not been verified&quot;</span><span class="p">)</span>
 
-    <span class="c1"># removeprefix is used for compatability with both hexbytes&lt;1 and &gt;=1</span>
+    <span class="c1"># removeprefix is used for compatibility with both hexbytes&lt;1 and &gt;=1</span>
     <span class="n">code</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">)</span>
     <span class="c1"># EIP-1167: Minimal Proxy Contract</span>
     <span class="k">if</span> <span class="n">code</span><span class="p">[:</span><span class="mi">20</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;363d3d373d3d3d363d73&quot;</span> <span class="ow">and</span> <span class="n">code</span><span class="p">[</span><span class="mi">60</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;5af43d82803e903d91602b57fd5bf3&quot;</span><span class="p">:</span>
@@ -2064,7 +2132,7 @@
     <span class="p">):</span>
         <span class="n">address</span> <span class="o">=</span> <span class="n">_resolve_address</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">120</span><span class="p">:</span><span class="mi">160</span><span class="p">])</span>
 
-    <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">,</span>
         <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
         <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span>
@@ -2081,7 +2149,7 @@
             <span class="n">BrownieEnvironmentWarning</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetching source of </span><span class="si">{</span><span class="n">color</span><span class="p">(</span><span class="s1">&#39;bright blue&#39;</span><span class="p">)</span><span class="si">}{</span><span class="n">address</span><span class="si">}{</span><span class="n">color</span><span class="si">}</span><span class="s2"> from Etherscan...&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetching source of </span><span class="si">{</span><span class="n">bright_blue</span><span class="si">}{</span><span class="n">address</span><span class="si">}{</span><span class="n">color</span><span class="si">}</span><span class="s2"> from Etherscan...&quot;</span><span class="p">)</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
         <span class="s2">&quot;https://api.etherscan.io/v2/api&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">REQUEST_HEADERS</span>
@@ -2100,14 +2168,14 @@
 <span class="c1"># console auto-completion logic</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_call_autosuggest</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_call_autosuggest</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">ContractCall</span> <span class="o">|</span> <span class="n">ContractTx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="c1"># since methods are not unique for each object, we use `__reduce__`</span>
     <span class="c1"># to locate the specific object so we can access the correct ABI</span>
     <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">__reduce__</span><span class="p">()[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">_contract_method_autosuggest</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_transact_autosuggest</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_transact_autosuggest</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">ContractCall</span> <span class="o">|</span> <span class="n">ContractTx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">__reduce__</span><span class="p">()[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">_contract_method_autosuggest</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="n">abi</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">.</span><span class="n">payable</span><span class="p">)</span>
 
@@ -2122,17 +2190,18 @@
 <span class="n">_ContractMethod</span><span class="o">.</span><span class="n">transact</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_autosuggest&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_transact_autosuggest</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_contract_method_autosuggest</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">is_transaction</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">is_payable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-    <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;fixed168x10&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">})</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="p">],</span> <span class="n">types_list</span><span class="p">)</span>
-
-    <span class="n">suggestions</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}{</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">params</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_transaction</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">suggestions</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">is_payable</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">suggestions</span><span class="p">,</span> <span class="s2">&quot; {&#39;from&#39;: Account&quot;</span><span class="p">,</span> <span class="s2">&quot; &#39;value&#39;: Wei}&quot;</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">suggestions</span><span class="p">,</span> <span class="s2">&quot; {&#39;from&#39;: Account}&quot;</span><span class="p">]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_contract_method_autosuggest</span><span class="p">(</span>
+    <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">is_transaction</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">is_payable</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">types_list</span> <span class="o">=</span> <span class="n">get_type_strings</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">_fixed168x10</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+    <span class="n">suggestions</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">typ</span><span class="si">}{</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">typ</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">types_list</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">is_transaction</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_payable</span><span class="p">:</span>
+            <span class="n">suggestions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; {&#39;from&#39;: Account&quot;</span><span class="p">,</span> <span class="s2">&quot; &#39;value&#39;: Wei}&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">suggestions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; {&#39;from&#39;: Account}&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">suggestions</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_comment_slicer</span><span class="p">(</span><span class="n">match</span><span class="p">:</span> <span class="n">Match</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
