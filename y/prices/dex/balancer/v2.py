@@ -22,6 +22,7 @@ from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import _EventItem
+from faster_eth_abi.exceptions import InvalidPointer
 from hexbytes import HexBytes
 from multicall import Call
 from typing_extensions import Self
@@ -199,7 +200,10 @@ class BalancerV2Vault(ContractBase):
             >>> tokens, balances = await vault.get_pool_tokens(pool_id)
         """
         contract = await contracts.Contract.coroutine(self.address)
-        return await contract.getPoolTokens.coroutine(pool_id, block_identifier=block)
+        try:
+            return await contract.getPoolTokens.coroutine(pool_id, block_identifier=block)
+        except InvalidPointer:
+            return (), (), None
 
     @a_sync_ttl_cache
     @stuck_coro_debugger
