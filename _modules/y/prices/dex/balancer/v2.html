@@ -96,6 +96,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.convert.datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">EthAddress</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">brownie.network.event</span><span class="w"> </span><span class="kn">import</span> <span class="n">_EventItem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">faster_eth_abi.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidPointer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hexbytes</span><span class="w"> </span><span class="kn">import</span> <span class="n">HexBytes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">multicall</span><span class="w"> </span><span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
@@ -292,7 +293,10 @@
 <span class="sd">            &gt;&gt;&gt; tokens, balances = await vault.get_pool_tokens(pool_id)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contracts</span><span class="o">.</span><span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">getPoolTokens</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">pool_id</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">getPoolTokens</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">pool_id</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">InvalidPointer</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(),</span> <span class="p">(),</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="BalancerV2Vault.get_pool_info">
