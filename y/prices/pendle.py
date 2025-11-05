@@ -1,9 +1,10 @@
 from decimal import Decimal
-from typing import Tuple
+from typing import Optional, Tuple
 
 from a_sync import a_sync, cgather
 from async_lru import alru_cache
 
+from web3.exceptions import ContractLogicError
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method, is_contract
@@ -72,7 +73,7 @@ async def get_tokens(lp_token: Address) -> Tuple[str, str, str]:
 @a_sync("sync")
 async def get_lp_price(
     token: Address, block: Block = None, skip_cache: bool = ENVS.SKIP_CACHE
-) -> Decimal:
+) -> Optional[Decimal]:
     """
     Calculates the price of a Pendle LP token.
 
@@ -108,10 +109,14 @@ async def get_lp_price(
     #    use_asset = False
     #    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)
     sy_token, p_token, y_token = tokens
-    sy, rate = await cgather(
-        Contract.coroutine(sy_token),
-        PENDLE_ORACLE.getLpToAssetRate.coroutine(token, TWAP_DURATION, block_identifier=block),
-    )
+    try:
+        sy, rate = await cgather(
+            Contract.coroutine(sy_token),
+            PENDLE_ORACLE.getLpToAssetRate.coroutine(token, TWAP_DURATION, block_identifier=block),
+        )
+    except ContractLogicError:
+        return None
+        
     _, asset, decimals = await sy.assetInfo
     rate /= Decimal(10**decimals)
     return rate * Decimal(
