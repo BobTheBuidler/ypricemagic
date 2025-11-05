@@ -116,7 +116,7 @@ async def get_lp_price(
         )
     except ContractLogicError:
         return None
-        
+
     _, asset, decimals = await sy.assetInfo
     rate /= Decimal(10**decimals)
     return rate * Decimal(
