@@ -48,11 +48,6 @@ jobs:
           pip-cache-dependency-path: |
             pyproject.toml
             requirements.txt
-          normalize-source: true
-          push-source: false
-          commit-message: "chore: build wheel for docs"
-          trigger-pr-number: ""
-          trigger-branch-name: ${{ github.head_ref || github.ref_name }}
 
   build-and-deploy:
     needs: build-wheel
