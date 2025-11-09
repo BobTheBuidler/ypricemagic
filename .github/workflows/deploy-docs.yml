@@ -10,13 +10,52 @@ permissions:
   contents: write
   id-token: write
   pages: write
-  
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  build-wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        id: checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+        continue-on-error: true
+
+      - name: Branch no longer exists on GitHub
+        if: failure() && steps.checkout.outcome == 'failure'
+        run: |
+          echo "The branch ${{ github.head_ref }} no longer exists on GitHub"
+          exit 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Mypycify
+        uses: BobTheBuidler/mypycify@v0.1.0
+        with:
+          python-version: "3.12"
+          hash-key: |
+            pyproject.toml
+            setup.py
+            ypricemagic/**/*.py
+          pip-cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
+          normalize-source: true
+          push-source: false
+          commit-message: "chore: build wheel for docs"
+          trigger-pr-number: ""
+          trigger-branch-name: ${{ github.head_ref || github.ref_name }}
+
   build-and-deploy:
+    needs: build-wheel
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -25,7 +64,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.10'
+          python-version: '3.12'
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: BobTheBuidler_mypycified_wheel-${{ runner.os }}-py3.12-${{ hashFiles('pyproject.toml', 'setup.py', 'ypricemagic/**/*.py') }}
+
+      - name: Install wheel artifact
+        run: pip install dist/*.whl
 
       - name: Cache .mypy_cache
         uses: actions/cache@v4
@@ -44,11 +91,9 @@ jobs:
         run: |
           brownie networks modify mainnet host=${{ secrets.WEB3_PROVIDER }}
         continue-on-error: true
-        
+
       - name: Build documentation config
-        run: |
-          pip install .
-          make docs
+        run: make docs
 
       - name: Build documentation
         run: |
@@ -61,21 +106,21 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
           ref: gh-pages
-          
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
           # Upload entire repository
           path: '.'
-          
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
