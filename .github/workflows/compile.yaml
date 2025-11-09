@@ -36,7 +36,7 @@ jobs:
           python-version: "3.13"
 
       - name: Mypycify
-        uses: BobTheBuidler/mypycify@v0.0.2
+        uses: BobTheBuidler/mypycify@v0.1.0
         with:
           python-version: "3.13"
           hash-key: |
