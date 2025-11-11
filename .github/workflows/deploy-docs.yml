@@ -18,6 +18,8 @@ concurrency:
 jobs:
   build-wheel:
     runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.mypycify.outputs.artifact-name }}
     steps:
       - name: Checkout code
         id: checkout
@@ -38,6 +40,7 @@ jobs:
           python-version: '3.12'
 
       - name: Mypycify
+        id: mypycify
         uses: BobTheBuidler/mypycify@v0.2.2
         with:
           python-version: "3.12"
@@ -64,10 +67,11 @@ jobs:
       - name: Download wheel artifact
         uses: actions/download-artifact@v6
         with:
-          name: BobTheBuidler_mypycified_wheel-${{ runner.os }}-py3.12-source-${{ hashFiles('pyproject.toml', 'setup.py', 'ypricemagic/**/*.py') }}-source
+          name: ${{ needs.build-wheel.outputs.artifact-name }}
+          path: dist
 
       - name: Install wheel artifact
-        run: pip install dist/*.whl
+        run: pip install $(find dist -name '*.whl' -print -quit)
 
       - name: Cache .mypy_cache
         uses: actions/cache@v4
