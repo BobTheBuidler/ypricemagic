@@ -64,7 +64,7 @@ jobs:
       - name: Download wheel artifact
         uses: actions/download-artifact@v6
         with:
-          name: BobTheBuidler_mypycified_wheel-${{ runner.os }}-py3.12-${{ hashFiles('pyproject.toml', 'setup.py', 'ypricemagic/**/*.py') }}-source
+          name: BobTheBuidler_mypycified_wheel-${{ runner.os }}-py3.12-source-${{ hashFiles('pyproject.toml', 'setup.py', 'ypricemagic/**/*.py') }}-source
 
       - name: Install wheel artifact
         run: pip install dist/*.whl
