@@ -9,21 +9,21 @@ y.classes.common module
 
 .. automodule:: y.classes.common
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.classes.singleton module
 --------------------------
 
 .. automodule:: y.classes.singleton
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.classes
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

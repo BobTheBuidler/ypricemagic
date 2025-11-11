@@ -54,17 +54,17 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.cli">y.cli module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.monkey_patches">y.monkey_patches module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-environment-variables-module">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-cli-module">y.cli module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-constants-module">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-contracts-module">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-convert-module">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-datatypes-module">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-exceptions-module">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-monkey-patches-module">y.monkey_patches module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-networks-module">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-time-module">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -106,198 +106,14 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.eth_derivs.creth">
-<span id="y-prices-eth-derivs-creth-module"></span><h2>y.prices.eth_derivs.creth module<a class="headerlink" href="#module-y.prices.eth_derivs.creth" title="Link to this heading"></a></h2>
-<dl class="py a_sync_function">
-<dt class="sig sig-object py" id="y.prices.eth_derivs.creth.get_price_creth">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.eth_derivs.creth.</span></span><span class="sig-name descname"><span class="pre">get_price_creth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">Union[str,</span> <span class="pre">faster_hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">evmspec.data._main.Address,</span> <span class="pre">brownie.convert.datatypes.EthAddress,</span> <span class="pre">brownie.network.contract.Contract,</span> <span class="pre">int],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">EnvironmentVariable[bool](name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">default_value=False,</span> <span class="pre">using_default=True)</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">y.datatypes.UsdPrice</span></a></span></span><a class="reference internal" href="../_modules/y/prices/eth_derivs/creth.html#get_price_creth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.eth_derivs.creth.get_price_creth" title="Link to this definition"></a></dt>
-<dd><p>Get the price of crETH in USD.</p>
-<blockquote>
-<div><p>This function retrieves the accumulated balance and total supply of crETH,
-divides the total balance by the total supply to calculate the value per token,
-and then multiplies this value by the current WETH price to determine the price
-of crETH in USD.</p>
-<dl>
-<dt>Args:</dt><dd><p>token: The crETH token address.
-block: The block number to query. Defaults to the latest block.
-skip_cache: If True, skip using the cache while fetching price data.</p>
-</dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">get_price_creth</span><span class="p">(</span><span class="s2">&quot;0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd&quot;</span><span class="p">)</span>
-<span class="go">1234.56</span>
-</pre></div>
-</div>
-</dd>
-<dt>See Also:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p></li>
-<li><p><a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><code class="xref py py-class docutils literal notranslate"><span class="pre">y.classes.common.ERC20</span></code></a></p></li>
-</ul>
-</dd>
-</dl>
-</div></blockquote>
-<p>Since <cite>get_price_creth</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><em>Address</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.eth_derivs.creth.is_creth">
-<span class="sig-prename descclassname"><span class="pre">y.prices.eth_derivs.creth.</span></span><span class="sig-name descname"><span class="pre">is_creth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/eth_derivs/creth.html#is_creth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.eth_derivs.creth.is_creth" title="Link to this definition"></a></dt>
-<dd><p>Check if a token is crETH.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><em>Address</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The token address to check.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the token is crETH on the Ethereum Mainnet, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_creth</span><span class="p">(</span><span class="s2">&quot;0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd&quot;</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-</dd></dl>
-
+<section id="y-prices-eth-derivs-creth-module">
+<h2>y.prices.eth_derivs.creth module<a class="headerlink" href="#y-prices-eth-derivs-creth-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.eth_derivs.wsteth">
-<span id="y-prices-eth-derivs-wsteth-module"></span><h2>y.prices.eth_derivs.wsteth module<a class="headerlink" href="#module-y.prices.eth_derivs.wsteth" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="y.prices.eth_derivs.wsteth.wstEth">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.eth_derivs.wsteth.</span></span><span class="sig-name descname"><span class="pre">wstEth</span></span><a class="reference internal" href="../_modules/y/prices/eth_derivs/wsteth.html#wstEth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.eth_derivs.wsteth.wstEth" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.base.ASyncGenericBase" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncGenericBase</span></code></a></p>
-<p>A class to interact with the wstETH token on Ethereum Mainnet.</p>
-<p>This class provides methods to fetch the price of wstETH in USD, leveraging the <cite>a_sync</cite> library
-to support both synchronous and asynchronous operations.</p>
-<p class="rubric">Examples</p>
-<p>Initialize the class with asynchronous behavior:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wsteth</span> <span class="o">=</span> <span class="n">wstEth</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">wsteth</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Initialize the class with synchronous behavior:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wsteth_sync</span> <span class="o">=</span> <span class="n">wstEth</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">price_sync</span> <span class="o">=</span> <span class="n">wsteth_sync</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.ASyncGenericBase" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">a_sync.ASyncGenericBase</span></code></a></p></li>
-</ul>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.prices.eth_derivs.wsteth.wstEth.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/eth_derivs/wsteth.html#wstEth.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.eth_derivs.wsteth.wstEth.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initialize the wstEth class with optional asynchronous behavior.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – A boolean indicating if the operations should be asynchronous.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.prices.eth_derivs.wsteth.wstEth.address">
-<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.eth_derivs.wsteth.wstEth.address" title="Link to this definition"></a></dt>
-<dd><p>The address of the wstETH token on the Ethereum Mainnet, or None if not on Mainnet.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.prices.eth_derivs.wsteth.wstEth.wrapped_for_curve">
-<span class="sig-name descname"><span class="pre">wrapped_for_curve</span></span><a class="headerlink" href="#y.prices.eth_derivs.wsteth.wstEth.wrapped_for_curve" title="Link to this definition"></a></dt>
-<dd><p>The address of the wrapped version of wstETH for Curve on the Ethereum Mainnet, or None if not on Mainnet.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.prices.eth_derivs.wsteth.wstEth.get_price">
-<span class="sig-name descname"><span class="pre">get_price</span></span><a class="reference internal" href="../_modules/y/prices/eth_derivs/wsteth.html#wstEth.get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.eth_derivs.wsteth.wstEth.get_price" title="Link to this definition"></a></dt>
-<dd><p>Fetch the price of wstETH in USD.</p>
-<p>This method retrieves the price of wstETH by calling the <cite>stEthPerToken</cite> method
-on the wstETH contract using <a class="reference internal" href="y.utils.html#y.utils.raw_calls.raw_call" title="y.utils.raw_calls.raw_call"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.raw_calls.raw_call()</span></code></a> and fetching the current price
-of WETH using <a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>) – The block number at which to fetch the price.</p></li>
-<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Whether to skip the cache when fetching the price.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>Fetch the price asynchronously:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">wsteth</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Fetch the price synchronously:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">price_sync</span> <span class="o">=</span> <span class="n">wsteth_sync</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="y.utils.html#y.utils.raw_calls.raw_call" title="y.utils.raw_calls.raw_call"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.raw_calls.raw_call()</span></code></a></p></li>
-<li><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p></li>
-</ul>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.eth_derivs.wsteth.is_wsteth">
-<span class="sig-prename descclassname"><span class="pre">y.prices.eth_derivs.wsteth.</span></span><span class="sig-name descname"><span class="pre">is_wsteth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/eth_derivs/wsteth.html#is_wsteth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.eth_derivs.wsteth.is_wsteth" title="Link to this definition"></a></dt>
-<dd><p>Check if a given address is wstETH or its wrapped version for Curve on Ethereum Mainnet.</p>
-<p>This function verifies the network ID to ensure it is operating on the Ethereum Mainnet
-before performing the address comparison.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><em>Address</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The address to check.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>Check if an address is wstETH:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_wsteth</span><span class="p">(</span><span class="s2">&quot;0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0&quot;</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>Check if an address is not wstETH:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_wsteth</span><span class="p">(</span><span class="s2">&quot;0x0000000000000000000000000000000000000000&quot;</span><span class="p">)</span>
-<span class="go">False</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#y.prices.eth_derivs.wsteth.wstEth" title="y.prices.eth_derivs.wsteth.wstEth"><code class="xref py py-class docutils literal notranslate"><span class="pre">wstEth</span></code></a></p></li>
-</ul>
-</div>
-</dd></dl>
-
+<section id="y-prices-eth-derivs-wsteth-module">
+<h2>y.prices.eth_derivs.wsteth module<a class="headerlink" href="#y-prices-eth-derivs-wsteth-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.eth_derivs">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-y.prices.eth_derivs" title="Link to this heading"></a></h2>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 </section>
 </section>
 

@@ -9,13 +9,13 @@ y.interfaces.compound.unitroller module
 
 .. automodule:: y.interfaces.compound.unitroller
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.interfaces.compound
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

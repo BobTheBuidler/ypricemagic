@@ -9,37 +9,37 @@ y.prices.utils.buckets module
 
 .. automodule:: y.prices.utils.buckets
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.utils.debug module
 ---------------------------
 
 .. automodule:: y.prices.utils.debug
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.utils.sense\_check module
 ----------------------------------
 
 .. automodule:: y.prices.utils.sense_check
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.utils.ypriceapi module
 -------------------------------
 
 .. automodule:: y.prices.utils.ypriceapi
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.prices.utils
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

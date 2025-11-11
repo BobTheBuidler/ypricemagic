@@ -9,13 +9,13 @@ y.interfaces.balancer.WeightedPool module
 
 .. automodule:: y.interfaces.balancer.WeightedPool
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.interfaces.balancer
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

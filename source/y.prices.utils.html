@@ -54,17 +54,17 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.cli">y.cli module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.monkey_patches">y.monkey_patches module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-environment-variables-module">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-cli-module">y.cli module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-constants-module">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-contracts-module">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-convert-module">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-datatypes-module">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-exceptions-module">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-monkey-patches-module">y.monkey_patches module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-networks-module">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y-time-module">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -106,293 +106,20 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.utils.buckets">
-<span id="y-prices-utils-buckets-module"></span><h2>y.prices.utils.buckets module<a class="headerlink" href="#module-y.prices.utils.buckets" title="Link to this heading"></a></h2>
-<dl class="py a_sync_function">
-<dt class="sig sig-object py" id="y.prices.utils.buckets.check_bucket">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.utils.buckets.</span></span><span class="sig-name descname"><span class="pre">check_bucket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">faster_hexbytes.main.HexBytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AnyAddress</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><span class="pre">evmspec.data._main.Address</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">brownie.convert.datatypes.EthAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><span class="pre">brownie.network.contract.Contract</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/y/prices/utils/buckets.html#check_bucket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.buckets.check_bucket" title="Link to this definition"></a></dt>
-<dd><p>Determine and return the category or “bucket” of a given token.</p>
-<blockquote>
-<div><p>This function classifies a token by performing a set of tests in the following order:</p>
-<ol class="arabic simple">
-<li><p>It first attempts to retrieve a cached bucket from the database via
-<code class="xref py py-func docutils literal notranslate"><span class="pre">y._db.utils.token.get_bucket()</span></code>.</p></li>
-<li><p>Next, it applies simple string-based comparisons defined in the <code class="docutils literal notranslate"><span class="pre">string_matchers</span></code>
-dictionary.</p></li>
-<li><p>If no bucket is determined, it concurrently executes a set of asynchronous “calls-only”
-tests for further classification. The function will return immediately once any of these
-tests confirms the token’s membership in a bucket.</p></li>
-<li><p>If none of the concurrent tests succeed, it falls back to a series of sequential asynchronous
-checks that involve both contract initializations and blockchain calls.</p></li>
-</ol>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The fallback sequential tests are executed in order. However, the first two fallback checks
-(for “solidex” and “uni or uni-like lp”) are evaluated independently; as a result, if both
-conditions return true, the latter bucket (“uni or uni-like lp”) will overwrite the earlier
-assignment from “solidex”.</p>
-</div>
-<p>The final determined bucket is stored in the database using <code class="xref py py-func docutils literal notranslate"><span class="pre">db.set_bucket()</span></code>.</p>
-<dl>
-<dt>Args:</dt><dd><p>token: The token address to classify.</p>
-</dd>
-<dt>Examples:</dt><dd><dl>
-<dt>Basic usage with a stable USD token:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bucket</span> <span class="o">=</span> <span class="n">check_bucket</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
-<span class="go">stable usd</span>
-</pre></div>
-</div>
-</dd>
-<dt>Example triggering a concurrent asynchronous test:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bucket</span> <span class="o">=</span> <span class="n">check_bucket</span><span class="p">(</span><span class="s2">&quot;0xSomeLPTokenAddress&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
-<span class="go">popsicle</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-<p>Example where multiple fallback conditions are met (note that if both “solidex” and
-“uni or uni-like lp” tests pass, the latter overwrites the former):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bucket</span> <span class="o">=</span> <span class="n">check_bucket</span><span class="p">(</span><span class="s2">&quot;0xAnotherTokenAddress&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
-<span class="go">uni or uni-like lp</span>
-</pre></div>
-</div>
-</dd>
-<dt>See Also:</dt><dd><p><a class="reference internal" href="y.html#y.convert.to_address_async" title="y.convert.to_address_async"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.convert.to_address_async()</span></code></a>
-<a class="reference internal" href="y.utils.html#y.utils.logging.get_price_logger" title="y.utils.logging.get_price_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.logging.get_price_logger()</span></code></a>
-<code class="xref py py-func docutils literal notranslate"><span class="pre">_check_bucket_helper()</span></code> (Helper used for asynchronous bucket checks)</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>Since <cite>check_bucket</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><em>Address</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="y-prices-utils-buckets-module">
+<h2>y.prices.utils.buckets module<a class="headerlink" href="#y-prices-utils-buckets-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.utils.debug">
-<span id="y-prices-utils-debug-module"></span><h2>y.prices.utils.debug module<a class="headerlink" href="#module-y.prices.utils.debug" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.debug.debug_price">
-<span class="sig-prename descclassname"><span class="pre">y.prices.utils.debug.</span></span><span class="sig-name descname"><span class="pre">debug_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/utils/debug.html#debug_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.debug.debug_price" title="Link to this definition"></a></dt>
-<dd><p>Debug token price retrieval.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The address of the token to debug.</p></li>
-<li><p><strong>block</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – The block number at which to retrieve the token price.
-If not specified, uses the current block height.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The price of the token at the specified block.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If token is not provided.</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="y-prices-utils-debug-module">
+<h2>y.prices.utils.debug module<a class="headerlink" href="#y-prices-utils-debug-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.utils.sense_check">
-<span id="y-prices-utils-sense-check-module"></span><h2>y.prices.utils.sense_check module<a class="headerlink" href="#module-y.prices.utils.sense_check" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.sense_check.sense_check">
-<span class="sig-prename descclassname"><span class="pre">y.prices.utils.sense_check.</span></span><span class="sig-name descname"><span class="pre">sense_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.utils.sense_check.sense_check" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
+<section id="y-prices-utils-sense-check-module">
+<h2>y.prices.utils.sense_check module<a class="headerlink" href="#y-prices-utils-sense-check-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.utils.ypriceapi">
-<span id="y-prices-utils-ypriceapi-module"></span><h2>y.prices.utils.ypriceapi module<a class="headerlink" href="#module-y.prices.utils.ypriceapi" title="Link to this heading"></a></h2>
-<dl class="py exception">
-<dt class="sig sig-object py" id="y.prices.utils.ypriceapi.BadResponse">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.utils.ypriceapi.</span></span><span class="sig-name descname"><span class="pre">BadResponse</span></span><a class="reference internal" href="../_modules/y/prices/utils/ypriceapi.html#BadResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.ypriceapi.BadResponse" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
-<p>Exception raised for bad responses from ypriceAPI.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.ypriceapi.announce_beta">
-<span class="sig-prename descclassname"><span class="pre">y.prices.utils.ypriceapi.</span></span><span class="sig-name descname"><span class="pre">announce_beta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/utils/ypriceapi.html#announce_beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.ypriceapi.announce_beta" title="Link to this definition"></a></dt>
-<dd><p>Announce the beta version of ypriceAPI.</p>
-<p>This function logs the beta announcement message, which includes
-information about the benefits of using ypriceAPI and testimonials
-from users.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">announce_beta</span><span class="p">()</span>
-<span class="go">ypriceAPI is now in beta!</span>
-<span class="go">...</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.ypriceapi.chain_supported">
-<span class="sig-prename descclassname"><span class="pre">y.prices.utils.ypriceapi.</span></span><span class="sig-name descname"><span class="pre">chain_supported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chainid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/utils/ypriceapi.html#chain_supported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.ypriceapi.chain_supported" title="Link to this definition"></a></dt>
-<dd><p>Check if a chain is supported by ypriceAPI.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chainid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The chain ID to check.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the chain is supported, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">chain_supported</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">chain_supported</span><span class="p">(</span><span class="mi">9999</span><span class="p">)</span>
-<span class="go">False</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#y.prices.utils.ypriceapi.get_chains" title="y.prices.utils.ypriceapi.get_chains"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_chains()</span></code></a> for retrieving the list of supported chains.</p>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.ypriceapi.get_chains">
-<span class="sig-prename descclassname"><span class="pre">y.prices.utils.ypriceapi.</span></span><span class="sig-name descname"><span class="pre">get_chains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/utils/ypriceapi.html#get_chains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.ypriceapi.get_chains" title="Link to this definition"></a></dt>
-<dd><p>Get the supported chains from ypriceAPI.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary mapping chain IDs to chain names.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><em>Dict</em></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chains</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_chains</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">chains</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="go">&#39;Ethereum Mainnet&#39;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.ypriceapi.get_price">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.utils.ypriceapi.</span></span><span class="sig-name descname"><span class="pre">get_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/utils/ypriceapi.html#get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.ypriceapi.get_price" title="Link to this definition"></a></dt>
-<dd><p>Get the price of a token from ypriceAPI.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><em>Address</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a>) – The address of the token.</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>) – The block number to query.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The price of the token in USD as an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">UsdPrice</span></code>, or None if the price cannot be retrieved.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
-</dd>
-</dl>
-<p>This function will return None if the authorization headers are not present or if the current time is less than the resume time.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0xTokenAddress&quot;</span><span class="p">,</span> <span class="mi">12345678</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
-<span class="go">$1234.56780000</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ClientConnectorSSLError</strong> – If there is an SSL error during the request.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/asyncio-exceptions.html#asyncio.TimeoutError" title="(in Python v3.14)"><strong>asyncio.TimeoutError</strong></a> – If the request times out.</p></li>
-<li><p><strong>ClientError</strong> – If there is a client error during the request.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><em>Address</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a>)</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">UsdPrice</span></code> for the price representation.</p>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.ypriceapi.get_retry_header">
-<span class="sig-prename descclassname"><span class="pre">y.prices.utils.ypriceapi.</span></span><span class="sig-name descname"><span class="pre">get_retry_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.utils.ypriceapi.get_retry_header" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.ypriceapi.get_session">
-<span class="sig-prename descclassname"><span class="pre">y.prices.utils.ypriceapi.</span></span><span class="sig-name descname"><span class="pre">get_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/utils/ypriceapi.html#get_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.ypriceapi.get_session" title="Link to this definition"></a></dt>
-<dd><p>Get an aiohttp ClientSession for ypriceAPI.</p>
-<p>This session is configured with the ypriceAPI URL, headers, and timeout.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An aiohttp ClientSession object.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>ClientSession</em></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">session</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_session</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.ypriceapi.read_response">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.utils.ypriceapi.</span></span><span class="sig-name descname"><span class="pre">read_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/utils/ypriceapi.html#read_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.ypriceapi.read_response" title="Link to this definition"></a></dt>
-<dd><p>Read and process the response from ypriceAPI.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>response</strong> (<em>ClientResponse</em>) – The aiohttp ClientResponse object.</p></li>
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.data.html#evmspec.data.Address" title="(in evmspec)"><em>Address</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><em>None</em>) – The token address (optional).</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>) – The block number (optional).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The parsed response data, or None if the response is not valid.</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#y.prices.utils.ypriceapi.BadResponse" title="y.prices.utils.ypriceapi.BadResponse"><strong>BadResponse</strong></a> – If the response content type is invalid.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a> | None</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/get_price/1/0xTokenAddress?block=12345678&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">read_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
+<section id="y-prices-utils-ypriceapi-module">
+<h2>y.prices.utils.ypriceapi module<a class="headerlink" href="#y-prices-utils-ypriceapi-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-y.prices.utils" title="Link to this heading"></a></h2>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 </section>
 </section>
 

@@ -9,53 +9,53 @@ y.prices.stable\_swap.belt module
 
 .. automodule:: y.prices.stable_swap.belt
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.stable\_swap.curve module
 ----------------------------------
 
 .. automodule:: y.prices.stable_swap.curve
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.stable\_swap.ellipsis module
 -------------------------------------
 
 .. automodule:: y.prices.stable_swap.ellipsis
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.stable\_swap.froyo module
 ----------------------------------
 
 .. automodule:: y.prices.stable_swap.froyo
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.stable\_swap.mstablefeederpool module
 ----------------------------------------------
 
 .. automodule:: y.prices.stable_swap.mstablefeederpool
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.stable\_swap.saddle module
 -----------------------------------
 
 .. automodule:: y.prices.stable_swap.saddle
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.prices.stable_swap
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

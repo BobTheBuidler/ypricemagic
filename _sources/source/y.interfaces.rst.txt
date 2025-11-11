@@ -20,21 +20,21 @@ y.interfaces.ERC20 module
 
 .. automodule:: y.interfaces.ERC20
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.interfaces.multicall2 module
 ------------------------------
 
 .. automodule:: y.interfaces.multicall2
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.interfaces
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

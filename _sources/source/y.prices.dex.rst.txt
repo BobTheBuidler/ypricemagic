@@ -18,37 +18,37 @@ y.prices.dex.genericamm module
 
 .. automodule:: y.prices.dex.genericamm
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.dex.mooniswap module
 -----------------------------
 
 .. automodule:: y.prices.dex.mooniswap
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.dex.solidly module
 ---------------------------
 
 .. automodule:: y.prices.dex.solidly
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.dex.velodrome module
 -----------------------------
 
 .. automodule:: y.prices.dex.velodrome
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.prices.dex
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

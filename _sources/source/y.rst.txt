@@ -20,85 +20,85 @@ y.ENVIRONMENT\_VARIABLES module
 
 .. automodule:: y.ENVIRONMENT_VARIABLES
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.cli module
 ------------
 
 .. automodule:: y.cli
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.constants module
 ------------------
 
 .. automodule:: y.constants
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.contracts module
 ------------------
 
 .. automodule:: y.contracts
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.convert module
 ----------------
 
 .. automodule:: y.convert
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.datatypes module
 ------------------
 
 .. automodule:: y.datatypes
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.exceptions module
 -------------------
 
 .. automodule:: y.exceptions
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.monkey\_patches module
 ------------------------
 
 .. automodule:: y.monkey_patches
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.networks module
 -----------------
 
 .. automodule:: y.networks
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.time module
 -------------
 
 .. automodule:: y.time
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

@@ -9,93 +9,93 @@ y.utils.cache module
 
 .. automodule:: y.utils.cache
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.checks module
 ---------------------
 
 .. automodule:: y.utils.checks
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.client module
 ---------------------
 
 .. automodule:: y.utils.client
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.dank\_mids module
 -------------------------
 
 .. automodule:: y.utils.dank_mids
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.events module
 ---------------------
 
 .. automodule:: y.utils.events
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.fakes module
 --------------------
 
 .. automodule:: y.utils.fakes
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.gather module
 ---------------------
 
 .. automodule:: y.utils.gather
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.logging module
 ----------------------
 
 .. automodule:: y.utils.logging
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.middleware module
 -------------------------
 
 .. automodule:: y.utils.middleware
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.multicall module
 ------------------------
 
 .. automodule:: y.utils.multicall
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.utils.raw\_calls module
 -------------------------
 
 .. automodule:: y.utils.raw_calls
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.utils
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

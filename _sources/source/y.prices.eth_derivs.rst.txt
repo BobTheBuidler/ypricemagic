@@ -9,21 +9,21 @@ y.prices.eth\_derivs.creth module
 
 .. automodule:: y.prices.eth_derivs.creth
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.eth\_derivs.wsteth module
 ----------------------------------
 
 .. automodule:: y.prices.eth_derivs.wsteth
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.prices.eth_derivs
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

@@ -9,45 +9,45 @@ y.prices.tokenized\_fund.basketdao module
 
 .. automodule:: y.prices.tokenized_fund.basketdao
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.tokenized\_fund.gelato module
 --------------------------------------
 
 .. automodule:: y.prices.tokenized_fund.gelato
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.tokenized\_fund.piedao module
 --------------------------------------
 
 .. automodule:: y.prices.tokenized_fund.piedao
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.tokenized\_fund.reserve module
 ---------------------------------------
 
 .. automodule:: y.prices.tokenized_fund.reserve
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.tokenized\_fund.tokensets module
 -----------------------------------------
 
 .. automodule:: y.prices.tokenized_fund.tokensets
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.prices.tokenized_fund
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

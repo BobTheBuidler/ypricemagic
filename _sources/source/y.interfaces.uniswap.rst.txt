@@ -9,29 +9,29 @@ y.interfaces.uniswap.factoryv2 module
 
 .. automodule:: y.interfaces.uniswap.factoryv2
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.interfaces.uniswap.quoterv3 module
 ------------------------------------
 
 .. automodule:: y.interfaces.uniswap.quoterv3
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.interfaces.uniswap.velov2 module
 ----------------------------------
 
 .. automodule:: y.interfaces.uniswap.velov2
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.interfaces.uniswap
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

@@ -22,101 +22,101 @@ y.prices.band module
 
 .. automodule:: y.prices.band
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.chainlink module
 -------------------------
 
 .. automodule:: y.prices.chainlink
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.convex module
 ----------------------
 
 .. automodule:: y.prices.convex
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.gearbox module
 -----------------------
 
 .. automodule:: y.prices.gearbox
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.magic module
 ---------------------
 
 .. automodule:: y.prices.magic
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.one\_to\_one module
 ----------------------------
 
 .. automodule:: y.prices.one_to_one
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.pendle module
 ----------------------
 
 .. automodule:: y.prices.pendle
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.popsicle module
 ------------------------
 
 .. automodule:: y.prices.popsicle
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.rkp3r module
 ---------------------
 
 .. automodule:: y.prices.rkp3r
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.solidex module
 -----------------------
 
 .. automodule:: y.prices.solidex
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.synthetix module
 -------------------------
 
 .. automodule:: y.prices.synthetix
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.yearn module
 ---------------------
 
 .. automodule:: y.prices.yearn
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.prices
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

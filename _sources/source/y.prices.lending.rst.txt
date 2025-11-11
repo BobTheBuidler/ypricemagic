@@ -9,29 +9,29 @@ y.prices.lending.aave module
 
 .. automodule:: y.prices.lending.aave
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.lending.compound module
 --------------------------------
 
 .. automodule:: y.prices.lending.compound
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.lending.ib module
 --------------------------
 
 .. automodule:: y.prices.lending.ib
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.prices.lending
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

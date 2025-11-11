@@ -9,45 +9,45 @@ y.prices.dex.uniswap.uniswap module
 
 .. automodule:: y.prices.dex.uniswap.uniswap
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.dex.uniswap.v1 module
 ------------------------------
 
 .. automodule:: y.prices.dex.uniswap.v1
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.dex.uniswap.v2 module
 ------------------------------
 
 .. automodule:: y.prices.dex.uniswap.v2
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.dex.uniswap.v2\_forks module
 -------------------------------------
 
 .. automodule:: y.prices.dex.uniswap.v2_forks
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 y.prices.dex.uniswap.v3 module
 ------------------------------
 
 .. automodule:: y.prices.dex.uniswap.v3
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.prices.dex.uniswap
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

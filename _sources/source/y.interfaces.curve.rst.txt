@@ -9,13 +9,13 @@ y.interfaces.curve.CurveRegistry module
 
 .. automodule:: y.interfaces.curve.CurveRegistry
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: y.interfaces.curve
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
