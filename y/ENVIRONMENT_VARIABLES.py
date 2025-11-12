@@ -73,7 +73,7 @@ TOKENLISTS: Final = str(
     _envs.create_env(
         "TOKENLISTS",
         str,
-        default="https://ipfs.io/ipns/tokens.uniswap.org,tokens.1inch.eth",
+        default="tokens.1inch.eth",
         verbose=False,
     )
 ).split(",")
