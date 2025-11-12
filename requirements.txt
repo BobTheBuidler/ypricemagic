@@ -1,5 +1,5 @@
 aiosqlite
-asyncpg
+asyncpg<0.31
 bobs_lazy_logging==0.0.4
 cchecksum>=0.0.3,<1
 checksum_dict>=2.1.9,<3
