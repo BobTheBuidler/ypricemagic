@@ -119,7 +119,7 @@ async def asyncpg_set_price(address: ChecksumAddress, block: BlockNumber, price:
 
 _set_price_func = (
     asyncpg_set_price
-    if db_config.connection_settings.get("provider") == "postgresql"
+    if db_config.connection_settings.get("provider") == "postgres"
     else _set_price
 )
 
