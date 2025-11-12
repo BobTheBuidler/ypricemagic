@@ -4,6 +4,7 @@ from typing import Callable, Final, List, Optional, final
 import a_sync
 from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
+from brownie import ZERO_ADDRESS
 from eth_typing import ChecksumAddress, HexStr
 from faster_eth_abi import encode
 from multicall import Call
