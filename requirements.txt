@@ -1,10 +1,10 @@
 aiosqlite
+asyncpg
 bobs_lazy_logging==0.0.4
-cchecksum>=0.0.3
+cchecksum>=0.0.3,<1
 checksum_dict>=2.1.9,<3
 dank_mids>=4.20.161
 eth-brownie==1.22.0.dev0
-eth-event>=1.3.0
 eth_retry>=0.2.1
 evmspec>=0.3.4
 ez-a-sync>=0.32.27,<1

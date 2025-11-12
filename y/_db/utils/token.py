@@ -104,7 +104,7 @@ def ensure_token(address: AnyAddressType) -> None:
     return _ensure_token(str(address))  # force to string for cache key
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=512)
 @db_session_retry_locked
 def _ensure_token(address: str) -> None:
     """Helper function to ensure a token entity exists.
