@@ -6,6 +6,7 @@ from brownie import chain
 from eth_typing import ChecksumAddress
 from tokenlists import TokenListManager
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.contracts import Contract
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
@@ -38,11 +39,21 @@ A placeholder for the Sushi token contract, which may be set depending on the ne
 TOKEN_CONSTANTS_SYMBOLS: Final = "WETH", "USDC", "DAI", "WBTC", "USDT", "SUSHI", "WBNB", "CAKE", "WMATIC", "WFTM"
 
 _tokenlists: Final = TokenListManager()
+for tl in ENVS.TOKENLISTS:
+    if tl not in _tokenlists.installed_tokenlists:
+        _tokenlists.install_tokenlist(tl)
+
 _addresses: Final[Dict[str, Optional[str]]] = {}
 
 for symbol in TOKEN_CONSTANTS_SYMBOLS:
-    token_info = _tokenlists.get_token_info(symbol, chain_id=CHAINID)
-    _addresses[symbol] = token_info.address
+    for tl_name in _tokenlists.installed_tokenlists:
+        try:
+            token_info = _tokenlists.get_token_info(symbol, tl_name, chain_id=CHAINID)
+        except ValueError:
+            continue
+        else:
+            _addresses[symbol] = token_info.address
+            break
 
 if CHAINID == Network.Arbitrum:
     weth = Contract("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1")

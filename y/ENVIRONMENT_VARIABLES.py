@@ -67,3 +67,14 @@ SKIP_YPRICEAPI: Final = create_env("SKIP_YPRICEAPI", bool, default=False, verbos
 # sense checker
 SENSE_CHECK_FILE: Final = _envs.create_env("SENSE_CHECK_FILE", str, default="", verbose=False)
 """If set, sense checker will log all erroneous price messages to this file path using aiofiles."""
+
+# tokenlists
+TOKENLISTS: Final = str(
+    _envs.create_env(
+        "TOKENLISTS",
+        str,
+        default="https://ipfs.io/ipns/tokens.uniswap.org,tokens.1inch.eth",
+        verbose=False,
+    )
+).split(",")
+"""A comma-separated list of tokenlists to use for fetching addresses for tokens in constants.py."""
