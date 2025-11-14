@@ -35,7 +35,6 @@ try:
             "--disable-error-code=str-bytes-safe",
             "--disable-error-code=call-overload",
             "--disable-error-code=used-before-def",
-            "--disable-error-code=return",
             "--disable-error-code=index",
             "--disable-error-code=list-item",
             "--disable-error-code=annotation-unchecked",
