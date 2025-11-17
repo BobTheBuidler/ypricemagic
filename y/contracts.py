@@ -184,7 +184,10 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             elif "Server error: account aurora does not exist while viewing" in err:
                 if not warned:
                     logger.warning(err)
-            elif "No state available for block" in err or "Unknown state. First available state is" in err:
+            elif (
+                "No state available for block" in err
+                or "Unknown state. First available state is" in err
+            ):
                 if not warned:
                     logger.warning(err)
             else:
@@ -278,7 +281,10 @@ async def contract_creation_block_async(
             elif "Server error: account aurora does not exist while viewing" in err:
                 if not warned:
                     logger.warning(err)
-            elif "No state available for block" in err or "Unknown state. First available state is" in err:
+            elif (
+                "No state available for block" in err
+                or "Unknown state. First available state is" in err
+            ):
                 if not warned:
                     logger.warning(err)
             else:
