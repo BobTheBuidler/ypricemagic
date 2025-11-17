@@ -22,7 +22,7 @@ from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import _EventItem
-from faster_eth_abi.exceptions import InvalidPointer
+from eth_abi.exceptions import InvalidPointer
 from hexbytes import HexBytes
 from multicall import Call
 from typing_extensions import Self
