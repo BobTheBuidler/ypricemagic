@@ -176,16 +176,20 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             else:
                 lo = mid
         except ValueError as e:
-            if "missing trie node" in str(e) and not warned:
+            err = str(e)
+            if "missing trie node" in err and not warned:
                 logger.warning(
                     "missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node."
                 )
-            elif "Server error: account aurora does not exist while viewing" in str(e):
+            elif "Server error: account aurora does not exist while viewing" in err:
                 if not warned:
-                    logger.warning(str(e))
-            elif "No state available for block" in str(e):
+                    logger.warning(err)
+            elif (
+                "No state available for block" in err
+                or "Unknown state. First available state is" in err
+            ):
                 if not warned:
-                    logger.warning(str(e))
+                    logger.warning(err)
             else:
                 raise
             warned = True
@@ -268,17 +272,21 @@ async def contract_creation_block_async(
                 logger_debug("%s not yet deployed by block %s, checking higher", address, mid)
                 lo = mid
         except ValueError as e:
-            if "missing trie node" in str(e):
+            err = str(e)
+            if "missing trie node" in err:
                 if not warned:
                     logger.warning(
                         "missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node."
                     )
-            elif "Server error: account aurora does not exist while viewing" in str(e):
+            elif "Server error: account aurora does not exist while viewing" in err:
                 if not warned:
-                    logger.warning(str(e))
-            elif "No state available for block" in str(e):
+                    logger.warning(err)
+            elif (
+                "No state available for block" in err
+                or "Unknown state. First available state is" in err
+            ):
                 if not warned:
-                    logger.warning(str(e))
+                    logger.warning(err)
             else:
                 raise
             warned = True
