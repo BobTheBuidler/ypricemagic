@@ -6,7 +6,7 @@ import a_sync
 import brownie
 import dank_mids
 from a_sync import igather
-from faster_eth_abi.exceptions import InsufficientDataBytes
+from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import CannotHandleRequest
 
