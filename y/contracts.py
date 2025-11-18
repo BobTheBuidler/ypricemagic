@@ -218,7 +218,7 @@ def _get_code(address: str, block: int) -> HexBytes:
     return web3.eth.get_code(address, block)
 
 
-creation_block_semaphore = ThreadsafeSemaphore(32)
+creation_block_semaphore = ThreadsafeSemaphore(48)
 
 
 @a_sync(cache_type="memory")
