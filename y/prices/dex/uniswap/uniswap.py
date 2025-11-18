@@ -3,8 +3,7 @@ import threading
 from contextlib import suppress
 from typing import List, Optional, Tuple, Union
 
-import a_sync
-from a_sync import igather
+from a_sync import ASyncGenericSingleton, igather
 from brownie import ZERO_ADDRESS
 from web3.exceptions import ContractLogicError
 
@@ -40,7 +39,7 @@ _special_routers = {
 Uniswap = Union[UniswapV1, UniswapRouterV2, UniswapV3]
 
 
-class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
+class UniswapMultiplexer(ASyncGenericSingleton):
     """
     A multiplexer for Uniswap routers that provides aggregated functionality across multiple Uniswap instances,
     including Uniswap V1, V2, V3, and certain protocols with similar interfaces like Solidly and Velodrome.
@@ -209,7 +208,6 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True) if balance
         ]
 
-    @a_sync.Semaphore(250)  # some arbitrary number to keep the loop unclogged
     @stuck_coro_debugger
     async def check_liquidity(
         self,
