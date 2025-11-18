@@ -729,8 +729,6 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
                 token_address, block, skip_cache=skip_cache, sync=False
             )
 
-    # NOTE: we need a tiny semaphore here because balancer is super arduous and every unpricable token must pass thru this section
-    @a_sync.Semaphore(10)
     @stuck_coro_debugger
     async def deepest_pool_for(
         self, token_address: Address, block: Optional[Block] = None
