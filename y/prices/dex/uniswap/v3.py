@@ -22,6 +22,7 @@ import eth_retry
 from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
+from eth_abi.exceptions import InvalidPointer
 from eth_typing import BlockNumber, ChecksumAddress, HexAddress
 from faster_eth_abi.packed import encode_packed
 from typing_extensions import Self
@@ -708,6 +709,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
             amount = await quoter.quoteExactInput.coroutine(
                 _encode_path(path), amount_in, block_identifier=block
             )
+        except InvalidPointer:
+            # TODO: debug why this happens and handle it somewhere more appropriate
+            return None
         except Exception as e:
             if call_reverted(e):
                 return None
