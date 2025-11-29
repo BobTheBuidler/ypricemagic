@@ -3,7 +3,7 @@ requires = [
   "setuptools",
   "wheel",
   "mypy[mypyc]==1.19.0",
-  "pony-stubs",
+  "pony-stubs==0.5.2",
   "types-python-dateutil",
   "types-cachetools",
   "types-requests",
