@@ -76,7 +76,7 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                 # Raise if we got some error unrelated to locking
                 if not ("database is locked" in stre or "deadlock detected" in stre):
                     raise
-                
+
                 time.sleep(sleep)
                 sleep *= 1.5
             except TransactionError as e:
