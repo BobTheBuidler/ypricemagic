@@ -1,5 +1,5 @@
-#ifndef MYPYC_NATIVE_INTERNAL_ypricemagic_H
-#define MYPYC_NATIVE_INTERNAL_ypricemagic_H
+#ifndef MYPYC_LIBRT_INTERNAL_ypricemagic_H
+#define MYPYC_LIBRT_INTERNAL_ypricemagic_H
 #include <Python.h>
 #include <CPy.h>
 #include "__native_ypricemagic.h"
