@@ -14,5 +14,5 @@ inflection>=0.1,<0.6
 joblib>=1.0.1
 multicall>=0.8.2
 pony
-pony-stubs
+pony-stubs==0.5.2
 python-dateutil
