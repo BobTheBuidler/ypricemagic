@@ -72,8 +72,11 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                 log = log_warning if sleep > 1 else log_debug
                 stre = str(e)
                 log("%s.%s got %s: %s", callable.__module__, callable.__name__, type(e), stre)
-                if "database is locked" not in stre:
+
+                # Raise if we got some error unrelated to locking
+                if not ("database is locked" in stre or "deadlock detected" in stre):
                     raise
+
                 time.sleep(sleep)
                 sleep *= 1.5
             except TransactionError as e:
