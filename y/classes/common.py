@@ -382,10 +382,9 @@ class ERC20(ContractBase):
             >>> await token.total_supply_readable()
             1000.0
         """
-        total_supply, scale = await cgather(
-            self.total_supply(block=block, sync=False), self.__scale__
-        )
-        return total_supply / scale
+        # `self.__scale__` is cached after the first call so we will await these without gather
+        total_supply = await self.total_supply(block=block, sync=False)
+        return total_supply / await self.__scale__
 
     async def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
         """
@@ -408,10 +407,9 @@ class ERC20(ContractBase):
     async def balance_of_readable(
         self, address: AnyAddressType, block: Optional[Block] = None
     ) -> Decimal:
-        balance, scale = await cgather(
-            self.balance_of(address, block=block, sync=False), self.__scale__
-        )
-        return Decimal(balance) / scale
+        # `self.__scale__` is cached after the first call so we will await these without gather
+        balance = await self.balance_of(address, block=block, sync=False)
+        return Decimal(balance) / await self.__scale__
 
     async def price(
         self,

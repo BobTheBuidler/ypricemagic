@@ -145,7 +145,7 @@ class UniswapV2Pool(ERC20):
 
     @a_sync.aka.cached_property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
-        return await cgather(self.__token0__, self.__token1__)
+        return await self.__token0__, await self.__token1__
 
     __tokens__: HiddenMethodDescriptor[Self, Tuple[ERC20, ERC20]]
 
@@ -530,13 +530,11 @@ class UniswapRouterV2(ContractBase):
                 log_debug("deepest pool: %s", deepest_pool)
             paired_with = await deepest_pool.get_token_out(token_in, sync=False)
             path = [token_in, paired_with]
-            quote, out_scale = await cgather(
-                self.get_quote(amount_in, path, block=block, sync=False),
-                ERC20._get_scale_for(path[-1]),
-            )
+            quote = await self.get_quote(amount_in, path, block=block, sync=False)
             if debug_logs:
                 log_debug("quote: %s", quote)
             if quote is not None:
+                out_scale = await ERC20._get_scale_for(path[-1])
                 amount_out = Decimal(quote[-1]) / out_scale
                 fees = Decimal(0.997) ** (len(path) - 1)
                 amount_out /= fees
@@ -561,11 +559,9 @@ class UniswapRouterV2(ContractBase):
         fees = 0.997 ** (len(path) - 1)
         if debug_logs:
             log_debug("router: %s     path: %s", self.label, path)
-        quote, out_scale = await cgather(
-            self.get_quote(amount_in, path, block=block, sync=False),
-            ERC20._get_scale_for(path[-1]),
-        )
+        quote = await self.get_quote(amount_in, path, block=block, sync=False)
         if quote is not None:
+            out_scale = await ERC20._get_scale_for(path[-1])
             amount_out = quote[-1] / out_scale
             return UsdPrice(amount_out / fees)
 
