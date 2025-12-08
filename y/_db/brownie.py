@@ -1,16 +1,19 @@
 import hashlib
 import json
 from asyncio import Lock
+from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Container, Dict, Final, Literal, Optional, Tuple, final
+from typing import Any, Callable, Container, Dict, Final, List, Literal, Optional, Tuple, cast, final
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
 from brownie._config import CONFIG, _get_data_folder
 from brownie.exceptions import BrownieEnvironmentError
 from brownie.network.contract import _resolve_address
+from brownie.network.state import Deployment
 from brownie.project.build import DEPLOYMENT_KEYS
-from functools import lru_cache
+from brownie.typing import ContractBuildJson, ProgramCounter
+from eth_typing import HexStr
 from sqlite3 import InterfaceError, OperationalError
 
 from y.datatypes import Address
@@ -35,8 +38,7 @@ SourceKey = Literal[
     "type",
 ]
 
-# TODO: replace these with the typed dicts in brownie >=1.22
-BuildJson = Dict[str, Any]
+# TODO: replace these with the typed dicts in brownie >=1.22]
 Sources = Dict[SourceKey, Any]
 
 
@@ -149,7 +151,7 @@ async def _get_deployment(
     address: Optional[str] = None,
     alias: Optional[str] = None,
     skip_source_keys: Container[SourceKey] = DISCARD_SOURCE_KEYS,
-) -> Tuple[Optional[BuildJson], Optional[Sources]]:
+) -> Deployment | Tuple[None, None]:
     if address and alias:
         raise ValueError("Passed both params address and alias, should be only one!")
     if address:
@@ -165,22 +167,26 @@ async def _get_deployment(
     if not row:
         return None, None
 
-    build_json = dict(zip(SOURCE_KEYS, row))
-    path_map: dict = build_json.pop("paths")
+    build_json = cast(ContractBuildJson, dict(zip(SOURCE_KEYS, row)))
+    path_map: Dict[str, List[str]] = build_json.pop("paths")  # type: ignore [typeddict-item]
 
-    sources = {
-        source_key: await __fetch_source_for_hash(val)
-        for val, source_key in path_map.values()
-        if source_key not in skip_source_keys
-    }
+    sources: Dict[str, Any] = {}
+    all_source_paths: Dict[str, Any] = {}
 
-    build_json["allSourcePaths"] = {k: v[1] for k, v in path_map.items()}
-    pc_map: Optional[dict] = build_json.get("pcMap")
+    for k, v in path_map.items():
+        val, source_key = v
+        if source_key in skip_source_keys:
+            continue
+        sources[source_key] = await __fetch_source_for_hash(cast(HexStr, val))
+        all_source_paths[k] = source_key
+
+    build_json["allSourcePaths"] = all_source_paths
+    pc_map = cast(Optional[Dict[int | str, ProgramCounter]], build_json.get("pcMap"))
     if pc_map is not None:
         build_json["pcMap"] = {int(key): pc_map[key] for key in pc_map}
 
     return build_json, sources
 
 
-async def __fetch_source_for_hash(hashval: str) -> Any:
+async def __fetch_source_for_hash(hashval: HexStr) -> Any:
     return (await fetchone("SELECT source FROM sources WHERE hash=?", hashval))[0]
