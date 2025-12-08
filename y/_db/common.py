@@ -911,10 +911,11 @@ class Filter(_DiskCachedMixin[T, C]):
         task = self._task
         if task is None:
             logger.debug("creating task for %s", self)
-            self._task = task = create_task(coro=self.__fetch(), name=f"{self}.__fetch")
+            task = create_task(coro=self.__fetch(), name=f"{self}.__fetch")
             # NOTE: The task does not return and will be cancelled when this object is
             # garbage collected so there is no need to log the "destroy pending task" message.
             task._log_destroy_pending = False
+            self._task = task
         _raise_if_exception(task)
 
     async def __insert_chunk(
