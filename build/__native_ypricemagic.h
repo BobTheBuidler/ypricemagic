@@ -49,15 +49,6 @@ typedef struct tuple_T16OOOOOOOOOOOOOOOO {
 } tuple_T16OOOOOOOOOOOOOOOO;
 #endif
 
-#ifndef MYPYC_DECLARED_tuple_T3CIO
-#define MYPYC_DECLARED_tuple_T3CIO
-typedef struct tuple_T3CIO {
-    char f0;
-    CPyTagged f1;
-    PyObject *f2;
-} tuple_T3CIO;
-#endif
-
 #ifndef MYPYC_DECLARED_tuple_T4CIOO
 #define MYPYC_DECLARED_tuple_T4CIOO
 typedef struct tuple_T4CIOO {
@@ -66,6 +57,15 @@ typedef struct tuple_T4CIOO {
     PyObject *f2;
     PyObject *f3;
 } tuple_T4CIOO;
+#endif
+
+#ifndef MYPYC_DECLARED_tuple_T3CIO
+#define MYPYC_DECLARED_tuple_T3CIO
+typedef struct tuple_T3CIO {
+    char f0;
+    CPyTagged f1;
+    PyObject *f2;
+} tuple_T3CIO;
 #endif
 
 #ifndef MYPYC_DECLARED_tuple_T8OOOOOOOO
@@ -196,31 +196,25 @@ typedef struct {
     tuple_T3OOO ___mypyc_temp__44;
     PyObject *___mypyc_generator_attribute__build_json;
     PyObject *___mypyc_generator_attribute__path_map;
-    PyObject *___mypyc_temp__45;
-    PyObject *___mypyc_temp__46;
-    CPyTagged ___mypyc_temp__47;
-    int64_t ___mypyc_temp__48;
-    PyObject *___mypyc_temp__49;
-    PyObject *___mypyc_generator_attribute__val;
-    PyObject *___mypyc_generator_attribute__source_key;
-    PyObject *___mypyc_temp__50;
-    tuple_T3OOO ___mypyc_temp__51;
     PyObject *___mypyc_generator_attribute__sources;
-    PyObject *___mypyc_temp__52;
-    PyObject *___mypyc_temp__53;
-    CPyTagged ___mypyc_temp__54;
-    int64_t ___mypyc_temp__55;
-    PyObject *___mypyc_temp__56;
+    PyObject *___mypyc_generator_attribute__all_source_paths;
+    PyObject *___mypyc_temp__45;
+    CPyTagged ___mypyc_temp__46;
+    int64_t ___mypyc_temp__47;
+    PyObject *___mypyc_temp__48;
     PyObject *___mypyc_generator_attribute__k;
     PyObject *___mypyc_generator_attribute__v;
+    PyObject *___mypyc_generator_attribute__val;
+    PyObject *___mypyc_generator_attribute__source_key;
+    PyObject *___mypyc_temp__49;
+    tuple_T3OOO ___mypyc_temp__50;
     PyObject *___mypyc_generator_attribute__pc_map;
-    PyObject *___mypyc_temp__57;
-    PyObject *___mypyc_temp__58;
-    CPyTagged ___mypyc_temp__59;
-    int64_t ___mypyc_temp__60;
-    PyObject *___mypyc_temp__61;
+    PyObject *___mypyc_temp__51;
+    PyObject *___mypyc_temp__52;
+    CPyTagged ___mypyc_temp__53;
+    int64_t ___mypyc_temp__54;
+    PyObject *___mypyc_temp__55;
     PyObject *___mypyc_generator_attribute__key;
-    PyObject *___mypyc_temp__2_0;
 } y____db___brownie____get_deployment_genObject;
 
 typedef struct {
@@ -228,8 +222,8 @@ typedef struct {
     CPyVTableItem *vtable;
     PyObject *___mypyc_generator_attribute__hashval;
     int32_t ___mypyc_next_label__;
-    PyObject *___mypyc_temp__62;
-    tuple_T3OOO ___mypyc_temp__63;
+    PyObject *___mypyc_temp__56;
+    tuple_T3OOO ___mypyc_temp__57;
 } y____db___brownie_____fetch_source_for_hash_genObject;
 
 typedef struct {

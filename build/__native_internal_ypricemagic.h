@@ -6,7 +6,7 @@
 
 int CPyGlobalsInit(void);
 
-extern PyObject *CPyStatics[673];
+extern PyObject *CPyStatics[682];
 extern const char * const CPyLit_Str[];
 extern const char * const CPyLit_Bytes[];
 extern const char * const CPyLit_Int[];
@@ -21,6 +21,7 @@ extern CPyModule *CPyModule_builtins;
 extern CPyModule *CPyModule_hashlib;
 extern CPyModule *CPyModule_json;
 extern CPyModule *CPyModule_asyncio;
+extern CPyModule *CPyModule_functools;
 extern CPyModule *CPyModule_pathlib;
 extern CPyModule *CPyModule_typing;
 extern CPyModule *CPyModule_aiosqlite;
@@ -28,8 +29,10 @@ extern CPyModule *CPyModule_a_sync;
 extern CPyModule *CPyModule_brownie____config;
 extern CPyModule *CPyModule_brownie___exceptions;
 extern CPyModule *CPyModule_brownie___network___contract;
+extern CPyModule *CPyModule_brownie___network___state;
 extern CPyModule *CPyModule_brownie___project___build;
-extern CPyModule *CPyModule_functools;
+extern CPyModule *CPyModule_brownie___typing;
+extern CPyModule *CPyModule_eth_typing;
 extern CPyModule *CPyModule_sqlite3;
 extern CPyModule *CPyModule_y___datatypes;
 extern CPyModule *CPyModule_y____db___config__internal;
@@ -61,7 +64,6 @@ extern CPyModule *CPyModule_y___convert;
 extern PyObject *CPyStatic_convert___globals;
 extern CPyModule *CPyModule_cchecksum;
 extern CPyModule *CPyModule_hexbytes;
-extern CPyModule *CPyModule_eth_typing;
 extern CPyModule *CPyModule_y___exceptions__internal;
 extern CPyModule *CPyModule_y___exceptions;
 extern PyObject *CPyStatic_exceptions___globals;
