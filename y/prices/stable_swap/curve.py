@@ -349,9 +349,9 @@ class CurvePool(ERC20):
 
     __coins__: HiddenMethodDescriptor[Self, List[ERC20]]
 
-    @a_sync.a_sync(ram_cache_maxsize=256)
+    @a_sync.a_sync(ram_cache_maxsize=10_000)
     async def get_coin_index(self, coin: AnyAddressType) -> int:
-        return [i for i, _coin in enumerate(await self.__coins__) if _coin == coin][0]
+        return next(i for i, _coin in enumerate(await self.__coins__) if _coin == coin)
 
     @a_sync.aka.cached_property
     async def num_coins(self) -> int:
