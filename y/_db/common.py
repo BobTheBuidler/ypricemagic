@@ -680,8 +680,10 @@ class Filter(_DiskCachedMixin[T, C]):
 
     def _wakeup(self) -> None:
         """Wake up the Filter to query logs from blocks not yet loaded into memory."""
-        if self._sleep_fut is not None:
-            self._sleep_fut.set_result(None)
+        # self._task should never be None here, it should be assigned by this point
+        _raise_if_exception(self._task)
+        if (fut := self._sleep_fut) is not None:
+            fut.set_result(None)
             del self._sleep_fut
 
     async def __fetch(self) -> NoReturn:
@@ -906,15 +908,14 @@ class Filter(_DiskCachedMixin[T, C]):
         """
         Ensures there is a main fetch task running in the background. If not, creates it.
         """
-        if self._task is None:
+        task = self._task
+        if task is None:
             logger.debug("creating task for %s", self)
-            self._task = create_task(coro=self.__fetch(), name=f"{self}.__fetch")
+            self._task = task = create_task(coro=self.__fetch(), name=f"{self}.__fetch")
             # NOTE: The task does not return and will be cancelled when this object is
             # garbage collected so there is no need to log the "destroy pending task" message.
-            self._task._log_destroy_pending = False
-        if self._task.done() and (e := self._task.exception()):
-            # copy the exc so the traceback doesn't get destroyed by other waiters
-            raise copy(e).with_traceback(e.__traceback__) from e.__cause__
+            task._log_destroy_pending = False
+        _raise_if_exception(task)
 
     async def __insert_chunk(
         self,
@@ -961,6 +962,12 @@ class Filter(_DiskCachedMixin[T, C]):
         """
         self._objects = self._objects[count:]
         self._pruned += count
+
+
+def _raise_if_exception(task: asyncio.Task[Any]) -> None
+    if task.done() and (e := task.exception()):
+        # copy the exc so the traceback doesn't get destroyed by other waiters
+        raise copy(e).with_traceback(e.__traceback__) from e.__cause__
 
 
 def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, List[str]]:
