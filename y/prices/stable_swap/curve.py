@@ -433,7 +433,7 @@ class CurvePool(ERC20):
 
     __get_underlying_coins__: HiddenMethodDescriptor[Self, List[ERC20]]
 
-    @a_sync.a_sync(ram_cache_maxsize=1000)
+    @a_sync.a_sync(ram_cache_maxsize=5000)
     async def get_balances(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> List[WeiBalance]:
