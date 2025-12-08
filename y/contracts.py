@@ -15,6 +15,7 @@ from typing import (
     Optional,
     Tuple,
     Union,
+    overload,
 )
 from urllib.parse import urlparse
 
@@ -801,12 +802,13 @@ async def has_method(
     try:
         response = await Call(address, [method])
         return False if response is None else response if return_response else True
+    except ContractLogicError:
+        return False
     except Exception as e:
-        if (
-            isinstance(e, ContractLogicError)
-            or call_reverted(e)
-            or any(err in str(e) for err in ("invalid jump destination", "EVM error: InvalidJump"))
-        ):
+        if call_reverted(e):
+            return False
+        stre = str(e)
+        if any(err in stre for err in ("invalid jump destination", "EVM error: InvalidJump")):
             return False
         raise
 
