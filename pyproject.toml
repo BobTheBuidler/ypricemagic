@@ -9,6 +9,7 @@ requires = [
   "types-requests",
   "faster-eth-abi>=5.2.12,<6",
   "eth-brownie==1.22.0.dev0; platform_system == 'Linux' and platform_machine != 'i686'",
+  "eth-retry==0.3.5",
   "eth-typing==5.2.1",
 ]
 
