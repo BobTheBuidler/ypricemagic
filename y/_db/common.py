@@ -965,7 +965,7 @@ class Filter(_DiskCachedMixin[T, C]):
         self._pruned += count
 
 
-def _raise_if_exception(task: asyncio.Task[Any]) -> None:
+def _raise_if_exception(task: Task[Any]) -> None:
     if not task.done():
         return None
     elif (e := task.exception()) is None:
