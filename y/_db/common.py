@@ -965,10 +965,14 @@ class Filter(_DiskCachedMixin[T, C]):
         self._pruned += count
 
 
-def _raise_if_exception(task: asyncio.Task[Any]) -> None
-    if task.done() and (e := task.exception()):
-        # copy the exc so the traceback doesn't get destroyed by other waiters
-        raise copy(e).with_traceback(e.__traceback__) from e.__cause__
+def _raise_if_exception(task: asyncio.Task[Any]) -> None:
+    if not task.done():
+        return None
+    elif (e := task.exception()) is None:
+        return None
+    # we have an exception, copy it and raise it
+    # copy the exc so the traceback doesn't get destroyed by other waiters
+    raise copy(e).with_traceback(e.__traceback__) from e.__cause__
 
 
 def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, List[str]]:
