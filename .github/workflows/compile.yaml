@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - '.github/workflows/**'
+      - '!.github/workflows/compile.yaml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,35 +17,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        id: checkout
+        uses: actions/checkout@v6
         with:
           # Check out the PR branch
           ref: ${{ github.head_ref }}
+        continue-on-error: true
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+      - name: Branch no longer exists on GitHub
+        if: failure() && steps.checkout.outcome == 'failure'
+        run: |
+          echo "The branch ${{ github.head_ref }} no longer exists on GitHub"
+          exit 0
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
-          
-      - name: Install Requirements
-        run: pip install -r requirements.txt
-        
-      - name: Install ypricemagic
-        run: pip install .
+          python-version: "3.13"
 
-      - name: Check for changes
-        run: |
-          if [[ -n $(git status --porcelain) ]]; then
-            echo "changes_detected=true" >> $GITHUB_ENV
-          else
-            echo "changes_detected=false" >> $GITHUB_ENV
-          fi
-
-      - name: Commit changes
-        if: env.changes_detected == 'true'
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "chore: compile C files for source control"
-          git push
+      - name: Mypycify
+        uses: BobTheBuidler/mypycify@v0.2.3
+        with:
+          python-version: "3.13"
+          hash-key: |
+            pyproject.toml
+            setup.py
+            ypricemagic/**/*.py
+          pip-cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
+          normalize-source: true
+          push-source: true
+          commit-message: "chore: compile C files for source control"
+          trigger-pr-number: ${{ github.event.pull_request.number }}
+          trigger-branch-name: ${{ github.head_ref || github.ref_name }}

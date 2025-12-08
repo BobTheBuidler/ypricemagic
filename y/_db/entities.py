@@ -311,18 +311,20 @@ def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
                 e.args = *e.args, type, kwargs
                 raise
     except TransactionIntegrityError as e:
-        constraint_errs = (
-            "UNIQUE constraint failed",
-            "duplicate key value violates unique constraint",
-        )
-        if any(map((msg := str(e)).__contains__, constraint_errs)):
-            logger.debug("%s: %s %s", msg, type.__name__, kwargs)
-        else:
-            logger.debug(
-                "%s %s when inserting %s",
-                e.__class__.__name__,
-                str(e),
-                e,
-                type.__name__,
+        err = str(e)
+        if type.__name__ in err:
+            constraint_errs = (
+                "UNIQUE constraint failed",
+                "duplicate key value violates unique constraint",
             )
-            raise
+            if any(string in err for string in constraint_errs):
+                logger.debug("%s: %s %s", err, type.__name__, kwargs)
+                return None
+
+        logger.debug(
+            "%s %s when inserting %s",
+            e.__class__.__name__,
+            err,
+            type.__name__,
+        )
+        raise

@@ -189,11 +189,9 @@ class BalancerV1Pool(BalancerPool):
             >>> await pool.get_balance("0xabcdefabcdefabcdefabcdefabcdefabcdef")
             Decimal('1000')
         """
-        balance, scale = await cgather(
-            self.check_liquidity(str(token), block, sync=False),
-            ERC20._get_scale_for(token),
-        )
-        return Decimal(balance) / scale
+        # `ERC20._get_scale_for` is cached after the first call so we will await these without gather
+        balance = await self.check_liquidity(str(token), block, sync=False)
+        return Decimal(balance) / await ERC20._get_scale_for(token)
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10 * 60)

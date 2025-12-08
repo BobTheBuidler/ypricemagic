@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 25.9.0
+    hooks:
+      - id: black
+        language_version: python3
+        args: [--line-length=100]
+  - repo: https://github.com/PyCQA/isort
+    rev: 7.0.0
+    hooks:
+      - id: isort
+        language_version: python3
+        args: [--profile=black]
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.2.1
+    hooks:
+      - id: autoflake
+        args: [
+          --remove-all-unused-imports,
+          --in-place,
+          --expand-star-imports,
+          --ignore-init-module-imports
+        ]
+        types: [python]
+        files: \.py$

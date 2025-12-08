@@ -14,7 +14,7 @@ from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound, EventLookupError
 from brownie.network.event import _EventItem
-from eth_abi.exceptions import InvalidPointer
+from eth_abi.exceptions import InsufficientDataBytes, InvalidPointer
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
@@ -457,8 +457,11 @@ class CurvePool(ERC20):
             factory = await self.__factory__
             source = factory or await curve.__registry__
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
-        except (ContractLogicError, ValueError):
-            # ContractLogicError in web3>=6.0, ValueError in <6.0
+        except (ContractLogicError, ValueError, InsufficientDataBytes):
+            # ContractLogicError in web3>=6.0, ValueError in <6.0,
+            # InsufficientDataBytes sometimes too, not sure why.
+            # Potentially related to https://github.com/ethereum/eth-abi/pull/247
+
             # fallback for historical queries where registry was not yet deployed
             balances = await a_sync.map(self._get_balance, range(len(coins)), block=block).values(
                 pop=True

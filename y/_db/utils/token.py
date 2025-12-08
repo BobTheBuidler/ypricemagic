@@ -1,14 +1,15 @@
 import logging
 import threading
+import time
 from functools import lru_cache
 from typing import Dict, Optional, Set
 
 import a_sync
-from a_sync import PruningThreadPoolExecutor
 from cachetools import TTLCache, cached
-from pony.orm import commit, db_session, select
+from pony.orm import ObjectNotFound, TransactionIntegrityError, commit, select
 
 from y import constants, convert
+from y._db.common import make_executor
 from y._db.decorators import (
     a_sync_read_db_session,
     db_session_retry_locked,
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
 
 
-_token_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [token]")
+_token_executor = make_executor(2, 10, "ypricemagic db executor [token]")
 
 
 @a_sync.a_sync(default="async", executor=_token_executor)
@@ -64,9 +65,26 @@ def get_token(address: str) -> Token:
                 return entity
             entity.delete()
             commit()
-        return insert(type=Token, chain=CHAINID, address=address) or Token.get(
-            chain=CHAINID, address=address
-        )
+        try:
+            return insert(type=Token, chain=CHAINID, address=address) or Token.get(
+                chain=CHAINID, address=address
+            )
+        except TransactionIntegrityError as e:
+            if "Address.chain, Address.address" in str(e).split(":")[-1]:
+                try:
+                    addr = Address[CHAINID, address]  # type: ignore [type-arg]
+                except ObjectNotFound:
+                    raise RuntimeError(
+                        "you probably have an eth-portfolio enhanced db but no eth-portfolio in your env"
+                    )
+                # TODO handle this more gracefully, instead of just
+                #      dropping the address and re-adding as a Token
+                addr.delete()
+                commit()
+                continue
+        if entity is not None:
+            return entity
+        time.sleep(1)
 
 
 @a_sync.a_sync(default="sync", ram_cache_maxsize=None)
@@ -86,7 +104,7 @@ def ensure_token(address: AnyAddressType) -> None:
     return _ensure_token(str(address))  # force to string for cache key
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=512)
 @db_session_retry_locked
 def _ensure_token(address: str) -> None:
     """Helper function to ensure a token entity exists.

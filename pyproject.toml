@@ -2,11 +2,15 @@
 requires = [
   "setuptools",
   "wheel",
-  "mypy[mypyc]==1.17.0",
+  "mypy[mypyc]==1.19.0",
+  "pony-stubs==0.5.2",
   "types-python-dateutil",
   "types-cachetools",
   "types-requests",
-  "eth-typing==4.4.0",
+  "faster-eth-abi>=5.2.12,<6",
+  "eth-brownie==1.22.0.dev0; platform_system == 'Linux' and platform_machine != 'i686'",
+  "eth-retry==0.3.5",
+  "eth-typing==5.2.1",
 ]
 
 [tool.black]
