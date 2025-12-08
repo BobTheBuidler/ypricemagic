@@ -326,20 +326,20 @@ class CurvePool(ERC20):
         """
         # TODO: unfortunately we might need to make this function support a block_id, time will tell
         
-        factory = await self.__factory__
+        if factory := await self.__factory__:
+            lookup_contract = factory
+        else:
+            lookup_contract = await curve.__registry__
         
         try:
-            if factory:
-                coins = await factory.get_coins.coroutine(self.address)
-            else:
-                registry = await curve.__registry__
-                coins = await registry.get_coins.coroutine(self.address)
+            coins = await lookup_contract.get_coins.coroutine(self.address)
         except InvalidPointer:
             # I'm not sure if this means the pool was shut down (can that even happen?) or if the pool
             # is not in registry and the Exception is now handled differently by some dependency.
             logger.warning(
                 "InvalidPointer error when calling get_coins(pool) "
-                "for pool %s. TODO give this func a block_id param.",
+                "on %s for pool %s. TODO give this func a block_id param.",
+                lookup_contract.address,
                 self.address,
             )
             coins = (ZERO_ADDRESS,)
