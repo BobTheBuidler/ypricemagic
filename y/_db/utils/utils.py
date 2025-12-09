@@ -7,7 +7,7 @@ from typing import Dict, Optional, Set
 from a_sync import ProcessingQueue, a_sync
 from brownie import chain
 from eth_typing import BlockNumber
-from pony.orm import commit, select
+from pony.orm import TransactionIntegrityError, commit, select
 
 from y._db.common import make_executor
 from y._db.decorators import (
@@ -26,7 +26,7 @@ CHAINID = chain.id
 del chain
 
 
-_block_executor = make_executor(4, 8, "ypricemagic db executor [block]")
+_block_executor = make_executor(2, 8, "ypricemagic db executor [block]")
 _timestamp_executor = make_executor(1, 4, "ypricemagic db executor [timestamp]")
 
 
@@ -116,7 +116,10 @@ def ensure_block(number: int) -> None:
         from y._db.utils._ep import _get_get_block
 
         get_block = _get_get_block()
-        get_block(number, sync=True)
+        try:
+            get_block(number, sync=True)
+        except TransactionIntegrityError:
+            get_block(number, sync=True)
 
 
 @a_sync_read_db_session

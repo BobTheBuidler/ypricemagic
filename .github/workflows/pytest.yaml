@@ -7,6 +7,7 @@ on:
     paths:
       - '**.py'
       - '**/pytest.yaml'
+  workflow_dispatch:
       
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,15 +21,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        pyversion: [ "3.9", "3.10" ]
+        pyversion: [ "3.10", "3.11", "3.12" ]
         network: [ mainnet, bsc-main, polygon-main, ftm-main, arbitrum-main, optimism-main ]
         include:
         - os: ubuntu-latest
-          path: ~/.cache/pip
+          home: /home/runner
         - os: macos-latest
-          path: ~/Library/Caches/pip
+          home: /Users/runner
         - os: windows-latest
-          path: ~\AppData\Local\pip\Cache
+          home: C:\Users\runner
         - network: mainnet
           provider: WEB3_PROVIDER
         - network: bsc-main
@@ -44,46 +45,58 @@ jobs:
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
 
       - name: Setup Python (faster than using Python container)
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.pyversion }}
+          cache: pip
+          cache-key:
+            requirements.txt
+            requirements-dev.txt
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
+      - name: Cache .mypy_cache
+        uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
-          path: |
-            ${{ matrix.path }}
+          path: .mypy_cache
+          key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
+
+      - name: Restore ydb cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ matrix.home }}/.ypricemagic/ypricemagic.sqlite
+          key: ydb-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Restore joblib middleware cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ./cache/**/joblib/
+          key: ${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**.py', 'requirements.txt') }}
       
-      - name: Cache joblib middleware cache
-        uses: actions/cache@v3
+      - name: Restore compilers cache
+        uses: actions/cache/restore@v4
         with:
-          # Include requirements.txt so we recache if web3 version changes
-          key: forceupdatedeletethislater3-${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
           path: |
-            ./cache/*/joblib/web3/middleware/filter/middleware
+            ${{ matrix.home }}/.solcx
+            ${{ matrix.home }}/.vvm
+          key: compilers-${{ runner.os }}-${{ matrix.network }}
+      
+      - name: Restore brownie contracts db
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ matrix.home }}/.brownie/deployments.db
+          key: brownie-${{ runner.os }}-${{ matrix.network }}
 
+      - name: Update Pip and Setuptools
+        run: pip install -U pip setuptools
+        
       - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
-          pip install -r requirements.txt
+        run: pip install . -r requirements-dev.txt
       
       - name: Setup brownie networks
-        run: |
-          brownie networks modify ${{ matrix.network }} host=${{ secrets[matrix.provider] }}
+        run: brownie networks modify ${{ matrix.network }} host=${{ secrets[matrix.provider] }}
         continue-on-error: true
-
-      - name: Cache compilers and brownie deployments
-        uses: actions/cache@v3
-        with:
-          key: forceupdatedeletethislater3-${{ runner.os }}-brownie-cache-${{ matrix.network }}
-          path: |
-            ~/.brownie/deployments.db
-            ~/.solcx
-            ~/.vvm
       
       - name: Run test suite
         env:
@@ -96,4 +109,34 @@ jobs:
           ARBISCAN_TOKEN: ${{ secrets.ARBISCAN_TOKEN }}
           OPTISCAN_TOKEN: ${{ secrets.OPTISCAN_TOKEN }}
         run: make test
+        timeout-minutes: 180
       
+      - name: Save ydb cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ matrix.home }}/.ypricemagic/ypricemagic.sqlite
+          key: ydb-${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Save joblib cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ./cache/**/joblib/
+          key: ${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**.py', 'requirements.txt') }}
+      
+      - name: Save compilers cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ matrix.home }}/.solcx
+            ${{ matrix.home }}/.vvm
+          key: compilers-${{ runner.os }}-${{ matrix.network }}
+      
+      - name: Save brownie contracts db
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ matrix.home }}/.brownie/deployments.db
+          key: brownie-${{ runner.os }}-${{ matrix.network }}
