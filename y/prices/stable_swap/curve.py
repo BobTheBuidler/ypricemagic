@@ -325,12 +325,12 @@ class CurvePool(ERC20):
             [<ERC20 TKN1 '0x...'>, <ERC20 TKN2 '0x...'>]
         """
         # TODO: unfortunately we might need to make this function support a block_id, time will tell
-        
+
         if factory := await self.__factory__:
             lookup_contract = factory
         else:
             lookup_contract = await curve.__registry__
-        
+
         try:
             coins = await lookup_contract.get_coins.coroutine(self.address)
         except InvalidPointer:

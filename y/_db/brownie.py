@@ -6,6 +6,7 @@ from typing import Any, Callable, Container, Dict, Final, Literal, Optional, Tup
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
+from aiosqlite.context import Result
 from brownie._config import CONFIG, _get_data_folder
 from brownie.exceptions import BrownieEnvironmentError
 from brownie.network.contract import _resolve_address
@@ -92,7 +93,7 @@ class AsyncCursor:
         self._filename: Final = filename
         self._db: Optional[aiosqlite.Connection] = None
         self._connected: bool = False
-        self._execute: Optional[Callable[..., aiosqlite.Cursor]] = None
+        self._execute: Optional[Callable[..., Result[aiosqlite.Cursor]]] = None
 
     async def connect(self) -> None:
         """Establish an async connection to the SQLite database"""

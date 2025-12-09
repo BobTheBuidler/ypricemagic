@@ -6,7 +6,7 @@
 
 int CPyGlobalsInit(void);
 
-extern PyObject *CPyStatics[673];
+extern PyObject *CPyStatics[676];
 extern const char * const CPyLit_Str[];
 extern const char * const CPyLit_Bytes[];
 extern const char * const CPyLit_Int[];
@@ -25,6 +25,7 @@ extern CPyModule *CPyModule_pathlib;
 extern CPyModule *CPyModule_typing;
 extern CPyModule *CPyModule_aiosqlite;
 extern CPyModule *CPyModule_a_sync;
+extern CPyModule *CPyModule_aiosqlite___context;
 extern CPyModule *CPyModule_brownie____config;
 extern CPyModule *CPyModule_brownie___exceptions;
 extern CPyModule *CPyModule_brownie___network___contract;
