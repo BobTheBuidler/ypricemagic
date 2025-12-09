@@ -1037,8 +1037,8 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     if address == "":
         raise Exception(
             f"""implementation: {implementation}
-            implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967}
-            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822}"""
+            implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967!r}
+            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}"""
         )
 
     if len(implementation_eip1967) > 0 and int(implementation_eip1967.hex(), 16):
