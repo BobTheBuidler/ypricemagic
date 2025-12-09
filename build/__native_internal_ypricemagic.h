@@ -6,7 +6,7 @@
 
 int CPyGlobalsInit(void);
 
-extern PyObject *CPyStatics[676];
+extern PyObject *CPyStatics[677];
 extern const char * const CPyLit_Str[];
 extern const char * const CPyLit_Bytes[];
 extern const char * const CPyLit_Int[];
@@ -97,6 +97,7 @@ extern PyObject *CPyStatic_brownie___loads;
 extern PyObject *CPyStatic_brownie___sqlite_lock;
 extern PyObject *CPyStatic_brownie___cur;
 extern PyObject *CPyStatic_brownie___fetchone;
+extern PyObject *CPyStatic_brownie___y____db___brownie____get_deployment___skip_source_keys;
 extern PyTypeObject *CPyType_brownie___AsyncCursor;
 extern PyObject *CPyDef_brownie___AsyncCursor(PyObject *cpy_r_filename);
 extern PyTypeObject *CPyType_brownie___connect_AsyncCursor_gen;

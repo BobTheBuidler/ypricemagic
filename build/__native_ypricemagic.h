@@ -155,6 +155,7 @@ typedef struct {
     char ___mypyc_temp__17;
     PyObject *___mypyc_temp__18;
     tuple_T3OOO ___mypyc_temp__19;
+    PyObject *___mypyc_generator_attribute__execute;
     PyObject *___mypyc_temp__20;
     PyObject *___mypyc_temp__21;
     char ___mypyc_temp__22;
