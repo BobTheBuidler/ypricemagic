@@ -60,7 +60,7 @@ def stringify_column_value(value: Any, format_bytes: Callable[[bytes], str]) -> 
 
 
 def _format_bytes_sqlite(b: bytes) -> str:
-     return f"X'{value.hex()}'"
+    return f"X'{value.hex()}'"
 
 
 def _format_bytes_postgres(b: bytes) -> str:
@@ -104,7 +104,7 @@ def build_query(
         format_bytes = _format_bytes_sqlite
     else:
         raise NotImplementedError(provider)
-        
+
     data = ",".join(build_row(i, format_bytes) for i in items)
     if provider_name == "sqlite":
         return f'insert or ignore into {entity_name} ({",".join(columns)}) values {data}'
