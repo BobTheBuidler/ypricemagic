@@ -324,12 +324,25 @@ class CurvePool(ERC20):
             >>> await pool.coins
             [<ERC20 TKN1 '0x...'>, <ERC20 TKN2 '0x...'>]
         """
-        factory = await self.__factory__
-        if factory:
-            coins = await factory.get_coins.coroutine(self.address)
+        # TODO: unfortunately we might need to make this function support a block_id, time will tell
+
+        if factory := await self.__factory__:
+            lookup_contract = factory
         else:
-            registry = await curve.__registry__
-            coins = await registry.get_coins.coroutine(self.address)
+            lookup_contract = await curve.__registry__
+
+        try:
+            coins = await lookup_contract.get_coins.coroutine(self.address)
+        except InvalidPointer:
+            # I'm not sure if this means the pool was shut down (can that even happen?) or if the pool
+            # is not in registry and the Exception is now handled differently by some dependency.
+            logger.warning(
+                "InvalidPointer error when calling get_coins(pool) "
+                "on %s for pool %s. TODO give this func a block_id param.",
+                lookup_contract.address,
+                self.address,
+            )
+            coins = (ZERO_ADDRESS,)
 
         # pool not in registry
         if set(coins) == {ZERO_ADDRESS}:
@@ -349,9 +362,9 @@ class CurvePool(ERC20):
 
     __coins__: HiddenMethodDescriptor[Self, List[ERC20]]
 
-    @a_sync.a_sync(ram_cache_maxsize=256)
+    @a_sync.a_sync(ram_cache_maxsize=10_000)
     async def get_coin_index(self, coin: AnyAddressType) -> int:
-        return [i for i, _coin in enumerate(await self.__coins__) if _coin == coin][0]
+        return next(i for i, _coin in enumerate(await self.__coins__) if _coin == coin)
 
     @a_sync.aka.cached_property
     async def num_coins(self) -> int:
@@ -415,10 +428,11 @@ class CurvePool(ERC20):
                 except InvalidPointer:
                     logger.warning(
                         "InvalidPointer error when calling get_coins(pool) "
-                        "on factory %s with pool %s. Skipping.",
+                        "on factory %s with pool %s. TODO give this func a block_id param.",
                         factory.address,
                         self.address,
                     )
+                    coins = (ZERO_ADDRESS,)
         else:
             registry = await curve.registry
             coins = await registry.get_underlying_coins.coroutine(self.address)
@@ -433,7 +447,7 @@ class CurvePool(ERC20):
 
     __get_underlying_coins__: HiddenMethodDescriptor[Self, List[ERC20]]
 
-    @a_sync.a_sync(ram_cache_maxsize=1000)
+    @a_sync.a_sync(ram_cache_maxsize=5000)
     async def get_balances(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> List[WeiBalance]:

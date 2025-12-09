@@ -15,6 +15,7 @@ from typing import (
     Optional,
     Tuple,
     Union,
+    overload,
 )
 from urllib.parse import urlparse
 
@@ -768,6 +769,18 @@ def is_contract(address: AnyAddressType) -> bool:
     return web3.eth.get_code(address) not in ("0x", b"")
 
 
+@overload
+async def has_method(
+    address: Address, method: str, return_response: Literal[True]
+) -> Union[bool, Any]: ...
+
+
+@overload
+async def has_method(
+    address: Address, method: str, return_response: Literal[False] = False
+) -> bool: ...
+
+
 @a_sync(default="sync", cache_type="memory")
 async def has_method(
     address: Address, method: str, return_response: bool = False
@@ -789,12 +802,13 @@ async def has_method(
     try:
         response = await Call(address, [method])
         return False if response is None else response if return_response else True
+    except ContractLogicError:
+        return False
     except Exception as e:
-        if not return_response and (
-            isinstance(e, ContractLogicError)
-            or call_reverted(e)
-            or any(err in str(e) for err in ("invalid jump destination", "EVM error: InvalidJump"))
-        ):
+        if call_reverted(e):
+            return False
+        stre = str(e)
+        if any(err in stre for err in ("invalid jump destination", "EVM error: InvalidJump")):
             return False
         raise
 

@@ -1,5 +1,5 @@
-aiosqlite
-asyncpg<0.31
+aiosqlite==0.21.0
+asyncpg>=0.31,<0.32
 bobs_lazy_logging==0.0.4
 cchecksum>=0.0.3,<1
 checksum_dict>=2.1.9,<3
@@ -7,7 +7,7 @@ dank_mids>=4.20.174
 eth-brownie==1.22.0.dev0
 eth_retry>=0.2.1
 evmspec>=0.3.4
-ez-a-sync>=0.33.1,<1
+ez-a-sync>=0.33.4,<1
 faster-eth-abi>=5.2.12,<6
 faster-eth-utils
 inflection>=0.1,<0.6
