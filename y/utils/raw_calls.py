@@ -551,6 +551,6 @@ def prepare_input(
         Supported input types are
         uint: int, 
         address: Union[str, Address, brownie.Contract, y.Contract]
-        you passed input: {input} type: {input_type}
+        you passed input: {input!r} type: {input_type}
         """
     )
