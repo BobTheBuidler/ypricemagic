@@ -32,7 +32,7 @@ logger: Final = logging.getLogger(__name__)
 
 # Add file handler to logger if SENSE_CHECK_FILE is set
 if ENVS.SENSE_CHECK_FILE:
-    file_handler = logging.FileHandler(ENVS.SENSE_CHECK_FILE, mode="a", encoding="utf-8")
+    file_handler = logging.FileHandler(str(ENVS.SENSE_CHECK_FILE), mode="a", encoding="utf-8")
     file_handler.setLevel(logging.WARNING)
     formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
     file_handler.setFormatter(formatter)
@@ -45,7 +45,7 @@ acceptable_all_chains: Final[Set[ChecksumAddress]] = {
     wbtc.address,
 }
 
-ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operator, assignment]
+ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operator, assignment, call-overload]
     Network.Mainnet: {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
