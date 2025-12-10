@@ -231,6 +231,7 @@ typedef struct {
     int32_t ___mypyc_next_label__;
     PyObject *___mypyc_temp__62;
     tuple_T3OOO ___mypyc_temp__63;
+    PyObject *___mypyc_generator_attribute__row;
 } y____db___brownie_____fetch_source_for_hash_genObject;
 
 typedef struct {

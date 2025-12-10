@@ -58,4 +58,4 @@ else:
         "database": str(ENVS.DB_DATABASE),
     }
     if ENVS.DB_PORT:
-        connection_settings["port"] = int(ENVS.DB_PORT)
+        connection_settings["port"] = int(ENVS.DB_PORT)  # type: ignore [call-overload]
