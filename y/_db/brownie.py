@@ -185,4 +185,5 @@ async def _get_deployment(
 
 
 async def __fetch_source_for_hash(hashval: str) -> Any:
-    return (await fetchone("SELECT source FROM sources WHERE hash=?", hashval))[0]
+    row = await fetchone("SELECT source FROM sources WHERE hash=?", hashval)
+    return cast(Tuple[Any, ...], row)[0]
