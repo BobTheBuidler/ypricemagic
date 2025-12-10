@@ -15,7 +15,7 @@ HexBytes: Final = hexbytes.HexBytes
 to_checksum_address: Final = cchecksum.to_checksum_address
 
 
-@lru_cache(maxsize=int(ENVS.CHECKSUM_CACHE_MAXSIZE))  # type: ignore [call-overload]
+@lru_cache(maxsize=int(ENVS.CHECKSUM_CACHE_MAXSIZE))  # type: ignore [has-type]
 def checksum(address: AnyAddress) -> ChecksumAddress:
     """Convert an address to its checksummed format.
 
