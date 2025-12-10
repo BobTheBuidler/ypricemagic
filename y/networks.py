@@ -140,7 +140,7 @@ class Network(IntEnum):
             return "BERA"
 
     @staticmethod
-    def name(chain_id: Optional[int] = None) -> str:
+    def name(chain_id: Optional[int] = None) -> str:  # type: ignore [override]
         """
         Get the full name of a network for a given chain ID.
 
@@ -195,6 +195,7 @@ class Network(IntEnum):
             return "Katana"
         elif chain_id == Network.Berachain:
             return "Berachain"
+        raise ValueError(f"{chain_id} is not a known chainid")
 
     @staticmethod
     def printable(chain_id: Optional[int] = None) -> str:
