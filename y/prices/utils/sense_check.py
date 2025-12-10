@@ -207,7 +207,9 @@ ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operato
         "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b",  # tbtc
         "0xcb327b99ff831bf8223cced12b1338ff3aa322ff",  # bsdETH
     },
-}.get(CHAINID, set()) | acceptable_all_chains
+}.get(
+    CHAINID, set()
+) | acceptable_all_chains
 """
 List of tokens addresses for which high prices are acceptable.
 Nothing will be logged for tokens in this list.
