@@ -138,6 +138,7 @@ class Network(IntEnum):
             return "KATANA"
         elif chain_id == Network.Berachain:
             return "BERA"
+        raise ValueError(f"{chain_id} is not a known chainid")
 
     @staticmethod
     def name(chain_id: Optional[int] = None) -> str:  # type: ignore [override]
