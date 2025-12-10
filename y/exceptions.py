@@ -11,6 +11,7 @@ from y.datatypes import AnyAddressType
 
 if TYPE_CHECKING:
     from y.prices.dex.uniswap.v2 import UniswapV2Pool
+    from y.utils.logging import PriceLogger
 
 
 logger: Final = logging.getLogger(__name__)
@@ -67,7 +68,7 @@ class PriceError(Exception):
     Raised when a queried price is not found.
     """
 
-    def __init__(self, logger: logging.Logger, symbol: str):
+    def __init__(self, logger: "PriceLogger", symbol: str):
         super().__init__(f"No price found for {symbol} {logger.address} at block {logger.block}")
 
 
@@ -197,8 +198,8 @@ class NotAUniswapV2Pool(Exception):
     def __init__(self, non_pool: "UniswapV2Pool"):
         from y.prices.dex.uniswap.v2 import UniswapV2Pool
 
-        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[True].pop(non_pool.address, None)
-        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[False].pop(non_pool.address, None)
+        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[True].pop(non_pool.address, None)  # type: ignore [attr-defined]
+        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[False].pop(non_pool.address, None)  # type: ignore [attr-defined]
         super().__init__(non_pool.address)
 
 
