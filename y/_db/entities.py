@@ -81,7 +81,7 @@ class Block(DbEntity, _AsyncEntityMixin):
     chain = Required(Chain, reverse="blocks")
     number = Required(int, size=64)
     PrimaryKey(chain, number)
-    hash = Optional(int, lazy=True)  # this seems obviously wrong but nothigng is broken? 
+    hash = Optional(int, lazy=True)  # this seems obviously wrong but nothigng is broken?
     timestamp = Optional(datetime, lazy=True)
 
     composite_index(chain, hash)
