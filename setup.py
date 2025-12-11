@@ -25,6 +25,7 @@ try:
             "--pretty",
             "--install-types",
             "--follow-imports=silent",
+            "--disable-error-code=import-not-found",
         ],
         group_name="ypricemagic",
     )
