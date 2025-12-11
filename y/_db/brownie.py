@@ -186,10 +186,10 @@ async def _get_deployment(
 
     for k, v in path_map.items():
         val, source_key = v
+        all_source_paths[k] = source_key
         if source_key in skip_source_keys:
             continue
         sources[source_key] = await __fetch_source_for_hash(cast(HexStr, val))
-        all_source_paths[k] = source_key
 
     build_json["allSourcePaths"] = all_source_paths
     pc_map = cast(Optional[Dict[int | str, ProgramCounter]], build_json.get("pcMap"))
