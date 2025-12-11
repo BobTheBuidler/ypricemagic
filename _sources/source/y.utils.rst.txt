@@ -28,14 +28,6 @@ y.utils.client module
    :show-inheritance:
    :undoc-members:
 
-y.utils.dank\_mids module
--------------------------
-
-.. automodule:: y.utils.dank_mids
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 y.utils.events module
 ---------------------
 
