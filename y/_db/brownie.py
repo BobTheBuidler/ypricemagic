@@ -48,9 +48,6 @@ SourceKey = Literal[
     "type",
 ]
 
-# TODO: replace these with the typed dicts in brownie >=1.22]
-Sources = Dict[SourceKey, Any]
-
 
 SOURCE_KEYS: Final = (
     "address",
