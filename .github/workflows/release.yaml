@@ -98,7 +98,7 @@ jobs:
           python-version: "3.11"
 
       - name: Cache .mypy_cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .mypy_cache
           key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
