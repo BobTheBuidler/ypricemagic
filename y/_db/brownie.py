@@ -3,7 +3,19 @@ import json
 from asyncio import Lock
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Container, Dict, Final, List, Literal, Optional, Tuple, cast, final
+from typing import (
+    Any,
+    Callable,
+    Container,
+    Dict,
+    Final,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    cast,
+    final,
+)
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
