@@ -212,7 +212,7 @@ class Log(DbEntity):
 
     block = Required(Block, index=True, lazy=True)
     tx = Required(Hashes, index=True, lazy=True)
-    log_index = Required(int, size=16, lazy=True)
+    log_index = Required(int, lazy=True)
     PrimaryKey(block, tx, log_index)
 
     address = Required(Hashes, index=True, lazy=True)
