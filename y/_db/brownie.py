@@ -190,7 +190,7 @@ async def _get_deployment(
 
     build_json["allSourcePaths"] = all_source_paths
 
-    pc_map: Dict[int | str, ProgramCounter]]
+    pc_map: Dict[int | str, ProgramCounter]
     if pc_map := build_json.get("pcMap", {}):
         build_json["pcMap"] = {int(key): pc_map[key] for key in pc_map}
 
