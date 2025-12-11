@@ -189,7 +189,7 @@ async def _get_deployment(
         sources[source_key] = await __fetch_source_for_hash(cast(HexStr, val))
 
     build_json["allSourcePaths"] = all_source_paths
-    
+
     pc_map = cast(Optional[Dict[int | str, ProgramCounter]], build_json.get("pcMap"))
     if pc_map is not None:
         build_json["pcMap"] = {int(key): pc_map[key] for key in pc_map}
