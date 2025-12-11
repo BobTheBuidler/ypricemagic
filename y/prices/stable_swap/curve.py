@@ -471,10 +471,11 @@ class CurvePool(ERC20):
             factory = await self.__factory__
             source = factory or await curve.__registry__
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
-        except (ContractLogicError, ValueError, InsufficientDataBytes):
+        except (ContractLogicError, ValueError, InsufficientDataBytes, InvalidPointer):
             # ContractLogicError in web3>=6.0, ValueError in <6.0,
             # InsufficientDataBytes sometimes too, not sure why.
             # Potentially related to https://github.com/ethereum/eth-abi/pull/247
+            # update Dec 12 2025: looks like the InsufficientDataBytes now comes in the form InvalidPointer
 
             # fallback for historical queries where registry was not yet deployed
             balances = await a_sync.map(self._get_balance, range(len(coins)), block=block).values(
