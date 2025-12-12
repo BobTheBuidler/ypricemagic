@@ -14,6 +14,7 @@ from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from eth_typing import HexAddress
 from eth_utils.toolz import concat
+from faster_eth_abi.exceptions import DecodingError
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -233,13 +234,17 @@ class UniswapV2Pool(ERC20):
         if reserves is None and self._verified:
             # This shouldn't really run anymore, maybe delete
             contract = await Contract.coroutine(self.address)
+            getReserves = contract.getReserves
             try:
-                reserves = await contract.getReserves.coroutine(block_identifier=block)
-                types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
-                logger.warning(f"abi for getReserves for {contract} is {types}")
+                reserves = await getReserves.coroutine(block_identifier=block)
+            except DecodingError as e:
+                logger.warning("%s for getReserves for %s: %s", type(e), contract, e)
             except Exception as e:
                 if not call_reverted(e):
                     raise
+            else:
+                types = ",".join(output["type"] for output in getReserves.abi["outputs"])
+                logger.warning("abi for getReserves for %s is %s", contract, types)
 
         if reserves is None:
             return None
@@ -579,14 +584,20 @@ class UniswapRouterV2(ContractBase):
         # TODO figure out how to best handle uni forks with slight modifications.
         # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
         except Exception as e:
-            strings = [
-                "INSUFFICIENT_INPUT_AMOUNT",
-                "INSUFFICIENT_LIQUIDITY",
-                "INSUFFICIENT_OUT_LIQUIDITY",
-                "Sequence has incorrect length",
-            ]
-            if not call_reverted(e) and all(s not in str(e) for s in strings):
-                raise
+            if call_reverted(e):
+                return None
+            exc = str(e)
+            if any(
+                s in exc
+                for s in (
+                    "INSUFFICIENT_INPUT_AMOUNT",
+                    "INSUFFICIENT_LIQUIDITY",
+                    "INSUFFICIENT_OUT_LIQUIDITY",
+                    "Sequence has incorrect length",
+                )
+            ):
+                return None
+            raise
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
