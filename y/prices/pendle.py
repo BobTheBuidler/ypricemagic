@@ -37,8 +37,11 @@ async def is_pendle_lp(token: Address) -> bool:
         >>> print(is_pendle)
         True
     """
-    return PENDLE_ORACLE is not None and await has_method(
-        token, "readTokens()(address,address,address)", sync=False
+    return (
+        PENDLE_ORACLE is not None
+        # idk why this token is giving a false positive, but it is, at least sometimes
+        and token != "0x00e8Eb340f8AF587EEA6200D2081E31dC87285ac"
+        and await has_method(token, "readTokens()(address,address,address)", sync=False)
     )
 
 
