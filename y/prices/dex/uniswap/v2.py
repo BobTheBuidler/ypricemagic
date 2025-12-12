@@ -234,15 +234,18 @@ class UniswapV2Pool(ERC20):
         if reserves is None and self._verified:
             # This shouldn't really run anymore, maybe delete
             contract = await Contract.coroutine(self.address)
+            getReserves = contract.getReserves
             try:
-                reserves = await contract.getReserves.coroutine(block_identifier=block)
-                types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
-                logger.warning("abi for getReserves for %s is %s", contract, types)
+                reserves = await getReserves.coroutine(block_identifier=block)
             except DecodingError as e:
                 logger.warning("%s for getReserves for %s: %s", type(e), contract, e)
             except Exception as e:
                 if not call_reverted(e):
                     raise
+            else:
+                abi = getReserves.abi
+                types = ",".join(output["type"] for output in abi["outputs"])
+                logger.warning("abi for getReserves for %s is %s", contract, types)
 
         if reserves is None:
             return None
@@ -382,9 +385,8 @@ class UniswapV2Pool(ERC20):
             return
         try:
             contract = await Contract.coroutine(self.address)
-            reserves_types = ",".join(
-                output["type"] for output in contract.getReserves.abi["outputs"]
-            )
+            abi = contract.getReserves.abi
+            reserves_types = ",".join(output["type"] for output in abi["outputs"])
             self._verified = True
             assert reserves_types.count(",") == 2, reserves_types
             self.get_reserves = Call(self.address, f"getReserves()(({reserves_types}))").coroutine
@@ -582,14 +584,19 @@ class UniswapRouterV2(ContractBase):
         # TODO figure out how to best handle uni forks with slight modifications.
         # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
         except Exception as e:
-            strings = [
-                "INSUFFICIENT_INPUT_AMOUNT",
-                "INSUFFICIENT_LIQUIDITY",
-                "INSUFFICIENT_OUT_LIQUIDITY",
-                "Sequence has incorrect length",
-            ]
-            if not call_reverted(e) and all(s not in str(e) for s in strings):
-                raise
+            if call_reverted(e):
+                return None
+            exc = str(e)
+            if any(
+                s in exc for s in (
+                    "INSUFFICIENT_INPUT_AMOUNT",
+                    "INSUFFICIENT_LIQUIDITY",
+                    "INSUFFICIENT_OUT_LIQUIDITY",
+                    "Sequence has incorrect length",
+                )
+            ):
+                return None
+            raise
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
