@@ -243,8 +243,7 @@ class UniswapV2Pool(ERC20):
                 if not call_reverted(e):
                     raise
             else:
-                abi = getReserves.abi
-                types = ",".join(output["type"] for output in abi["outputs"])
+                types = ",".join(output["type"] for output in getReserves.abi["outputs"])
                 logger.warning("abi for getReserves for %s is %s", contract, types)
 
         if reserves is None:
@@ -385,8 +384,7 @@ class UniswapV2Pool(ERC20):
             return
         try:
             contract = await Contract.coroutine(self.address)
-            abi = contract.getReserves.abi
-            reserves_types = ",".join(output["type"] for output in abi["outputs"])
+            reserves_types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
             self._verified = True
             assert reserves_types.count(",") == 2, reserves_types
             self.get_reserves = Call(self.address, f"getReserves()(({reserves_types}))").coroutine
