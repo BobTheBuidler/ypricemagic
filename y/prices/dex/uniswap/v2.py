@@ -14,6 +14,7 @@ from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from eth_typing import HexAddress
 from eth_utils.toolz import concat
+from faster_eth_abi.exceptions import DecodingError
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -238,7 +239,7 @@ class UniswapV2Pool(ERC20):
                 types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
                 logger.warning("abi for getReserves for %s is %s", contract, types)
             except DecodingError as e:
-                logger.warning("%s for getReserves for %s is %s: %s", type(e), contract, types, e)
+                logger.warning("%s for getReserves for %s: %s", type(e), contract, e)
             except Exception as e:
                 if not call_reverted(e):
                     raise
