@@ -384,7 +384,9 @@ class UniswapV2Pool(ERC20):
             return
         try:
             contract = await Contract.coroutine(self.address)
-            reserves_types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
+            reserves_types = ",".join(
+                output["type"] for output in contract.getReserves.abi["outputs"]
+            )
             self._verified = True
             assert reserves_types.count(",") == 2, reserves_types
             self.get_reserves = Call(self.address, f"getReserves()(({reserves_types}))").coroutine
