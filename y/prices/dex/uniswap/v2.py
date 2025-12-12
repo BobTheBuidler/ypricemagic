@@ -236,7 +236,9 @@ class UniswapV2Pool(ERC20):
             try:
                 reserves = await contract.getReserves.coroutine(block_identifier=block)
                 types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
-                logger.warning(f"abi for getReserves for {contract} is {types}")
+                logger.warning("abi for getReserves for %s is %s", contract, types)
+            except DecodingError as e:
+                logger.warning("%s for getReserves for %s is %s: %s", type(e), contract, types, e)
             except Exception as e:
                 if not call_reverted(e):
                     raise
