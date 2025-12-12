@@ -588,7 +588,8 @@ class UniswapRouterV2(ContractBase):
                 return None
             exc = str(e)
             if any(
-                s in exc for s in (
+                s in exc
+                for s in (
                     "INSUFFICIENT_INPUT_AMOUNT",
                     "INSUFFICIENT_LIQUIDITY",
                     "INSUFFICIENT_OUT_LIQUIDITY",
