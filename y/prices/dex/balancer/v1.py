@@ -9,6 +9,7 @@ from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import VirtualMachineError
+from eth_abi.exceptions import InvalidPointer
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
@@ -311,7 +312,7 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
             1000
         """
         amount_in = await ERC20._get_scale_for(token_in) * scale
-        with suppress(ValueError, VirtualMachineError, ContractLogicError):
+        try:
             # across various dep versions we get these various excs
             view_split_exact_in = await self.exchange_proxy.viewSplitExactIn.coroutine(
                 token_in,
@@ -321,6 +322,8 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
                 block_identifier=block,
             )
             return view_split_exact_in["totalOutput"]
+        except (ValueError, VirtualMachineError, ContractLogicError, InvalidPointer):
+            return None
 
     @stuck_coro_debugger
     async def get_some_output(
