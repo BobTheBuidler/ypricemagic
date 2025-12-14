@@ -14,6 +14,7 @@ from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound, EventLookupError
 from brownie.network.event import _EventItem
+from dank_mids.exceptions import Revert
 from eth_abi.exceptions import InsufficientDataBytes, InvalidPointer
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -333,9 +334,11 @@ class CurvePool(ERC20):
 
         try:
             coins = await lookup_contract.get_coins.coroutine(self.address)
-        except InvalidPointer:
+        except (InvalidPointer, Revert):
             # I'm not sure if this means the pool was shut down (can that even happen?) or if the pool
             # is not in registry and the Exception is now handled differently by some dependency.
+            # NOTE: I originally added this for InvalidPointer but sometimes I get Revert?
+            # TODO: This implies odd handling somewhere in the stack which needs to be debugged
             logger.warning(
                 "InvalidPointer error when calling get_coins(pool) "
                 "on %s for pool %s. TODO give this func a block_id param.",
