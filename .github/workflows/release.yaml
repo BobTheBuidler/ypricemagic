@@ -5,6 +5,11 @@ on:
     branches:
       - master
     types: [published]
+  workflow_dispatch:
+    inputs:
+      fake_tag:
+        description: 'Fake tag name to use for dry run (e.g. v2.3.4)'
+        required: true
 
 jobs:
   build_wheels:
@@ -42,15 +47,6 @@ jobs:
             artifact_name: "wheels-ubuntu-latest-musllinux-x64"
 
           # ----------------------------------------------------
-          # musllinux 32-bit
-          # ----------------------------------------------------
-          - os: ubuntu-latest
-            build_type: musllinux-x86
-            cibw_build: "*musllinux*"
-            cibw_archs_linux: i686
-            artifact_name: "wheels-ubuntu-latest-musllinux-x86"
-
-          # ----------------------------------------------------
           # macOS (64-bit only)
           # ----------------------------------------------------
           - os: macos-latest
@@ -79,14 +75,33 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
+      # ----------------------------------------------------
+      # Extract version from git tag or use fake tag for dry run (strip leading 'v')
+      # ----------------------------------------------------
+      - name: Extract version from tag
+        id: get_version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=$(echo '${{ github.event.inputs.fake_tag }}' | sed 's/^v//')" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+
+      - name: Cache .mypy_cache
+        uses: actions/cache@v5
+        with:
+          path: .mypy_cache
+          key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
 
       - name: Install cibuildwheel
         run: |
@@ -102,11 +117,15 @@ jobs:
           CIBW_ARCHS_WINDOWS: ${{ matrix.cibw_archs_windows || '' }}
           # Which wheels to build for Linux (manylinux vs. musllinux)
           CIBW_BUILD: ${{ matrix.cibw_build || '' }}
+          # Use version from git tag (stripped 'v')
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.get_version.outputs.version }}
+          # Pass version into Docker for Linux builds
+          CIBW_ENVIRONMENT: "SETUPTOOLS_SCM_PRETEND_VERSION=${{ steps.get_version.outputs.version }}"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.artifact_name }}
           path: wheelhouse/*.whl
@@ -117,21 +136,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
+      # ----------------------------------------------------
+      # Extract version from git tag or use fake tag for dry run (strip leading 'v')
+      # ----------------------------------------------------
+      - name: Extract version from tag
+        id: get_version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=$(echo '${{ github.event.inputs.fake_tag }}' | sed 's/^v//')" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools wheel twine mypy[mypyc] types-cachetools types-python-dateutil types-requests
+          pip install setuptools wheel twine mypy[mypyc] pony-stubs types-cachetools types-python-dateutil types-requests
 
       - name: Build sdist
+        env:
+          # Use version from git tag (stripped 'v')
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.get_version.outputs.version }}
         run: |
           python setup.py sdist
 
@@ -139,51 +174,46 @@ jobs:
       # Download wheels built on each runner
       # ----------------------------------------------------
       - name: Download manylinux 64-bit wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: "wheels-ubuntu-latest-manylinux-x64"
           path: wheelhouse/linux-many-x64
 
       - name: Download manylinux 32-bit wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: "wheels-ubuntu-latest-manylinux-x86"
           path: wheelhouse/linux-many-x86
 
       - name: Download musllinux 64-bit wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: "wheels-ubuntu-latest-musllinux-x64"
           path: wheelhouse/linux-musl-x64
 
-      - name: Download musllinux 32-bit wheels
-        uses: actions/download-artifact@v4
-        with:
-          name: "wheels-ubuntu-latest-musllinux-x86"
-          path: wheelhouse/linux-musl-x86
-
       - name: Download macOS wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: "wheels-macos-latest"
           path: wheelhouse/macos
 
       - name: Download Windows 64-bit wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: "wheels-windows-latest-x64"
           path: wheelhouse/windows-x64
 
       - name: Download Windows 32-bit wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: "wheels-windows-latest-x86"
           path: wheelhouse/windows-x86
 
       # ----------------------------------------------------
-      # Publish all built artifacts to PyPI
+      # Publish sdist and wheels to PyPI
       # ----------------------------------------------------
       - name: Publish sdist and wheels to PyPI
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -193,7 +223,6 @@ jobs:
             wheelhouse/linux-many-x64/*.whl \
             wheelhouse/linux-many-x86/*.whl \
             wheelhouse/linux-musl-x64/*.whl \
-            wheelhouse/linux-musl-x86/*.whl \
             wheelhouse/macos/*.whl \
             wheelhouse/windows-x64/*.whl \
             wheelhouse/windows-x86/*.whl

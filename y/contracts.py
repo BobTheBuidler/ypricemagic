@@ -15,6 +15,7 @@ from typing import (
     Optional,
     Tuple,
     Union,
+    overload,
 )
 from urllib.parse import urlparse
 
@@ -176,16 +177,20 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             else:
                 lo = mid
         except ValueError as e:
-            if "missing trie node" in str(e) and not warned:
+            err = str(e)
+            if "missing trie node" in err and not warned:
                 logger.warning(
                     "missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node."
                 )
-            elif "Server error: account aurora does not exist while viewing" in str(e):
+            elif "Server error: account aurora does not exist while viewing" in err:
                 if not warned:
-                    logger.warning(str(e))
-            elif "No state available for block" in str(e):
+                    logger.warning(err)
+            elif (
+                "No state available for block" in err
+                or "Unknown state. First available state is" in err
+            ):
                 if not warned:
-                    logger.warning(str(e))
+                    logger.warning(err)
             else:
                 raise
             warned = True
@@ -214,7 +219,7 @@ def _get_code(address: str, block: int) -> HexBytes:
     return web3.eth.get_code(address, block)
 
 
-creation_block_semaphore = ThreadsafeSemaphore(32)
+creation_block_semaphore = ThreadsafeSemaphore(48)
 
 
 @a_sync(cache_type="memory")
@@ -268,17 +273,21 @@ async def contract_creation_block_async(
                 logger_debug("%s not yet deployed by block %s, checking higher", address, mid)
                 lo = mid
         except ValueError as e:
-            if "missing trie node" in str(e):
+            err = str(e)
+            if "missing trie node" in err:
                 if not warned:
                     logger.warning(
                         "missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node."
                     )
-            elif "Server error: account aurora does not exist while viewing" in str(e):
+            elif "Server error: account aurora does not exist while viewing" in err:
                 if not warned:
-                    logger.warning(str(e))
-            elif "No state available for block" in str(e):
+                    logger.warning(err)
+            elif (
+                "No state available for block" in err
+                or "Unknown state. First available state is" in err
+            ):
                 if not warned:
-                    logger.warning(str(e))
+                    logger.warning(err)
             else:
                 raise
             warned = True
@@ -760,6 +769,18 @@ def is_contract(address: AnyAddressType) -> bool:
     return web3.eth.get_code(address) not in ("0x", b"")
 
 
+@overload
+async def has_method(
+    address: Address, method: str, return_response: Literal[True]
+) -> Union[bool, Any]: ...
+
+
+@overload
+async def has_method(
+    address: Address, method: str, return_response: Literal[False] = False
+) -> bool: ...
+
+
 @a_sync(default="sync", cache_type="memory")
 async def has_method(
     address: Address, method: str, return_response: bool = False
@@ -781,12 +802,13 @@ async def has_method(
     try:
         response = await Call(address, [method])
         return False if response is None else response if return_response else True
+    except ContractLogicError:
+        return False
     except Exception as e:
-        if not return_response and (
-            isinstance(e, ContractLogicError)
-            or call_reverted(e)
-            or any(err in str(e) for err in ("invalid jump destination", "EVM error: InvalidJump"))
-        ):
+        if call_reverted(e):
+            return False
+        stre = str(e)
+        if any(err in stre for err in ("invalid jump destination", "EVM error: InvalidJump")):
             return False
         raise
 
@@ -1014,9 +1036,9 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     # Just leave this code where it is for a helpful debugger as needed.
     if address == "":
         raise Exception(
-            f"""implementation: {implementation}
-            implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967}
-            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822}"""
+            f"""implementation: {implementation!r}
+            implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967!r}
+            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}"""
         )
 
     if len(implementation_eip1967) > 0 and int(implementation_eip1967.hex(), 16):
@@ -1216,9 +1238,9 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
     # Just leave this code where it is for a helpful debugger as needed.
     if address == "":
         raise Exception(
-            f"""implementation: {implementation}
-            implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967}
-            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822}"""
+            f"""implementation: {implementation!r}
+            implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967!r}
+            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}"""
         )
 
     if len(implementation_eip1967) > 0 and int(implementation_eip1967.hex(), 16):

@@ -4,11 +4,11 @@ PyMODINIT_FUNC
 PyInit_sense_check(void)
 {
     PyObject *tmp;
-    if (!(tmp = PyImport_ImportModule("839fc216801717d47e67__mypyc"))) return NULL;
+    if (!(tmp = PyImport_ImportModule("ypricemagic__mypyc"))) return NULL;
     PyObject *capsule = PyObject_GetAttrString(tmp, "init_y___prices___utils___sense_check");
     Py_DECREF(tmp);
     if (capsule == NULL) return NULL;
-    void *init_func = PyCapsule_GetPointer(capsule, "839fc216801717d47e67__mypyc.init_y___prices___utils___sense_check");
+    void *init_func = PyCapsule_GetPointer(capsule, "ypricemagic__mypyc.init_y___prices___utils___sense_check");
     Py_DECREF(capsule);
     if (!init_func) {
         return NULL;

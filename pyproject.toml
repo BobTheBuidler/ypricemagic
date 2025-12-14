@@ -2,12 +2,18 @@
 requires = [
   "setuptools",
   "wheel",
-  "mypy[mypyc]==1.17.0",
+  "mypy[mypyc]==1.19.0",
+  "pony-stubs==0.5.2",
   "types-python-dateutil",
   "types-cachetools",
   "types-requests",
-  "faster-eth-abi>=5.2.1,<6",
-  "eth-typing==4.4.0",
+  "aiosqlite==0.22.0",
+  "dank-mids==4.20.177; platform_system == 'MacOS' or (platform_system == 'Linux' and platform_machine != 'i686')",
+  "eth-brownie==1.22.0.dev0; platform_system == 'Linux' and platform_machine != 'i686'",
+  "eth-retry==0.3.5",
+  "eth-typing==5.2.1",
+  "ez-a-sync==0.33.6",
+  "faster-eth-abi>=5.2.12,<6",
 ]
 
 [tool.black]

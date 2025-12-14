@@ -10,39 +10,76 @@ permissions:
   contents: write
   id-token: write
   pages: write
-  
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  build-wheel:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.mypycify.outputs.artifact-name }}
+    steps:
+      - name: Checkout code
+        id: checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+        continue-on-error: true
+
+      - name: Branch no longer exists on GitHub
+        if: failure() && steps.checkout.outcome == 'failure'
+        run: |
+          echo "The branch ${{ github.head_ref }} no longer exists on GitHub"
+          exit 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Mypycify
+        id: mypycify
+        uses: BobTheBuidler/mypycify@v0.2.4
+        with:
+          python-version: "3.12"
+          hash-key: |
+            pyproject.toml
+            setup.py
+            ypricemagic/**/*.py
+          pip-cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
+
   build-and-deploy:
+    needs: build-wheel
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
-      - name: Install dependencies
-        run: |
-          pip install wheel
-          pip install --no-build-isolation "Cython<3" "pyyaml==5.4.1"
-          pip install -r requirements.txt
-          pip install sphinx sphinx-rtd-theme
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build-wheel.outputs.artifact-name }}
+          path: dist
+
+      - name: Install wheel and docs dependencies
+        run: pip install $(find dist -name '*.whl' -print -quit) sphinx sphinx-rtd-theme
 
       - name: Setup brownie networks
         run: |
           brownie networks modify mainnet host=${{ secrets.WEB3_PROVIDER }}
         continue-on-error: true
-        
+
       - name: Build documentation config
-        run: |
-          pip install .
-          make docs
+        run: make docs
 
       - name: Build documentation
         run: |
@@ -51,25 +88,25 @@ jobs:
         continue-on-error: true
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          
+
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: gh-pages
-          
+
       - name: Setup Pages
-        uses: actions/configure-pages@v4
-        
+        uses: actions/configure-pages@v5
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           # Upload entire repository
           path: '.'
-          
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

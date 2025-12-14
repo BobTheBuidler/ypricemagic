@@ -16,6 +16,7 @@ from typing import Final, Optional, Set, Union
 import a_sync
 from eth_typing import BlockNumber, ChecksumAddress
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.constants import CHAINID, NETWORK_NAME, wbtc, weth
 from y.contracts import Contract
@@ -29,6 +30,14 @@ from y.prices.yearn import YearnInspiredVault
 
 logger: Final = logging.getLogger(__name__)
 
+# Add file handler to logger if SENSE_CHECK_FILE is set
+if ENVS.SENSE_CHECK_FILE:
+    file_handler = logging.FileHandler(str(ENVS.SENSE_CHECK_FILE), mode="a", encoding="utf-8")
+    file_handler.setLevel(logging.WARNING)
+    formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+    file_handler.setFormatter(formatter)
+
+
 # This module is far from perfect, but provides an acceptable way to validate some of the prices returned by `get_price`
 
 acceptable_all_chains: Final[Set[ChecksumAddress]] = {
@@ -36,7 +45,7 @@ acceptable_all_chains: Final[Set[ChecksumAddress]] = {
     wbtc.address,
 }
 
-ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operator, assignment]
+ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operator, assignment, call-overload]
     Network.Mainnet: {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
@@ -132,6 +141,7 @@ ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operato
         "0x2889302a794dA87fBF1D6Db415C1492194663D13",  # crvCRVUSDTBTCWSTETH
         "0xBfAb6FA95E0091ed66058ad493189D2cB29385E6",  # ETHwBETHCRV
         "0x8a4f252812dFF2A8636E4F7EB249d8FC2E3bd77f",  # BTCGHOETH
+        "0xa1d65E8fB6e87b60FECCBc582F7f97804B725521",  # DXD
         # nfts
         "0x641927E970222B10b2E8CDBC96b1B4F427316f16",  # meeb
         "0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5",  # punk
@@ -197,7 +207,9 @@ ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operato
         "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b",  # tbtc
         "0xcb327b99ff831bf8223cced12b1338ff3aa322ff",  # bsdETH
     },
-}.get(CHAINID, set()) | acceptable_all_chains
+}.get(
+    CHAINID, set()
+) | acceptable_all_chains
 """
 List of tokens addresses for which high prices are acceptable.
 Nothing will be logged for tokens in this list.
@@ -249,13 +261,13 @@ async def sense_check(
     price_readable = round(price, 4)
     try:
         symbol = await ERC20(token_address, asynchronous=True).symbol  # type: ignore [call-overload]
-        logger.warning(
-            f"unusually high price (${price_readable}) returned for {symbol} {token_address} on {NETWORK_NAME} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
-        )
+        msg = f"unusually high price (${price_readable}) returned for {symbol} {token_address} on {NETWORK_NAME} block {block}."
     except NonStandardERC20:
-        logger.warning(
-            f"unusually high price (${price_readable}) returned for {token_address} on {NETWORK_NAME} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
-        )
+        msg = f"unusually high price (${price_readable}) returned for {token_address} on {NETWORK_NAME} block {block}."
+
+    logger.warning(
+        f"{msg} This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
+    )
 
 
 # yLazyLogger(logger)

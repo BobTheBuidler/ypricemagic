@@ -1,7 +1,7 @@
 import logging
 import time
 from functools import lru_cache, wraps
-from typing import Callable, Final, Iterable, TypeVar
+from typing import Callable, Final, Iterable, Sized, TypeVar
 from typing_extensions import ParamSpec
 
 from a_sync import PruningThreadPoolExecutor, a_sync
@@ -20,6 +20,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 
 
 _T = TypeVar("_T")
+_S = TypeVar("_S", bound=Sized)
 _P = ParamSpec("_P")
 
 DEBUG: Final = logging.DEBUG
@@ -72,8 +73,11 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                 log = log_warning if sleep > 1 else log_debug
                 stre = str(e)
                 log("%s.%s got %s: %s", callable.__module__, callable.__name__, type(e), stre)
-                if "database is locked" not in stre:
+
+                # Raise if we got some error unrelated to locking
+                if not ("database is locked" in stre or "deadlock detected" in stre):
                     raise
+
                 time.sleep(sleep)
                 sleep *= 1.5
             except TransactionError as e:
@@ -126,7 +130,7 @@ _CHAIN_INFO: Final = "chain", chain.id
 
 def log_result_count(
     name: str, arg_names: Iterable[str] = []
-) -> Callable[[Callable[_P, _T]], Callable[_P, _T]]:
+) -> Callable[[Callable[_P, _S]], Callable[_P, _S]]:
     """Logs the number of results returned by a function.
 
     This decorator logs the number of results returned by a function at the DEBUG level,
@@ -148,9 +152,9 @@ def log_result_count(
         - :mod:`logging`
     """
 
-    def result_count_deco(fn: Callable[_P, _T]) -> Callable[_P, _T]:
+    def result_count_deco(fn: Callable[_P, _S]) -> Callable[_P, _S]:
         @wraps(fn)
-        def result_count_wrap(*args: _P.args, **kwargs: _P.kwargs) -> _T:
+        def result_count_wrap(*args: _P.args, **kwargs: _P.kwargs) -> _S:
             results = fn(*args, **kwargs)
             if _result_count_logger_is_enabled_for(DEBUG):
                 arg_values = " ".join(f"{k} {v}" for k, v in (_CHAIN_INFO, *zip(arg_names, args)))

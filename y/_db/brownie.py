@@ -2,13 +2,14 @@ import hashlib
 import json
 from asyncio import Lock
 from pathlib import Path
-from typing import Any, Callable, Container, Dict, Final, Literal, Optional, Tuple, final
+from typing import Any, Callable, Container, Dict, Final, Literal, Optional, Tuple, cast, final
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
+from aiosqlite.context import Result
 from brownie._config import CONFIG, _get_data_folder
 from brownie.exceptions import BrownieEnvironmentError
-from brownie.network.contract import _resolve_address
+from brownie.network.contract import _resolve_address  # type: ignore [attr-defined]
 from brownie.project.build import DEPLOYMENT_KEYS
 from functools import lru_cache
 from sqlite3 import InterfaceError, OperationalError
@@ -92,7 +93,7 @@ class AsyncCursor:
         self._filename: Final = filename
         self._db: Optional[aiosqlite.Connection] = None
         self._connected: bool = False
-        self._execute: Optional[Callable[..., aiosqlite.Cursor]] = None
+        self._execute: Optional[Callable[..., Result[aiosqlite.Cursor]]] = None
 
     async def connect(self) -> None:
         """Establish an async connection to the SQLite database"""
@@ -125,7 +126,8 @@ class AsyncCursor:
         if self._db is None:
             await self.connect()
         async with sqlite_lock:
-            async with self._execute(cmd, args) as cursor:
+            execute = cast(Callable[..., Result[aiosqlite.Cursor]], self._execute)
+            async with execute(cmd, args) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     return None
@@ -148,7 +150,7 @@ def _get_select_statement() -> str:
 async def _get_deployment(
     address: Optional[str] = None,
     alias: Optional[str] = None,
-    skip_source_keys: Container[SourceKey] = DISCARD_SOURCE_KEYS,
+    skip_source_keys: Container[SourceKey] = cast(Container[SourceKey], DISCARD_SOURCE_KEYS),
 ) -> Tuple[Optional[BuildJson], Optional[Sources]]:
     if address and alias:
         raise ValueError("Passed both params address and alias, should be only one!")
@@ -166,7 +168,7 @@ async def _get_deployment(
         return None, None
 
     build_json = dict(zip(SOURCE_KEYS, row))
-    path_map: dict = build_json.pop("paths")
+    path_map: dict = build_json.pop("paths")  # type: ignore [type-arg]
 
     sources = {
         source_key: await __fetch_source_for_hash(val)
@@ -175,7 +177,7 @@ async def _get_deployment(
     }
 
     build_json["allSourcePaths"] = {k: v[1] for k, v in path_map.items()}
-    pc_map: Optional[dict] = build_json.get("pcMap")
+    pc_map: Optional[dict] = build_json.get("pcMap")  # type: ignore [type-arg]
     if pc_map is not None:
         build_json["pcMap"] = {int(key): pc_map[key] for key in pc_map}
 
@@ -183,4 +185,5 @@ async def _get_deployment(
 
 
 async def __fetch_source_for_hash(hashval: str) -> Any:
-    return (await fetchone("SELECT source FROM sources WHERE hash=?", hashval))[0]
+    row = await fetchone("SELECT source FROM sources WHERE hash=?", hashval)
+    return cast(Tuple[Any, ...], row)[0]

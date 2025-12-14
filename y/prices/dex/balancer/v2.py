@@ -22,6 +22,7 @@ from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import _EventItem
+from eth_abi.exceptions import InvalidPointer
 from hexbytes import HexBytes
 from multicall import Call
 from typing_extensions import Self
@@ -57,6 +58,9 @@ BALANCER_V2_VAULTS = {
     ],
     Network.Base: [
         "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+    ],
+    Network.Berachain: [
+        "0x4Be03f781C497A489E3cB0287833452cA9B9E80B",  # BEX Exchange https://docs.bex.berachain.com/developers/
     ],
 }.get(CHAINID, [])
 
@@ -196,7 +200,10 @@ class BalancerV2Vault(ContractBase):
             >>> tokens, balances = await vault.get_pool_tokens(pool_id)
         """
         contract = await contracts.Contract.coroutine(self.address)
-        return await contract.getPoolTokens.coroutine(pool_id, block_identifier=block)
+        try:
+            return await contract.getPoolTokens.coroutine(pool_id, block_identifier=block)
+        except InvalidPointer:
+            return (), (), None
 
     @a_sync_ttl_cache
     @stuck_coro_debugger
@@ -722,8 +729,6 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
                 token_address, block, skip_cache=skip_cache, sync=False
             )
 
-    # NOTE: we need a tiny semaphore here because balancer is super arduous and every unpricable token must pass thru this section
-    @a_sync.Semaphore(10)
     @stuck_coro_debugger
     async def deepest_pool_for(
         self, token_address: Address, block: Optional[Block] = None

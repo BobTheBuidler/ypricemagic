@@ -4,6 +4,7 @@ from typing import Callable, Final, List, Optional, final
 import a_sync
 from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
+from brownie import ZERO_ADDRESS
 from eth_typing import ChecksumAddress, HexStr
 from faster_eth_abi import encode
 from multicall import Call
@@ -69,8 +70,8 @@ class Synthetix(a_sync.ASyncGenericSingleton):
 
     __address_resolver__: HiddenMethodDescriptor[Self, Contract]
 
-    @a_sync.a_sync(ram_cache_maxsize=256)
-    async def get_address(self, name: str, block: Block = None) -> Contract:
+    @a_sync.a_sync(ram_cache_maxsize=512)
+    async def get_address(self, name: str, block: Block = None) -> Optional[Contract]:
         """Get contract from Synthetix registry.
 
         Args:
@@ -93,12 +94,14 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         address = await address_resolver.getAddress.coroutine(
             encode_bytes(name), block_identifier=block
         )
+        if address == ZERO_ADDRESS:
+            return None
         proxy = await Contract.coroutine(address)
-        return (
-            await Contract.coroutine(await proxy.target.coroutine(block_identifier=block))
-            if hasattr(proxy, "target")
-            else proxy
-        )
+        target_contract_meth = getattr(proxy, "target", None)
+        if target_contract_meth is None:
+            return proxy
+        target = await target_contract_meth.coroutine(block_identifier=block)
+        return await Contract.coroutine(target)
 
     @a_sync.aka.cached_property
     async def synths(self) -> List[ChecksumAddress]:
@@ -212,7 +215,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             self.get_address("ExchangeRates", block=block, sync=False),
             self.get_currency_key(token, sync=False),
         )
-        if await rates.rateIsStale.coroutine(key, block_identifier=block):
+        if rates is None or await rates.rateIsStale.coroutine(key, block_identifier=block):
             return None
         try:
             return UsdPrice(

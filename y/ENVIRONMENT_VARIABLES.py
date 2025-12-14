@@ -10,7 +10,7 @@ CACHE_TTL: Final = _envs.create_env("CACHE_TTL", int, default=60 * 60, verbose=F
 """TTL for various in-memory caches throughout the library"""
 
 CONTRACT_CACHE_TTL: Final = _envs.create_env(
-    "CONTRACT_CACHE_TTL", int, default=int(CACHE_TTL), verbose=False
+    "CONTRACT_CACHE_TTL", int, default=int(CACHE_TTL), verbose=False  # type: ignore [call-overload]
 )
 """TTL for contract cache, defaults to :obj:`CACHE_TTL` if not set"""
 
@@ -63,3 +63,7 @@ SKIP_CACHE: Final = _envs.create_env("SKIP_CACHE", bool, default=False, verbose=
 # ypriceapi
 SKIP_YPRICEAPI: Final = create_env("SKIP_YPRICEAPI", bool, default=False, verbose=False)
 """Flag to skip using ypriceapi"""
+
+# sense checker
+SENSE_CHECK_FILE: Final = _envs.create_env("SENSE_CHECK_FILE", str, default="", verbose=False)
+"""If set, sense checker will log all erroneous price messages to this file path using aiofiles."""

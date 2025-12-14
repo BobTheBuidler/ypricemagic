@@ -79,9 +79,9 @@ class Block(DbEntity, _AsyncEntityMixin):
     """Represents a block entity in the database."""
 
     chain = Required(Chain, reverse="blocks")
-    number = Required(int)
+    number = Required(int, size=64)
     PrimaryKey(chain, number)
-    hash = Optional(int, lazy=True)
+    hash = Optional(int, lazy=True)  # this seems obviously wrong but nothigng is broken?
     timestamp = Optional(datetime, lazy=True)
 
     composite_index(chain, hash)
@@ -126,7 +126,7 @@ class Token(Contract):
 
     symbol = Optional(str, lazy=True)
     name = Optional(str, lazy=True)
-    decimals = Optional(int, lazy=True)
+    decimals = Optional(int, size=16, lazy=True)
     bucket = Optional(str, index=True, lazy=True)
 
     if TYPE_CHECKING:
@@ -152,8 +152,8 @@ class TraceCacheInfo(DbEntity):
     to_addresses = Required(bytes, index=True)
     from_addresses = Required(bytes, index=True)
     PrimaryKey(chain, to_addresses, from_addresses)
-    cached_from = Required(int)
-    cached_thru = Required(int)
+    cached_from = Required(int, size=64)
+    cached_thru = Required(int, size=64)
 
 
 class LogCacheInfo(DbEntity):
@@ -163,8 +163,8 @@ class LogCacheInfo(DbEntity):
     address = Required(str, 42, index=True)
     topics = Required(bytes)
     PrimaryKey(chain, address, topics)
-    cached_from = Required(int)
-    cached_thru = Required(int)
+    cached_from = Required(int, size=64)
+    cached_thru = Required(int, size=64)
 
 
 class LogTopic(DbEntity):
@@ -211,8 +211,8 @@ class Log(DbEntity):
     """Represents a log entity in the database."""
 
     block = Required(Block, index=True, lazy=True)
-    tx = Required(Hashes, lazy=True)
-    log_index = Required(int, size=16, lazy=True)
+    tx = Required(Hashes, index=True, lazy=True)
+    log_index = Required(int, lazy=True)
     PrimaryKey(block, tx, log_index)
 
     address = Required(Hashes, index=True, lazy=True)
@@ -237,7 +237,7 @@ class Log(DbEntity):
 class Trace(DbEntity):
     """Represents a trace entity in the database."""
 
-    id = PrimaryKey(int, auto=True)
+    id = PrimaryKey(int, auto=True, size=64)
     block = Required(Block, index=True, lazy=True)
     hash = Required(str, 64, index=True, lazy=True)
     from_address = Required(str, 42, index=True, lazy=True)
@@ -251,7 +251,7 @@ class BlockAtTimestamp(DbEntity):
     chainid = Required(int)
     timestamp = Required(datetime)
     PrimaryKey(chainid, timestamp)
-    block = Required(int)
+    block = Required(int, size=64)
 
 
 __write_threads_submit = ydb_write_threads.submit
@@ -311,18 +311,20 @@ def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
                 e.args = *e.args, type, kwargs
                 raise
     except TransactionIntegrityError as e:
-        constraint_errs = (
-            "UNIQUE constraint failed",
-            "duplicate key value violates unique constraint",
-        )
-        if any(map((msg := str(e)).__contains__, constraint_errs)):
-            logger.debug("%s: %s %s", msg, type.__name__, kwargs)
-        else:
-            logger.debug(
-                "%s %s when inserting %s",
-                e.__class__.__name__,
-                str(e),
-                e,
-                type.__name__,
+        err = str(e)
+        if type.__name__ in err:
+            constraint_errs = (
+                "UNIQUE constraint failed",
+                "duplicate key value violates unique constraint",
             )
-            raise
+            if any(string in err for string in constraint_errs):
+                logger.debug("%s: %s %s", err, type.__name__, kwargs)
+                return None
+
+        logger.debug(
+            "%s %s when inserting %s",
+            e.__class__.__name__,
+            err,
+            type.__name__,
+        )
+        raise

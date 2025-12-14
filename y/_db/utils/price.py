@@ -9,15 +9,16 @@ from cachetools import TTLCache, cached
 from eth_typing import BlockNumber, ChecksumAddress
 from pony.orm import select
 
+import y._db.config as db_config
 from y import constants
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.asyncpg_pool import get_asyncpg_pool
 from y._db.decorators import a_sync_read_db_session, log_result_count, retry_locked
 from y._db.entities import Price, insert_nowait
+from y._db.utils.asyncpg import get_asyncpg_pool
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 from y.constants import CHAINID
-
 
 logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
@@ -119,6 +120,34 @@ async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decima
         logger.warning("asyncpg insert price failed: %s", e)
 
 
+async def asyncpg_set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> None:
+
+    await ensure_block(block, sync=False)
+    await ensure_token(address, sync=False)
+
+    pool = await get_asyncpg_pool()
+
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO price (block_chain, block_number, token_chain, token_address, price)
+            VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (block_chain, block_number, token_chain, token_address) DO UPDATE SET price = EXCLUDED.price
+            """,
+            CHAINID,
+            block,
+            CHAINID,
+            str(address),
+            Decimal(price),
+        )
+    _logger_debug("asyncpg inserted %s block %s price to ydb: %s", address, block, price)
+
+
+_set_price_func = (
+    asyncpg_set_price if db_config.connection_settings.get("provider") == "postgres" else _set_price
+)
+
+
 def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> None:
     """
     Set the price of a token at a specific block in the database.
@@ -143,7 +172,7 @@ def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> N
     """
 
 
-set_price = ProcessingQueue(_set_price, num_workers=50, return_data=False)
+set_price = ProcessingQueue(_set_price_func, num_workers=50, return_data=False)
 
 
 @cached(TTLCache(maxsize=1_000, ttl=5 * 60), lock=threading.Lock())

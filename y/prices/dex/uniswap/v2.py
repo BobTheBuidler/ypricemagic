@@ -14,6 +14,7 @@ from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from eth_typing import HexAddress
 from eth_utils.toolz import concat
+from faster_eth_abi.exceptions import DecodingError
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -145,7 +146,7 @@ class UniswapV2Pool(ERC20):
 
     @a_sync.aka.cached_property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
-        return await cgather(self.__token0__, self.__token1__)
+        return await self.__token0__, await self.__token1__
 
     __tokens__: HiddenMethodDescriptor[Self, Tuple[ERC20, ERC20]]
 
@@ -233,13 +234,17 @@ class UniswapV2Pool(ERC20):
         if reserves is None and self._verified:
             # This shouldn't really run anymore, maybe delete
             contract = await Contract.coroutine(self.address)
+            getReserves = contract.getReserves
             try:
-                reserves = await contract.getReserves.coroutine(block_identifier=block)
-                types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
-                logger.warning(f"abi for getReserves for {contract} is {types}")
+                reserves = await getReserves.coroutine(block_identifier=block)
+            except DecodingError as e:
+                logger.warning("%s for getReserves for %s: %s", type(e), contract, e)
             except Exception as e:
                 if not call_reverted(e):
                     raise
+            else:
+                types = ",".join(output["type"] for output in getReserves.abi["outputs"])
+                logger.warning("abi for getReserves for %s is %s", contract, types)
 
         if reserves is None:
             return None
@@ -304,9 +309,7 @@ class UniswapV2Pool(ERC20):
                 raise Exception("how did we get here?") from None
 
     @stuck_coro_debugger
-    @a_sync.a_sync(
-        ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60, semaphore=10_000
-    )  # lets try a semaphore here
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         """
         Check the liquidity of a specific token in the pool at a given block.
@@ -447,9 +450,6 @@ def _log_factory_helper_failure(e: Exception, token_address, block, _ignore_pool
     )
 
 
-_all_pools_semaphore = a_sync.Semaphore(10, name=f"{__name__}.UniswapRouterV2.all_pools_for")
-
-
 class UniswapRouterV2(ContractBase):
     def __init__(self, router_address: AnyAddressType, *, asynchronous: bool = False) -> None:
         super().__init__(router_address, asynchronous=asynchronous)
@@ -535,13 +535,11 @@ class UniswapRouterV2(ContractBase):
                 log_debug("deepest pool: %s", deepest_pool)
             paired_with = await deepest_pool.get_token_out(token_in, sync=False)
             path = [token_in, paired_with]
-            quote, out_scale = await cgather(
-                self.get_quote(amount_in, path, block=block, sync=False),
-                ERC20._get_scale_for(path[-1]),
-            )
+            quote = await self.get_quote(amount_in, path, block=block, sync=False)
             if debug_logs:
                 log_debug("quote: %s", quote)
             if quote is not None:
+                out_scale = await ERC20._get_scale_for(path[-1])
                 amount_out = Decimal(quote[-1]) / out_scale
                 fees = Decimal(0.997) ** (len(path) - 1)
                 amount_out /= fees
@@ -566,11 +564,9 @@ class UniswapRouterV2(ContractBase):
         fees = 0.997 ** (len(path) - 1)
         if debug_logs:
             log_debug("router: %s     path: %s", self.label, path)
-        quote, out_scale = await cgather(
-            self.get_quote(amount_in, path, block=block, sync=False),
-            ERC20._get_scale_for(path[-1]),
-        )
+        quote = await self.get_quote(amount_in, path, block=block, sync=False)
         if quote is not None:
+            out_scale = await ERC20._get_scale_for(path[-1])
             amount_out = quote[-1] / out_scale
             return UsdPrice(amount_out / fees)
 
@@ -588,14 +584,20 @@ class UniswapRouterV2(ContractBase):
         # TODO figure out how to best handle uni forks with slight modifications.
         # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
         except Exception as e:
-            strings = [
-                "INSUFFICIENT_INPUT_AMOUNT",
-                "INSUFFICIENT_LIQUIDITY",
-                "INSUFFICIENT_OUT_LIQUIDITY",
-                "Sequence has incorrect length",
-            ]
-            if not call_reverted(e) and all(s not in str(e) for s in strings):
-                raise
+            if call_reverted(e):
+                return None
+            exc = str(e)
+            if any(
+                s in exc
+                for s in (
+                    "INSUFFICIENT_INPUT_AMOUNT",
+                    "INSUFFICIENT_LIQUIDITY",
+                    "INSUFFICIENT_OUT_LIQUIDITY",
+                    "Sequence has incorrect length",
+                )
+            ):
+                return None
+            raise
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
@@ -638,7 +640,7 @@ class UniswapRouterV2(ContractBase):
     __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=None, semaphore=_all_pools_semaphore)
+    @a_sync.a_sync(ram_cache_maxsize=None)
     async def all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
         for i, pool in enumerate(await self.__pools__):

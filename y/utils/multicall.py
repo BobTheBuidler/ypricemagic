@@ -6,7 +6,7 @@ import a_sync
 import brownie
 import dank_mids
 from a_sync import igather
-from faster_eth_abi.exceptions import InsufficientDataBytes
+from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import CannotHandleRequest
 
@@ -36,6 +36,8 @@ MULTICALL2 = {
     Network.Cronos: "0x5e954f5972EC6BFc7dECd75779F10d848230345F",
     Network.Optimism: "0xcA11bde05977b3631167028862bE2a173976CA11",  # Multicall 3
     Network.Base: "0xcA11bde05977b3631167028862bE2a173976CA11",  # mc3
+    Network.Katana: "0xcA11bde05977b3631167028862bE2a173976CA11",
+    Network.Berachain: "0xcA11bde05977b3631167028862bE2a173976CA11",
 }.get(brownie.chain.id)
 
 multicall = None

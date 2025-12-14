@@ -76,6 +76,12 @@ class Network(IntEnum):
     Aurora = 1313161554
     """The Chain ID for Aurora"""
 
+    Katana = 747474
+    """The Chain ID for Katana"""
+
+    Berachain = 80094
+    """The Chain ID for Berachain"""
+
     @staticmethod
     def label(chain_id: Optional[int] = None) -> str:
         """
@@ -128,9 +134,14 @@ class Network(IntEnum):
             return "OPTI"
         elif chain_id == Network.Base:
             return "BASE"
+        elif chain_id == Network.Katana:
+            return "KATANA"
+        elif chain_id == Network.Berachain:
+            return "BERA"
+        raise ValueError(f"{chain_id} is not a known chainid")
 
     @staticmethod
-    def name(chain_id: Optional[int] = None) -> str:
+    def name(chain_id: Optional[int] = None) -> str:  # type: ignore [override]
         """
         Get the full name of a network for a given chain ID.
 
@@ -181,6 +192,11 @@ class Network(IntEnum):
             return "Optimism"
         elif chain_id == Network.Base:
             return "Base"
+        elif chain_id == Network.Katana:
+            return "Katana"
+        elif chain_id == Network.Berachain:
+            return "Berachain"
+        raise ValueError(f"{chain_id} is not a known chainid")
 
     @staticmethod
     def printable(chain_id: Optional[int] = None) -> str:
