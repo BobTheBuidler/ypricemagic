@@ -1,4 +1,4 @@
-aiosqlite==0.21.0
+aiosqlite==0.22.0
 asyncpg>=0.31,<0.32
 bobs_lazy_logging==0.0.4
 cchecksum>=0.0.3,<1
