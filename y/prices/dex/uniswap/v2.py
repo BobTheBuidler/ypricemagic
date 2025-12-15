@@ -219,6 +219,8 @@ class UniswapV2Pool(ERC20):
     ) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         try:
             reserves = await self.get_reserves(block_id=block)
+        except DecodingError:
+            reserves = None
         except Exception as e:
             if not call_reverted(e):
                 raise
