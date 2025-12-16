@@ -172,7 +172,7 @@ def _set_bucket(address: str, bucket: str) -> None:
     _logger_debug("updated %s bucket in ydb: %s", address, bucket)
 
 
-set_bucket = a_sync.ProcessingQueue(_set_bucket, num_workers=10, return_data=False)
+set_bucket = a_sync.ProcessingQueue(_set_bucket, num_workers=1, return_data=False)
 
 
 @a_sync_read_db_session
