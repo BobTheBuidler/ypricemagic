@@ -105,7 +105,7 @@ def set_deploy_block(address: str, deploy_block: int) -> None:
     """
 
 
-set_deploy_block = ProcessingQueue(_set_deploy_block, num_workers=10, return_data=False)
+set_deploy_block = ProcessingQueue(_set_deploy_block, num_workers=2, return_data=False)
 
 # startup caches
 
