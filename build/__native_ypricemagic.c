@@ -16522,7 +16522,7 @@ CPyL41: ;
     cpy_r_r126 = 24;
     goto CPyL46;
 CPyL45: ;
-    cpy_r_r126 = 8;
+    cpy_r_r126 = 4;
 CPyL46: ;
     cpy_r_r127 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'ydb read threads' */
     cpy_r_r128 = CPyStatic_decorators___globals;
@@ -16582,7 +16582,7 @@ CPyL52: ;
     cpy_r_r144 = 24;
     goto CPyL57;
 CPyL56: ;
-    cpy_r_r144 = 8;
+    cpy_r_r144 = 4;
 CPyL57: ;
     cpy_r_r145 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'ydb write threads' */
     cpy_r_r146 = CPyStatic_decorators___globals;
