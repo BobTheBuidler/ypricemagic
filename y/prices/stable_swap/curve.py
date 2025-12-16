@@ -334,14 +334,14 @@ class CurvePool(ERC20):
 
         try:
             coins = await lookup_contract.get_coins.coroutine(self.address)
-        except (InvalidPointer, Revert):
+        except (Revert, InsufficientDataBytes, InvalidPointer) as e:
             # I'm not sure if this means the pool was shut down (can that even happen?) or if the pool
             # is not in registry and the Exception is now handled differently by some dependency.
-            # NOTE: I originally added this for InvalidPointer but sometimes I get Revert?
+            # NOTE: I originally added this for InvalidPointer but sometimes I get Revert? (and now sometimes InsufficientDataBytes)
             # TODO: This implies odd handling somewhere in the stack which needs to be debugged
             logger.warning(
-                "InvalidPointer error when calling get_coins(pool) "
-                "on %s for pool %s. TODO give this func a block_id param.",
+                "%s error when calling get_coins(pool) on %s for pool %s. TODO give this func a block_id param.",
+                type(e).__name__,
                 lookup_contract.address,
                 self.address,
             )
@@ -428,10 +428,10 @@ class CurvePool(ERC20):
             else:
                 try:
                     coins = await factory.get_coins.coroutine(self.address)
-                except InvalidPointer:
+                except (InsufficientDataBytes, InvalidPointer) as e:
                     logger.warning(
-                        "InvalidPointer error when calling get_coins(pool) "
-                        "on factory %s with pool %s. TODO give this func a block_id param.",
+                        "%s error when calling get_coins(pool) on factory %s with pool %s. TODO give this func a block_id param.",
+                        type(e).__name__,
                         factory.address,
                         self.address,
                     )
