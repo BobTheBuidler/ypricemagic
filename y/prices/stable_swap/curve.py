@@ -800,8 +800,6 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                     # Send it to the waiters
                     for waiter in self._done._waiters:
                         waiter.set_exception(e)
-                # We've propagated the Exception, now delete the loader task so a new one can begin
-                del self._task
 
             elif e := t.exception():
                 # Send it to the waiters
