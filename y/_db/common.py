@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from asyncio import Task, create_task, get_event_loop, shield, sleep
+from asyncio import Task, TimeoutError, create_task, get_event_loop, shield, sleep
 from copy import copy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
@@ -616,8 +616,15 @@ class Filter(_DiskCachedMixin[T, C]):
 
         while True:
             if block is None or done_thru < block:
-                self._wakeup()
-                await self._lock.wait_for(done_thru + 1)
+                # TODO: extract this block to a helper method
+                while True:
+                    self._wakeup()
+                    try:
+                        await wait_for(self._lock.wait_for(done_thru + 1), 60)
+                    except TimeoutError:
+                        pass
+                    else:
+                        break
             if self._exc is not None:
                 # raise a copy of it so multiple waiters don't destroy the traceback
                 raise self._exc.with_traceback(self._tb) from self._exc.__cause__
