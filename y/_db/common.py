@@ -616,8 +616,14 @@ class Filter(_DiskCachedMixin[T, C]):
 
         while True:
             if block is None or done_thru < block:
-                self._wakeup()
-                await self._lock.wait_for(done_thru + 1)
+                while True:
+                    self._wakeup()
+                    try:
+                        await wait_for(self._lock.wait_for(done_thru + 1), 60)
+                    except TimeoutError:
+                        pass
+                    else:
+                        break
             if self._exc is not None:
                 # raise a copy of it so multiple waiters don't destroy the traceback
                 raise self._exc.with_traceback(self._tb) from self._exc.__cause__
