@@ -787,7 +787,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     def _task(self) -> Task:
         _startup_logger_debug("creating loader task for %s", self)
         task = create_task(coro=self._load_all(), name=f"{self}._load_all()")
-        
+
         def propagate_exceptions(t: Task) -> None:
             """
             Propagate any Exception to all waiters, because it should not occur and we need to know about it ASAP.
@@ -807,11 +807,11 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                 # Send it to the waiters
                 for waiter in self._done._waiters:
                     waiter.set_exception(e)
-            
+
             else:
                 # Success! Exit before task cleanup.
                 return
-            
+
             # We've propagated the Exception, now delete the loader task so a new one can begin
             del self._task
 
