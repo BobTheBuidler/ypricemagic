@@ -885,7 +885,7 @@ class Filter(_DiskCachedMixin[T, C]):
                 if prev_task.exception():
                     # raise the exception with the proper traceback
                     prev_task.result()
-                
+
                 prev_task = None
 
         depth = self._depth
