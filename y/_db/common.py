@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from asyncio import Task, create_task, get_event_loop, shield, sleep
+from asyncio import Task, TimeoutError, create_task, get_event_loop, shield, sleep
 from copy import copy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
@@ -616,6 +616,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
         while True:
             if block is None or done_thru < block:
+                # TODO: extract this block to a helper method
                 while True:
                     self._wakeup()
                     try:
