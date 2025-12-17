@@ -351,7 +351,12 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
 
     def _task_done_callback(self, t: Task):
         """
-        Callback function for when a task is completed.
+        Log any Exception that occurs in a startup task.
+
+        Because these tasks are only used to populate caches
+        and don't block anything, we don't need to propagate
+        the Exception and can just remove the task so it can
+        be garbage collected
 
         Args:
             t: The completed task.
