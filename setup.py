@@ -67,6 +67,6 @@ setup(
     package_data={"y": ["py.typed"]},
     include_package_data=True,
     entry_points={"console_scripts": ["ypricemagic=y.cli:main"]},
-    # ext_modules=ext_modules,
+    ext_modules=ext_modules,
     zip_safe=False,
 )
