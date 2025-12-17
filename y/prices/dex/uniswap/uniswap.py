@@ -218,17 +218,13 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         """
         Check the maximum liquidity for a token across all Uniswap instances.
 
-        This method checks the liquidity of the given token across all Uniswap instances
-        and returns the maximum liquidity found.
+        This method concurrently checks the liquidity of the given token across
+        all Uniswap instances and returns the maximum liquidity found.
 
         Args:
             token: The address of the token to check liquidity for.
             block: The block number to query.
             ignore_pools (optional): A tuple of Pool objects to ignore when checking liquidity.
-
-        Note:
-            - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.
-            - A semaphore is used to limit the number of concurrent checks to 250.
 
         Examples:
             >>> multiplexer = UniswapMultiplexer(asynchronous=True)
