@@ -281,7 +281,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         super().__init__(*args, **kwargs)
         self.vault = vault
         self.asynchronous = asynchronous
-        self.__tasks = []
+        self.__tasks: dict[Task[Any], BalancerV2Pool] = {}
 
     def _include_event(self, event: _EventItem) -> Awaitable[bool]:
         """
@@ -330,7 +330,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         )
         # lets get this cached into memory now
         task = create_task(pool.tokens(sync=False))
-        self.__tasks.append(task)
+        self.__tasks[task] = pool
         task.add_done_callback(self._task_done_callback)
         return pool
 
@@ -351,7 +351,12 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
 
     def _task_done_callback(self, t: Task):
         """
-        Callback function for when a task is completed.
+        Log any Exception that occurs in a startup task.
+
+        Because these tasks are only used to populate caches
+        and don't block anything, we don't need to propagate
+        the Exception and can just remove the task so it can
+        be garbage collected
 
         Args:
             t: The completed task.
@@ -359,10 +364,13 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         Examples:
             >>> events._task_done_callback(task)
         """
-        self.__tasks.remove(t)
-        if not t.cancelled():
-            # get the exc so it doesn't log, it will come up later
-            t.exception()
+        pool = self.__tasks.pop(t)
+        if t.cancelled():
+            logger.error("balancer v2 startup task %s is cancelled??", t)
+        elif exc := t.exception():
+            logger.error(f"balancer v2 startup task failed: {exc!r}")
+        # force shrink the dict's hash table as the tasks complete
+        self.__tasks = dict(self.__tasks)
 
 
 class BalancerV2Pool(BalancerPool):
