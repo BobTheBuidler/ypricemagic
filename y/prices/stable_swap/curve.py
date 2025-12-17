@@ -1,4 +1,4 @@
-from asyncio import Task, create_task, sleep
+from asyncio import CancelledError, Task, create_task, sleep
 from collections import defaultdict
 from enum import IntEnum
 from functools import cached_property
@@ -788,14 +788,32 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         _startup_logger_debug("creating loader task for %s", self)
         task = create_task(coro=self._load_all(), name=f"{self}._load_all()")
 
-        def done_callback(t: Task):
-            if e := t.exception():
-                startup_logger.error("exception while loading %s: %s", self, e)
-                startup_logger.exception(e)
-                self.__task = None
-                raise e
+        def propagate_exceptions(t: Task) -> None:
+            """
+            Propagate any Exception to all waiters, because it should not occur and we need to know about it ASAP.
+            """
+            if t.cancelled():
+                try:
+                    # Try to get the result so we can get the CancelledError with traceback info
+                    t.result()
+                except CancelledError as e:
+                    # Send it to the waiters
+                    for waiter in self._done._waiters:
+                        waiter.set_exception(e)
 
-        task.add_done_callback(done_callback)
+            elif e := t.exception():
+                # Send it to the waiters
+                for waiter in self._done._waiters:
+                    waiter.set_exception(e)
+
+            else:
+                # Success! Exit before task cleanup.
+                return
+
+            # We've propagated the Exception, now delete the loader task so a new one can begin
+            del self._task
+
+        task.add_done_callback(propagate_exceptions)
         return task
 
     async def _load_all(self) -> None:
