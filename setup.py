@@ -15,7 +15,7 @@ try:
             "y/_db/brownie.py",
             # "y/_db/config.py",
             # "y/_db/decorators.py",
-            # "y/_db/utils/stringify.py",
+            "y/_db/utils/stringify.py",
             # "y/ENVIRONMENT_VARIABLES.py",
             # "y/convert.py",
             # "y/exceptions.py",
