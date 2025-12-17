@@ -136,7 +136,7 @@ class AsyncCursor:
 
 
 cur: Final = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
-fetchone: Final = SmartProcessingQueue(cur.fetchone, num_workers=32)
+fetchone: Final = SmartProcessingQueue(cur.fetchone, num_workers=32)  # type: ignore [var-annotated]
 
 
 @lru_cache(maxsize=None)
