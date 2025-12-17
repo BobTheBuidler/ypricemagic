@@ -816,8 +816,6 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             del self._task
 
         task.add_done_callback(propagate_exceptions)
-
-        task.add_done_callback(done_callback)
         return task
 
     async def _load_all(self) -> None:
