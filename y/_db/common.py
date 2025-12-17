@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from asyncio import Task, create_task, get_event_loop, sleep
+from asyncio import Task, create_task, get_event_loop, shield, sleep
 from copy import copy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
@@ -18,6 +18,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    final,
 )
 
 import a_sync
@@ -686,6 +687,7 @@ class Filter(_DiskCachedMixin[T, C]):
             fut.set_result(None)
             del self._sleep_fut
 
+    @final
     async def __fetch(self) -> NoReturn:
         """
         Main coroutine that continuously runs the internal fetch loop.
@@ -693,6 +695,7 @@ class Filter(_DiskCachedMixin[T, C]):
         try:
             await self._fetch()
         except Exception as e:
+            # TODO: propagate these exceptions to the waiters of _lock
             import traceback
 
             logger.exception(e)
@@ -879,8 +882,10 @@ class Filter(_DiskCachedMixin[T, C]):
         """
         if prev_task := self._db_task:
             if prev_task.done():
-                if e := prev_task.exception():
-                    raise e
+                if prev_task.exception():
+                    # raise the exception with the proper traceback
+                    prev_task.result()
+                
                 prev_task = None
 
         depth = self._depth
@@ -939,7 +944,9 @@ class Filter(_DiskCachedMixin[T, C]):
             debug_logs: Whether debug logs are active.
         """
         if prev_chunk_task:
-            await prev_chunk_task
+            # I don't believe this can be cancelled by any user-facing function
+            # but just in case, we still want all queued db inserts to complete.
+            await shield(prev_chunk_task)
         del prev_chunk_task
 
         if objs:
