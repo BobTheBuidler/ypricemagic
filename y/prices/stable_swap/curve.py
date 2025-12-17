@@ -810,8 +810,9 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                 # Success! Exit before task cleanup.
                 return
 
-            # We've propagated the Exception, now delete the loader task so a new one can begin
+            # We've propagated the Exception, now delete the loader task (and event) so a new one can begin
             del self._task
+            del self._done
 
         task.add_done_callback(propagate_exceptions)
         return task
