@@ -586,7 +586,7 @@ class UniswapRouterV2(ContractBase):
         # TODO figure out how to best handle uni forks with slight modifications.
         # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
         except Exception as e:
-            if call_reverted(e):
+            if call_reverted(e) or isinstance(e, DecodingError):
                 return None
             exc = str(e)
             if any(
