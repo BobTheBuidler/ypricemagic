@@ -926,3 +926,4 @@ async def _lowest_deploy_block(
         addresses,
         when_no_history_return_0=when_no_history_return_0,
     ).min(sync=False)
+
