@@ -2,7 +2,8 @@ import hashlib
 import json
 from asyncio import Lock
 from pathlib import Path
-from typing import Any, Callable, Dict, Final, Literal, Optional, Tuple, cast, final
+from typing import Any, Dict, Final, Literal, Optional, Tuple, cast, final
+from collections.abc import Callable
 from collections.abc import Container
 
 import aiosqlite
@@ -92,9 +93,9 @@ sqlite_lock: Final = Lock()
 class AsyncCursor:
     def __init__(self, filename: Path) -> None:
         self._filename: Final = filename
-        self._db: Optional[aiosqlite.Connection] = None
+        self._db: aiosqlite.Connection | None = None
         self._connected: bool = False
-        self._execute: Optional[Callable[..., Result[aiosqlite.Cursor]]] = None
+        self._execute: Callable[..., Result[aiosqlite.Cursor]] | None = None
 
     async def connect(self) -> None:
         """Establish an async connection to the SQLite database"""
@@ -123,7 +124,7 @@ class AsyncCursor:
         async with self._execute(query, values):
             await self._db.commit()
 
-    async def fetchone(self, cmd: str, *args: Any) -> Optional[tuple[Any, ...]]:
+    async def fetchone(self, cmd: str, *args: Any) -> tuple[Any, ...] | None:
         if self._db is None:
             await self.connect()
         async with sqlite_lock:
@@ -149,10 +150,10 @@ def _get_select_statement() -> str:
 
 
 async def _get_deployment(
-    address: Optional[str] = None,
-    alias: Optional[str] = None,
+    address: str | None = None,
+    alias: str | None = None,
     skip_source_keys: Container[SourceKey] = cast(Container[SourceKey], DISCARD_SOURCE_KEYS),
-) -> tuple[Optional[BuildJson], Optional[Sources]]:
+) -> tuple[BuildJson | None, Sources | None]:
     if address and alias:
         raise ValueError("Passed both params address and alias, should be only one!")
     if address:
@@ -178,7 +179,7 @@ async def _get_deployment(
     }
 
     build_json["allSourcePaths"] = {k: v[1] for k, v in path_map.items()}
-    pc_map: Optional[dict] = build_json.get("pcMap")  # type: ignore [type-arg]
+    pc_map: dict | None = build_json.get("pcMap")  # type: ignore [type-arg]
     if pc_map is not None:
         build_json["pcMap"] = {int(key): pc_map[key] for key in pc_map}
 

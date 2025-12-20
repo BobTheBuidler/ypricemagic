@@ -241,12 +241,12 @@ class Feed:
 
     # @a_sync.future(cache_type='memory')
     @alru_cache(maxsize=None)
-    async def scale(self) -> Optional[int]:
+    async def scale(self) -> int | None:
         return await (10 ** a_sync.ASyncFuture(self.decimals()))
 
     # @a_sync.future
     @stuck_coro_debugger
-    async def get_price(self, block: int) -> Optional[UsdPrice]:
+    async def get_price(self, block: int) -> UsdPrice | None:
         """Get the price of the asset at a specific block.
 
         If the feed is stale, returns None.
@@ -391,7 +391,7 @@ class Chainlink(a_sync.ASyncGenericBase):
                 yield feed
 
     @a_sync_ttl_cache
-    async def get_feed(self, asset: Address) -> Optional[Feed]:
+    async def get_feed(self, asset: Address) -> Feed | None:
         """Get the feed for a specific asset.
 
         The method converts the supplied asset address to an instance of :class:`~y.classes.common.ERC20`
@@ -444,9 +444,7 @@ class Chainlink(a_sync.ASyncGenericBase):
 
     # @a_sync.future
     @stuck_coro_debugger
-    async def get_price(
-        self, asset: AnyAddressType, block: Optional[Block] = None
-    ) -> Optional[UsdPrice]:
+    async def get_price(self, asset: AnyAddressType, block: Block | None = None) -> UsdPrice | None:
         """Get the price of an asset at a specific block.
 
         If the block is not specified, the latest block is used.
@@ -475,7 +473,7 @@ class Chainlink(a_sync.ASyncGenericBase):
         return await self._get_price(str(asset), block)  # force to string for cache key
 
     @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
-    async def _get_price(self, asset: Address, block: Block) -> Optional[UsdPrice]:
+    async def _get_price(self, asset: Address, block: Block) -> UsdPrice | None:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None

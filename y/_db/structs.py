@@ -16,15 +16,15 @@ class _CamelDictStruct(_DictStruct, rename="camel"):
 
 
 class Log(_CamelDictStruct):
-    removed: Optional[bool]
-    log_index: Optional[int]
-    transaction_index: Optional[int]
+    removed: bool | None
+    log_index: int | None
+    transaction_index: int | None
     transaction_hash: str
-    block_hash: Optional[str]
-    block_number: Optional[int]
-    address: Optional[str]
-    data: Optional[str]
-    topics: Optional[list[str]]
+    block_hash: str | None
+    block_number: int | None
+    address: str | None
+    data: str | None
+    topics: list[str] | None
 
 
 class Trace(_CamelDictStruct):

@@ -39,7 +39,7 @@ def is_convex_lp(token_address: ChecksumAddress) -> bool:
 @a_sync.a_sync(default="sync")
 async def get_price(
     token_address: ChecksumAddress,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
     """

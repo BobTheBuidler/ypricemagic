@@ -53,7 +53,7 @@ async def is_solidex_deposit(token: AnyAddressType) -> bool:
 @a_sync.a_sync(default="sync")
 async def get_price(
     token: AnyAddressType,
-    block: Optional[int] = None,
+    block: int | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ):
     """

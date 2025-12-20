@@ -2,7 +2,6 @@ from functools import wraps
 from logging import DEBUG, Logger, getLogger
 from typing import (
     Any,
-    Callable,
     Dict,
     List,
     Literal,
@@ -11,6 +10,7 @@ from typing import (
     TypeVar,
     overload,
 )
+from collections.abc import Callable
 from collections.abc import Iterable
 
 import a_sync
@@ -59,19 +59,19 @@ cache_logger = getLogger(f"{__name__}.cache")
 @overload
 async def get_price(
     token_address: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     *,
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
-) -> Optional[UsdPrice]: ...
+) -> UsdPrice | None: ...
 
 
 @overload
 async def get_price(
     token_address: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
@@ -83,13 +83,13 @@ async def get_price(
 @a_sync.a_sync(default="sync")
 async def get_price(
     token_address: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
-) -> Optional[UsdPrice]:
+) -> UsdPrice | None:
     """
     Get the price of a token in USD.
 
@@ -141,18 +141,18 @@ async def get_price(
 @overload
 async def get_prices(
     token_addresses: Iterable[AnyAddressType],
-    block: Optional[Block] = None,
+    block: Block | None = None,
     *,
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> list[Optional[UsdPrice]]: ...
+) -> list[UsdPrice | None]: ...
 
 
 @overload
 async def get_prices(
     token_addresses: Iterable[AnyAddressType],
-    block: Optional[Block] = None,
+    block: Block | None = None,
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
@@ -163,12 +163,12 @@ async def get_prices(
 @a_sync.a_sync(default="sync")
 async def get_prices(
     token_addresses: Iterable[AnyAddressType],
-    block: Optional[Block] = None,
+    block: Block | None = None,
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> list[Optional[UsdPrice]]:
+) -> list[UsdPrice | None]:
     """
     Get prices for multiple tokens in USD.
 
@@ -210,7 +210,7 @@ def map_prices(
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[_TAddress, Optional[UsdPrice]]: ...
+) -> a_sync.TaskMapping[_TAddress, UsdPrice | None]: ...
 
 
 @overload
@@ -231,7 +231,7 @@ def map_prices(
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[_TAddress, Optional[UsdPrice]]:
+) -> a_sync.TaskMapping[_TAddress, UsdPrice | None]:
     """
     Map token addresses to their prices asynchronously.
 
@@ -285,7 +285,7 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: tuple[Pool, ...] = (),
         silent: bool = False,
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         from y._db.utils import price as db
 
         if not skip_cache and (price := await db.get_price(token, block)):
@@ -316,7 +316,7 @@ async def _get_price(
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
-) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
+) -> UsdPrice | None:  # sourcery skip: remove-redundant-if
     """
     Internal function to get the price of a token.
 
@@ -378,7 +378,7 @@ async def _exit_early_for_known_tokens(
     logger: Logger,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
-) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
+) -> UsdPrice | None:  # sourcery skip: low-code-quality
     """
     Attempt to get the price for known token types without having to fully load everything.
 

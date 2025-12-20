@@ -116,7 +116,7 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
 @a_sync.a_sync(default="sync")
 async def get_price(
     token: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
 ) -> UsdPrice:
@@ -232,7 +232,7 @@ class YearnInspiredVault(ERC20):
         raise CantFetchParam(f"underlying for {self}")
 
     @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=1000)
-    async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
+    async def share_price(self, block: Block | None = None) -> Decimal | None:
         """
         Calculates the share price of the vault.
 
@@ -281,7 +281,7 @@ class YearnInspiredVault(ERC20):
                             function = method
 
                             @staticmethod
-                            async def coroutine(block_id: Optional[Block]) -> int:
+                            async def coroutine(block_id: Block | None) -> int:
                                 return await contract_call.coroutine(
                                     scale, block_identifier=block_id
                                 )
@@ -323,7 +323,7 @@ class YearnInspiredVault(ERC20):
 
     async def price(
         self,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         ignore_pools: tuple[Pool, ...] = (),
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> UsdPrice:

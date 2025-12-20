@@ -106,7 +106,7 @@ class Band(a_sync.ASyncGenericSingleton):
 
     __oracle__: HiddenMethodDescriptor[Self, Contract]
 
-    async def get_price(self, asset: Address, block: Optional[Block] = None) -> Optional[float]:
+    async def get_price(self, asset: Address, block: Block | None = None) -> float | None:
         """
         Get the price of an asset in terms of USDC using the Band Protocol oracle.
 
