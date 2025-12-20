@@ -444,9 +444,7 @@ class Chainlink(a_sync.ASyncGenericBase):
 
     # @a_sync.future
     @stuck_coro_debugger
-    async def get_price(
-        self, asset: AnyAddressType, block: Block | None = None
-    ) -> UsdPrice | None:
+    async def get_price(self, asset: AnyAddressType, block: Block | None = None) -> UsdPrice | None:
         """Get the price of an asset at a specific block.
 
         If the block is not specified, the latest block is used.

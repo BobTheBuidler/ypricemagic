@@ -188,9 +188,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             else None
         )
 
-    async def get_price(
-        self, token: AnyAddressType, block: Block | None = None
-    ) -> UsdPrice | None:
+    async def get_price(self, token: AnyAddressType, block: Block | None = None) -> UsdPrice | None:
         """Get the price of a synth in dollars.
 
         Args:

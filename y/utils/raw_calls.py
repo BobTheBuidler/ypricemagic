@@ -496,10 +496,15 @@ def prepare_data(
 # yLazyLogger(logger)
 def prepare_input(
     input: (
-        bytes |  # for bytes input
-        int |  # for int input
+        bytes  # for bytes input
+        | int  # for int input
+        |
         # for address input
-        str | Address | EthAddress | brownie.Contract | Contract
+        str
+        | Address
+        | EthAddress
+        | brownie.Contract
+        | Contract
     ),
 ) -> str:
     """
