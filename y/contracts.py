@@ -9,7 +9,6 @@ from typing import (
     Any,
     Callable,
     Dict,
-    Iterable,
     List,
     Literal,
     Optional,
@@ -17,6 +16,7 @@ from typing import (
     Union,
     overload,
 )
+from collections.abc import Iterable
 from urllib.parse import urlparse
 
 import dank_mids
@@ -79,7 +79,7 @@ _CHAINID = chain.id
 
 _brownie_deployments_db_lock = threading.Lock()
 _contract_locks = defaultdict(Lock)
-_decode_abi = Decoder(type=List[Dict[str, Any]]).decode
+_decode_abi = Decoder(type=list[dict[str, Any]]).decode
 
 # These tokens have trouble when resolving the implementation via the chain.
 FORCE_IMPLEMENTATION = {
@@ -466,7 +466,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         cls,
         name: str,
         address: str,
-        abi: List,
+        abi: list,
         owner: Optional[AccountsType] = None,
         persist: bool = True,
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
@@ -628,7 +628,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
     @eth_retry.auto_retry
     def __init_from_abi__(
-        self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True
+        self, build: dict, owner: Optional[AccountsType] = None, persist: bool = True
     ) -> None:
         """
         Initialize a :class:`~Contract` instance from an ABI.
@@ -673,7 +673,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         """
         return has_method(self.address, method, return_response=return_response, sync=False)
 
-    async def has_methods(self, methods: List[str], _func: Union[any, all] = all) -> bool:
+    async def has_methods(self, methods: list[str], _func: Union[any, all] = all) -> bool:
         """
         Check if the contract has all the specified methods.
 
@@ -997,7 +997,7 @@ def _extract_abi_data(address: Address):
     return name, abi, implementation
 
 
-def _resolve_proxy(address) -> Tuple[str, List]:
+def _resolve_proxy(address) -> tuple[str, list]:
     """
     Resolve the implementation address for a proxy contract.
 
@@ -1127,7 +1127,7 @@ async def _extract_abi_data_async(address: Address):
 
 
 @eth_retry.auto_retry
-async def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> Dict:
+async def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> dict:
     url = "https://api.etherscan.io/v2/api"
 
     if address in _unverified_addresses:
@@ -1156,7 +1156,7 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
 
 
 @lru_cache(maxsize=None)
-def _get_explorer_api_key(url, silent) -> Tuple[str, str]:
+def _get_explorer_api_key(url, silent) -> tuple[str, str]:
     if api_key := getenv("ETHERSCAN_TOKEN"):
         return api_key
     if not silent:
@@ -1197,7 +1197,7 @@ async def _fetch_explorer_data(url, silent, params):
 _get_storage_at = dank_mids.eth.get_storage_at
 
 
-async def _resolve_proxy_async(address) -> Tuple[str, List]:
+async def _resolve_proxy_async(address) -> tuple[str, list]:
     """
     Resolve the implementation address for a proxy contract.
 
