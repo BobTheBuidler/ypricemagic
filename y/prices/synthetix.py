@@ -104,7 +104,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         return await Contract.coroutine(target)
 
     @a_sync.aka.cached_property
-    async def synths(self) -> List[ChecksumAddress]:
+    async def synths(self) -> list[ChecksumAddress]:
         """Get target addresses of all synths.
 
         Returns:

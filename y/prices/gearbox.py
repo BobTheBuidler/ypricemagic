@@ -77,7 +77,7 @@ class Gearbox(a_sync.ASyncGenericBase):
         if chain.id != Network.Mainnet:
             raise UnsupportedNetwork("gearbox not supported on this network")
         self.asynchronous = asynchronous
-        self._dtokens: Dict[ERC20, DieselPool] = {}
+        self._dtokens: dict[ERC20, DieselPool] = {}
         super().__init__()
 
     @a_sync.aka.cached_property
@@ -85,14 +85,14 @@ class Gearbox(a_sync.ASyncGenericBase):
         return await Contract.coroutine(registry)
 
     @a_sync_ttl_cache
-    async def pools(self) -> List[DieselPool]:
+    async def pools(self) -> list[DieselPool]:
         registry = await self.registry
         return [
             DieselPool(pool, asynchronous=self.asynchronous) for pool in await registry.getPools
         ]
 
-    async def diesel_tokens(self) -> Dict[ERC20, DieselPool]:
-        pools: List[DieselPool] = await self.pools(sync=False)
+    async def diesel_tokens(self) -> dict[ERC20, DieselPool]:
+        pools: list[DieselPool] = await self.pools(sync=False)
         return dict(zip(await DieselPool.diesel_token.map(pools).values(pop=True), pools))
 
     async def is_diesel_token(self, token: Address) -> bool:

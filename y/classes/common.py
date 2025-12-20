@@ -6,9 +6,7 @@ from logging import getLogger
 from typing import (
     TYPE_CHECKING,
     Any,
-    Awaitable,
     Final,
-    Generator,
     Literal,
     NoReturn,
     Optional,
@@ -16,6 +14,7 @@ from typing import (
     Union,
     final,
 )
+from collections.abc import Awaitable, Generator
 
 import a_sync
 from a_sync import cgather
@@ -416,7 +415,7 @@ class ERC20(ContractBase):
         block: Optional[Block] = None,
         return_None_on_failure: bool = False,
         skip_cache: bool = ENVS.SKIP_CACHE,
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> Optional[UsdPrice]:
         """
         Get the price of the token in USD.
@@ -565,7 +564,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     block: Optional[Block] = None
     asynchronous: bool = False
     _skip_cache: bool = ENVS.SKIP_CACHE
-    _ignore_pools: Tuple[Pool, ...] = ()
+    _ignore_pools: tuple[Pool, ...] = ()
     __logger = None
 
     def __init__(
@@ -575,7 +574,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         block: Optional[Block] = None,
         *,
         skip_cache: bool = ENVS.SKIP_CACHE,
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: tuple[Pool, ...] = (),
         asynchronous: bool = False,
     ) -> None:
         """

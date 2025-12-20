@@ -2,7 +2,8 @@ import hashlib
 import json
 from asyncio import Lock
 from pathlib import Path
-from typing import Any, Callable, Container, Dict, Final, Literal, Optional, Tuple, cast, final
+from typing import Any, Callable, Dict, Final, Literal, Optional, Tuple, cast, final
+from collections.abc import Container
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
@@ -37,8 +38,8 @@ SourceKey = Literal[
 ]
 
 # TODO: replace these with the typed dicts in brownie >=1.22
-BuildJson = Dict[str, Any]
-Sources = Dict[SourceKey, Any]
+BuildJson = dict[str, Any]
+Sources = dict[SourceKey, Any]
 
 
 SOURCE_KEYS: Final = (
@@ -122,7 +123,7 @@ class AsyncCursor:
         async with self._execute(query, values):
             await self._db.commit()
 
-    async def fetchone(self, cmd: str, *args: Any) -> Optional[Tuple[Any, ...]]:
+    async def fetchone(self, cmd: str, *args: Any) -> Optional[tuple[Any, ...]]:
         if self._db is None:
             await self.connect()
         async with sqlite_lock:
@@ -151,7 +152,7 @@ async def _get_deployment(
     address: Optional[str] = None,
     alias: Optional[str] = None,
     skip_source_keys: Container[SourceKey] = cast(Container[SourceKey], DISCARD_SOURCE_KEYS),
-) -> Tuple[Optional[BuildJson], Optional[Sources]]:
+) -> tuple[Optional[BuildJson], Optional[Sources]]:
     if address and alias:
         raise ValueError("Passed both params address and alias, should be only one!")
     if address:
@@ -186,4 +187,4 @@ async def _get_deployment(
 
 async def __fetch_source_for_hash(hashval: str) -> Any:
     row = await fetchone("SELECT source FROM sources WHERE hash=?", hashval)
-    return cast(Tuple[Any, ...], row)[0]
+    return cast(tuple[Any, ...], row)[0]

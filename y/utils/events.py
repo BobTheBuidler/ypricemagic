@@ -10,17 +10,15 @@ from threading import current_thread, main_thread
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
-    Awaitable,
     Callable,
     Dict,
-    Iterable,
     List,
     NoReturn,
     Optional,
     TypeVar,
     Union,
 )
+from collections.abc import AsyncGenerator, Awaitable, Iterable
 
 import a_sync
 import dank_mids
@@ -124,11 +122,11 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
 @a_sync.a_sync(default="sync")
 async def get_logs_asap(
     address: Optional[Address],
-    topics: Optional[List[str]],
+    topics: Optional[list[str]],
     from_block: Optional[Block] = None,
     to_block: Optional[Block] = None,
     verbose: int = 0,
-) -> List[Any]:
+) -> list[Any]:
     """
     Get logs as soon as possible.
 
@@ -174,14 +172,14 @@ async def get_logs_asap(
 
 async def get_logs_asap_generator(
     address: Optional[Address],
-    topics: Optional[List[str]] = None,
+    topics: Optional[list[str]] = None,
     from_block: Optional[Block] = None,
     to_block: Optional[Block] = None,
     chronological: bool = True,
     run_forever: bool = False,
     run_forever_interval: int = 60,
     verbose: int = 0,
-) -> AsyncGenerator[List[LogReceipt], None]:  # sourcery skip: low-code-quality
+) -> AsyncGenerator[list[LogReceipt], None]:  # sourcery skip: low-code-quality
     """
     Get logs as soon as possible in a generator.
 
@@ -262,7 +260,7 @@ async def get_logs_asap_generator(
         to_block = current_block
 
 
-def logs_to_balance_checkpoints(logs) -> Dict[ChecksumAddress, int]:
+def logs_to_balance_checkpoints(logs) -> dict[ChecksumAddress, int]:
     """
     Convert Transfer logs to `{address: {from_block: balance}}` checkpoints.
 
@@ -324,10 +322,10 @@ def checkpoints_to_weight(checkpoints, start_block: Block, end_block: Block) -> 
 @a_sync.a_sync
 def _get_logs(
     address: Optional[ChecksumAddress],
-    topics: Optional[List[str]],
+    topics: Optional[list[str]],
     start: Block,
     end: Block,
-) -> List[Log]:
+) -> list[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -365,7 +363,7 @@ get_logs_semaphore = defaultdict(
 )
 
 
-async def _get_logs_async(address, topics, start, end) -> List[Log]:
+async def _get_logs_async(address, topics, start, end) -> list[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -389,7 +387,7 @@ async def _get_logs_async(address, topics, start, end) -> List[Log]:
 
 
 @eth_retry.auto_retry
-async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
+async def _get_logs_async_no_cache(address, topics, start, end) -> list[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -452,10 +450,10 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
 @eth_retry.auto_retry
 def _get_logs_no_cache(
     address: Optional[ChecksumAddress],
-    topics: Optional[List[str]],
+    topics: Optional[list[str]],
     start: Block,
     end: Block,
-) -> List[Log]:
+) -> list[Log]:
     """
     Get logs without using the disk cache.
 
@@ -518,8 +516,8 @@ def _get_logs_no_cache(
 
 @memory.cache()
 def _get_logs_batch_cached(
-    address: Optional[str], topics: Optional[List[str]], start: Block, end: Block
-) -> List[Log]:
+    address: Optional[str], topics: Optional[list[str]], start: Block, end: Block
+) -> list[Log]:
     """
     Get logs from the disk cache, or fetch and cache them if not available.
 
@@ -642,7 +640,7 @@ class LogFilter(Filter[Log, "LogCache"]):
         raise NotImplementedError
 
     @cached_property
-    def bulk_insert(self) -> Callable[[List[Log]], Awaitable[None]]:
+    def bulk_insert(self) -> Callable[[list[Log]], Awaitable[None]]:
         """
         Get the function for bulk inserting logs into the database.
 
@@ -691,7 +689,7 @@ class LogFilter(Filter[Log, "LogCache"]):
                 )
         return self.from_block
 
-    async def _fetch_range(self, range_start: Block, range_end: Block) -> List[Log]:
+    async def _fetch_range(self, range_start: Block, range_end: Block) -> list[Log]:
         """
         Fetch logs for a given block range.
 
@@ -760,7 +758,7 @@ class Events(LogFilter):
         """
         return self._objects_thru(block=to_block, from_block=from_block)
 
-    async def _extend(self, logs: List[Log]) -> None:
+    async def _extend(self, logs: list[Log]) -> None:
         """
         Extend the list of events with decoded logs.
 
@@ -859,7 +857,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
         return self._objects_thru(block=to_block)
 
-    async def _extend(self, logs: List[Log]) -> None:
+    async def _extend(self, logs: list[Log]) -> None:
         """
         Process a new set of logs and extend the list of processed events with the results.
 

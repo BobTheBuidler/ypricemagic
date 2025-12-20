@@ -46,7 +46,7 @@ async def is_pendle_lp(token: Address) -> bool:
 
 
 @alru_cache(maxsize=None)
-async def get_tokens(lp_token: Address) -> Tuple[str, str, str]:
+async def get_tokens(lp_token: Address) -> tuple[str, str, str]:
     """
     Retrieves the addresses of the tokens in a Pendle LP token.
 
