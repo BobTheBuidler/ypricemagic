@@ -1,6 +1,7 @@
 import contextlib
 import logging
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
+from collections.abc import Callable
 from collections.abc import Iterable
 
 import a_sync
@@ -59,8 +60,8 @@ multicall_deploy_block = contract_creation_block(multicall2.address)
 async def multicall_same_func_no_input(
     addresses: Iterable[AnyAddressType],
     method: str,
-    block: Optional[Block] = None,
-    apply_func: Optional[Callable] = None,
+    block: Block | None = None,
+    apply_func: Callable | None = None,
     return_None_on_failure: bool = False,
 ) -> list[Any]:
 
@@ -76,9 +77,9 @@ async def multicall_same_func_no_input(
 async def multicall_same_func_same_contract_different_inputs(
     address: AnyAddressType,
     method: str,
-    inputs: Union[list, tuple],
-    block: Optional[Block] = None,
-    apply_func: Optional[Callable] = None,
+    inputs: list | tuple,
+    block: Block | None = None,
+    apply_func: Callable | None = None,
     return_None_on_failure: bool = False,
 ) -> list[Any]:
     assert inputs
@@ -99,7 +100,7 @@ async def multicall_same_func_same_contract_different_inputs(
 @stuck_coro_debugger
 async def multicall_decimals(
     addresses: Iterable[AddressOrContract],
-    block: Optional[Block] = None,
+    block: Block | None = None,
     return_None_on_failure: bool = True,
 ) -> list[int]:
 
@@ -121,7 +122,7 @@ async def multicall_decimals(
 @stuck_coro_debugger
 async def multicall_totalSupply(
     addresses: Iterable[AddressOrContract],
-    block: Optional[Block] = None,
+    block: Block | None = None,
     return_None_on_failure: bool = True,
 ) -> list[int]:
 
@@ -143,7 +144,7 @@ async def multicall_totalSupply(
 # yLazyLogger(logger)
 @a_sync.a_sync(default="sync")
 @stuck_coro_debugger
-async def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> list[Optional[Any]]:
+async def fetch_multicall(*calls: Any, block: Block | None = None) -> list[Any | None]:
     # https://github.com/makerdao/multicall
     multicall_input = []
     fn_list = []

@@ -73,7 +73,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
     asynchronous: bool = False
     """A boolean indicating whether the instance will be used asynchronously."""
 
-    _deploy_block: Optional[int] = None
+    _deploy_block: int | None = None
     """The block when the contract was deployed, if known."""
 
     __slots__ = ("address",)
@@ -83,7 +83,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         address: AnyAddressType,
         *,
         asynchronous: bool = False,
-        _deploy_block: Optional[int] = None,
+        _deploy_block: int | None = None,
     ) -> None:
         self.address = convert.to_address(address)
         """
@@ -183,7 +183,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
 
     deploy_block: ASyncBoundMethod[Self, Any, int]
 
-    async def has_method(self, method: str, return_response: bool = False) -> Union[bool, Any]:
+    async def has_method(self, method: str, return_response: bool = False) -> bool | Any:
         """
         Check if the contract has a specific method.
 
@@ -318,7 +318,7 @@ class ERC20(ContractBase):
                 return await self._decimals()
             raise
 
-    async def _decimals(self, block: Optional[Block] = None) -> int:
+    async def _decimals(self, block: Block | None = None) -> int:
         """used to fetch decimals at specific block"""
         # TODO: deprecate and remove
         if self.address == EEE_ADDRESS:
@@ -345,11 +345,11 @@ class ERC20(ContractBase):
         """
         return 10 ** await self.__decimals__
 
-    async def _scale(self, block: Optional[Block] = None) -> int:
+    async def _scale(self, block: Block | None = None) -> int:
         # TODO: deprecate and remove
         return 10 ** await self._decimals(block)
 
-    async def total_supply(self, block: Optional[Block] = None) -> int:
+    async def total_supply(self, block: Block | None = None) -> int:
         """
         Get the total supply of the token.
 
@@ -366,7 +366,7 @@ class ERC20(ContractBase):
         """
         return await _erc20.totalSupply(self.address, block=block, sync=False)
 
-    async def total_supply_readable(self, block: Optional[Block] = None) -> float:
+    async def total_supply_readable(self, block: Block | None = None) -> float:
         """
         Get the total supply of the token scaled to a human-readable decimal.
 
@@ -385,7 +385,7 @@ class ERC20(ContractBase):
         total_supply = await self.total_supply(block=block, sync=False)
         return total_supply / await self.__scale__
 
-    async def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
+    async def balance_of(self, address: AnyAddressType, block: Block | None = None) -> int:
         """
         Query the balance of the token for a given address at a specific block.
 
@@ -404,7 +404,7 @@ class ERC20(ContractBase):
         return await raw_calls.balanceOf(self.address, address, block=block, sync=False)
 
     async def balance_of_readable(
-        self, address: AnyAddressType, block: Optional[Block] = None
+        self, address: AnyAddressType, block: Block | None = None
     ) -> Decimal:
         # `self.__scale__` is cached after the first call so we will await these without gather
         balance = await self.balance_of(address, block=block, sync=False)
@@ -412,11 +412,11 @@ class ERC20(ContractBase):
 
     async def price(
         self,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         return_None_on_failure: bool = False,
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: tuple[Pool, ...] = (),
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         """
         Get the price of the token in USD.
 
@@ -561,7 +561,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     """
 
     # defaults are stored as class vars to keep instance dicts smaller
-    block: Optional[Block] = None
+    block: Block | None = None
     asynchronous: bool = False
     _skip_cache: bool = ENVS.SKIP_CACHE
     _ignore_pools: tuple[Pool, ...] = ()
@@ -569,9 +569,9 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
     def __init__(
         self,
-        balance: Union[int, Decimal],
+        balance: int | Decimal,
         token: AnyAddressType,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         *,
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: tuple[Pool, ...] = (),
@@ -799,7 +799,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
                 f"subtraction not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'"
             ) from None
 
-    def __mul__(self, __o: Union[int, float, Decimal]) -> "WeiBalance":
+    def __mul__(self, __o: int | float | Decimal) -> "WeiBalance":
         """
         Multiply a WeiBalance object by a scalar value.
 
@@ -829,7 +829,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
             ignore_pools=self._ignore_pools,
         )
 
-    def __truediv__(self, __o: Union[int, float, Decimal]) -> "WeiBalance":
+    def __truediv__(self, __o: int | float | Decimal) -> "WeiBalance":
         """
         Divide a WeiBalance object by a scalar value.
 

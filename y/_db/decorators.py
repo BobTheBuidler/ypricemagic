@@ -1,7 +1,8 @@
 import logging
 import time
 from functools import lru_cache, wraps
-from typing import Callable, Final, TypeVar
+from typing import Final, TypeVar
+from collections.abc import Callable
 from collections.abc import Iterable, Sized
 from typing_extensions import ParamSpec
 

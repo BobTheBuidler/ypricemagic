@@ -10,7 +10,6 @@ from threading import current_thread, main_thread
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Dict,
     List,
     NoReturn,
@@ -18,6 +17,7 @@ from typing import (
     TypeVar,
     Union,
 )
+from collections.abc import Callable
 from collections.abc import AsyncGenerator, Awaitable, Iterable
 
 import a_sync
@@ -57,7 +57,7 @@ T = TypeVar("T")
 logger = getLogger(__name__)
 
 
-def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
+def decode_logs(logs: Iterable[LogReceipt] | Iterable[Log]) -> EventDict:
     # NOTE: we want to ensure backward-compatability with LogReceipt
     """
     Decode logs to events and enrich them with additional info.
@@ -121,10 +121,10 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
 
 @a_sync.a_sync(default="sync")
 async def get_logs_asap(
-    address: Optional[Address],
-    topics: Optional[list[str]],
-    from_block: Optional[Block] = None,
-    to_block: Optional[Block] = None,
+    address: Address | None,
+    topics: list[str] | None,
+    from_block: Block | None = None,
+    to_block: Block | None = None,
     verbose: int = 0,
 ) -> list[Any]:
     """
@@ -171,10 +171,10 @@ async def get_logs_asap(
 
 
 async def get_logs_asap_generator(
-    address: Optional[Address],
-    topics: Optional[list[str]] = None,
-    from_block: Optional[Block] = None,
-    to_block: Optional[Block] = None,
+    address: Address | None,
+    topics: list[str] | None = None,
+    from_block: Block | None = None,
+    to_block: Block | None = None,
     chronological: bool = True,
     run_forever: bool = False,
     run_forever_interval: int = 60,
@@ -321,8 +321,8 @@ def checkpoints_to_weight(checkpoints, start_block: Block, end_block: Block) -> 
 
 @a_sync.a_sync
 def _get_logs(
-    address: Optional[ChecksumAddress],
-    topics: Optional[list[str]],
+    address: ChecksumAddress | None,
+    topics: list[str] | None,
     start: Block,
     end: Block,
 ) -> list[Log]:
@@ -449,8 +449,8 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> list[Log]:
 
 @eth_retry.auto_retry
 def _get_logs_no_cache(
-    address: Optional[ChecksumAddress],
-    topics: Optional[list[str]],
+    address: ChecksumAddress | None,
+    topics: list[str] | None,
     start: Block,
     end: Block,
 ) -> list[Log]:
@@ -516,7 +516,7 @@ def _get_logs_no_cache(
 
 @memory.cache()
 def _get_logs_batch_cached(
-    address: Optional[str], topics: Optional[list[str]], start: Block, end: Block
+    address: str | None, topics: list[str] | None, start: Block, end: Block
 ) -> list[Log]:
     """
     Get logs from the disk cache, or fetch and cache them if not available.
@@ -551,11 +551,11 @@ class LogFilter(Filter[Log, "LogCache"]):
         *,
         addresses=[],
         topics=[],
-        from_block: Optional[Block] = None,
+        from_block: Block | None = None,
         chunk_size: int = BATCH_SIZE,
-        chunks_per_batch: Optional[int] = None,
-        semaphore: Optional[dank_mids.BlockSemaphore] = None,
-        executor: Optional[_AsyncExecutorMixin] = None,
+        chunks_per_batch: int | None = None,
+        semaphore: dank_mids.BlockSemaphore | None = None,
+        executor: _AsyncExecutorMixin | None = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ) -> None:  # sourcery skip: default-mutable-arg
@@ -611,7 +611,7 @@ class LogFilter(Filter[Log, "LogCache"]):
             self._semaphore = semaphore
         return semaphore
 
-    def logs(self, to_block: Optional[Block]) -> a_sync.ASyncIterator[Log]:
+    def logs(self, to_block: Block | None) -> a_sync.ASyncIterator[Log]:
         """
         Get logs up to a given block.
 
@@ -740,7 +740,7 @@ class Events(LogFilter):
     obj_type = _EventItem
 
     def events(
-        self, to_block: Block, from_block: Optional[Block] = None
+        self, to_block: Block, from_block: Block | None = None
     ) -> a_sync.ASyncIterator[_EventItem]:
         """
         Get events up to a given block.
@@ -802,7 +802,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
     This class extends :class:`Events` to provide additional functionality for processing events.
     """
 
-    def _include_event(self, event: _EventItem) -> Union[bool, Awaitable[bool]]:
+    def _include_event(self, event: _EventItem) -> bool | Awaitable[bool]:
         """
         Determine whether to include a given event in this container.
 
@@ -839,7 +839,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
 
     def objects(
-        self, to_block: Block, from_block: Optional[Block] = None
+        self, to_block: Block, from_block: Block | None = None
     ) -> a_sync.ASyncIterator[_EventItem]:
         """
         Get an :class:`~a_sync.ASyncIterator` that yields all events up to a given block.

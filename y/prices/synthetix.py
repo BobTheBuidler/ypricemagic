@@ -1,5 +1,6 @@
 import logging
-from typing import Callable, Final, List, Optional, final
+from typing import Final, List, Optional, final
+from collections.abc import Callable
 
 import a_sync
 from a_sync import cgather
@@ -71,7 +72,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
     __address_resolver__: HiddenMethodDescriptor[Self, Contract]
 
     @a_sync.a_sync(ram_cache_maxsize=512)
-    async def get_address(self, name: str, block: Block = None) -> Optional[Contract]:
+    async def get_address(self, name: str, block: Block = None) -> Contract | None:
         """Get contract from Synthetix registry.
 
         Args:
@@ -162,7 +163,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             raise
 
     @a_sync_ttl_cache
-    async def get_currency_key(self, token: AnyAddressType) -> Optional[HexStr]:
+    async def get_currency_key(self, token: AnyAddressType) -> HexStr | None:
         """Get the currency key for a given token.
 
         Args:
@@ -188,8 +189,8 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         )
 
     async def get_price(
-        self, token: AnyAddressType, block: Optional[Block] = None
-    ) -> Optional[UsdPrice]:
+        self, token: AnyAddressType, block: Block | None = None
+    ) -> UsdPrice | None:
         """Get the price of a synth in dollars.
 
         Args:

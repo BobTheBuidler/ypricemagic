@@ -6,7 +6,6 @@ from logging import DEBUG, getLogger
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Dict,
     Generic,
     List,
@@ -17,6 +16,7 @@ from typing import (
     Union,
     final,
 )
+from collections.abc import Callable
 from collections.abc import AsyncIterator, Awaitable, Container
 
 import a_sync
@@ -275,7 +275,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
 
     def __init__(
         self,
-        executor: Optional[AsyncThreadPoolExecutor] = None,
+        executor: AsyncThreadPoolExecutor | None = None,
         is_reusable: bool = True,
     ):
         """
@@ -413,7 +413,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         return None
 
 
-def make_executor(small: int, big: int, name: Optional[str] = None) -> PruningThreadPoolExecutor:
+def make_executor(small: int, big: int, name: str | None = None) -> PruningThreadPoolExecutor:
     """
     Creates a thread pool executor that prunes completed tasks.
 
@@ -461,10 +461,10 @@ class Filter(_DiskCachedMixin[T, C]):
         from_block: "Block",
         *,
         chunk_size: int = BATCH_SIZE,
-        chunks_per_batch: Optional[int] = None,
+        chunks_per_batch: int | None = None,
         sleep_time: int = 60,
-        semaphore: Optional[BlockSemaphore] = None,
-        executor: Optional[AsyncThreadPoolExecutor] = None,
+        semaphore: BlockSemaphore | None = None,
+        executor: AsyncThreadPoolExecutor | None = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
@@ -933,7 +933,7 @@ class Filter(_DiskCachedMixin[T, C]):
         objs: list[T],
         from_block: "Block",
         done_thru: "Block",
-        prev_chunk_task: Optional[Task],
+        prev_chunk_task: Task | None,
         depth: int,
         debug_logs: bool,
     ) -> None:
@@ -987,7 +987,7 @@ def _raise_if_exception(task: Task[Any]) -> None:
     raise copy(e).with_traceback(e.__traceback__) from e.__cause__
 
 
-def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, list[str]]:
+def _clean_addresses(addresses: list | tuple) -> str | list[str]:
     """
     Converts addresses into a standardized format, raising an error if the zero address is encountered.
 
@@ -1028,7 +1028,7 @@ def _get_suitable_checkpoint(target_block: "Block", checkpoints: Checkpoints) ->
     return None if block_lt_checkpoint is True else tuple(group)[-1]
 
 
-def _get_checkpoint_index(target_block: "Block", checkpoints: Checkpoints) -> Optional[int]:
+def _get_checkpoint_index(target_block: "Block", checkpoints: Checkpoints) -> int | None:
     """
     Retrieves the index for a checkpoint that is less than or equal to a given block.
 

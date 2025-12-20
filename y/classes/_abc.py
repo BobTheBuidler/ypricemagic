@@ -52,8 +52,8 @@ class LiquidityPool(Wrapper):
 
     @stuck_coro_debugger
     async def get_pool_price(
-        self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
-    ) -> Optional[UsdPrice]:
+        self, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE
+    ) -> UsdPrice | None:
         """
         Calculate the price of the liquidity pool token.
 
@@ -88,8 +88,8 @@ class LiquidityPool(Wrapper):
 
     @abc.abstractmethod
     async def get_tvl(
-        self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
-    ) -> Optional[UsdValue]:
+        self, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE
+    ) -> UsdValue | None:
         """
         Get the Total Value Locked (TVL) in the liquidity pool.
 

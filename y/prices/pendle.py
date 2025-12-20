@@ -76,7 +76,7 @@ async def get_tokens(lp_token: Address) -> tuple[str, str, str]:
 @a_sync("sync")
 async def get_lp_price(
     token: Address, block: Block = None, skip_cache: bool = ENVS.SKIP_CACHE
-) -> Optional[Decimal]:
+) -> Decimal | None:
     """
     Calculates the price of a Pendle LP token.
 

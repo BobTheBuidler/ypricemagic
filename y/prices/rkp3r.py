@@ -38,7 +38,7 @@ def is_rkp3r(address: Address) -> bool:
 
 @a_sync.a_sync(default="sync")
 async def get_price(
-    address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
+    address: Address, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE
 ) -> Decimal:
     """
     Get the discounted price of the RKP3R token based on the underlying KP3R token price.
@@ -78,7 +78,7 @@ async def get_price(
     return Decimal(price) * (100 - discount) / 100
 
 
-async def get_discount(block: Optional[Block] = None) -> Decimal:
+async def get_discount(block: Block | None = None) -> Decimal:
     """
     Retrieve the discount percentage for the RKP3R token from its contract.
 

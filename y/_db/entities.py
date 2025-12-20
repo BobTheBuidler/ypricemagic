@@ -1,7 +1,8 @@
 import logging
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
+from collections.abc import Callable
 from typing import Optional as typing_Optional
 
 from pony.orm import (

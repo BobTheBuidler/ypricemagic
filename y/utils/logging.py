@@ -49,7 +49,7 @@ class PriceLogger(Logger):
     enabled: bool
     address: ChecksumAddress
     block: BlockNumber
-    key: tuple[AnyAddressType, Block, Optional[str], str]
+    key: tuple[AnyAddressType, Block, str | None, str]
     debug_task: Optional["Task[None]"]
 
     def close(self) -> None:
@@ -124,7 +124,7 @@ def get_price_logger(
 def _noop(*_a, **_k): ...
 
 
-async def _debug_tsk(symbol: Optional[str], logger_ref: "weak_ref[Logger]") -> NoReturn:
+async def _debug_tsk(symbol: str | None, logger_ref: "weak_ref[Logger]") -> NoReturn:
     """Prints a log every 1 minute until the creating coro returns."""
     if symbol:
         args = "price still fetching for %s", symbol
@@ -146,7 +146,7 @@ NETWORK_DESCRIPTOR_FOR_ISSUE_REQ: Final = (
 )
 
 
-def _gh_issue_request(issue_request_details: Union[str, list[str]], _logger=None) -> None:
+def _gh_issue_request(issue_request_details: str | list[str], _logger=None) -> None:
     """
     Log a request for a GitHub issue or pull request.
 
