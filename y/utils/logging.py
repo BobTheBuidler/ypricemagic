@@ -49,7 +49,7 @@ class PriceLogger(Logger):
     enabled: bool
     address: ChecksumAddress
     block: BlockNumber
-    key: Tuple[AnyAddressType, Block, Optional[str], str]
+    key: tuple[AnyAddressType, Block, Optional[str], str]
     debug_task: Optional["Task[None]"]
 
     def close(self) -> None:
@@ -146,7 +146,7 @@ NETWORK_DESCRIPTOR_FOR_ISSUE_REQ: Final = (
 )
 
 
-def _gh_issue_request(issue_request_details: Union[str, List[str]], _logger=None) -> None:
+def _gh_issue_request(issue_request_details: Union[str, list[str]], _logger=None) -> None:
     """
     Log a request for a GitHub issue or pull request.
 

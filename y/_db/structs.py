@@ -24,7 +24,7 @@ class Log(_CamelDictStruct):
     block_number: Optional[int]
     address: Optional[str]
     data: Optional[str]
-    topics: Optional[List[str]]
+    topics: Optional[list[str]]
 
 
 class Trace(_CamelDictStruct):

@@ -118,7 +118,7 @@ async def get_price(
     token: AnyAddressType,
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
-    ignore_pools: Tuple[Pool, ...] = (),
+    ignore_pools: tuple[Pool, ...] = (),
 ) -> UsdPrice:
     return await YearnInspiredVault(token).price(
         block=block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
@@ -324,7 +324,7 @@ class YearnInspiredVault(ERC20):
     async def price(
         self,
         block: Optional[Block] = None,
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: tuple[Pool, ...] = (),
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> UsdPrice:
         """

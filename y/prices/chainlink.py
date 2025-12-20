@@ -1,5 +1,6 @@
 import logging
-from typing import AsyncIterator, Optional
+from typing import Optional
+from collections.abc import AsyncIterator
 
 import a_sync
 import dank_mids

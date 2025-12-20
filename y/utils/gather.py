@@ -2,7 +2,8 @@
 Utility functions for gathering method results asynchronously.
 """
 
-from typing import Any, Final, Iterable, List, Optional, Tuple
+from typing import Any, Final, List, Optional, Tuple
+from collections.abc import Iterable
 
 import a_sync
 import multicall
@@ -21,7 +22,7 @@ async def gather_methods(
     *,
     block: Optional[int] = None,
     return_exceptions: bool = False,
-) -> List[Any]:
+) -> list[Any]:
     """
     Asynchronously gather results from multiple contract methods.
 
@@ -62,11 +63,11 @@ async def gather_methods(
 @stuck_coro_debugger
 async def _gather_methods_brownie(
     address: str,
-    methods: Tuple[str, ...],
+    methods: tuple[str, ...],
     *,
     block: Optional[int] = None,
     return_exceptions: bool = False,
-) -> List[Any]:
+) -> list[Any]:
     """
     Internal function to gather results using Brownie.
 
@@ -101,11 +102,11 @@ async def _gather_methods_brownie(
 @stuck_coro_debugger
 async def _gather_methods_raw(
     address: str,
-    methods: Tuple[str, ...],
+    methods: tuple[str, ...],
     *,
     block: Optional[int] = None,
     return_exceptions: bool = False,
-) -> List[Any]:
+) -> list[Any]:
     """
     Internal function to gather results using raw calls.
 

@@ -244,7 +244,7 @@ async def _totalSupply(
     )
 
 
-_BALANCEOF_FAILURES: Final[Set[AddressOrContract]] = set()
+_BALANCEOF_FAILURES: Final[set[AddressOrContract]] = set()
 
 
 @a_sync.a_sync(default="sync")

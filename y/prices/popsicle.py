@@ -104,7 +104,7 @@ async def get_tvl(
         - :func:`get_price`
         - :func:`get_balances`
     """
-    balances: Tuple[WeiBalance, WeiBalance]
+    balances: tuple[WeiBalance, WeiBalance]
     balances = await get_balances(
         token, block, skip_cache=skip_cache, _async_balance_objects=True, sync=False
     )
@@ -117,7 +117,7 @@ async def get_balances(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
     _async_balance_objects: bool = False,
-) -> Optional[Tuple[WeiBalance, WeiBalance]]:
+) -> Optional[tuple[WeiBalance, WeiBalance]]:
     """
     Retrieves the balances of the underlying tokens in a Popsicle Finance LP token.
 

@@ -50,7 +50,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
 
         super().__init__(name, bases, namespace)
 
-        cls.__instances: Dict[bool, ChecksumAddressDict[T]] = {
+        cls.__instances: dict[bool, ChecksumAddressDict[T]] = {
             True: ChecksumAddressDict(),
             False: ChecksumAddressDict(),
         }

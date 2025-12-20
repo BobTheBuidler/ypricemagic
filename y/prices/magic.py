@@ -4,7 +4,6 @@ from typing import (
     Any,
     Callable,
     Dict,
-    Iterable,
     List,
     Literal,
     Optional,
@@ -12,6 +11,7 @@ from typing import (
     TypeVar,
     overload,
 )
+from collections.abc import Iterable
 
 import a_sync
 import dank_mids
@@ -63,7 +63,7 @@ async def get_price(
     *,
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
-    ignore_pools: Tuple[Pool, ...] = (),
+    ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
 ) -> Optional[UsdPrice]: ...
 
@@ -75,7 +75,7 @@ async def get_price(
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
-    ignore_pools: Tuple[Pool, ...] = (),
+    ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
 ) -> UsdPrice: ...
 
@@ -87,7 +87,7 @@ async def get_price(
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
-    ignore_pools: Tuple[Pool, ...] = (),
+    ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
 ) -> Optional[UsdPrice]:
     """
@@ -146,7 +146,7 @@ async def get_prices(
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> List[Optional[UsdPrice]]: ...
+) -> list[Optional[UsdPrice]]: ...
 
 
 @overload
@@ -157,7 +157,7 @@ async def get_prices(
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> List[UsdPrice]: ...
+) -> list[UsdPrice]: ...
 
 
 @a_sync.a_sync(default="sync")
@@ -168,7 +168,7 @@ async def get_prices(
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> List[Optional[UsdPrice]]:
+) -> list[Optional[UsdPrice]]:
     """
     Get prices for multiple tokens in USD.
 
@@ -283,7 +283,7 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
         *,
         fail_to_None: bool = False,
         skip_cache: bool = ENVS.SKIP_CACHE,
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: tuple[Pool, ...] = (),
         silent: bool = False,
     ) -> Optional[UsdPrice]:
         from y._db.utils import price as db
@@ -314,7 +314,7 @@ async def _get_price(
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
-    ignore_pools: Tuple[Pool, ...] = (),
+    ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
 ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
     """
@@ -377,7 +377,7 @@ async def _exit_early_for_known_tokens(
     block: BlockNumber,
     logger: Logger,
     skip_cache: bool = ENVS.SKIP_CACHE,
-    ignore_pools: Tuple[Pool, ...] = (),
+    ignore_pools: tuple[Pool, ...] = (),
 ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
     """
     Attempt to get the price for known token types without having to fully load everything.
@@ -606,8 +606,8 @@ async def _get_price_from_dexes(
     liquidity = await igather(
         dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes
     )
-    depth_to_dex: Dict[int, object] = dict(zip(liquidity, dexes))
-    dexes_by_depth: Dict[int, object] = {
+    depth_to_dex: dict[int, object] = dict(zip(liquidity, dexes))
+    dexes_by_depth: dict[int, object] = {
         depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True) if depth
     }
     if debug_logs_enabled := logger.isEnabledFor(DEBUG):

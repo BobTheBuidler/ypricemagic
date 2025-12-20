@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
-with open("requirements.txt", "r") as f:
+with open("requirements.txt") as f:
     requirements = [line.strip() for line in f.read().splitlines() if line.strip()]
 
 try:

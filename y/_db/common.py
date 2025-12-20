@@ -6,10 +6,7 @@ from logging import DEBUG, getLogger
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncIterator,
-    Awaitable,
     Callable,
-    Container,
     Dict,
     Generic,
     List,
@@ -20,6 +17,7 @@ from typing import (
     Union,
     final,
 )
+from collections.abc import AsyncIterator, Awaitable, Container
 
 import a_sync
 import dank_mids
@@ -55,7 +53,7 @@ T = TypeVar("T")
 S = TypeVar("S")
 M = TypeVar("M")
 
-Checkpoints = Dict["Block", int]
+Checkpoints = dict["Block", int]
 
 logger = getLogger(__name__)
 default_filter_threads = PruningThreadPoolExecutor(4)
@@ -107,7 +105,7 @@ def enc_hook(obj: Any) -> bytes:
         raise TypeError
 
 
-def dec_hook(typ: Type[T], obj: bytes) -> T:
+def dec_hook(typ: type[T], obj: bytes) -> T:
     """
     Decode hook for JSON deserialization of special types.
 
@@ -164,7 +162,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def _select(self, from_block: "Block", to_block: "Block") -> List[S]:
+    def _select(self, from_block: "Block", to_block: "Block") -> list[S]:
         """
         Selects all cached objects from block `from_block` to block `to_block`.
 
@@ -204,7 +202,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
 
     @db_session
     @retry_locked
-    def select(self, from_block: "Block", to_block: "Block") -> List[S]:
+    def select(self, from_block: "Block", to_block: "Block") -> list[S]:
         """
         Selects all cached objects from block `from_block` to block `to_block`.
 
@@ -233,7 +231,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
 
     @db_session
     @retry_locked
-    def check_and_select(self, from_block: "Block", to_block: "Block") -> List[S]:
+    def check_and_select(self, from_block: "Block", to_block: "Block") -> list[S]:
         """
         Selects all cached objects within a specified block range.
 
@@ -290,7 +288,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         self.is_reusable = is_reusable
         self._cache = None
         self._executor = executor
-        self._objects: List[T] = []
+        self._objects: list[T] = []
         self._pruned = 0
 
     @property
@@ -322,7 +320,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
     @abstractmethod
     def insert_to_db(self) -> Callable[[T], None]: ...
 
-    def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]:
+    def bulk_insert(self) -> Callable[[list[T]], Awaitable[None]]:
         """
         Function to bulk insert a list of objects into the database.
 
@@ -512,7 +510,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._task.cancel()
 
     @abstractmethod
-    async def _fetch_range(self, from_block: "Block", to_block: "Block") -> List[T]:
+    async def _fetch_range(self, from_block: "Block", to_block: "Block") -> list[T]:
         """
         Fetches data for a given range of blocks from an on-chain or remote provider.
 
@@ -727,7 +725,7 @@ class Filter(_DiskCachedMixin[T, C]):
     @stuck_coro_debugger
     async def _fetch_range_wrapped(
         self, i: int, range_start: "Block", range_end: "Block", debug_logs: bool
-    ) -> List[T]:
+    ) -> list[T]:
         """
         Wraps the _fetch_range call with concurrency control.
 
@@ -876,7 +874,7 @@ class Filter(_DiskCachedMixin[T, C]):
         self._lock.set(block)
 
     def _insert_chunk(
-        self, objs: List[T], from_block: "Block", done_thru: "Block", debug_logs: bool
+        self, objs: list[T], from_block: "Block", done_thru: "Block", debug_logs: bool
     ) -> None:
         """
         Queues the insertion of a chunk of objects into the database, and sets metadata.
@@ -932,7 +930,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
     async def __insert_chunk(
         self,
-        objs: List[T],
+        objs: list[T],
         from_block: "Block",
         done_thru: "Block",
         prev_chunk_task: Optional[Task],
@@ -989,7 +987,7 @@ def _raise_if_exception(task: Task[Any]) -> None:
     raise copy(e).with_traceback(e.__traceback__) from e.__cause__
 
 
-def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, List[str]]:
+def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, list[str]]:
     """
     Converts addresses into a standardized format, raising an error if the zero address is encountered.
 

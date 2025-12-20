@@ -2,7 +2,8 @@
 Utility functions for performing various checks.
 """
 
-from typing import Any, Iterable
+from typing import Any
+from collections.abc import Iterable
 
 
 def hasall(obj: Any, attrs: Iterable[str]) -> bool:

@@ -104,8 +104,8 @@ async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
     return checksummed
 
 
-_is_checksummed: Final[Set[ChecksumAddress]] = set()
-_is_not_checksummed: Final[Set[HexAddress]] = set()
+_is_checksummed: Final[set[ChecksumAddress]] = set()
+_is_not_checksummed: Final[set[HexAddress]] = set()
 
 
 def __get_checksum_from_cache(address: HexAddress) -> Optional[ChecksumAddress]:
