@@ -14,6 +14,7 @@ requires = [
   "eth-typing==5.2.1",
   "ez-a-sync==0.33.9",
   "faster-eth-abi>=5.2.12,<6",
+  "typed-envs==0.2.2",
 ]
 
 [tool.black]
