@@ -16,3 +16,4 @@ multicall>=0.8.2
 pony
 pony-stubs==0.5.2
 python-dateutil
+typed-envs>=0.2.2,<0.3
