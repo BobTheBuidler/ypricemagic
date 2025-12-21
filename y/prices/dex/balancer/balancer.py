@@ -133,7 +133,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         token_address: AnyAddressType,
         block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> UsdPrice | None:
         """
         Get the price of a Balancer pool.
@@ -163,7 +163,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         token_address: AnyAddressType,
         block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> UsdPrice | None:
         """
         Get the price of a token using Balancer pools.
