@@ -69,7 +69,9 @@ async def _calc_out_value(
     """
     out_scale, out_price = await cgather(
         ERC20._get_scale_for(token_out),
-        magic.get_price(token_out, block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False),
+        magic.get_price(
+            token_out, block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
+        ),
     )
     return (total_outout / out_scale) * float(out_price) / scale
 
@@ -284,7 +286,9 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
             if output := await self.get_some_output(
                 token_address, block=block, scale=scale, sync=False
             ):
-                return await _calc_out_value(*output, scale, block=block, skip_cache=skip_cache, ignore_pools=ignore_pools)
+                return await _calc_out_value(
+                    *output, scale, block=block, skip_cache=skip_cache, ignore_pools=ignore_pools
+                )
 
     @stuck_coro_debugger
     async def check_liquidity_against(

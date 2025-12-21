@@ -508,7 +508,10 @@ class BalancerV2Pool(BalancerPool):
     @a_sync_ttl_cache
     @stuck_coro_debugger
     async def get_balances(
-        self, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE, ignore_pools: tuple[Pool, ...] = ()
+        self,
+        block: Block | None = None,
+        skip_cache: bool = ENVS.SKIP_CACHE,
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> PoolBalances:
         """
         Get the balances of tokens in the pool.
@@ -570,7 +573,7 @@ class BalancerV2Pool(BalancerPool):
         token_address: AnyAddressType,
         block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-        ignore_pools: tuple[Pool, ...] = ()
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> UsdPrice | None:
         """
         Get the price of a specific token in the pool in USD.
@@ -586,7 +589,9 @@ class BalancerV2Pool(BalancerPool):
         Examples:
             >>> price = await pool.get_token_price("0xTokenAddress")
         """
-        get_balances_coro = self.get_balances(block=block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False)
+        get_balances_coro = self.get_balances(
+            block=block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
+        )
         if self.__nonweighted:
             # this await will return immediately once cached
             token_balances = await get_balances_coro
@@ -707,7 +712,7 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
         token_address: Address,
         block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-        ignore_pools: tuple[Pool, ...] = ()
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> UsdPrice:
         """
         Get the price of a specific token in USD.
@@ -723,14 +728,19 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
         Examples:
             >>> price = await balancer.get_token_price("0xTokenAddress")
         """
-        if deepest_pool := await self.deepest_pool_for(token_address, block=block, ignore_pools=ignore_pools, sync=False):
+        if deepest_pool := await self.deepest_pool_for(
+            token_address, block=block, ignore_pools=ignore_pools, sync=False
+        ):
             return await deepest_pool.get_token_price(
                 token_address, block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
             )
 
     @stuck_coro_debugger
     async def deepest_pool_for(
-        self, token_address: Address, block: Block | None = None, ignore_pools: tuple[Pool, ...] = ()
+        self,
+        token_address: Address,
+        block: Block | None = None,
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> BalancerV2Pool | None:
         """
         Find the deepest pool for a specific token.
