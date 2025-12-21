@@ -3,17 +3,7 @@ from asyncio import Task, create_task, ensure_future, get_event_loop
 from decimal import Decimal
 from functools import cached_property
 from logging import getLogger
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Final,
-    Literal,
-    NoReturn,
-    Optional,
-    Tuple,
-    Union,
-    final,
-)
+from typing import TYPE_CHECKING, Any, Final, Literal, NoReturn, Union, final
 from collections.abc import Awaitable, Generator
 
 import a_sync
@@ -221,11 +211,17 @@ class ERC20(ContractBase):
             if ERC20.symbol.has_cache_value(self):
                 symbol = ERC20.symbol.get_cache_value(self)
                 return f"<{cls} {symbol} '{self.address}'>"
-            elif not get_event_loop().is_running() and not self.asynchronous:
+            if not self.asynchronous:
                 try:
-                    return f"<{cls} {self.__symbol__(sync=True)} '{self.address}'>"
-                except NonStandardERC20:
-                    return f"<{cls} SYMBOL_INVALID '{self.address}'>"
+                    loop = get_event_loop()
+                except RuntimeError:
+                    loop = None
+                else:
+                    if not loop.is_running() and not loop.is_closed():
+                        try:
+                            return f"<{cls} {self.__symbol__(sync=True)} '{self.address}'>"
+                        except NonStandardERC20:
+                            return f"<{cls} SYMBOL_INVALID '{self.address}'>"
         except AttributeError:
             pass
         return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
