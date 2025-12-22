@@ -1,4 +1,3 @@
-import pytest
 
 from tests.fixtures import mainnet_only
 from y.classes.common import ERC20

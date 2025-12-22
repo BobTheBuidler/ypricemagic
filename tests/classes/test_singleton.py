@@ -1,4 +1,3 @@
-from random import randint
 
 from brownie.convert.datatypes import EthAddress
 from y import convert

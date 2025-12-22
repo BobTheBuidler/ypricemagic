@@ -24,7 +24,6 @@ from y.exceptions import (
     call_reverted,
 )
 from y.networks import Network
-from y.utils.logging import yLazyLogger
 
 
 logger: Final = logging.getLogger(__name__)

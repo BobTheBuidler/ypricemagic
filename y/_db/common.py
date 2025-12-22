@@ -4,8 +4,7 @@ from copy import copy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
 from typing import TYPE_CHECKING, Any, Generic, NoReturn, Optional, TypeVar, final
-from collections.abc import Callable
-from collections.abc import AsyncIterator, Awaitable, Container
+from collections.abc import AsyncIterator, Awaitable, Callable, Container
 
 import a_sync
 import dank_mids
