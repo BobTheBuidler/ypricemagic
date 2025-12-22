@@ -1,4 +1,3 @@
-
 from brownie.convert.datatypes import EthAddress
 from y import convert
 from y.classes.common import ContractBase
