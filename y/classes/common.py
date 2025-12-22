@@ -406,6 +406,7 @@ class ERC20(ContractBase):
         balance = await self.balance_of(address, block=block, sync=False)
         return Decimal(balance) / await self.__scale__
 
+    @stuck_coro_debugger
     async def price(
         self,
         block: Block | None = None,
@@ -856,6 +857,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         )
 
     @a_sync.aka.property
+    @stuck_coro_debugger
     async def readable(self) -> Decimal:
         """
         Get the balance scaled to a human-readable decimal.
@@ -883,6 +885,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     __readable__: HiddenMethodDescriptor[Self, Decimal]
 
     @a_sync.aka.property
+    @stuck_coro_debugger
     async def price(self) -> Decimal:
         """
         Get the price of the token in USD.
@@ -909,6 +912,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     __price__: HiddenMethodDescriptor[Self, Decimal]
 
     @a_sync.aka.property
+    @stuck_coro_debugger
     async def value_usd(self) -> Decimal:
         """
         Get the value of the balance in USD.
