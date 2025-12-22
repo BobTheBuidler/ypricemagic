@@ -42,7 +42,7 @@ async def is_rtoken(token_address: Address) -> bool:
 @a_sync(default="sync")
 async def get_price(
     token_address: Address,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> Decimal:
     """

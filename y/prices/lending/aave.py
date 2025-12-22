@@ -1,7 +1,8 @@
 import logging
 from abc import abstractmethod
 from decimal import Decimal
-from typing import Awaitable, List, Optional, Union
+from typing import List, Optional, Union
+from collections.abc import Awaitable
 
 import a_sync
 from a_sync import cgather, igather
@@ -114,7 +115,7 @@ class AaveMarketBase(ContractBase):
         logger.debug("%s contains %s: %s", self, token, contains)
         return contains
 
-    async def get_reserves(self) -> List[Address]:
+    async def get_reserves(self) -> list[Address]:
         return await Call(self.address, [self._get_reserves_method])
 
     async def get_reserve_data(self, reserve: AnyAddressType) -> tuple:
@@ -122,7 +123,7 @@ class AaveMarketBase(ContractBase):
 
     @property
     @abstractmethod
-    async def atokens(self) -> Awaitable[List[ERC20]]:
+    async def atokens(self) -> Awaitable[list[ERC20]]:
         """
         Get the aTokens of the market.
 
@@ -138,7 +139,7 @@ class AaveMarketBase(ContractBase):
             [<ERC20 '0xTokenAddress1'>, <ERC20 '0xTokenAddress2'>]
         """
 
-    __atokens__: HiddenMethodDescriptor[Self, List[ERC20]]
+    __atokens__: HiddenMethodDescriptor[Self, list[ERC20]]
 
     @abstractmethod
     async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
@@ -177,7 +178,7 @@ class AaveMarketBase(ContractBase):
 
 class AaveMarketV1(AaveMarketBase):
     @a_sync.aka.cached_property
-    async def atokens(self) -> List[ERC20]:
+    async def atokens(self) -> list[ERC20]:
         reserves_data = a_sync.map(self.get_reserve_data, self.get_reserves(sync=False))
         atokens = [
             ERC20(reserve_data["aTokenAddress"], asynchronous=self.asynchronous)
@@ -201,7 +202,7 @@ _V2_RESERVE_DATA_METHOD = "getReserveData(address)((uint256,uint128,uint128,uint
 
 class AaveMarketV2(AaveMarketBase):
     @a_sync.aka.cached_property
-    async def atokens(self) -> List[ERC20]:
+    async def atokens(self) -> list[ERC20]:
         reserves_data = a_sync.map(self.get_reserve_data, self.get_reserves(sync=False))
         try:
             atokens = [
@@ -231,7 +232,7 @@ class AaveMarketV2(AaveMarketBase):
 
 class AaveMarketV3(AaveMarketBase):
     @a_sync.aka.cached_property
-    async def atokens(self) -> List[ERC20]:
+    async def atokens(self) -> list[ERC20]:
         reserves_data = a_sync.map(self.get_reserve_data, self.get_reserves(sync=False))
         try:
             atokens = [
@@ -268,7 +269,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         super().__init__()
 
     @a_sync.aka.cached_property
-    async def pools(self) -> List[AaveMarket]:
+    async def pools(self) -> list[AaveMarket]:
         v1, v2, v3 = await cgather(
             self.__pools_v1__,
             self.__pools_v2__,
@@ -276,35 +277,35 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         )
         return v1 + v2 + v3
 
-    __pools__: HiddenMethodDescriptor[Self, List[AaveMarket]]
+    __pools__: HiddenMethodDescriptor[Self, list[AaveMarket]]
 
     @a_sync.aka.cached_property
-    async def pools_v1(self) -> List[AaveMarketV1]:
+    async def pools_v1(self) -> list[AaveMarketV1]:
         pools = [AaveMarketV1(pool, asynchronous=self.asynchronous) for pool in v1_pools]
         logger.debug("AaveRegistry v1 pools %s", pools)
         return pools
 
-    __pools_v1__: HiddenMethodDescriptor[Self, List[AaveMarketV1]]
+    __pools_v1__: HiddenMethodDescriptor[Self, list[AaveMarketV1]]
 
     @a_sync.aka.cached_property
-    async def pools_v2(self) -> List[AaveMarketV2]:
+    async def pools_v2(self) -> list[AaveMarketV2]:
         pools = [AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools]
         logger.debug("AaveRegistry v2 pools %s", pools)
         return pools
 
-    __pools_v2__: HiddenMethodDescriptor[Self, List[AaveMarketV2]]
+    __pools_v2__: HiddenMethodDescriptor[Self, list[AaveMarketV2]]
 
     @a_sync.aka.cached_property
-    async def pools_v3(self) -> List[AaveMarketV3]:
+    async def pools_v3(self) -> list[AaveMarketV3]:
         pools = [AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools]
         logger.debug("AaveRegistry v3 pools %s", pools)
         return pools
 
-    __pools_v3__: HiddenMethodDescriptor[Self, List[AaveMarketV3]]
+    __pools_v3__: HiddenMethodDescriptor[Self, list[AaveMarketV3]]
 
     async def pool_for_atoken(
         self, atoken_address: AnyAddressType
-    ) -> Optional[Union[AaveMarketV1, AaveMarketV2, AaveMarketV3]]:
+    ) -> AaveMarketV1 | AaveMarketV2 | AaveMarketV3 | None:
         pools = await self.__pools__
         for pool in pools:
             if await pool.contains(atoken_address, sync=False):
@@ -340,7 +341,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.a_sync(cache_type="memory")
     async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
-        pool: Union[AaveMarketV1, AaveMarketV2, AaveMarketV3] = await self.pool_for_atoken(
+        pool: AaveMarketV1 | AaveMarketV2 | AaveMarketV3 = await self.pool_for_atoken(
             atoken_address, sync=False
         )
         return await pool.underlying(atoken_address, sync=False)
@@ -348,7 +349,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     async def get_price(
         self,
         atoken_address: AddressOrContract,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> UsdPrice:
         underlying: ERC20 = await self.underlying(atoken_address, sync=False)
@@ -357,9 +358,9 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     async def get_price_wrapped_v2(
         self,
         atoken_address: AddressOrContract,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         return await self._get_price_wrapped(
             atoken_address, "staticToDynamicAmount", block=block, skip_cache=skip_cache
         )
@@ -367,9 +368,9 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     async def get_price_wrapped_v3(
         self,
         atoken_address: AddressOrContract,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         return await self._get_price_wrapped(
             atoken_address, "convertToAssets", block=block, skip_cache=skip_cache
         )
@@ -378,9 +379,9 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         self,
         atoken_address: AddressOrContract,
         method: str,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         contract, scale = await cgather(
             Contract.coroutine(atoken_address),
             ERC20._get_scale_for(atoken_address),

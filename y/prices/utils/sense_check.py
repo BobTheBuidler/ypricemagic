@@ -40,12 +40,12 @@ if ENVS.SENSE_CHECK_FILE:
 
 # This module is far from perfect, but provides an acceptable way to validate some of the prices returned by `get_price`
 
-acceptable_all_chains: Final[Set[ChecksumAddress]] = {
+acceptable_all_chains: Final[set[ChecksumAddress]] = {
     weth.address,
     wbtc.address,
 }
 
-ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {  # type: ignore [operator, assignment, call-overload]
+ACCEPTABLE_HIGH_PRICES: Final[set[ChecksumAddress]] = {  # type: ignore [operator, assignment, call-overload]
     Network.Mainnet: {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
@@ -218,8 +218,8 @@ Nothing will be logged for tokens in this list.
 
 async def sense_check(
     token_address: ChecksumAddress,
-    block: Optional[BlockNumber],
-    price: Union[float, Decimal],
+    block: BlockNumber | None,
+    price: float | Decimal,
 ):
     """
     Performs a sense check on the given token price and logs a warning if it is unexpectedly high.

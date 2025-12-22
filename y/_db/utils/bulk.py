@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Iterable, Sequence
+from typing import Any
+from collections.abc import Iterable, Sequence
 from pony.orm import Database, DatabaseError, commit
 
 from a_sync import a_sync

@@ -123,7 +123,7 @@ def ensure_block(number: int) -> None:
 
 
 @a_sync_read_db_session
-def get_block_timestamp(number: int) -> Optional[int]:
+def get_block_timestamp(number: int) -> int | None:
     """Retrieve the timestamp for a given block number.
 
     If the timestamp is not known, it retrieves and caches the block's timestamp.
@@ -156,7 +156,7 @@ def get_block_timestamp(number: int) -> Optional[int]:
 
 
 @a_sync_read_db_session
-def get_block_at_timestamp(timestamp: datetime) -> Optional[BlockNumber]:
+def get_block_at_timestamp(timestamp: datetime) -> BlockNumber | None:
     """Retrieve the block number at a specific timestamp.
 
     If the block number is not known, it attempts to find it in the database.
@@ -251,7 +251,7 @@ set_block_at_timestamp = ProcessingQueue(_set_block_at_timestamp, num_workers=2,
 
 @lru_cache(maxsize=1)
 @log_result_count("blocks")
-def known_blocks() -> Set[int]:
+def known_blocks() -> set[int]:
     """Cache and return all known blocks for this chain to minimize db reads.
 
     Returns:
@@ -269,7 +269,7 @@ def known_blocks() -> Set[int]:
 
 @lru_cache(maxsize=1)
 @log_result_count("block timestamps")
-def known_block_timestamps() -> Dict[int, datetime]:
+def known_block_timestamps() -> dict[int, datetime]:
     """Cache and return all known block timestamps for this chain to minimize db reads.
 
     Returns:
@@ -293,7 +293,7 @@ def known_block_timestamps() -> Dict[int, datetime]:
 
 @lru_cache(maxsize=1)
 @log_result_count("blocks for timestamps")
-def known_blocks_for_timestamps() -> Dict[datetime, int]:
+def known_blocks_for_timestamps() -> dict[datetime, int]:
     """Cache and return all known blocks for timestamps for this chain to minimize db reads.
 
     Returns:

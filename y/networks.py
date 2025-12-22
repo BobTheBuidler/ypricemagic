@@ -83,7 +83,7 @@ class Network(IntEnum):
     """The Chain ID for Berachain"""
 
     @staticmethod
-    def label(chain_id: Optional[int] = None) -> str:
+    def label(chain_id: int | None = None) -> str:
         """
         Get the label (abbreviation) for a given chain ID.
 
@@ -141,7 +141,7 @@ class Network(IntEnum):
         raise ValueError(f"{chain_id} is not a known chainid")
 
     @staticmethod
-    def name(chain_id: Optional[int] = None) -> str:  # type: ignore [override]
+    def name(chain_id: int | None = None) -> str:  # type: ignore [override]
         """
         Get the full name of a network for a given chain ID.
 
@@ -199,7 +199,7 @@ class Network(IntEnum):
         raise ValueError(f"{chain_id} is not a known chainid")
 
     @staticmethod
-    def printable(chain_id: Optional[int] = None) -> str:
+    def printable(chain_id: int | None = None) -> str:
         """
         Get a printable string that identifies the network.
 

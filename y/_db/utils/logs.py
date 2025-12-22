@@ -138,7 +138,7 @@ async def _prepare_log(log: Log) -> tuple:
 _check_using_extended_db = lambda: "eth_portfolio" in _get_get_block().__module__
 
 
-async def bulk_insert(logs: List[Log], executor: AsyncExecutor = default_filter_threads) -> None:
+async def bulk_insert(logs: list[Log], executor: AsyncExecutor = default_filter_threads) -> None:
     if not logs:
         return
 
@@ -209,7 +209,7 @@ def _get_hash_dbid(hexstr: HexStr) -> int:
     return entity.dbid
 
 
-def get_decoded(log: Log) -> Optional[_EventItem]:
+def get_decoded(log: Log) -> _EventItem | None:
     # TODO: load these in bulk
     log = DbLog[CHAINID, log.block_number, log.transaction_hash, log.log_index]
     if decoded := log.decoded:
@@ -258,7 +258,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
     def topic3(self) -> str:
         return self.topics[3] if self.topics and len(self.topics) > 3 else None
 
-    def load_metadata(self) -> Optional[LogCacheInfo]:
+    def load_metadata(self) -> LogCacheInfo | None:
         """Loads the cache metadata from the db."""
         if self.addresses:
             raise NotImplementedError(self.addresses)
@@ -290,7 +290,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
 
         if self.addresses:
             chain = db.get_chain(sync=True)
-            infos: List[LogCacheInfo]
+            infos: list[LogCacheInfo]
             if isinstance(self.addresses, str):
                 infos = [
                     # If we cached all logs for this address...
@@ -323,7 +323,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             return info.cached_thru
         return 0
 
-    def _select(self, from_block: int, to_block: int) -> List[Log]:
+    def _select(self, from_block: int, to_block: int) -> list[Log]:
         logger.info("executing select query for %s", self)
         try:
             return [_decode_log(log.raw) for log in self._get_query(from_block, to_block)]

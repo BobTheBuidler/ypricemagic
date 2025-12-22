@@ -22,7 +22,7 @@ _logger_debug = logger.debug
 
 
 @a_sync_read_db_session
-def get_price(address: ChecksumAddress, block: BlockNumber) -> Optional[Decimal]:
+def get_price(address: ChecksumAddress, block: BlockNumber) -> Decimal | None:
     """
     Retrieve the price of a token at a specific block.
 
@@ -152,7 +152,7 @@ set_price = ProcessingQueue(_set_price_func, num_workers=50, return_data=False)
 
 @cached(TTLCache(maxsize=1_000, ttl=5 * 60), lock=threading.Lock())
 @log_result_count("prices", ("block",))
-def known_prices_at_block(number: BlockNumber) -> Dict[ChecksumAddress, Decimal]:
+def known_prices_at_block(number: BlockNumber) -> dict[ChecksumAddress, Decimal]:
     """
     Cache and return all known prices at a specific block to minimize database reads.
 

@@ -7,7 +7,7 @@ import y._db.config as db_config
 
 
 POOL_LOCK: Final = asyncio.Lock()
-_asyncpg_pool: Optional[asyncpg.Pool] = None
+_asyncpg_pool: asyncpg.Pool | None = None
 
 
 async def set_asyncpg_pool() -> asyncpg.Pool:

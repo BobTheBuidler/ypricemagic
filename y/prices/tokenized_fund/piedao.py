@@ -39,9 +39,9 @@ async def is_pie(token: AnyAddressType) -> bool:
 @a_sync.a_sync(default="sync")
 async def get_price(
     pie: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
-) -> Optional[UsdPrice]:
+) -> UsdPrice | None:
     """
     Get the price of a PieDAO token in USD.
 
@@ -67,7 +67,7 @@ async def get_price(
     return UsdPrice(tvl / total_supply)
 
 
-async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> Optional[List[ERC20]]:
+async def get_tokens(pie_address: Address, block: Block | None = None) -> list[ERC20] | None:
     """
     Get the list of tokens in a PieDAO token.
 
@@ -89,7 +89,7 @@ async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> Opt
     return None if tokens is None else list(map(ERC20, tokens))
 
 
-async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
+async def get_bpool(pie_address: Address, block: Block | None = None) -> Address:
     """
     Get the Balancer pool address for a PieDAO token.
 
@@ -115,9 +115,9 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
 
 async def get_tvl(
     pie_address: Address,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
-) -> Optional[UsdValue]:
+) -> UsdValue | None:
     """
     Get the total value locked (TVL) in a PieDAO token in USD.
 
@@ -135,7 +135,7 @@ async def get_tvl(
         - :func:`get_bpool`
         - :func:`get_tokens`
     """
-    tokens: List[ERC20]
+    tokens: list[ERC20]
     pool, tokens = await cgather(get_bpool(pie_address, block), get_tokens(pie_address, block))
     if tokens is None:
         return None
@@ -144,7 +144,7 @@ async def get_tvl(
     )
 
 
-async def get_balance(bpool: Address, token: ERC20, block: Optional[Block] = None) -> Decimal:
+async def get_balance(bpool: Address, token: ERC20, block: Block | None = None) -> Decimal:
     """
     Get the balance of a token in a Balancer pool.
 
@@ -167,7 +167,7 @@ async def get_balance(bpool: Address, token: ERC20, block: Optional[Block] = Non
 async def get_value(
     bpool: Address,
     token: ERC20,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdValue:
     """

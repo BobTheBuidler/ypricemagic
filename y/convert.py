@@ -108,7 +108,7 @@ _is_checksummed: Final[set[ChecksumAddress]] = set()
 _is_not_checksummed: Final[set[HexAddress]] = set()
 
 
-def __get_checksum_from_cache(address: HexAddress) -> Optional[ChecksumAddress]:
+def __get_checksum_from_cache(address: HexAddress) -> ChecksumAddress | None:
     """Retrieve a checksummed address from the cache if available.
 
     This function checks if the given address is already known to be checksummed,

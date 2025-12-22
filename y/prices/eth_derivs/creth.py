@@ -36,7 +36,7 @@ def is_creth(token: AnyAddressType) -> bool:
 @a_sync(default="sync")
 async def get_price_creth(
     token: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
     """Get the price of crETH in USD.

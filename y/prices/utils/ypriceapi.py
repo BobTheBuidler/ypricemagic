@@ -6,7 +6,8 @@ from collections import defaultdict
 from http import HTTPStatus
 from random import randint
 from time import time
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Dict, Optional
+from collections.abc import Callable
 
 import dank_mids
 from aiohttp import (
@@ -58,7 +59,7 @@ YPRICEAPI_SEMAPHORE = dank_mids.BlockSemaphore(int(os.environ.get("YPRICEAPI_SEM
 if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
     for header in AUTH_HEADERS:
         if not AUTH_HEADERS[header]:
-            raise EnvironmentError(
+            raise OSError(
                 f"You must also pass in a value for {header_env_names[header]} in order to use ypriceAPI."
             )
 
@@ -154,7 +155,7 @@ async def get_session() -> ClientSession:
 
 
 @alru_cache(ttl=ONE_HOUR)
-async def get_chains() -> Dict[int, str]:
+async def get_chains() -> dict[int, str]:
     """Get the supported chains from ypriceAPI.
 
     Returns:
@@ -196,7 +197,7 @@ async def chain_supported(chainid: int) -> bool:
     return False
 
 
-async def get_price(token: Address, block: Optional[Block]) -> Optional[UsdPrice]:
+async def get_price(token: Address, block: Block | None) -> UsdPrice | None:
     """Get the price of a token from ypriceAPI.
 
     Args:
@@ -268,9 +269,9 @@ async def get_price(token: Address, block: Optional[Block]) -> Optional[UsdPrice
 
 async def read_response(
     response: ClientResponse,
-    token: Optional[Address] = None,
-    block: Optional[Block] = None,
-) -> Optional[Any]:
+    token: Address | None = None,
+    block: Block | None = None,
+) -> Any | None:
     """Read and process the response from ypriceAPI.
 
     Args:

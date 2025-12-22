@@ -93,7 +93,7 @@ async def get_pool(token_address: AnyAddressType) -> Address:
 
 
 @a_sync(default="sync")
-async def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+async def get_price(token_address: AddressOrContract, block: Block | None = None) -> UsdPrice:
     """
     Calculate the price of a Saddle LP token in USD.
 
@@ -120,7 +120,7 @@ async def get_price(token_address: AddressOrContract, block: Optional[Block] = N
 @a_sync(default="sync")
 async def get_tvl(
     token_address: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdValue:
     """
@@ -141,7 +141,7 @@ async def get_tvl(
     See Also:
         - :func:`get_price`
     """
-    tokens: List[ERC20]
+    tokens: list[ERC20]
     pool, tokens = await cgather(
         get_pool(token_address, sync=False),
         get_tokens(token_address, block, sync=False),
@@ -162,7 +162,7 @@ async def get_tvl(
 
 
 @a_sync(default="sync")
-async def get_tokens(token_address: AnyAddressType, block: Optional[Block] = None) -> List[ERC20]:
+async def get_tokens(token_address: AnyAddressType, block: Block | None = None) -> list[ERC20]:
     """
     Retrieve the list of tokens in a Saddle LP token pool.
 

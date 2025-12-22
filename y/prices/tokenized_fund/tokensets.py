@@ -54,7 +54,7 @@ async def is_token_set(token: AnyAddressType) -> bool:
 @a_sync.a_sync(default="sync")
 async def get_price(
     token: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
     """Get the USD price of a TokenSet.
@@ -106,7 +106,7 @@ class TokenSet(ERC20):
         )
 
     @a_sync.a_sync(ram_cache_maxsize=100)
-    async def components(self, block: Optional[Block] = None) -> List[ERC20]:
+    async def components(self, block: Block | None = None) -> list[ERC20]:
         """Get the components of the TokenSet.
 
         Args:
@@ -124,8 +124,8 @@ class TokenSet(ERC20):
         return [ERC20(component, asynchronous=self.asynchronous) for component in components]
 
     async def balances(
-        self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
-    ) -> List[WeiBalance]:
+        self, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE
+    ) -> list[WeiBalance]:
         """Get the balances of the components in the TokenSet.
 
         This method retrieves the balances of the components in the TokenSet by first
@@ -169,7 +169,7 @@ class TokenSet(ERC20):
         return balances
 
     async def get_price(
-        self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
+        self, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> UsdPrice:
         """Get the USD price of the TokenSet.
 
@@ -202,7 +202,7 @@ class TokenSet(ERC20):
             return UsdPrice(0)
         contract = await Contract.coroutine(self.address)
         if hasattr(contract, "getUnits"):
-            balances: List[WeiBalance] = await self.balances(
+            balances: list[WeiBalance] = await self.balances(
                 block=block, skip_cache=skip_cache, sync=False
             )
             values = await WeiBalance.value_usd.map(balances).values(pop=True)
@@ -212,7 +212,7 @@ class TokenSet(ERC20):
             logger.debug("total supply: %s  tvl: %s  price: %s", total_supply, tvl, price)
             return price
         elif hasattr(contract, "getTotalComponentRealUnits"):
-            balances_per_token: List[WeiBalance] = await self.balances(block=block, sync=False)
+            balances_per_token: list[WeiBalance] = await self.balances(block=block, sync=False)
             price = UsdPrice(await WeiBalance.value_usd.sum(balances_per_token, sync=False))
             logger.debug("balances per token: %s  price: %s", balances_per_token, price)
             return price
