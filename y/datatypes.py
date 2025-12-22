@@ -6,6 +6,7 @@ from brownie.convert.datatypes import EthAddress, HexBytes
 from eth_typing import AnyAddress, BlockNumber
 
 if TYPE_CHECKING:
+    from y.prices.dex.balancer.v2 import BalancerV2Pool
     from y.prices.dex.uniswap.v2 import UniswapV2Pool
     from y.prices.stable_swap.curve import CurvePool
 
@@ -52,7 +53,7 @@ Examples:
     >>> any_address_int = 12345678
 """
 
-Pool = Union["UniswapV2Pool", "CurvePool"]
+Pool = Union["UniswapV2Pool", "CurvePool", "BalancerV2Pool"]
 """
 A union of types representing liquidity pools.
 
