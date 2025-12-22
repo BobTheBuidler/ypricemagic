@@ -215,9 +215,7 @@ class UniswapV2Pool(ERC20):
         raise TokenNotFound(token_in, [token0, token1]) from None
 
     @stuck_coro_debugger
-    async def reserves(
-        self, *, block: Block | None = None
-    ) -> tuple[WeiBalance, WeiBalance] | None:
+    async def reserves(self, *, block: Block | None = None) -> tuple[WeiBalance, WeiBalance] | None:
         try:
             reserves = await self.get_reserves(block_id=block)
         except DecodingError:

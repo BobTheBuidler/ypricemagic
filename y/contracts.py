@@ -782,9 +782,7 @@ async def has_method(
 
 
 @a_sync(default="sync", cache_type="memory")
-async def has_method(
-    address: Address, method: str, return_response: bool = False
-) -> bool | Any:
+async def has_method(address: Address, method: str, return_response: bool = False) -> bool | Any:
     """
     Checks to see if a contract has a `method` view method with no inputs.
     `return_response=True` will return `response` in bytes if `response` else `False`
