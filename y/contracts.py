@@ -667,7 +667,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         """
         return has_method(self.address, method, return_response=return_response, sync=False)
 
-    async def has_methods(self, methods: list[str], _func: Callable[[Iterable["SupportsBool"]], bool] = all) -> bool:  # noqa
+    async def has_methods(
+        self, methods: list[str], _func: Callable[[Iterable["SupportsBool"]], bool] = all
+    ) -> bool:  # noqa
         """
         Check if the contract has all the specified methods.
 
