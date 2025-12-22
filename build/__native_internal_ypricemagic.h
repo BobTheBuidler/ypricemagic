@@ -6,7 +6,11 @@
 
 int CPyGlobalsInit(void);
 
+<<<<<<< HEAD
 extern PyObject *CPyStatics[673];
+=======
+extern PyObject *CPyStatics[677];
+>>>>>>> chore: compile C files for source control
 extern const char * const CPyLit_Str[];
 extern const char * const CPyLit_Bytes[];
 extern const char * const CPyLit_Int[];
