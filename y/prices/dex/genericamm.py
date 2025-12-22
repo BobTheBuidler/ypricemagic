@@ -67,7 +67,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
     async def get_price(
         self,
         lp_token: AnyAddressType,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> UsdPrice:
         """
@@ -105,7 +105,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
 
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type="memory")
-    async def get_tokens(self, lp_token_address: ChecksumAddress) -> Tuple[ERC20, ERC20]:
+    async def get_tokens(self, lp_token_address: ChecksumAddress) -> tuple[ERC20, ERC20]:
         """
         Get the tokens in the AMM pool.
 
@@ -132,7 +132,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
     async def get_tvl(
         self,
         lp_token_address: ChecksumAddress,
-        block: Optional[BlockNumber] = None,
+        block: BlockNumber | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> UsdValue:
         """

@@ -1,5 +1,6 @@
 import logging
-from typing import AsyncIterator, List, Optional
+from typing import List, Optional
+from collections.abc import AsyncIterator
 
 import a_sync
 import dank_mids
@@ -64,7 +65,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
 
     __slots__ = "from_addresses", "to_addresses"
 
-    def __init__(self, from_addresses: List[str], to_addresses: List[str]):
+    def __init__(self, from_addresses: list[str], to_addresses: list[str]):
         """Initialize TraceCache with cleaned from and to addresses.
 
         Args:
@@ -85,8 +86,8 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
         self.to_addresses = _clean_addresses(to_addresses)
 
     def load_metadata(
-        self, chain: Chain, from_address: Optional[str], to_address: Optional[str]
-    ) -> Optional[TraceCacheInfo]:
+        self, chain: Chain, from_address: str | None, to_address: str | None
+    ) -> TraceCacheInfo | None:
         """Load metadata for the given chain and addresses.
 
         Args:
@@ -130,7 +131,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
             return max(info.cached_thru for info in infos)
         return 0
 
-    def _select(self, from_block: int, to_block: int) -> List[dict]:
+    def _select(self, from_block: int, to_block: int) -> list[dict]:
         """Select cached traces within a block range.
 
         Args:
@@ -279,14 +280,14 @@ class TraceFilter(Filter[dict, TraceCache]):
 
     def __init__(
         self,
-        from_addresses: List[str],
-        to_addresses: List[str],
+        from_addresses: list[str],
+        to_addresses: list[str],
         from_block: int,
         *,
         chunk_size: int = BATCH_SIZE,
-        chunks_per_batch: Optional[int] = None,
-        semaphore: Optional[dank_mids.BlockSemaphore] = None,
-        executor: Optional[AsyncThreadPoolExecutor] = None,
+        chunks_per_batch: int | None = None,
+        semaphore: dank_mids.BlockSemaphore | None = None,
+        executor: AsyncThreadPoolExecutor | None = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
@@ -329,7 +330,7 @@ class TraceFilter(Filter[dict, TraceCache]):
             self._cache = TraceCache(self.from_addresses, self.to_addresses)
         return self._cache
 
-    def traces(self, to_block: Optional[int]) -> AsyncIterator[dict]:
+    def traces(self, to_block: int | None) -> AsyncIterator[dict]:
         """Get an asynchronous iterator over traces up to a specified block.
 
         Args:
@@ -343,7 +344,7 @@ class TraceFilter(Filter[dict, TraceCache]):
         """
         return self._objects_thru(block=to_block)
 
-    async def _fetch_range(self, from_block: int, to_block: int) -> List[dict]:
+    async def _fetch_range(self, from_block: int, to_block: int) -> list[dict]:
         """Fetch traces within a block range.
 
         Args:
@@ -366,7 +367,7 @@ class TraceFilter(Filter[dict, TraceCache]):
             results = {block: traces async for block, traces in tasks.map()}
             return list(concat(results[i] for i in range(from_block, to_block)))
 
-    async def _trace_block(self, block: int) -> List[dict]:
+    async def _trace_block(self, block: int) -> list[dict]:
         """Trace a specific block for transactions.
 
         Args:

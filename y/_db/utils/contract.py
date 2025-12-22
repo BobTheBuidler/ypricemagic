@@ -28,7 +28,7 @@ _deploy_block_write_executor = make_executor(1, 4, "ypricemagic db executor [dep
     executor=_deploy_block_read_executor,
 )
 @db_session_retry_locked
-def get_deploy_block(address: str) -> Optional[int]:
+def get_deploy_block(address: str) -> int | None:
     """Retrieve the cached deployment block number for a given contract address.
 
     This function first examines the cached deploy block numbers via
@@ -112,7 +112,7 @@ set_deploy_block = ProcessingQueue(_set_deploy_block, num_workers=2, return_data
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("deploy blocks")
-def known_deploy_blocks() -> Dict[Address, Block]:
+def known_deploy_blocks() -> dict[Address, Block]:
     """Cache and return all known contract deploy blocks for this chain.
 
     This function minimizes database reads by caching the result for one hour.

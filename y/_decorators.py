@@ -1,7 +1,8 @@
 from asyncio import iscoroutinefunction
 from functools import partial, wraps
 from logging import getLogger
-from typing import Callable, TypeVar, Union
+from typing import TypeVar, Union
+from collections.abc import Callable
 
 from a_sync import debugging
 from typing_extensions import ParamSpec
@@ -54,7 +55,7 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
     if iscoroutinefunction(func):
 
         @wraps(func)
-        async def continue_on_revert_wrap(*args: P.args, **kwargs: P.kwargs) -> Union[T, None]:
+        async def continue_on_revert_wrap(*args: P.args, **kwargs: P.kwargs) -> T | None:
             try:
                 return await func(*args, **kwargs)
             except Exception as e:
@@ -63,7 +64,7 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
     elif callable(func):
 
         @wraps(func)
-        def continue_on_revert_wrap(*args: P.args, **kwargs: P.kwargs) -> Union[T, None]:
+        def continue_on_revert_wrap(*args: P.args, **kwargs: P.kwargs) -> T | None:
             try:
                 return func(*args, **kwargs)
             except Exception as e:

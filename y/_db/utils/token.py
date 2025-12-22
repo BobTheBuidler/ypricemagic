@@ -124,7 +124,7 @@ def _ensure_token(address: str) -> None:
 
 
 @a_sync_read_db_session
-def get_bucket(address: str) -> Optional[str]:
+def get_bucket(address: str) -> str | None:
     """Retrieve the bucket for a given token address.
 
     This function retrieves the bucket associated with a token address from
@@ -176,7 +176,7 @@ set_bucket = a_sync.ProcessingQueue(_set_bucket, num_workers=2, return_data=Fals
 
 
 @a_sync_read_db_session
-def get_symbol(address: str) -> Optional[str]:
+def get_symbol(address: str) -> str | None:
     """Retrieve the symbol for a given token address.
 
     This function retrieves the symbol associated with a token address from
@@ -229,7 +229,7 @@ def set_symbol(address: str, symbol: str):
 
 
 @a_sync_read_db_session
-def get_name(address: str) -> Optional[str]:
+def get_name(address: str) -> str | None:
     """Retrieve the name for a given token address.
 
     This function retrieves the name associated with a token address from
@@ -386,7 +386,7 @@ def _set_name(address: str, name: str) -> None:
 
 
 @a_sync_read_db_session
-def _get_token_decimals(address: str) -> Optional[int]:
+def _get_token_decimals(address: str) -> int | None:
     """Retrieve the decimals for a given token address.
 
     This function retrieves the decimals associated with a token address from
@@ -416,7 +416,7 @@ def _get_token_decimals(address: str) -> Optional[int]:
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @db_session_retry_locked
 @log_result_count("tokens")
-def known_tokens() -> Set[str]:
+def known_tokens() -> set[str]:
     """Cache and return all known tokens for this chain.
 
     This function caches and returns all known tokens for the current chain
@@ -434,7 +434,7 @@ def known_tokens() -> Set[str]:
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("buckets")
-def known_buckets() -> Dict[str, str]:
+def known_buckets() -> dict[str, str]:
     """Cache and return all known token buckets for this chain.
 
     This function caches and returns all known token buckets for the current
@@ -452,7 +452,7 @@ def known_buckets() -> Dict[str, str]:
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("token decimals")
-def known_decimals() -> Dict[Address, int]:
+def known_decimals() -> dict[Address, int]:
     """Cache and return all known token decimals for this chain.
 
     This function caches and returns all known token decimals for the current
@@ -472,7 +472,7 @@ def known_decimals() -> Dict[Address, int]:
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("token symbols")
-def known_symbols() -> Dict[Address, str]:
+def known_symbols() -> dict[Address, str]:
     """Cache and return all known token symbols for this chain.
 
     This function caches and returns all known token symbols for the current
@@ -490,7 +490,7 @@ def known_symbols() -> Dict[Address, str]:
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("token names")
-def known_names() -> Dict[Address, str]:
+def known_names() -> dict[Address, str]:
     """Cache and return all known token names for this chain.
 
     This function caches and returns all known token names for the current

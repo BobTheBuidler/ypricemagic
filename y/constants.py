@@ -27,7 +27,7 @@ The address used to represent the native token (e.g., ETH on Ethereum, AVAX on A
 
 weth: Contract
 
-sushi: Optional[Contract] = None
+sushi: Contract | None = None
 """
 A placeholder for the Sushi token contract, which may be set depending on the network.
 """

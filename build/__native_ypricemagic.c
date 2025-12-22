@@ -17034,7 +17034,7 @@ CPyL2: ;
     if (likely(PyBytes_Check(cpy_r_value) || PyByteArray_Check(cpy_r_value)))
         cpy_r_r7 = cpy_r_value;
     else {
-        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 53, CPyStatic_stringify___globals, "bytes", cpy_r_value);
+        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 54, CPyStatic_stringify___globals, "bytes", cpy_r_value);
         goto CPyL48;
     }
     cpy_r_r8 = CPy_DecodeUTF8(cpy_r_r7);
@@ -17060,7 +17060,7 @@ CPyL8: ;
     if (likely(PyBytes_Check(cpy_r_value) || PyByteArray_Check(cpy_r_value)))
         cpy_r_r14 = cpy_r_value;
     else {
-        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 55, CPyStatic_stringify___globals, "bytes", cpy_r_value);
+        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 56, CPyStatic_stringify___globals, "bytes", cpy_r_value);
         goto CPyL48;
     }
     cpy_r_r15 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'hex' */
@@ -17075,7 +17075,7 @@ CPyL8: ;
     if (likely(PyUnicode_Check(cpy_r_r18)))
         cpy_r_r19 = cpy_r_r18;
     else {
-        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 55, CPyStatic_stringify___globals, "str", cpy_r_r18);
+        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 56, CPyStatic_stringify___globals, "str", cpy_r_r18);
         goto CPyL48;
     }
     cpy_r_r20 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* "'" */
@@ -17117,7 +17117,7 @@ CPyL18: ;
     if (likely(PyUnicode_Check(cpy_r_value)))
         cpy_r_r30 = cpy_r_value;
     else {
-        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 58, CPyStatic_stringify___globals, "str", cpy_r_value);
+        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 59, CPyStatic_stringify___globals, "str", cpy_r_value);
         goto CPyL48;
     }
     cpy_r_r31 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* "'" */
@@ -17232,7 +17232,7 @@ CPyL40: ;
     if (likely(PyUnicode_Check(cpy_r_r61)))
         cpy_r_r62 = cpy_r_r61;
     else {
-        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 62, CPyStatic_stringify___globals, "str", cpy_r_r61);
+        CPy_TypeErrorTraceback("y/_db/utils/stringify.py", "stringify_column_value", 63, CPyStatic_stringify___globals, "str", cpy_r_r61);
         goto CPyL48;
     }
     cpy_r_r63 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* "'" */
@@ -17626,27 +17626,31 @@ char CPyDef_stringify_____top_level__(void) {
     PyObject *cpy_r_r21;
     PyObject *cpy_r_r22;
     PyObject *cpy_r_r23;
-    int32_t cpy_r_r24;
-    char cpy_r_r25;
+    PyObject *cpy_r_r24;
+    PyObject *cpy_r_r25;
     PyObject *cpy_r_r26;
     PyObject *cpy_r_r27;
-    PyObject *cpy_r_r28;
-    PyObject *cpy_r_r29;
+    int32_t cpy_r_r28;
+    char cpy_r_r29;
     PyObject *cpy_r_r30;
     PyObject *cpy_r_r31;
     PyObject *cpy_r_r32;
-    int32_t cpy_r_r33;
-    char cpy_r_r34;
+    PyObject *cpy_r_r33;
+    PyObject *cpy_r_r34;
     PyObject *cpy_r_r35;
     PyObject *cpy_r_r36;
-    PyObject *cpy_r_r37;
-    PyObject *cpy_r_r38;
+    int32_t cpy_r_r37;
+    char cpy_r_r38;
     PyObject *cpy_r_r39;
     PyObject *cpy_r_r40;
     PyObject *cpy_r_r41;
-    int32_t cpy_r_r42;
-    char cpy_r_r43;
-    char cpy_r_r44;
+    PyObject *cpy_r_r42;
+    PyObject *cpy_r_r43;
+    PyObject *cpy_r_r44;
+    PyObject *cpy_r_r45;
+    int32_t cpy_r_r46;
+    char cpy_r_r47;
+    char cpy_r_r48;
     cpy_r_r0 = CPyModule_builtins;
     cpy_r_r1 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r2 = cpy_r_r0 != cpy_r_r1;
@@ -17655,7 +17659,7 @@ char CPyDef_stringify_____top_level__(void) {
     cpy_r_r4 = PyImport_Import(cpy_r_r3);
     if (unlikely(cpy_r_r4 == NULL)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", -1, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
     CPyModule_builtins = cpy_r_r4;
     CPy_INCREF(CPyModule_builtins);
@@ -17667,7 +17671,7 @@ CPyL3: ;
     cpy_r_r8 = CPyImport_ImportFromMany(cpy_r_r6, cpy_r_r5, cpy_r_r5, cpy_r_r7);
     if (unlikely(cpy_r_r8 == NULL)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
     CPyModule_datetime = cpy_r_r8;
     CPy_INCREF(CPyModule_datetime);
@@ -17678,101 +17682,112 @@ CPyL3: ;
     cpy_r_r12 = CPyImport_ImportFromMany(cpy_r_r10, cpy_r_r9, cpy_r_r9, cpy_r_r11);
     if (unlikely(cpy_r_r12 == NULL)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
     CPyModule_decimal = cpy_r_r12;
     CPy_INCREF(CPyModule_decimal);
     CPy_DECREF(cpy_r_r12);
-    cpy_r_r13 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Any', 'Final', 'Iterable') */
+    cpy_r_r13 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Any', 'Final') */
     cpy_r_r14 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
     cpy_r_r15 = CPyStatic_stringify___globals;
     cpy_r_r16 = CPyImport_ImportFromMany(cpy_r_r14, cpy_r_r13, cpy_r_r13, cpy_r_r15);
     if (unlikely(cpy_r_r16 == NULL)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
     CPyModule_typing = cpy_r_r16;
     CPy_INCREF(CPyModule_typing);
     CPy_DECREF(cpy_r_r16);
-    cpy_r_r17 = CPyStatic_stringify___globals;
-    cpy_r_r18 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'timezone' */
-    cpy_r_r19 = CPyDict_GetItem(cpy_r_r17, cpy_r_r18);
-    if (unlikely(cpy_r_r19 == NULL)) {
+    cpy_r_r17 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Iterable',) */
+    cpy_r_r18 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'collections.abc' */
+    cpy_r_r19 = CPyStatic_stringify___globals;
+    cpy_r_r20 = CPyImport_ImportFromMany(cpy_r_r18, cpy_r_r17, cpy_r_r17, cpy_r_r19);
+    if (unlikely(cpy_r_r20 == NULL)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
-    cpy_r_r20 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'utc' */
-    cpy_r_r21 = CPyObject_GetAttr(cpy_r_r19, cpy_r_r20);
-    CPy_DECREF(cpy_r_r19);
-    if (unlikely(cpy_r_r21 == NULL)) {
+    CPyModule_collections___abc = cpy_r_r20;
+    CPy_INCREF(CPyModule_collections___abc);
+    CPy_DECREF(cpy_r_r20);
+    cpy_r_r21 = CPyStatic_stringify___globals;
+    cpy_r_r22 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'timezone' */
+    cpy_r_r23 = CPyDict_GetItem(cpy_r_r21, cpy_r_r22);
+    if (unlikely(cpy_r_r23 == NULL)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
-    CPyStatic_stringify___UTC = cpy_r_r21;
+    cpy_r_r24 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'utc' */
+    cpy_r_r25 = CPyObject_GetAttr(cpy_r_r23, cpy_r_r24);
+    CPy_DECREF(cpy_r_r23);
+    if (unlikely(cpy_r_r25 == NULL)) {
+        CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
+        goto CPyL17;
+    }
+    CPyStatic_stringify___UTC = cpy_r_r25;
     CPy_INCREF(CPyStatic_stringify___UTC);
-    cpy_r_r22 = CPyStatic_stringify___globals;
-    cpy_r_r23 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'UTC' */
-    cpy_r_r24 = CPyDict_SetItem(cpy_r_r22, cpy_r_r23, cpy_r_r21);
-    CPy_DECREF(cpy_r_r21);
-    cpy_r_r25 = cpy_r_r24 >= 0;
-    if (unlikely(!cpy_r_r25)) {
-        CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
-    }
     cpy_r_r26 = CPyStatic_stringify___globals;
-    cpy_r_r27 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'datetime' */
-    cpy_r_r28 = CPyDict_GetItem(cpy_r_r26, cpy_r_r27);
-    if (unlikely(cpy_r_r28 == NULL)) {
+    cpy_r_r27 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'UTC' */
+    cpy_r_r28 = CPyDict_SetItem(cpy_r_r26, cpy_r_r27, cpy_r_r25);
+    CPy_DECREF(cpy_r_r25);
+    cpy_r_r29 = cpy_r_r28 >= 0;
+    if (unlikely(!cpy_r_r29)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
-    cpy_r_r29 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'astimezone' */
-    cpy_r_r30 = CPyObject_GetAttr(cpy_r_r28, cpy_r_r29);
-    CPy_DECREF(cpy_r_r28);
-    if (unlikely(cpy_r_r30 == NULL)) {
+    cpy_r_r30 = CPyStatic_stringify___globals;
+    cpy_r_r31 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'datetime' */
+    cpy_r_r32 = CPyDict_GetItem(cpy_r_r30, cpy_r_r31);
+    if (unlikely(cpy_r_r32 == NULL)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
-    CPyStatic_stringify___astimezone = cpy_r_r30;
+    cpy_r_r33 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'astimezone' */
+    cpy_r_r34 = CPyObject_GetAttr(cpy_r_r32, cpy_r_r33);
+    CPy_DECREF(cpy_r_r32);
+    if (unlikely(cpy_r_r34 == NULL)) {
+        CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
+        goto CPyL17;
+    }
+    CPyStatic_stringify___astimezone = cpy_r_r34;
     CPy_INCREF(CPyStatic_stringify___astimezone);
-    cpy_r_r31 = CPyStatic_stringify___globals;
-    cpy_r_r32 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'astimezone' */
-    cpy_r_r33 = CPyDict_SetItem(cpy_r_r31, cpy_r_r32, cpy_r_r30);
-    CPy_DECREF(cpy_r_r30);
-    cpy_r_r34 = cpy_r_r33 >= 0;
-    if (unlikely(!cpy_r_r34)) {
-        CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
-    }
     cpy_r_r35 = CPyStatic_stringify___globals;
-    cpy_r_r36 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'datetime' */
-    cpy_r_r37 = CPyDict_GetItem(cpy_r_r35, cpy_r_r36);
-    if (unlikely(cpy_r_r37 == NULL)) {
+    cpy_r_r36 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'astimezone' */
+    cpy_r_r37 = CPyDict_SetItem(cpy_r_r35, cpy_r_r36, cpy_r_r34);
+    CPy_DECREF(cpy_r_r34);
+    cpy_r_r38 = cpy_r_r37 >= 0;
+    if (unlikely(!cpy_r_r38)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
-    cpy_r_r38 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'isoformat' */
-    cpy_r_r39 = CPyObject_GetAttr(cpy_r_r37, cpy_r_r38);
-    CPy_DECREF(cpy_r_r37);
-    if (unlikely(cpy_r_r39 == NULL)) {
+    cpy_r_r39 = CPyStatic_stringify___globals;
+    cpy_r_r40 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'datetime' */
+    cpy_r_r41 = CPyDict_GetItem(cpy_r_r39, cpy_r_r40);
+    if (unlikely(cpy_r_r41 == NULL)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
-    CPyStatic_stringify___isoformat = cpy_r_r39;
+    cpy_r_r42 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'isoformat' */
+    cpy_r_r43 = CPyObject_GetAttr(cpy_r_r41, cpy_r_r42);
+    CPy_DECREF(cpy_r_r41);
+    if (unlikely(cpy_r_r43 == NULL)) {
+        CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
+        goto CPyL17;
+    }
+    CPyStatic_stringify___isoformat = cpy_r_r43;
     CPy_INCREF(CPyStatic_stringify___isoformat);
-    cpy_r_r40 = CPyStatic_stringify___globals;
-    cpy_r_r41 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'isoformat' */
-    cpy_r_r42 = CPyDict_SetItem(cpy_r_r40, cpy_r_r41, cpy_r_r39);
-    CPy_DECREF(cpy_r_r39);
-    cpy_r_r43 = cpy_r_r42 >= 0;
-    if (unlikely(!cpy_r_r43)) {
+    cpy_r_r44 = CPyStatic_stringify___globals;
+    cpy_r_r45 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'isoformat' */
+    cpy_r_r46 = CPyDict_SetItem(cpy_r_r44, cpy_r_r45, cpy_r_r43);
+    CPy_DECREF(cpy_r_r43);
+    cpy_r_r47 = cpy_r_r46 >= 0;
+    if (unlikely(!cpy_r_r47)) {
         CPy_AddTraceback("y/_db/utils/stringify.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-        goto CPyL16;
+        goto CPyL17;
     }
     return 1;
-CPyL16: ;
-    cpy_r_r44 = 2;
-    return cpy_r_r44;
+CPyL17: ;
+    cpy_r_r48 = 2;
+    return cpy_r_r48;
 }
 static PyMethodDef ENVIRONMENT_VARIABLESmodule_methods[] = {
     {NULL, NULL, 0, NULL}
@@ -41765,6 +41780,7 @@ int CPyGlobalsInit(void)
     CPyModule_datetime = Py_None;
     CPyModule_decimal = Py_None;
     CPyModule_typing = Py_None;
+    CPyModule_collections___abc = Py_None;
     CPyModule_y___ENVIRONMENT_VARIABLES = Py_None;
     CPyModule_builtins = Py_None;
     CPyModule_os = Py_None;
@@ -42073,14 +42089,14 @@ const int CPyLit_Tuple[] = {
     1, 116, 1, 117, 2, 152, 153, 3, 157, 157, 157, 3, 158, 158, 158, 2,
     627, 628, 2, 69, 148, 2, 48, 160, 2, 161, 162, 1, 163, 2, 165, 60, 1,
     166, 1, 168, 6, 139, 30, 146, 140, 138, 150, 1, 173, 2, 203, 212, 1,
-    202, 3, 46, 48, 161, 1, 114, 2, 218, 219, 2, 152, 224, 1, 152, 4, 48,
-    50, 249, 52, 3, 60, 60, 60, 3, 250, 250, 250, 3, 251, 251, 251, 3,
-    647, 648, 649, 3, 253, 254, 255, 1, 257, 1, 267, 1, 286, 1, 627, 1,
+    202, 2, 46, 48, 1, 161, 1, 114, 2, 218, 219, 2, 152, 224, 1, 152, 4,
+    48, 50, 249, 52, 3, 60, 60, 60, 3, 250, 250, 250, 3, 251, 251, 251, 3,
+    648, 649, 650, 3, 253, 254, 255, 1, 257, 1, 267, 1, 286, 1, 627, 1,
     300, 5, 302, 46, 48, 50, 53, 1, 303, 1, 276, 1, 278, 2, 304, 254, 1,
     290, 1, 365, 3, 48, 50, 53, 1, 381, 1, 390, 4, 48, 50, 249, 410, 1,
-    647, 1, 380, 4, 367, 378, 412, 413, 1, 311, 1, 400, 1, 403, 1, 394, 1,
+    648, 1, 380, 4, 367, 378, 412, 413, 1, 311, 1, 400, 1, 403, 1, 394, 1,
     389, 1, 408, 2, 424, 425, 2, 264, 563, 1, 565, 1, 563, 1, 566, 5, 46,
-    48, 567, 50, 51, 1, 161, 3, 568, 568, 568, 2, 647, 684, 1, 570
+    48, 567, 50, 51, 3, 568, 568, 568, 2, 648, 684, 1, 570
 };
 const int CPyLit_FrozenSet[] = {0};
 CPyModule *CPyModule_y____db___brownie__internal = NULL;

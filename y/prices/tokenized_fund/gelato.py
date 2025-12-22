@@ -42,7 +42,7 @@ async def is_gelato_pool(token_address: AnyAddressType) -> bool:
 @a_sync(default="sync")
 async def get_price(
     token: AnyAddressType,
-    block: Optional[Block] = None,
+    block: Block | None = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
     """

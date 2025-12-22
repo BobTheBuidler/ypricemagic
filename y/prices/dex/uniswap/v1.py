@@ -49,7 +49,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None)
-    async def get_exchange(self, token_address: Address) -> Optional[Contract]:
+    async def get_exchange(self, token_address: Address) -> Contract | None:
         """
         Get the exchange contract for a given token address.
 
@@ -82,10 +82,10 @@ class UniswapV1(a_sync.ASyncGenericBase):
     async def get_price(
         self,
         token_address: Address,
-        block: Optional[Block],
-        ignore_pools: Tuple[Pool, ...] = (),  # unused
+        block: Block | None,
+        ignore_pools: tuple[Pool, ...] = (),  # unused
         skip_cache: bool = ENVS.SKIP_CACHE,  # unused
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         """
         Get the price of a token in USD.
 
@@ -135,7 +135,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
     async def check_liquidity(
-        self, token_address: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()
+        self, token_address: Address, block: Block, ignore_pools: tuple[Pool, ...] = ()
     ) -> int:
         """
         Check the liquidity of a token in its exchange.
