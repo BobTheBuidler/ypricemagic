@@ -30,7 +30,7 @@ jobs:
       run: pip install pyupgrade
 
     - name: Run PyUpgrade
-      run: pyupgrade --py310-plus --exit-zero-even-if-changed **/**/**.py
+      run: find . -name '*.py' -exec pyupgrade --py310-plus --exit-zero-even-if-changed {} +
 
     - name: Check for changes
       id: changes
