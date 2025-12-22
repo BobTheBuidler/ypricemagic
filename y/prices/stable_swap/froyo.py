@@ -52,7 +52,7 @@ def is_froyo(token: AnyAddressType) -> bool:
 
 
 @a_sync.a_sync(default="sync")
-async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+async def get_price(token: AnyAddressType, block: Block | None = None) -> UsdPrice | None:
     """
     Retrieves the USD price of the Froyo pool token on the Fantom network.
 

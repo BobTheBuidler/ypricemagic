@@ -118,7 +118,7 @@ async def get_block_timestamp_async(height: int) -> int:
 
 # TODO: deprecate
 @memory.cache()
-def last_block_on_date(date: Union[str, datetime.date]) -> BlockNumber:
+def last_block_on_date(date: str | datetime.date) -> BlockNumber:
     """
     Returns the last block on a given date. You can pass either a `datetime.date` object or a date string formatted as 'YYYY-MM-DD'.
 

@@ -5,17 +5,16 @@ from functools import cached_property, lru_cache
 from itertools import cycle, islice
 from logging import DEBUG, getLogger
 from typing import (
-    AsyncIterator,
     DefaultDict,
     Dict,
     Final,
-    Iterable,
     List,
     Literal,
     Optional,
     Tuple,
     Union,
 )
+from collections.abc import AsyncIterator, Iterable
 
 import a_sync
 import eth_retry
@@ -114,7 +113,7 @@ forked_deployments: Final = {
 
 _FEE_DENOMINATOR: Final = Decimal(1_000_000)
 
-_PATH_TYPE_STRINGS: Final[Dict[int, Tuple[Literal["address", "uint24"], ...]]] = {
+_PATH_TYPE_STRINGS: Final[dict[int, tuple[Literal["address", "uint24"], ...]]] = {
     3: tuple(islice(cycle(("address", "uint24")), 3)),
     5: tuple(islice(cycle(("address", "uint24")), 5)),
 }
@@ -211,7 +210,7 @@ class UniswapV3Pool(ContractBase):
         return ERC20(token, asynchronous=self.asynchronous)
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
-    async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
+    async def check_liquidity(self, token: AnyAddressType, block: Block) -> int | None:
         """
         Check the liquidity of a token in the pool at a specific block.
 
@@ -264,7 +263,7 @@ class UniswapV3Pool(ContractBase):
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
     async def _check_liquidity_token_out(
         self, token_in: AnyAddressType, block: Block
-    ) -> Optional[int]:
+    ) -> int | None:
         """
         Check the liquidity of the token out for a given token in.
 
@@ -319,7 +318,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
         self,
         factory: HexAddress,
         quoter: HexAddress,
-        fee_tiers: List[int],
+        fee_tiers: list[int],
         asynchronous: bool = True,
     ) -> None:
         """
@@ -429,7 +428,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
-    async def pools(self) -> List[UniswapV3Pool]:
+    async def pools(self) -> list[UniswapV3Pool]:
         """
         Get the list of Uniswap V3 pools.
 
@@ -524,10 +523,10 @@ class UniswapV3(a_sync.ASyncGenericBase):
     async def get_price(
         self,
         token: Address,
-        block: Optional[Block] = None,
-        ignore_pools: Tuple[Pool, ...] = (),  # unused
+        block: Block | None = None,
+        ignore_pools: tuple[Pool, ...] = (),  # unused
         skip_cache: bool = ENVS.SKIP_CACHE,  # unused
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         """
         Get the price of a token in USD.
 
@@ -551,7 +550,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
         if block and block < await contract_creation_block_async(quoter, True):
             return None
 
-        paths: List[Path] = [(token, fee, usdc.address) for fee in self.fee_tiers]
+        paths: list[Path] = [(token, fee, usdc.address) for fee in self.fee_tiers]
         if token != weth:
             paths += [
                 (token, fee, weth.address, self.fee_tiers[0], usdc.address)
@@ -575,7 +574,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
     async def check_liquidity(
-        self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()
+        self, token: Address, block: Block, ignore_pools: tuple[Pool, ...] = ()
     ) -> int:
         """
         Check the liquidity of a token in the Uniswap V3 protocol.
@@ -646,7 +645,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
         # Since uni v3 liquidity can be provided asymmetrically, the most liquid pool in terms of `token` might not actually be the most liquid pool in terms of `token_out`
         # We need some spaghetticode here to account for these erroneous liquidity values
         # TODO: Refactor this
-        token_out_liquidity: DefaultDict[ERC20, List[int]] = defaultdict(list)
+        token_out_liquidity: DefaultDict[ERC20, list[int]] = defaultdict(list)
         if debug_logs_enabled:
             async for pool, liquidity in token_out_tasks.map(pop=False):
                 await log_liquidity(pool, token, block, liquidity)
@@ -685,7 +684,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
     @eth_retry.auto_retry
     async def _quote_exact_input(
         self, path: Path, amount_in: int, block: BlockNumber
-    ) -> Optional[Decimal]:
+    ) -> Decimal | None:
         """
         Quote the exact input for a given path and amount.
 
@@ -772,7 +771,7 @@ def _undo_fees(path: Path) -> Decimal:
 class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     """Represents a collection of Uniswap V3 Pools."""
 
-    _pools_by_token_cache: DefaultDict[Address, Dict[Block, List[UniswapV3Pool]]]
+    _pools_by_token_cache: DefaultDict[Address, dict[Block, list[UniswapV3Pool]]]
 
     __slots__ = "asynchronous", "_pools_by_token_cache"
 

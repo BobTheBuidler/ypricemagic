@@ -55,7 +55,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         self.asynchronous = asynchronous
 
     @a_sync.aka.property
-    async def versions(self) -> List[Union[BalancerV1, BalancerV2]]:
+    async def versions(self) -> list[BalancerV1 | BalancerV2]:
         """
         Get the available Balancer versions.
 
@@ -67,10 +67,10 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         """
         return [v async for v in a_sync.as_completed([self.__v1__, self.__v2__], aiter=True) if v]
 
-    __versions__: HiddenMethodDescriptor[Self, List[Union[BalancerV1, BalancerV2]]]
+    __versions__: HiddenMethodDescriptor[Self, list[BalancerV1 | BalancerV2]]
 
     @a_sync.aka.cached_property
-    async def v1(self) -> Optional[BalancerV1]:
+    async def v1(self) -> BalancerV1 | None:
         """
         Get the Balancer V1 instance.
 
@@ -85,10 +85,10 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         except ImportError:
             return None
 
-    __v1__: HiddenMethodDescriptor[Self, Optional[BalancerV1]]
+    __v1__: HiddenMethodDescriptor[Self, BalancerV1 | None]
 
     @a_sync.aka.cached_property
-    async def v2(self) -> Optional[BalancerV2]:
+    async def v2(self) -> BalancerV2 | None:
         """
         Get the Balancer V2 instance.
 
@@ -103,7 +103,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         except ImportError:
             return None
 
-    __v2__: HiddenMethodDescriptor[Self, Optional[BalancerV2]]
+    __v2__: HiddenMethodDescriptor[Self, BalancerV2 | None]
 
     @stuck_coro_debugger
     @optional_async_diskcache
@@ -130,9 +130,9 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
     async def get_pool_price(
         self,
         token_address: AnyAddressType,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         """
         Get the price of a Balancer pool.
 
@@ -159,9 +159,9 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
     async def get_price(
         self,
         token_address: AnyAddressType,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         """
         Get the price of a token using Balancer pools.
 

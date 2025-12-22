@@ -88,7 +88,7 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         # TODO: fix that if it causes issues for somebody. For us its fine.
         self.v3_forks = v3.forks
 
-        self.uniswaps: List[Uniswap] = []
+        self.uniswaps: list[Uniswap] = []
         if self.v1:
             self.uniswaps.append(self.v1)
         self.uniswaps.extend(self.v2_routers.values())
@@ -124,10 +124,10 @@ class UniswapMultiplexer(ASyncGenericSingleton):
     async def get_price(
         self,
         token_in: AnyAddressType,
-        block: Optional[Block] = None,
-        ignore_pools: Tuple[Pool, ...] = (),
+        block: Block | None = None,
+        ignore_pools: tuple[Pool, ...] = (),
         skip_cache: bool = ENVS.SKIP_CACHE,
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always finds the deepest swap path for `token_in`.
@@ -172,9 +172,9 @@ class UniswapMultiplexer(ASyncGenericSingleton):
     async def routers_by_depth(
         self,
         token_in: AnyAddressType,
-        block: Optional[Block] = None,
-        ignore_pools: Tuple[Pool, ...] = (),
-    ) -> List[UniswapRouterV2]:
+        block: Block | None = None,
+        ignore_pools: tuple[Pool, ...] = (),
+    ) -> list[UniswapRouterV2]:
         """
         Get Uniswap routers sorted by liquidity depth for a given token.
 
@@ -213,7 +213,7 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         self,
         token: Address,
         block: Block,
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> int:
         """
         Check the maximum liquidity for a token across all Uniswap instances.

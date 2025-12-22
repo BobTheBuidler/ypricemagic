@@ -7,7 +7,6 @@ from logging import getLogger
 from os import getenv
 from typing import (
     Any,
-    Callable,
     Dict,
     List,
     Literal,
@@ -16,6 +15,7 @@ from typing import (
     Union,
     overload,
 )
+from collections.abc import Callable
 from collections.abc import Iterable
 from urllib.parse import urlparse
 
@@ -376,15 +376,15 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     Provides a convenient way to query contract events with minimal code.
     """
 
-    _ttl_cache_popper: Union[Literal["disabled"], int, TimerHandle]
+    _ttl_cache_popper: Literal["disabled"] | int | TimerHandle
 
     @eth_retry.auto_retry
     def __init__(
         self,
         address: AnyAddressType,
-        owner: Optional[AccountsType] = None,
+        owner: AccountsType | None = None,
         require_success: bool = True,
-        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
+        cache_ttl: int | None = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> None:
         """
         Initialize a :class:`~Contract` instance.
@@ -467,9 +467,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         name: str,
         address: str,
         abi: list,
-        owner: Optional[AccountsType] = None,
+        owner: AccountsType | None = None,
         persist: bool = True,
-        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
+        cache_ttl: int | None = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
         """
         Create a :class:`~Contract` instance from an ABI.
@@ -504,10 +504,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def coroutine(
         cls,
         address: AnyAddressType,
-        owner: Optional[AccountsType] = None,
+        owner: AccountsType | None = None,
         persist: bool = True,
         require_success: bool = True,
-        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
+        cache_ttl: int | None = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
         """
         Create a :class:`~Contract` instance asynchronously.
@@ -628,7 +628,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
     @eth_retry.auto_retry
     def __init_from_abi__(
-        self, build: dict, owner: Optional[AccountsType] = None, persist: bool = True
+        self, build: dict, owner: AccountsType | None = None, persist: bool = True
     ) -> None:
         """
         Initialize a :class:`~Contract` instance from an ABI.
@@ -658,7 +658,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             )
         return self
 
-    def has_method(self, method: str, return_response: bool = False) -> Union[bool, Any]:
+    def has_method(self, method: str, return_response: bool = False) -> bool | Any:
         """
         Check if the contract has a specific method.
 
@@ -673,7 +673,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         """
         return has_method(self.address, method, return_response=return_response, sync=False)
 
-    async def has_methods(self, methods: list[str], _func: Union[any, all] = all) -> bool:
+    async def has_methods(self, methods: list[str], _func: any | all = all) -> bool:
         """
         Check if the contract has all the specified methods.
 
@@ -688,7 +688,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         """
         return await has_methods(self.address, methods, _func, sync=False)
 
-    async def build_name(self, return_None_on_failure: bool = False) -> Optional[str]:
+    async def build_name(self, return_None_on_failure: bool = False) -> str | None:
         """
         Get the build name of the contract.
 
@@ -704,7 +704,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             self.address, return_None_on_failure=return_None_on_failure, sync=False
         )
 
-    async def get_code(self, block: Optional[Block] = None) -> HexBytes:
+    async def get_code(self, block: Block | None = None) -> HexBytes:
         """
         Get the bytecode of the contract at a specific block.
 
@@ -718,7 +718,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         """
         return await get_code(self.address, block=block)
 
-    def _schedule_cache_pop(self, cache_ttl: Optional[int]) -> None:
+    def _schedule_cache_pop(self, cache_ttl: int | None) -> None:
         if cache_ttl is None:
             self._ttl_cache_popper = "disabled"
             return
@@ -736,7 +736,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             self.address,
         )
 
-    def __post_init__(self, cache_ttl: Optional[int] = None) -> None:
+    def __post_init__(self, cache_ttl: int | None = None) -> None:
         super().__post_init__()
 
         # Init an event container for each topic
@@ -772,7 +772,7 @@ def is_contract(address: AnyAddressType) -> bool:
 @overload
 async def has_method(
     address: Address, method: str, return_response: Literal[True]
-) -> Union[bool, Any]: ...
+) -> bool | Any: ...
 
 
 @overload
@@ -784,7 +784,7 @@ async def has_method(
 @a_sync(default="sync", cache_type="memory")
 async def has_method(
     address: Address, method: str, return_response: bool = False
-) -> Union[bool, Any]:
+) -> bool | Any:
     """
     Checks to see if a contract has a `method` view method with no inputs.
     `return_response=True` will return `response` in bytes if `response` else `False`
@@ -854,7 +854,7 @@ async def has_methods(
 async def probe(
     address: AnyAddressType,
     methods: Iterable[str],
-    block: Optional[Block] = None,
+    block: Block | None = None,
     return_method: bool = False,
 ) -> Any:
     address = await convert.to_address_async(address)
@@ -904,7 +904,7 @@ async def build_name(address: AnyAddressType, return_None_on_failure: bool = Fal
         return None
 
 
-async def proxy_implementation(address: AnyAddressType, block: Optional[Block]) -> Address:
+async def proxy_implementation(address: AnyAddressType, block: Block | None) -> Address:
     """
     Get the implementation address for a proxy contract.
 

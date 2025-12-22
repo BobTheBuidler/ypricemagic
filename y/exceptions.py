@@ -33,7 +33,7 @@ class yPriceMagicError(ValueError):
         self,
         exc: Exception,
         token_address: ChecksumAddress,
-        block: Optional[BlockNumber],
+        block: BlockNumber | None,
         symbol: str,
     ):
         self.token: Final = token_address

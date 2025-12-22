@@ -90,7 +90,7 @@ class CToken(ERC20):
         self.exchange_rate_current = Call(self.address, "exchangeRateCurrent()(uint)").coroutine
 
     async def get_price(
-        self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
+        self, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> UsdPrice:
         """
         Get the price of the CToken in USD.
@@ -142,7 +142,7 @@ class CToken(ERC20):
 
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
 
-    async def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
+    async def underlying_per_ctoken(self, block: Block | None = None) -> float:
         """
         Get the exchange rate of the CToken, adjusted for decimals.
 
@@ -169,7 +169,7 @@ class CToken(ERC20):
         return exchange_rate * 10 ** (decimals - await underlying.__decimals__)
 
     # yLazyLogger(logger)
-    async def exchange_rate(self, block: Optional[Block] = None) -> float:
+    async def exchange_rate(self, block: Block | None = None) -> float:
         """
         Get the current exchange rate of the CToken.
 
@@ -200,8 +200,8 @@ class CToken(ERC20):
         return exchange_rate / 10**18
 
     async def get_underlying_price(
-        self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
-    ) -> Optional[float]:
+        self, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE
+    ) -> float | None:
         """
         Get the price of the underlying token in USD.
 
@@ -247,8 +247,8 @@ class CToken(ERC20):
 class Comptroller(ContractBase):
     def __init__(
         self,
-        address: Optional[AnyAddressType] = None,
-        key: Optional[str] = None,
+        address: AnyAddressType | None = None,
+        key: str | None = None,
         *,
         asynchronous: bool = False,
     ) -> None:
@@ -299,7 +299,7 @@ class Comptroller(ContractBase):
         return token_address in self.markets
 
     @a_sync.aka.cached_property
-    async def markets(self) -> Tuple[CToken]:
+    async def markets(self) -> tuple[CToken]:
         """
         Get the markets associated with this Comptroller.
 
@@ -321,9 +321,9 @@ class Comptroller(ContractBase):
         logger.info("loaded %s markets for %s", len(markets), self)
         return markets
 
-    __markets__ = HiddenMethodDescriptor[Self, Tuple[CToken]]
+    __markets__ = HiddenMethodDescriptor[Self, tuple[CToken]]
 
-    async def oracle(self, block: Optional[Block] = None) -> Contract:
+    async def oracle(self, block: Block | None = None) -> Contract:
         """
         Get the oracle contract associated with this Comptroller.
 
@@ -388,7 +388,7 @@ class Compound(a_sync.ASyncGenericSingleton):
             )
         return self.is_compound_market(token_address)
 
-    async def get_troller(self, token_address: AddressOrContract) -> Optional[Comptroller]:
+    async def get_troller(self, token_address: AddressOrContract) -> Comptroller | None:
         """
         Get the Comptroller associated with a token address.
 
@@ -436,9 +436,9 @@ class Compound(a_sync.ASyncGenericSingleton):
     async def get_price(
         self,
         token_address: AnyAddressType,
-        block: Optional[Block] = None,
+        block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-    ) -> Optional[UsdPrice]:
+    ) -> UsdPrice | None:
         """
         Get the price of a token in USD.
 
