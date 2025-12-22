@@ -590,7 +590,7 @@ class BalancerV2Pool(BalancerPool):
             >>> price = await pool.get_token_price("0xTokenAddress")
         """
         get_balances_coro = self.get_balances(
-            block=block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
+            block=block, skip_cache=skip_cache, ignore_pools=(self, *ignore_pools), sync=False
         )
         if self.__nonweighted:
             # this await will return immediately once cached
