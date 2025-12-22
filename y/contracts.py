@@ -5,16 +5,7 @@ from collections import defaultdict
 from functools import lru_cache
 from logging import getLogger
 from os import getenv
-from typing import (
-    Any,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Union,
-    overload,
-)
+from typing import Any, Final, Literal, overload
 from collections.abc import Callable, Iterable
 from urllib.parse import urlparse
 
@@ -70,18 +61,22 @@ from y.utils.cache import memory
 from y.utils.events import Events
 from y.utils.gather import gather_methods
 
-logger = getLogger(__name__)
+if TYPE_CHECKING:
+    from _typeshed import SupportsBool
+
+
+logger: Final = getLogger(__name__)
 logger_debug = logger.debug
 
-NETWORK_NAME = Network.name()
-_CHAINID = chain.id
+NETWORK_NAME: Final = Network.name()
+_CHAINID: Final = chain.id
 
-_brownie_deployments_db_lock = threading.Lock()
-_contract_locks = defaultdict(Lock)
-_decode_abi = Decoder(type=list[dict[str, Any]]).decode
+_brownie_deployments_db_lock: Final = threading.Lock()
+_contract_locks: Final = defaultdict(Lock)
+_decode_abi: Final = Decoder(type=list[dict[str, Any]]).decode
 
 # These tokens have trouble when resolving the implementation via the chain.
-FORCE_IMPLEMENTATION = {
+FORCE_IMPLEMENTATION: Final = {
     Network.Mainnet: {
         "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": "0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF",  # USDC as of 2022-08-10
         "0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5": "0xf51fC5ae556F5B8c6dCf50f70167B81ceb02a2b2",  # dETH as of 2024-02-15
@@ -672,7 +667,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         """
         return has_method(self.address, method, return_response=return_response, sync=False)
 
-    async def has_methods(self, methods: list[str], _func: any | all = all) -> bool:
+    async def has_methods(self, methods: list[str], _func: Callable[[Iterable["SupportsBool"]], bool] = all) -> bool:  # noqa
         """
         Check if the contract has all the specified methods.
 
@@ -815,7 +810,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
 async def has_methods(
     address: AnyAddressType,
     methods: Iterable[str],
-    _func: Callable = all,  # Union[any, all]
+    _func: Callable[[Iterable["SupportsBool"]], bool] = all,
 ) -> bool:
     """
     Checks to see if a contract has each view method (with no inputs) in `methods`.
