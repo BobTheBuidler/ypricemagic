@@ -2,16 +2,7 @@ from asyncio import Task, create_task
 from contextlib import suppress
 from enum import IntEnum
 from logging import DEBUG, getLogger
-from typing import (
-    Any,
-    Dict,
-    List,
-    NewType,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import Any, NewType, TypeVar
 from collections.abc import AsyncIterator, Awaitable, Callable
 
 import a_sync

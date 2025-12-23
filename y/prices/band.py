@@ -1,5 +1,3 @@
-from typing import Optional
-
 import a_sync
 from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor

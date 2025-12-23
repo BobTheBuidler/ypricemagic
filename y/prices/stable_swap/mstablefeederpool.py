@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import a_sync
 from a_sync import cgather

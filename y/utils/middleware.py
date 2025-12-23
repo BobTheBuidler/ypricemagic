@@ -7,7 +7,6 @@ from brownie import chain, web3
 from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider, Web3
-from web3.middleware import filter
 from web3.middleware.geth_poa import geth_poa_middleware
 
 from y import ENVIRONMENT_VARIABLES as ENVS

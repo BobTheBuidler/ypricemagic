@@ -12,7 +12,6 @@ The module also includes a function for retrieving special token paths for a giv
 
 import logging
 from functools import lru_cache
-from typing import Dict, List
 
 from brownie import chain
 

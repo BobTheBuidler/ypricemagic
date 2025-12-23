@@ -1,7 +1,7 @@
 from asyncio import Task, sleep
 from logging import DEBUG, Logger, StreamHandler, getLogger, _lock
 from types import MethodType
-from typing import Final, List, NoReturn, Optional, Tuple, TypeVar, Union, final
+from typing import Final, NoReturn, Optional, TypeVar, final
 from weakref import WeakValueDictionary, ref as weak_ref
 
 import a_sync

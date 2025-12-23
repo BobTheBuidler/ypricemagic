@@ -1,6 +1,4 @@
 # sourcery skip: dont-import-test-modules
-from typing import List
-
 import a_sync
 import pytest
 from brownie import chain

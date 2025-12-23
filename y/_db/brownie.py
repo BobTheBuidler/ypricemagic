@@ -2,7 +2,7 @@ import hashlib
 import json
 from asyncio import Lock
 from pathlib import Path
-from typing import Any, Dict, Final, Literal, Optional, Tuple, cast, final
+from typing import Any, Final, Literal, cast, final
 from collections.abc import Callable
 from collections.abc import Container
 
@@ -12,11 +12,8 @@ from aiosqlite.context import Result
 from brownie._config import CONFIG, _get_data_folder
 from brownie.exceptions import BrownieEnvironmentError
 from brownie.network.contract import _resolve_address  # type: ignore [attr-defined]
-from brownie.project.build import DEPLOYMENT_KEYS
 from functools import lru_cache
-from sqlite3 import InterfaceError, OperationalError
-
-from y.datatypes import Address
+from sqlite3 import OperationalError
 
 
 SourceKey = Literal[

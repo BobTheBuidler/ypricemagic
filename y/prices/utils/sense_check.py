@@ -11,7 +11,7 @@ this requires modifying the source code, which may not be ideal for all users.
 
 import logging
 from decimal import Decimal
-from typing import Final, Optional, Set, Union
+from typing import Final
 
 import a_sync
 from eth_typing import BlockNumber, ChecksumAddress

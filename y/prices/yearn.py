@@ -1,6 +1,5 @@
 from decimal import Decimal
 from logging import DEBUG, getLogger
-from typing import Optional, Tuple
 
 import a_sync
 from a_sync import ASyncCachedPropertyDescriptor, cgather

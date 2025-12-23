@@ -1,6 +1,6 @@
 from contextlib import suppress
 from logging import DEBUG, getLogger
-from typing import Any, Optional, Tuple
+from typing import Any
 
 import a_sync
 from a_sync import cgather

@@ -1,6 +1,5 @@
 import logging
-from typing import Final, List, Optional, final
-from collections.abc import Callable
+from typing import Final, final
 
 import a_sync
 from a_sync import cgather

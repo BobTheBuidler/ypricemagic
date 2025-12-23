@@ -2,7 +2,7 @@
 Utility functions for gathering method results asynchronously.
 """
 
-from typing import Any, Final, List, Optional, Tuple
+from typing import Any, Final
 from collections.abc import Iterable
 
 import a_sync
