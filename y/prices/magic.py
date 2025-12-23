@@ -629,7 +629,7 @@ async def _get_price_from_dexes(
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
     if price := await balancer_multiplexer.get_price(
-        token, block=block, skip_cache=skip_cache, sync=False
+        token, block=block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
     ):
         if debug_logs_enabled:
             log_debug("balancer -> %s", price)
