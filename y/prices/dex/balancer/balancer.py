@@ -1,4 +1,5 @@
 import logging
+from typing import Final, final
 
 import a_sync
 from a_sync.a_sync.property import HiddenMethodDescriptor
@@ -8,7 +9,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import exceptions
 from y._decorators import stuck_coro_debugger
 from y.constants import CHAINID, CONNECTED_TO_MAINNET
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.networks import Network
 from y.prices.dex.balancer._abc import BalancerABC
 from y.prices.dex.balancer.v1 import BalancerV1
@@ -16,9 +17,10 @@ from y.prices.dex.balancer.v2 import BalancerV2
 from y.utils.cache import optional_async_diskcache
 
 
-logger = logging.getLogger(__name__)
+logger: Final = logging.getLogger(__name__)
 
 
+@final
 class BalancerMultiplexer(a_sync.ASyncGenericBase):
     """A multiplexer for interacting with different versions of Balancer pools.
 
@@ -51,7 +53,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
             asynchronous: Whether to operate in asynchronous mode.
         """
         super().__init__()
-        self.asynchronous = asynchronous
+        self.asynchronous: Final = asynchronous
 
     @a_sync.aka.property
     async def versions(self) -> list[BalancerV1 | BalancerV2]:
@@ -131,6 +133,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         token_address: AnyAddressType,
         block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> UsdPrice | None:
         """
         Get the price of a Balancer pool.
@@ -149,7 +152,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         balancer: BalancerABC = await self.get_version(token_address)
         logger.debug("pool %s is from %s", token_address, balancer)
         price = await balancer.get_pool_price(
-            token_address, block, skip_cache=skip_cache, sync=False
+            token_address, block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
         )
         return None if price is None else UsdPrice(price)
 
@@ -160,6 +163,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         token_address: AnyAddressType,
         block: Block | None = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
+        ignore_pools: tuple[Pool, ...] = (),
     ) -> UsdPrice | None:
         """
         Get the price of a token using Balancer pools.
@@ -177,7 +181,11 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         """
         if await self.is_balancer_pool(token_address, sync=False):
             return await self.get_pool_price(
-                token_address, block=block, skip_cache=skip_cache, sync=False
+                token_address,
+                block=block,
+                skip_cache=skip_cache,
+                ignore_pools=ignore_pools,
+                sync=False,
             )
 
         price = None
@@ -189,7 +197,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         ):  # TODO: refactor this out
             v2 = await self.__v2__
             if price := await v2.get_token_price(
-                token_address, block, skip_cache=skip_cache, sync=False
+                token_address, block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
             ):
                 logger.debug("balancer v2 -> $%s", price)
                 return price
@@ -226,4 +234,4 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         raise exceptions.TokenError(token_address, "Balancer pool")
 
 
-balancer_multiplexer = BalancerMultiplexer(asynchronous=True)
+balancer_multiplexer: Final = BalancerMultiplexer(asynchronous=True)
