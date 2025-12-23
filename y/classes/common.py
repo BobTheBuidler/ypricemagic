@@ -617,6 +617,8 @@ class WeiBalance(a_sync.ASyncGenericBase):
         return str(self.balance)
 
     def __repr__(self) -> str:
+        if self._ignore_pools:
+            return f"<WeiBalance token={self.token} balance={self.balance} block={self.block} ignore_pools={self._ignore_pools}>"
         return f"<WeiBalance token={self.token} balance={self.balance} block={self.block}>"
 
     def __hash__(self) -> int:
