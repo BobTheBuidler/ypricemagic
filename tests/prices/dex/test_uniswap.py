@@ -12,7 +12,7 @@ import pytest
 from a_sync import cgather
 from brownie import chain
 
-from tests.fixtures import async_uni_v1, mutate_addresses
+from tests.fixtures import mutate_addresses
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap import v3

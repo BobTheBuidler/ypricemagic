@@ -1774,7 +1774,11 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r13 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r13 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 99, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 100, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL193;
     }
     CPy_INCREF_NO_IMM(cpy_r_r13);
@@ -1793,7 +1797,11 @@ CPyL5: ;
     }
     cpy_r_r16 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__db;
     if (unlikely(cpy_r_r16 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "db", 100, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "db", 101, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL193;
     }
     CPy_INCREF(cpy_r_r16);
@@ -2048,7 +2056,11 @@ CPyL47: ;
 CPyL49: ;
     cpy_r_r63 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r63 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 103, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 104, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL89;
     }
     CPy_INCREF_NO_IMM(cpy_r_r63);
@@ -2072,7 +2084,11 @@ CPyL50: ;
 CPyL52: ;
     cpy_r_r69 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r69 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 105, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 106, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL89;
     }
     CPy_INCREF_NO_IMM(cpy_r_r69);
@@ -2260,7 +2276,11 @@ CPyL81: ;
 CPyL83: ;
     cpy_r_r103 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r103 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 105, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 106, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL202;
     }
     CPy_INCREF_NO_IMM(cpy_r_r103);
@@ -2270,7 +2290,11 @@ CPyL84: ;
     CPy_DECREF_NO_IMM(cpy_r_r103);
     cpy_r_r105 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r105 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 106, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 107, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL89;
     }
     CPy_INCREF_NO_IMM(cpy_r_r105);
@@ -2288,7 +2312,11 @@ CPyL85: ;
     }
     cpy_r_r110 = ((y____db___brownie___connect_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r110 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 106, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "connect", "connect_AsyncCursor_gen", "self", 107, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL209;
     }
     CPy_INCREF_NO_IMM(cpy_r_r110);
@@ -4231,7 +4259,11 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r25 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r25 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 125, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 126, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL370;
     }
     CPy_INCREF_NO_IMM(cpy_r_r25);
@@ -4243,7 +4275,11 @@ CPyL5: ;
     if (!cpy_r_r28) goto CPyL35;
     cpy_r_r29 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r29 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 126, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 127, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL370;
     }
     CPy_INCREF_NO_IMM(cpy_r_r29);
@@ -4637,7 +4673,11 @@ CPyL70: ;
 CPyL72: ;
     cpy_r_r94 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__self;
     if (unlikely(cpy_r_r94 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 128, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "self", 129, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL262;
     }
     CPy_INCREF_NO_IMM(cpy_r_r94);
@@ -4656,21 +4696,33 @@ CPyL73: ;
     }
     cpy_r_r97 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cmd;
     if (unlikely(cpy_r_r97 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "cmd", 129, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "cmd", 130, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL262;
     }
     CPy_INCREF(cpy_r_r97);
 CPyL75: ;
     cpy_r_r98 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__args;
     if (unlikely(cpy_r_r98 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "args", 129, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "args", 130, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL385;
     }
     CPy_INCREF(cpy_r_r98);
 CPyL76: ;
     cpy_r_r99 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__execute;
     if (unlikely(cpy_r_r99 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "execute", 129, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "execute", 130, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL386;
     }
     CPy_INCREF(cpy_r_r99);
@@ -4902,7 +4954,11 @@ CPyL112: ;
     }
     cpy_r_r139 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__cursor;
     if (unlikely(cpy_r_r139 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "cursor", 130, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "cursor", 131, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL174;
     }
     CPy_INCREF(cpy_r_r139);
@@ -5087,7 +5143,11 @@ CPyL143: ;
     }
     cpy_r_r169 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__row;
     if (unlikely(cpy_r_r169 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "row", 131, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "row", 132, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL174;
     }
     CPy_INCREF(cpy_r_r169);
@@ -5124,7 +5184,11 @@ CPyL147: ;
     }
     cpy_r_r176 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__row;
     if (unlikely(cpy_r_r176 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "row", 134, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "row", 135, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL174;
     }
     CPy_INCREF(cpy_r_r176);
@@ -5155,7 +5219,11 @@ CPyL150: ;
 CPyL153: ;
     cpy_r_r180 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__30;
     if (unlikely(cpy_r_r180 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__30", 134, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "__mypyc_temp__30", 135, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL174;
     }
     CPy_INCREF(cpy_r_r180);
@@ -5174,7 +5242,11 @@ CPyL154: ;
     }
     cpy_r_r183 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__i;
     if (unlikely(cpy_r_r183 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 134, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 135, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL174;
     }
     CPy_INCREF(cpy_r_r183);
@@ -5208,7 +5280,11 @@ CPyL157: ;
     if (!cpy_r_r189) goto CPyL166;
     cpy_r_r190 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__i;
     if (unlikely(cpy_r_r190 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 134, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 135, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL174;
     }
     CPy_INCREF(cpy_r_r190);
@@ -5240,7 +5316,11 @@ CPyL164: ;
 CPyL166: ;
     cpy_r_r197 = ((y____db___brownie___fetchone_AsyncCursor_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__i;
     if (unlikely(cpy_r_r197 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 134, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "fetchone", "fetchone_AsyncCursor_gen", "i", 135, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL174;
     }
     CPy_INCREF(cpy_r_r197);
@@ -7252,7 +7332,11 @@ PyObject *CPyDef_brownie____get_select_statement(void) {
     if (likely(PyDict_Check(cpy_r_r5)))
         cpy_r_r6 = cpy_r_r5;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_select_statement", 144, CPyStatic_brownie___globals, "dict", cpy_r_r5);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_select_statement", 145, CPyStatic_brownie___globals, "dict", cpy_r_r5);
+>>>>>>> chore: compile C files for source control
         goto CPyL8;
     }
     cpy_r_r7 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'chainid' */
@@ -7691,7 +7775,11 @@ CPyL1: ;
 CPyL4: ;
     cpy_r_r9 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__address;
     if (unlikely(cpy_r_r9 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 154, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 155, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r9);
@@ -7702,7 +7790,11 @@ CPyL5: ;
     if (likely(cpy_r_r9 != Py_None))
         cpy_r_r12 = cpy_r_r9;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals, "str", cpy_r_r9);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 155, CPyStatic_brownie___globals, "str", cpy_r_r9);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r13 = CPyStr_IsTrue(cpy_r_r12);
@@ -7710,7 +7802,11 @@ CPyL5: ;
     if (!cpy_r_r13) goto CPyL16;
     cpy_r_r14 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__alias;
     if (unlikely(cpy_r_r14 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 154, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 155, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r14);
@@ -7721,7 +7817,11 @@ CPyL9: ;
     if (likely(cpy_r_r14 != Py_None))
         cpy_r_r17 = cpy_r_r14;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 154, CPyStatic_brownie___globals, "str", cpy_r_r14);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 155, CPyStatic_brownie___globals, "str", cpy_r_r14);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r18 = CPyStr_IsTrue(cpy_r_r17);
@@ -7753,7 +7853,11 @@ CPyL9: ;
 CPyL16: ;
     cpy_r_r26 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__address;
     if (unlikely(cpy_r_r26 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 156, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 157, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r26);
@@ -7764,7 +7868,11 @@ CPyL17: ;
     if (likely(cpy_r_r26 != Py_None))
         cpy_r_r29 = cpy_r_r26;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 156, CPyStatic_brownie___globals, "str", cpy_r_r26);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals, "str", cpy_r_r26);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r30 = CPyStr_IsTrue(cpy_r_r29);
@@ -7772,7 +7880,11 @@ CPyL17: ;
     if (!cpy_r_r30) goto CPyL30;
     cpy_r_r31 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__address;
     if (unlikely(cpy_r_r31 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 157, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 158, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r31);
@@ -7780,7 +7892,11 @@ CPyL21: ;
     if (likely(cpy_r_r31 != Py_None))
         cpy_r_r32 = cpy_r_r31;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals, "str", cpy_r_r31);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 158, CPyStatic_brownie___globals, "str", cpy_r_r31);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r33 = CPyStatic_brownie___globals;
@@ -7802,7 +7918,11 @@ CPyL21: ;
     if (likely(PyUnicode_Check(cpy_r_r38)))
         cpy_r_r39 = cpy_r_r38;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 157, CPyStatic_brownie___globals, "str", cpy_r_r38);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 158, CPyStatic_brownie___globals, "str", cpy_r_r38);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__address != NULL) {
@@ -7817,7 +7937,11 @@ CPyL21: ;
     cpy_r_r41 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* " WHERE address='" */
     cpy_r_r42 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__address;
     if (unlikely(cpy_r_r42 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 158, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "address", 159, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r42);
@@ -7825,7 +7949,11 @@ CPyL27: ;
     if (likely(cpy_r_r42 != Py_None))
         cpy_r_r43 = cpy_r_r42;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 158, CPyStatic_brownie___globals, "str", cpy_r_r42);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 159, CPyStatic_brownie___globals, "str", cpy_r_r42);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r44 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* "'" */
@@ -7848,7 +7976,11 @@ CPyL27: ;
 CPyL30: ;
     cpy_r_r47 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__alias;
     if (unlikely(cpy_r_r47 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 159, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 160, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r47);
@@ -7859,7 +7991,11 @@ CPyL31: ;
     if (likely(cpy_r_r47 != Py_None))
         cpy_r_r50 = cpy_r_r47;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 159, CPyStatic_brownie___globals, "str", cpy_r_r47);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals, "str", cpy_r_r47);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r51 = CPyStr_IsTrue(cpy_r_r50);
@@ -7868,7 +8004,11 @@ CPyL31: ;
     cpy_r_r52 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* " WHERE alias='" */
     cpy_r_r53 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__alias;
     if (unlikely(cpy_r_r53 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 160, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "alias", 161, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r53);
@@ -7876,7 +8016,11 @@ CPyL35: ;
     if (likely(cpy_r_r53 != Py_None))
         cpy_r_r54 = cpy_r_r53;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 160, CPyStatic_brownie___globals, "str", cpy_r_r53);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 161, CPyStatic_brownie___globals, "str", cpy_r_r53);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r55 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* "'" */
@@ -7912,12 +8056,20 @@ CPyL38: ;
     if (likely(PyUnicode_Check(cpy_r_r61)))
         cpy_r_r62 = cpy_r_r61;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 163, CPyStatic_brownie___globals, "str", cpy_r_r61);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 164, CPyStatic_brownie___globals, "str", cpy_r_r61);
+>>>>>>> chore: compile C files for source control
         goto CPyL77;
     }
     cpy_r_r63 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__where_clause;
     if (unlikely(cpy_r_r63 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "where_clause", 163, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "where_clause", 164, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL260;
     }
     CPy_INCREF(cpy_r_r63);
@@ -8123,7 +8275,11 @@ CPyL75: ;
         cpy_r_r94 = NULL;
     }
     if (cpy_r_r94 != NULL) goto __LL17;
+<<<<<<< HEAD
     CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 163, CPyStatic_brownie___globals, "tuple or None", cpy_r_r75);
+=======
+    CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 164, CPyStatic_brownie___globals, "tuple or None", cpy_r_r75);
+>>>>>>> chore: compile C files for source control
     goto CPyL77;
 __LL17: ;
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__row != NULL) {
@@ -8208,7 +8364,11 @@ CPyL86: ;
 CPyL88: ;
     cpy_r_r107 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__row;
     if (unlikely(cpy_r_r107 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "row", 166, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "row", 167, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r107);
@@ -8219,7 +8379,11 @@ CPyL89: ;
     if (likely(cpy_r_r107 != Py_None))
         cpy_r_r110 = cpy_r_r107;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 166, CPyStatic_brownie___globals, "tuple", cpy_r_r107);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 167, CPyStatic_brownie___globals, "tuple", cpy_r_r107);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r111 = (CPyPtr)&((PyVarObject *)cpy_r_r110)->ob_size;
@@ -8262,7 +8426,11 @@ CPyL97: ;
 CPyL100: ;
     cpy_r_r120 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__row;
     if (unlikely(cpy_r_r120 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "row", 169, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "row", 170, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r120);
@@ -8270,7 +8438,11 @@ CPyL101: ;
     if (likely(cpy_r_r120 != Py_None))
         cpy_r_r121 = cpy_r_r120;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 169, CPyStatic_brownie___globals, "tuple", cpy_r_r120);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals, "tuple", cpy_r_r120);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     cpy_r_r122 = CPyModule_builtins;
@@ -8358,7 +8530,11 @@ CPyL101: ;
     }
     cpy_r_r131 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__build_json;
     if (unlikely(cpy_r_r131 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 170, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 171, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r131);
@@ -8376,7 +8552,11 @@ CPyL107: ;
     if (likely(PyDict_Check(cpy_r_r136)))
         cpy_r_r137 = cpy_r_r136;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 170, CPyStatic_brownie___globals, "dict", cpy_r_r136);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 171, CPyStatic_brownie___globals, "dict", cpy_r_r136);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__path_map != NULL) {
@@ -8404,7 +8584,11 @@ CPyL107: ;
     }
     cpy_r_r141 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__path_map;
     if (unlikely(cpy_r_r141 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "path_map", 174, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "path_map", 175, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r141);
@@ -8427,7 +8611,11 @@ CPyL113: ;
     }
     cpy_r_r144 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46;
     if (unlikely(cpy_r_r144 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__46", 172, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__46", 173, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL274;
     }
     CPy_INCREF(cpy_r_r144);
@@ -8458,14 +8646,22 @@ CPyL116: ;
 CPyL119: ;
     cpy_r_r149 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__49;
     if (unlikely(cpy_r_r149 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__49", 172, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__49", 173, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r149);
 CPyL120: ;
     cpy_r_r150 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__47;
     if (unlikely(cpy_r_r150 == CPY_INT_TAG)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__47", 172, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__47", 173, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL275;
     }
 CPyL121: ;
@@ -8552,14 +8748,22 @@ CPyL133: ;
 CPyL135: ;
     cpy_r_r165 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__source_key;
     if (unlikely(cpy_r_r165 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "source_key", 175, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "source_key", 176, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r165);
 CPyL136: ;
     cpy_r_r166 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__skip_source_keys;
     if (unlikely(cpy_r_r166 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "skip_source_keys", 175, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "skip_source_keys", 176, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL282;
     }
     CPy_INCREF(cpy_r_r166);
@@ -8593,7 +8797,11 @@ CPyL137: ;
 CPyL140: ;
     cpy_r_r173 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__val;
     if (unlikely(cpy_r_r173 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "val", 173, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "val", 174, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL283;
     }
     CPy_INCREF(cpy_r_r173);
@@ -8601,7 +8809,11 @@ CPyL141: ;
     if (likely(PyUnicode_Check(cpy_r_r173)))
         cpy_r_r174 = cpy_r_r173;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 173, CPyStatic_brownie___globals, "str", cpy_r_r173);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 174, CPyStatic_brownie___globals, "str", cpy_r_r173);
+>>>>>>> chore: compile C files for source control
         goto CPyL283;
     }
     cpy_r_r175 = CPyDef_brownie_____fetch_source_for_hash(cpy_r_r174);
@@ -8807,14 +9019,22 @@ CPyL171: ;
 CPyL172: ;
     cpy_r_r208 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__46;
     if (unlikely(cpy_r_r208 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__46", 172, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__46", 173, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r208);
 CPyL173: ;
     cpy_r_r209 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__48;
     if (unlikely(cpy_r_r209 == -113)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__48", 172, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__48", 173, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL295;
     }
 CPyL174: ;
@@ -8863,7 +9083,11 @@ CPyL177: ;
     }
     cpy_r_r216 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__path_map;
     if (unlikely(cpy_r_r216 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "path_map", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "path_map", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r216);
@@ -8886,7 +9110,11 @@ CPyL181: ;
     }
     cpy_r_r219 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53;
     if (unlikely(cpy_r_r219 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__53", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__53", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL296;
     }
     CPy_INCREF(cpy_r_r219);
@@ -8917,14 +9145,22 @@ CPyL184: ;
 CPyL187: ;
     cpy_r_r224 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__56;
     if (unlikely(cpy_r_r224 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__56", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__56", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r224);
 CPyL188: ;
     cpy_r_r225 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__54;
     if (unlikely(cpy_r_r225 == CPY_INT_TAG)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__54", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__54", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL297;
     }
 CPyL189: ;
@@ -8965,14 +9201,22 @@ CPyL189: ;
     }
     cpy_r_r234 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__k;
     if (unlikely(cpy_r_r234 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "k", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "k", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r234);
 CPyL194: ;
     cpy_r_r235 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__v;
     if (unlikely(cpy_r_r235 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "v", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "v", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL301;
     }
     CPy_INCREF(cpy_r_r235);
@@ -9002,14 +9246,22 @@ CPyL197: ;
     }
     cpy_r_r241 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__53;
     if (unlikely(cpy_r_r241 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__53", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__53", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r241);
 CPyL199: ;
     cpy_r_r242 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__55;
     if (unlikely(cpy_r_r242 == -113)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__55", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__55", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL303;
     }
 CPyL200: ;
@@ -9035,7 +9287,11 @@ CPyL201: ;
 CPyL203: ;
     cpy_r_r246 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__build_json;
     if (unlikely(cpy_r_r246 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 178, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 179, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL304;
     }
     CPy_INCREF(cpy_r_r246);
@@ -9051,7 +9307,11 @@ CPyL204: ;
     }
     cpy_r_r250 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__build_json;
     if (unlikely(cpy_r_r250 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 179, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 180, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r250);
@@ -9075,7 +9335,11 @@ CPyL206: ;
         cpy_r_r253 = NULL;
     }
     if (cpy_r_r253 != NULL) goto __LL36;
+<<<<<<< HEAD
     CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 179, CPyStatic_brownie___globals, "dict or None", cpy_r_r252);
+=======
+    CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 180, CPyStatic_brownie___globals, "dict or None", cpy_r_r252);
+>>>>>>> chore: compile C files for source control
     goto CPyL254;
 __LL36: ;
     if (((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__pc_map != NULL) {
@@ -9089,7 +9353,11 @@ __LL36: ;
     }
     cpy_r_r255 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__pc_map;
     if (unlikely(cpy_r_r255 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 180, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 181, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r255);
@@ -9114,7 +9382,11 @@ CPyL210: ;
     }
     cpy_r_r260 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__pc_map;
     if (unlikely(cpy_r_r260 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r260);
@@ -9122,7 +9394,11 @@ CPyL214: ;
     if (likely(cpy_r_r260 != Py_None))
         cpy_r_r261 = cpy_r_r260;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 181, CPyStatic_brownie___globals, "dict", cpy_r_r260);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 182, CPyStatic_brownie___globals, "dict", cpy_r_r260);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r261);
@@ -9143,7 +9419,11 @@ CPyL214: ;
     }
     cpy_r_r264 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58;
     if (unlikely(cpy_r_r264 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__58", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__58", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL305;
     }
     CPy_INCREF(cpy_r_r264);
@@ -9174,14 +9454,22 @@ CPyL218: ;
 CPyL221: ;
     cpy_r_r269 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__61;
     if (unlikely(cpy_r_r269 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__61", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__61", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r269);
 CPyL222: ;
     cpy_r_r270 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__59;
     if (unlikely(cpy_r_r270 == CPY_INT_TAG)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__59", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__59", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL306;
     }
 CPyL223: ;
@@ -9210,7 +9498,11 @@ CPyL223: ;
     }
     cpy_r_r277 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r277 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "key", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "key", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r277);
@@ -9236,7 +9528,11 @@ CPyL227: ;
     }
     cpy_r_r283 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__pc_map;
     if (unlikely(cpy_r_r283 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "pc_map", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL310;
     }
     CPy_INCREF(cpy_r_r283);
@@ -9244,12 +9540,20 @@ CPyL230: ;
     if (likely(cpy_r_r283 != Py_None))
         cpy_r_r284 = cpy_r_r283;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 181, CPyStatic_brownie___globals, "dict", cpy_r_r283);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "_get_deployment", 182, CPyStatic_brownie___globals, "dict", cpy_r_r283);
+>>>>>>> chore: compile C files for source control
         goto CPyL310;
     }
     cpy_r_r285 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__key;
     if (unlikely(cpy_r_r285 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "key", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "key", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL311;
     }
     CPy_INCREF(cpy_r_r285);
@@ -9280,14 +9584,22 @@ CPyL234: ;
     }
     cpy_r_r291 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__58;
     if (unlikely(cpy_r_r291 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__58", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__58", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r291);
 CPyL236: ;
     cpy_r_r292 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__60;
     if (unlikely(cpy_r_r292 == -113)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__60", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "__mypyc_temp__60", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL313;
     }
 CPyL237: ;
@@ -9313,7 +9625,11 @@ CPyL238: ;
 CPyL240: ;
     cpy_r_r296 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__build_json;
     if (unlikely(cpy_r_r296 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 181, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 182, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL314;
     }
     CPy_INCREF(cpy_r_r296);
@@ -9330,14 +9646,22 @@ CPyL241: ;
 CPyL242: ;
     cpy_r_r300 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__build_json;
     if (unlikely(cpy_r_r300 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 183, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "build_json", 184, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL254;
     }
     CPy_INCREF(cpy_r_r300);
 CPyL243: ;
     cpy_r_r301 = ((y____db___brownie____get_deployment_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__sources;
     if (unlikely(cpy_r_r301 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "sources", 183, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "_get_deployment", "_get_deployment_gen", "sources", 184, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL315;
     }
     CPy_INCREF(cpy_r_r301);
@@ -10112,7 +10436,11 @@ CPyL4: ;
     cpy_r_r5 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SELECT source FROM sources WHERE hash=?' */
     cpy_r_r6 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__hashval;
     if (unlikely(cpy_r_r6 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "hashval", 187, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "hashval", 188, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL51;
     }
     CPy_INCREF(cpy_r_r6);
@@ -10311,7 +10639,11 @@ CPyL37: ;
         cpy_r_r36 = NULL;
     }
     if (cpy_r_r36 != NULL) goto __LL43;
+<<<<<<< HEAD
     CPy_TypeErrorTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 187, CPyStatic_brownie___globals, "tuple or None", cpy_r_r17);
+=======
+    CPy_TypeErrorTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 188, CPyStatic_brownie___globals, "tuple or None", cpy_r_r17);
+>>>>>>> chore: compile C files for source control
     goto CPyL51;
 __LL43: ;
     if (((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__row != NULL) {
@@ -10325,7 +10657,11 @@ __LL43: ;
     }
     cpy_r_r38 = ((y____db___brownie_____fetch_source_for_hash_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__row;
     if (unlikely(cpy_r_r38 == NULL)) {
+<<<<<<< HEAD
         CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "row", 188, CPyStatic_brownie___globals);
+=======
+        CPy_AttributeError("y/_db/brownie.py", "__fetch_source_for_hash", "__fetch_source_for_hash_gen", "row", 189, CPyStatic_brownie___globals);
+>>>>>>> chore: compile C files for source control
         goto CPyL51;
     }
     CPy_INCREF(cpy_r_r38);
@@ -10333,7 +10669,11 @@ CPyL40: ;
     if (likely(cpy_r_r38 != Py_None))
         cpy_r_r39 = cpy_r_r38;
     else {
+<<<<<<< HEAD
         CPy_TypeErrorTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 188, CPyStatic_brownie___globals, "tuple", cpy_r_r38);
+=======
+        CPy_TypeErrorTraceback("y/_db/brownie.py", "__fetch_source_for_hash", 189, CPyStatic_brownie___globals, "tuple", cpy_r_r38);
+>>>>>>> chore: compile C files for source control
         goto CPyL51;
     }
     cpy_r_r40 = CPySequenceTuple_GetItem(cpy_r_r39, 0);
@@ -20818,7 +21158,11 @@ CPyL3: ;
     CPyModule_functools = cpy_r_r8;
     CPy_INCREF(CPyModule_functools);
     CPy_DECREF(cpy_r_r8);
+<<<<<<< HEAD
     cpy_r_r9 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Final', 'cast') */
+=======
+    cpy_r_r9 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Final', 'Optional', 'cast') */
+>>>>>>> chore: compile C files for source control
     cpy_r_r10 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
     cpy_r_r11 = CPyStatic_convert___globals;
     cpy_r_r12 = CPyImport_ImportFromMany(cpy_r_r10, cpy_r_r9, cpy_r_r9, cpy_r_r11);
@@ -41860,7 +42204,11 @@ const char * const CPyLit_Str[] = {
     "\006\vSQLITE_PATH /.ypricemagic/ypricemagic.sqlite\aDB_HOST\000\aDB_PORT\aDB_USER",
     "\005\vDB_PASSWORD\vDB_DATABASE\vypricemagic\nSKIP_CACHE\016SKIP_YPRICEAPI",
     "\005\020SENSE_CHECK_FILE\033 is not a valid ETH address\bchecksum\003run\nissubclass",
+<<<<<<< HEAD
     "\a\bHexBytes\0010\0020x\tcchecksum\bhexbytes\fy/convert.py\nAnyAddress",
+=======
+    "\b\bHexBytes\0010\0020x\bOptional\tcchecksum\bhexbytes\fy/convert.py\nAnyAddress",
+>>>>>>> chore: compile C files for source control
     "\005\017ChecksumAddress\nHexAddress\neth_typing\016AnyAddressType\vy.datatypes",
     "\003\023to_checksum_address\022ThreadPoolExecutor\020_checksum_thread",
     "\006\017_is_checksummed\023_is_not_checksummed\005token\005block\texception\t__class__",
@@ -41897,11 +42245,19 @@ const char * const CPyLit_Str[] = {
     "\006\fcheck_bucket\004sync\022uni or uni-like lp\rbalancer pool\bcurve lp\tCurvePool",
     "\b\005coins\021_exit_sense_check\003map\003all\006atoken\004aave\nunderlying\bcompound",
     "\006\006CToken\asolidex\tcoroutine\004pool\023yearn or yearn-like\022YearnInspiredVault",
+<<<<<<< HEAD
     "\005\035y/prices/utils/sense_check.py\020y.classes.common\004wbtc\004weth\vy.constants",
     "\003\vy.contracts\025y.prices.lending.aave\031y.prices.lending.compound",
     "\005\032y.prices.stable_swap.curve\016y.prices.utils\016y.prices.yearn\001a\005utf-8",
     "\005\vFileHandler\004mode\bencoding\ffile_handler\bsetLevel",
     "\003&%(asctime)s %(levelname)s: %(message)s\tFormatter\tformatter",
+=======
+    "\006\035y/prices/utils/sense_check.py\003Set\005Union\020y.classes.common\004wbtc\004weth",
+    "\003\vy.constants\vy.contracts\025y.prices.lending.aave",
+    "\003\031y.prices.lending.compound\032y.prices.stable_swap.curve\016y.prices.utils",
+    "\a\016y.prices.yearn\001a\005utf-8\vFileHandler\004mode\bencoding\ffile_handler",
+    "\004\bsetLevel&%(asctime)s %(levelname)s: %(message)s\tFormatter\tformatter",
+>>>>>>> chore: compile C files for source control
     "\002\fsetFormatter\025acceptable_all_chains",
     "\001*0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     "\001*0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
@@ -42047,6 +42403,7 @@ const char * const CPyLit_Int[] = {
 const double CPyLit_Float[] = {0};
 const double CPyLit_Complex[] = {0};
 const int CPyLit_Tuple[] = {
+<<<<<<< HEAD
     85, 1, 8, 3, 38, 38, 38, 3, 39, 39, 39, 2, 589, 590, 1, 42, 1, 44,
     5, 46, 47, 48, 49, 50, 1, 52, 1, 54, 3, 55, 55, 55, 1, 597, 1, 56, 1,
     58, 2, 17, 60, 1, 22, 1, 25, 1, 64, 1, 30, 1, 101, 1, 102, 3, 103,
@@ -42061,6 +42418,22 @@ const int CPyLit_Tuple[] = {
     1, 372, 4, 359, 370, 403, 404, 1, 303, 1, 392, 1, 395, 1, 386, 1, 381,
     1, 400, 2, 415, 416, 2, 256, 554, 1, 556, 1, 554, 1, 557, 3, 558, 558,
     558, 2, 636, 670, 1, 560
+=======
+    86, 1, 8, 3, 38, 38, 38, 3, 39, 39, 39, 2, 592, 593, 1, 42, 1, 44,
+    5, 46, 47, 48, 49, 50, 1, 52, 1, 54, 3, 55, 55, 55, 1, 600, 1, 56, 1,
+    58, 2, 17, 60, 1, 22, 1, 25, 1, 64, 1, 30, 1, 101, 1, 102, 3, 103,
+    103, 103, 1, 611, 2, 105, 106, 1, 47, 1, 108, 1, 109, 2, 144, 145, 3,
+    149, 149, 149, 3, 150, 150, 150, 2, 618, 619, 2, 64, 140, 2, 47, 152,
+    2, 153, 154, 1, 155, 2, 157, 57, 1, 158, 1, 160, 6, 131, 30, 138, 132,
+    130, 142, 1, 165, 2, 195, 204, 1, 194, 2, 46, 47, 1, 153, 1, 106, 2,
+    210, 211, 2, 144, 216, 1, 144, 3, 47, 241, 49, 3, 57, 57, 57, 3, 242,
+    242, 242, 3, 243, 243, 243, 3, 639, 640, 641, 3, 245, 246, 247, 1,
+    249, 1, 260, 1, 279, 1, 618, 1, 293, 5, 295, 46, 47, 241, 50, 1, 296,
+    1, 269, 1, 271, 2, 297, 246, 1, 283, 1, 358, 3, 47, 241, 50, 1, 374,
+    1, 383, 4, 47, 241, 403, 404, 1, 639, 1, 373, 4, 360, 371, 406, 407,
+    1, 304, 1, 393, 1, 396, 1, 387, 1, 382, 1, 401, 2, 418, 419, 2, 257,
+    557, 1, 559, 1, 557, 1, 560, 3, 561, 561, 561, 2, 639, 674, 1, 563
+>>>>>>> chore: compile C files for source control
 };
 const int CPyLit_FrozenSet[] = {0};
 CPyModule *CPyModule_y____db___brownie__internal = NULL;
