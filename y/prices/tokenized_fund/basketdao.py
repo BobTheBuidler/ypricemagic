@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Optional
 
 from a_sync import a_sync, cgather
 from eth_typing import ChecksumAddress

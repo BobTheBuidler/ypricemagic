@@ -1,5 +1,3 @@
-from typing import List, Optional, Tuple
-
 from a_sync import cgather
 
 from y._decorators import continue_on_revert, stuck_coro_debugger
@@ -78,8 +76,6 @@ class SolidlyPool(UniswapV2Pool):
     See Also:
         - :class:`~y.prices.dex.uniswap.v2.UniswapV2Pool`
     """
-
-    pass
 
 
 class SolidlyRouter(SolidlyRouterBase):

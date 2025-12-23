@@ -1,7 +1,7 @@
 import logging
 from abc import abstractmethod
 from decimal import Decimal
-from typing import List, Optional, Union
+from typing import Union
 from collections.abc import Awaitable
 
 import a_sync

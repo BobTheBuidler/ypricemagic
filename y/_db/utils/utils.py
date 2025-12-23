@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from dateutil import parser
 from functools import lru_cache
 from logging import getLogger
-from typing import Dict, Optional, Set
 
 from a_sync import ProcessingQueue, a_sync
 from brownie import chain

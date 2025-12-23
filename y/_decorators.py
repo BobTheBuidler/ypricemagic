@@ -1,7 +1,7 @@
 from asyncio import iscoroutinefunction
 from functools import partial, wraps
 from logging import getLogger
-from typing import TypeVar, Union
+from typing import TypeVar
 from collections.abc import Callable
 
 from a_sync import debugging

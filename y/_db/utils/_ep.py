@@ -67,6 +67,6 @@ def _get_get_token():
     except ModuleNotFoundError:
         from y._db.utils.token import get_token
     # force imports to run in main thread
-    import y._db.utils.token
+    import y._db.utils.token  # noqa
 
     return get_token

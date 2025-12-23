@@ -1,6 +1,5 @@
 import logging
 from decimal import Decimal
-from typing import List, Optional
 
 import a_sync
 from a_sync import cgather
@@ -12,7 +11,6 @@ from y.classes.common import ERC20
 from y.contracts import has_method
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import call_reverted
-from y.prices import magic
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)

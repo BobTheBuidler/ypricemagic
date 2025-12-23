@@ -1,6 +1,6 @@
 import logging
 from contextlib import suppress
-from typing import Any, Final, Optional, Set, Union
+from typing import Any, Final, Union
 from collections.abc import Callable
 
 import a_sync

@@ -4,7 +4,7 @@ from enum import IntEnum
 from functools import cached_property
 from itertools import filterfalse
 from logging import DEBUG, getLogger
-from typing import Any, Dict, List, Optional, Tuple, TypeVar
+from typing import Any, TypeVar
 
 import a_sync
 import brownie

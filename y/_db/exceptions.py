@@ -15,8 +15,6 @@ class CacheNotPopulatedError(Exception):
         >>> raise CacheNotPopulatedError("Cache is empty, cannot proceed.")
     """
 
-    pass
-
 
 class yDBError(Exception):
     """Base class for exceptions related to the ypricemagic database.
@@ -101,5 +99,3 @@ class EEEError(ValueError):
     Example:
         >>> raise EEEError("Invalid operation with the EEE address.")
     """
-
-    pass

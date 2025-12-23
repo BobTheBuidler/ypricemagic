@@ -3,19 +3,7 @@ from asyncio import Task, TimeoutError, create_task, get_event_loop, shield, sle
 from copy import copy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    List,
-    NoReturn,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    final,
-)
+from typing import TYPE_CHECKING, Any, Generic, NoReturn, Optional, TypeVar, final
 from collections.abc import Callable
 from collections.abc import AsyncIterator, Awaitable, Container
 
@@ -701,8 +689,6 @@ class Filter(_DiskCachedMixin[T, C]):
             await self._fetch()
         except Exception as e:
             # TODO: propagate these exceptions to the waiters of _lock
-            import traceback
-
             logger.exception(e)
             self._exc = e
             self._tb = e.__traceback__

@@ -1,6 +1,5 @@
 import logging
 from decimal import Decimal
-from typing import Optional
 
 import a_sync
 from a_sync import cgather

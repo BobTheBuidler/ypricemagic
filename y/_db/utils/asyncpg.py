@@ -1,5 +1,5 @@
 import asyncio
-from typing import Final, Optional
+from typing import Final
 
 import asyncpg
 

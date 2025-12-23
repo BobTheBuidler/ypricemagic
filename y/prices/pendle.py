@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Optional, Tuple
 
 from a_sync import a_sync, cgather
 from async_lru import alru_cache

@@ -1,5 +1,4 @@
 import logging
-from typing import Optional, Tuple
 
 import a_sync
 

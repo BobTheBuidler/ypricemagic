@@ -1,5 +1,4 @@
 import logging
-from typing import List, Optional
 from collections.abc import AsyncIterator
 
 import a_sync

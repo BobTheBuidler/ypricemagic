@@ -2,7 +2,6 @@ import logging
 import threading
 import time
 from functools import lru_cache
-from typing import Dict, Optional, Set
 
 import a_sync
 from cachetools import TTLCache, cached

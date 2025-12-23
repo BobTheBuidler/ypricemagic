@@ -4,16 +4,7 @@ from decimal import Decimal
 from functools import cached_property, lru_cache
 from itertools import cycle, islice
 from logging import DEBUG, getLogger
-from typing import (
-    DefaultDict,
-    Dict,
-    Final,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import DefaultDict, Final, Literal, Union
 from collections.abc import AsyncIterator, Iterable
 
 import a_sync
@@ -22,7 +13,7 @@ from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from eth_abi.exceptions import InvalidPointer
-from eth_typing import BlockNumber, ChecksumAddress, HexAddress
+from eth_typing import BlockNumber, HexAddress
 from faster_eth_abi.packed import encode_packed
 from typing_extensions import Self
 

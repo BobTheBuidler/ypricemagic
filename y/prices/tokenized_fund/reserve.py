@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Optional
 
 from a_sync import a_sync
 from dank_mids.exceptions import Revert

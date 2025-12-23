@@ -1,7 +1,7 @@
 import logging
 import threading
 from contextlib import suppress
-from typing import List, Optional, Tuple, Union
+from typing import Union
 
 from a_sync import ASyncGenericSingleton, igather
 from brownie import ZERO_ADDRESS

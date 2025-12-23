@@ -2,21 +2,11 @@ from abc import abstractmethod
 from asyncio import as_completed, get_event_loop, sleep
 from collections import Counter, defaultdict
 from functools import cached_property, wraps
-from importlib.metadata import version
 from inspect import isawaitable
 from itertools import zip_longest
 from logging import getLogger
 from threading import current_thread, main_thread
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    NoReturn,
-    Optional,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
 from collections.abc import Callable
 from collections.abc import AsyncGenerator, Awaitable, Iterable
 

@@ -2,7 +2,7 @@ from asyncio import sleep
 from contextlib import suppress
 from decimal import Decimal
 from logging import DEBUG, getLogger
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 from collections.abc import AsyncIterator
 
 import a_sync

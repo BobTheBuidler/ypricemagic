@@ -1,7 +1,6 @@
 import logging
 import threading
 from decimal import Decimal, InvalidOperation
-from typing import Dict, Optional
 
 from a_sync import ProcessingQueue
 from cachetools import TTLCache, cached

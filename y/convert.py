@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Final, Optional, Set, cast
+from typing import Final, cast
 
 import a_sync
 import cchecksum
