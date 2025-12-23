@@ -7,7 +7,7 @@ requires = [
   "types-python-dateutil",
   "types-cachetools",
   "types-requests",
-  "aiosqlite==0.22.0",
+  "aiosqlite==0.22.1",
   "dank-mids==4.20.190; platform_system == 'MacOS' or (platform_system == 'Linux' and platform_machine != 'i686')",
   "eth-brownie==1.22.0.dev0; platform_system == 'Linux' and platform_machine != 'i686'",
   "eth-retry==0.3.5",
