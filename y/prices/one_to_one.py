@@ -1,5 +1,3 @@
-from typing import Optional
-
 import a_sync
 from brownie import chain
 from eth_typing import ChecksumAddress

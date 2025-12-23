@@ -1,5 +1,3 @@
-from typing import Optional
-
 import a_sync
 from async_lru import alru_cache
 from brownie.convert.datatypes import EthAddress

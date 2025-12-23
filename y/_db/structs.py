@@ -1,5 +1,4 @@
 from functools import lru_cache
-from typing import List, Optional
 
 from dank_mids.types import _DictStruct
 from inflection import underscore

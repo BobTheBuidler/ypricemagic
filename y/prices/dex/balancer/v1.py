@@ -1,6 +1,5 @@
 import logging
 from decimal import Decimal
-from typing import Dict, List, Optional, Tuple
 
 import a_sync
 from a_sync import cgather
@@ -26,11 +25,9 @@ from y.datatypes import (
     UsdPrice,
     UsdValue,
 )
-from y.exceptions import continue_if_call_reverted
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
-from y.utils.cache import optional_async_diskcache
 
 EXCHANGE_PROXY = {
     Network.Mainnet: "0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21",

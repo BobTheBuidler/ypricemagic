@@ -1,6 +1,5 @@
 import logging
 import threading
-from typing import Dict, Optional
 
 from a_sync import ProcessingQueue, a_sync
 from cachetools import TTLCache, cached

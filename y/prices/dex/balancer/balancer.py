@@ -1,5 +1,4 @@
 import logging
-from typing import List, Optional, Union
 
 import a_sync
 from a_sync.a_sync.property import HiddenMethodDescriptor

@@ -1,6 +1,6 @@
 import threading
 from collections import defaultdict
-from typing import Dict, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from a_sync.a_sync._meta import ASyncMeta
 from checksum_dict import ChecksumAddressDict

@@ -3,7 +3,6 @@ import os
 
 from brownie import chain
 
-import y
 from y.prices.stable_swap.curve import CurveRegistry, curve
 
 y_logger = logging.getLogger("y")

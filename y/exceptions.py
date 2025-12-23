@@ -1,6 +1,6 @@
 import logging
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Final, Optional, final
+from typing import TYPE_CHECKING, Any, Final, final
 
 from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError

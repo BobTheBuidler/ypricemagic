@@ -1,5 +1,5 @@
 # mypy: disable-error-code="dict-item"
-from typing import Dict, Final, Optional
+from typing import Final
 
 from brownie import Contract as _Contract
 from brownie import chain

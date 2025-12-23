@@ -5,16 +5,7 @@ from collections import defaultdict
 from functools import lru_cache
 from logging import getLogger
 from os import getenv
-from typing import (
-    Any,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Union,
-    overload,
-)
+from typing import Any, Literal, overload
 from collections.abc import Callable, Iterable
 from urllib.parse import urlparse
 

@@ -1,5 +1,4 @@
 import logging
-from typing import List, Optional
 
 from a_sync import a_sync, cgather
 from web3.exceptions import ContractLogicError
