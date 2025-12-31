@@ -971,7 +971,7 @@ def _extract_abi_data(address: Address):
         ):
             raise InvalidAPIKeyError from e
         if contract_not_verified(e):
-            raise ContractNotVerified(f"{address} on {Network.printable()}") from e
+            raise ContractNotVerified(f"{address} on {Network.printable()}") from e.__cause__
         elif "Unknown contract address:" in str(e):
             if is_contract(address):
                 raise ContractNotVerified(str(e)) from e
@@ -1099,7 +1099,7 @@ async def _extract_abi_data_async(address: Address):
         ):
             raise InvalidAPIKeyError from e
         if contract_not_verified(e):
-            raise ContractNotVerified(f"{address} on {Network.printable()}") from e
+            raise ContractNotVerified(f"{address} on {Network.printable()}") from e.__cause__
         elif "Unknown contract address:" in str(e):
             if await get_code(address) not in ("0x", b""):
                 raise ContractNotVerified(str(e)) from e
