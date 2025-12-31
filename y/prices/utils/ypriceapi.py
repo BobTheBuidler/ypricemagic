@@ -2,8 +2,6 @@
 import asyncio
 import logging
 import os
-from collections import defaultdict
-from collections.abc import Callable
 from random import randint
 from time import time
 from typing import Any, Final, final
