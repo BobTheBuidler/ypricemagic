@@ -11,7 +11,6 @@ from collections.abc import Callable
 
 import dank_mids
 from aiohttp import (
-    BasicAuth,
     ClientResponse,
     ClientSession,
     ClientTimeout,
