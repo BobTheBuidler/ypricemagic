@@ -6,7 +6,7 @@ from collections import defaultdict
 from http import HTTPStatus
 from random import randint
 from time import time
-from typing import Any
+from typing import Any, Final, final
 from collections.abc import Callable
 
 import dank_mids
@@ -30,31 +30,28 @@ from y.constants import CHAINID, NETWORK_NAME
 from y.datatypes import Address, Block
 
 
-logger = logging.getLogger(__name__)
+logger: Final = logging.getLogger(__name__)
 
 # current
-header_env_names = {
+header_env_names: Final = {
     "X-Signer": "YPRICEAPI_SIGNER",
     "X-Signature": "YPRICEAPI_SIGNATURE",
 }
-AUTH_HEADERS = {header: os.environ.get(env) for header, env in header_env_names.items()}
-AUTH_HEADERS_PRESENT = all(AUTH_HEADERS.values())
+AUTH_HEADERS: Final = {header: os.environ.get(env) for header, env in header_env_names.items()}
+AUTH_HEADERS_PRESENT: Final = all(AUTH_HEADERS.values())
 
-# old
-YPRICEAPI_USER = os.environ.get("YPRICEAPI_USER")
-YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
-OLD_AUTH = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
+# some arbitrary amount of time in case the header is missing on unexpected 5xx responses
+ONE_MINUTE: Final = 60
+FIVE_MINUTES: Final = ONE_MINUTE * 5
+ONE_HOUR: Final = ONE_MINUTE * 60
+FALLBACK_STR: Final = "Falling back to your node for pricing."
 
-ONE_MINUTE = (
-    60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
+# Five minutes is the default timeout from aiohttp.
+YPRICEAPI_TIMEOUT: Final = ClientTimeout(int(os.environ.get("YPRICEAPI_TIMEOUT", FIVE_MINUTES)))
+
+YPRICEAPI_SEMAPHORE: Final = dank_mids.BlockSemaphore(
+    int(os.environ.get("YPRICEAPI_SEMAPHORE", 100))
 )
-ONE_HOUR = ONE_MINUTE * 60
-FALLBACK_STR = "Falling back to your node for pricing."
-
-YPRICEAPI_TIMEOUT = ClientTimeout(
-    int(os.environ.get("YPRICEAPI_TIMEOUT", 5 * ONE_MINUTE))
-)  # Five minutes is the default timeout from aiohttp.
-YPRICEAPI_SEMAPHORE = dank_mids.BlockSemaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
 if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
     for header in AUTH_HEADERS:
@@ -63,32 +60,38 @@ if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
                 f"You must also pass in a value for {header_env_names[header]} in order to use ypriceAPI."
             )
 
-should_use = not ENVS.SKIP_YPRICEAPI
-notified = set()
-auth_notifs = defaultdict(int)
+
+@final
+class BadResponse(Exception):
+    """Exception raised for bad responses from ypriceAPI."""
+
+
+should_use: Final = not ENVS.SKIP_YPRICEAPI
+notified: Final = set()
+auth_notifs: Final = defaultdict(int)
 resume_at = 0
-get_retry_header: Callable[[ClientResponse], int] = lambda x: int(
+get_retry_header: Final[Callable[[ClientResponse], int]] = lambda x: int(
     x.headers.get("Retry-After", ONE_MINUTE)
 )
 
 # NOTE: if you want to bypass ypriceapi for specific tokens, have your program add the addresses to this set.
-skip_tokens = set()
-skip_ypriceapi = skip_tokens  # alias for backward compatability
+skip_tokens: Final = set()
+skip_ypriceapi: Final = skip_tokens  # alias for backward compatability
 
 #########################
 # YPRICEAPI PUBLIC BETA #
 #########################
 
-_you_get = [
+_you_get: Final = (
     "access to your desired price data more quickly...",
     "...from nodes run by yearn-affiliated big brains...",
     "...on all the networks Yearn supports.",
-]
-_testimonials = [
+)
+_testimonials: Final = (
     "I can now get prices for all of my useless shitcoins without waiting all day for ypricemagic to load logs.",
     "I don't need to maintain an archive node anymore and that's saving me money.",
     "Wow, so fast!",
-]
+)
 beta_announcement = "ypriceAPI is now in beta!\n\n"
 beta_announcement += "Head to ypriceapi-beta.yearn.finance and sign up for access. You get:\n"
 for you_get in _you_get:
@@ -114,24 +117,6 @@ def announce_beta() -> None:
     spam_your_logs_fn(beta_announcement)
     global should_use
     should_use = False
-
-
-# TODO: Remove this when enough time has passed.
-# Notify user if using old auth scheme
-if OLD_AUTH is not None:
-    announce_beta()
-    raise NotImplementedError(
-        "YPRICEAPI_USER and YPRICEAPI_PASS are no longer used.\n"
-        + "Please sign up for a plan (we have a free tier) at ypriceapi-beta.yearn.finance.\n"
-        + "Then, pass in the following env vars to continue using ypriceAPI:\n"
-        + " - YPRICEAPI_SIGNATURE, the signature you generated on the website"
-        + " - YPRICEAPI_SIGNER, the wallet you used to sign up\n"
-        + "You can unset the old envs to continue using ypricemagic."
-    )
-
-
-class BadResponse(Exception):
-    """Exception raised for bad responses from ypriceAPI."""
 
 
 @alru_cache(maxsize=1)
