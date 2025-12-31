@@ -10,7 +10,7 @@ this requires modifying the source code, which may not be ideal for all users.
 """
 
 import logging
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Final
 
 import a_sync
@@ -258,12 +258,16 @@ async def sense_check(
         return None
 
     # proceed with sense check
-    price_readable = round(price, 4)
+    try:
+        price_readable = round(price, 4)
+    except InvalidOperation:
+        price_readable = price
     try:
         symbol = await ERC20(token_address, asynchronous=True).symbol  # type: ignore [call-overload]
-        msg = f"unusually high price (${price_readable}) returned for {symbol} {token_address} on {NETWORK_NAME} block {block}."
     except NonStandardERC20:
         msg = f"unusually high price (${price_readable}) returned for {token_address} on {NETWORK_NAME} block {block}."
+    else:
+        msg = f"unusually high price (${price_readable}) returned for {symbol} {token_address} on {NETWORK_NAME} block {block}."
 
     logger.warning(
         f"{msg} This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
