@@ -17,11 +17,7 @@ from aiolimiter import AsyncLimiter
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie._config import CONFIG, REQUEST_HEADERS
-from brownie.exceptions import (
-    BrownieEnvironmentWarning,
-    CompilerError,
-    ContractNotFound,
-)
+from brownie.exceptions import BrownieEnvironmentWarning, CompilerError, ContractNotFound
 from brownie.network.contract import (
     ContractEvents,
     _add_deployment,
@@ -66,7 +62,7 @@ if TYPE_CHECKING:
 
 
 logger: Final = getLogger(__name__)
-logger_debug = logger.debug
+logger_debug: Final = logger.debug
 
 NETWORK_NAME: Final = Network.name()
 _CHAINID: Final = chain.id
