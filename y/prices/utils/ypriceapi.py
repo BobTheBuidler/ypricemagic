@@ -40,13 +40,6 @@ header_env_names: Final = {
 AUTH_HEADERS: Final = {header: os.environ.get(env) for header, env in header_env_names.items()}
 AUTH_HEADERS_PRESENT: Final = all(AUTH_HEADERS.values())
 
-# old
-YPRICEAPI_USER: Final = os.environ.get("YPRICEAPI_USER")
-YPRICEAPI_PASS: Final = os.environ.get("YPRICEAPI_PASS")
-OLD_AUTH: Final = (
-    BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
-)
-
 # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
 ONE_MINUTE: Final = 60
 FIVE_MINUTES: Final = ONE_MINUTE * 5
@@ -66,6 +59,12 @@ if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
             raise OSError(
                 f"You must also pass in a value for {header_env_names[header]} in order to use ypriceAPI."
             )
+
+
+@final
+class BadResponse(Exception):
+    """Exception raised for bad responses from ypriceAPI."""
+
 
 should_use: Final = not ENVS.SKIP_YPRICEAPI
 notified: Final = set()
@@ -118,25 +117,6 @@ def announce_beta() -> None:
     spam_your_logs_fn(beta_announcement)
     global should_use
     should_use = False
-
-
-# TODO: Remove this when enough time has passed.
-# Notify user if using old auth scheme
-if OLD_AUTH is not None:
-    announce_beta()
-    raise NotImplementedError(
-        "YPRICEAPI_USER and YPRICEAPI_PASS are no longer used.\n"
-        + "Please sign up for a plan (we have a free tier) at ypriceapi-beta.yearn.finance.\n"
-        + "Then, pass in the following env vars to continue using ypriceAPI:\n"
-        + " - YPRICEAPI_SIGNATURE, the signature you generated on the website"
-        + " - YPRICEAPI_SIGNER, the wallet you used to sign up\n"
-        + "You can unset the old envs to continue using ypricemagic."
-    )
-
-
-@final
-class BadResponse(Exception):
-    """Exception raised for bad responses from ypriceAPI."""
 
 
 @alru_cache(maxsize=1)
