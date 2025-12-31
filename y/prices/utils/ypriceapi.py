@@ -287,7 +287,10 @@ async def read_response(
     # Server Errors
 
     # 502 & 503
-    elif response.status in {HTTPStatusExtended.BAD_GATEWAY, HTTPStatusExtended.SERVICE_UNAVAILABLE}:
+    elif response.status in {
+        HTTPStatusExtended.BAD_GATEWAY,
+        HTTPStatusExtended.SERVICE_UNAVAILABLE,
+    }:
         logger.warning("ypriceAPI returned status code %s", _get_err_reason(response))
         try:
             msg = await response.json(content_type=None) or await response.text()
