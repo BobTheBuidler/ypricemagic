@@ -43,7 +43,9 @@ AUTH_HEADERS_PRESENT: Final = all(AUTH_HEADERS.values())
 # old
 YPRICEAPI_USER: Final = os.environ.get("YPRICEAPI_USER")
 YPRICEAPI_PASS: Final = os.environ.get("YPRICEAPI_PASS")
-OLD_AUTH: Final = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
+OLD_AUTH: Final = (
+    BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
+)
 
 # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
 ONE_MINUTE: Final = 60
@@ -54,7 +56,9 @@ FALLBACK_STR: Final = "Falling back to your node for pricing."
 # Five minutes is the default timeout from aiohttp.
 YPRICEAPI_TIMEOUT: Final = ClientTimeout(int(os.environ.get("YPRICEAPI_TIMEOUT", FIVE_MINUTES)))
 
-YPRICEAPI_SEMAPHORE: Final = dank_mids.BlockSemaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
+YPRICEAPI_SEMAPHORE: Final = dank_mids.BlockSemaphore(
+    int(os.environ.get("YPRICEAPI_SEMAPHORE", 100))
+)
 
 if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
     for header in AUTH_HEADERS:
@@ -67,8 +71,8 @@ should_use: Final = not ENVS.SKIP_YPRICEAPI
 notified: Final = set()
 auth_notifs: Final = defaultdict(int)
 resume_at = 0
-get_retry_header: Final[Callable[[ClientResponse], int]] = (
-    lambda x: int(x.headers.get("Retry-After", ONE_MINUTE))
+get_retry_header: Final[Callable[[ClientResponse], int]] = lambda x: int(
+    x.headers.get("Retry-After", ONE_MINUTE)
 )
 
 # NOTE: if you want to bypass ypriceapi for specific tokens, have your program add the addresses to this set.
