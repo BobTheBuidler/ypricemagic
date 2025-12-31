@@ -2,27 +2,15 @@
 import asyncio
 import logging
 import os
-from collections import defaultdict
-from http import HTTPStatus
 from random import randint
 from time import time
 from typing import Any, Final, final
-from collections.abc import Callable
 
 import dank_mids
-from aiohttp import (
-    BasicAuth,
-    ClientResponse,
-    ClientSession,
-    ClientTimeout,
-    TCPConnector,
-)
-from aiohttp.client_exceptions import (
-    ClientConnectorSSLError,
-    ClientError,
-    ContentTypeError,
-)
+from aiohttp import ClientResponse, ClientSession, ClientTimeout, TCPConnector
+from aiohttp.client_exceptions import ClientConnectorSSLError, ClientError, ContentTypeError
 from async_lru import alru_cache
+from dank_mids.helpers._session import HTTPStatusExtended
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import UsdPrice
@@ -67,12 +55,8 @@ class BadResponse(Exception):
 
 
 should_use: Final = not ENVS.SKIP_YPRICEAPI
-notified: Final = set()
-auth_notifs: Final = defaultdict(int)
+notified: Final[set[HTTPStatusExtended]] = set()
 resume_at = 0
-get_retry_header: Final[Callable[[ClientResponse], int]] = lambda x: int(
-    x.headers.get("Retry-After", ONE_MINUTE)
-)
 
 # NOTE: if you want to bypass ypriceapi for specific tokens, have your program add the addresses to this set.
 skip_tokens: Final = set()
@@ -275,7 +259,7 @@ async def read_response(
         >>> data = await read_response(response)
     """
     # 200
-    if response.status == HTTPStatus.OK:
+    if response.status == HTTPStatusExtended.OK:
         try:
             return await response.json()
         except ContentTypeError as e:
@@ -287,21 +271,24 @@ async def read_response(
             )
 
     # 401
-    elif response.status == HTTPStatus.UNAUTHORIZED:
-        if HTTPStatus.UNAUTHORIZED not in notified:
+    elif response.status == HTTPStatusExtended.UNAUTHORIZED:
+        if HTTPStatusExtended.UNAUTHORIZED not in notified:
             logger.error(
                 f"Your provided ypriceAPI credentials are not authorized for use.{FALLBACK_STR}"
             )
-            notified.add(HTTPStatus.UNAUTHORIZED)
+            notified.add(HTTPStatusExtended.UNAUTHORIZED)
 
     # 404
-    elif response.status == HTTPStatus.NOT_FOUND and token and block:
+    elif response.status == HTTPStatusExtended.NOT_FOUND and token and block:
         logger.debug("Failed to get price from API: %s at %s", token, block)
 
     # Server Errors
 
     # 502 & 503
-    elif response.status in {HTTPStatus.BAD_GATEWAY, HTTPStatus.SERVICE_UNAVAILABLE}:
+    elif response.status in {
+        HTTPStatusExtended.BAD_GATEWAY,
+        HTTPStatusExtended.SERVICE_UNAVAILABLE,
+    }:
         logger.warning("ypriceAPI returned status code %s", _get_err_reason(response))
         try:
             msg = await response.json(content_type=None) or await response.text()
@@ -315,7 +302,7 @@ async def read_response(
             msg = ""
         if msg:
             logger.warning(msg)
-        _set_resume_at(get_retry_header(response))
+        _set_resume_at(_get_retry_header(response))
 
     else:
         msg = f"ypriceAPI returned status code {_get_err_reason(response)}"
@@ -342,6 +329,11 @@ def _get_err_reason(response: ClientResponse) -> str:
         return f"[{response.status}]"
     ascii_encodable_reason = response.reason.encode("ascii", "backslashreplace").decode("ascii")
     return f"[{response.status} {ascii_encodable_reason}]"
+
+
+def _get_retry_header(response: ClientResponse) -> int:
+    retry_after: str | None = response.headers.get("Retry-After")
+    return ONE_MINUTE if retry_after is None else int(retry_after)
 
 
 def _set_resume_at(retry_after: float) -> None:

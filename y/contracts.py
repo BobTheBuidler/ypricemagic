@@ -2,11 +2,11 @@ import threading
 import warnings
 from asyncio import Lock, TimerHandle, get_running_loop
 from collections import defaultdict
+from collections.abc import Callable, Iterable
 from functools import lru_cache
 from logging import getLogger
 from os import getenv
 from typing import TYPE_CHECKING, Any, Final, Literal, overload
-from collections.abc import Callable, Iterable
 from urllib.parse import urlparse
 
 import dank_mids
@@ -17,11 +17,7 @@ from aiolimiter import AsyncLimiter
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie._config import CONFIG, REQUEST_HEADERS
-from brownie.exceptions import (
-    BrownieEnvironmentWarning,
-    CompilerError,
-    ContractNotFound,
-)
+from brownie.exceptions import BrownieEnvironmentWarning, CompilerError, ContractNotFound
 from brownie.network.contract import (
     ContractEvents,
     _add_deployment,
@@ -66,7 +62,7 @@ if TYPE_CHECKING:
 
 
 logger: Final = getLogger(__name__)
-logger_debug = logger.debug
+logger_debug: Final = logger.debug
 
 NETWORK_NAME: Final = Network.name()
 _CHAINID: Final = chain.id
@@ -971,7 +967,7 @@ def _extract_abi_data(address: Address):
         ):
             raise InvalidAPIKeyError from e
         if contract_not_verified(e):
-            raise ContractNotVerified(f"{address} on {Network.printable()}") from e
+            raise ContractNotVerified(f"{address} on {Network.printable()}") from e.__cause__
         elif "Unknown contract address:" in str(e):
             if is_contract(address):
                 raise ContractNotVerified(str(e)) from e
@@ -1099,7 +1095,7 @@ async def _extract_abi_data_async(address: Address):
         ):
             raise InvalidAPIKeyError from e
         if contract_not_verified(e):
-            raise ContractNotVerified(f"{address} on {Network.printable()}") from e
+            raise ContractNotVerified(f"{address} on {Network.printable()}") from e.__cause__
         elif "Unknown contract address:" in str(e):
             if await get_code(address) not in ("0x", b""):
                 raise ContractNotVerified(str(e)) from e
