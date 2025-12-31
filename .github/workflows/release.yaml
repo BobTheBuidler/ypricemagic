@@ -97,15 +97,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Cache .mypy_cache
-        uses: actions/cache@v5
-        with:
-          path: .mypy_cache
-          key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
-
       - name: Install cibuildwheel
-        run: |
-          python -m pip install --upgrade pip setuptools wheel cibuildwheel
+        run: python -m pip install --upgrade pip setuptools wheel cibuildwheel
 
       - name: Build wheels
         env:
@@ -121,8 +114,7 @@ jobs:
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.get_version.outputs.version }}
           # Pass version into Docker for Linux builds
           CIBW_ENVIRONMENT: "SETUPTOOLS_SCM_PRETEND_VERSION=${{ steps.get_version.outputs.version }}"
-        run: |
-          python -m cibuildwheel --output-dir wheelhouse
+        run: python -m cibuildwheel --output-dir wheelhouse
 
       - name: Upload wheels
         uses: actions/upload-artifact@v6
@@ -167,8 +159,7 @@ jobs:
         env:
           # Use version from git tag (stripped 'v')
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.get_version.outputs.version }}
-        run: |
-          python setup.py sdist
+        run: python setup.py sdist
 
       # ----------------------------------------------------
       # Download wheels built on each runner
