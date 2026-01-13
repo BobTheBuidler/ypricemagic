@@ -1,10 +1,11 @@
 import hashlib
 import json
 from asyncio import Lock
+from collections.abc import Callable, Container
+from functools import lru_cache
 from pathlib import Path
+from sqlite3 import OperationalError
 from typing import Any, Final, Literal, cast, final
-from collections.abc import Callable
-from collections.abc import Container
 
 import aiosqlite
 from a_sync import SmartProcessingQueue
@@ -12,9 +13,6 @@ from aiosqlite.context import Result
 from brownie._config import CONFIG, _get_data_folder
 from brownie.exceptions import BrownieEnvironmentError
 from brownie.network.contract import _resolve_address  # type: ignore [attr-defined]
-from functools import lru_cache
-from sqlite3 import OperationalError
-
 
 SourceKey = Literal[
     "address",

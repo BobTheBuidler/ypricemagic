@@ -1,9 +1,9 @@
 from asyncio import sleep
+from collections.abc import AsyncIterator
 from contextlib import suppress
 from decimal import Decimal
 from logging import DEBUG, getLogger
 from typing import Any
-from collections.abc import AsyncIterator
 
 import a_sync
 import a_sync.exceptions
@@ -34,14 +34,7 @@ from y.constants import (
     weth,
 )
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import (
-    Address,
-    AddressOrContract,
-    AnyAddressType,
-    Block,
-    Pool,
-    UsdPrice,
-)
+from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
     CantFindSwapPath,
     ContractNotVerified,
@@ -55,11 +48,7 @@ from y.exceptions import (
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.prices import magic
-from y.prices.dex.uniswap.v2_forks import (
-    ROUTER_TO_FACTORY,
-    ROUTER_TO_PROTOCOL,
-    special_paths,
-)
+from y.prices.dex.uniswap.v2_forks import ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL, special_paths
 from y.utils.events import ProcessedEvents
 from y.utils.raw_calls import raw_call
 

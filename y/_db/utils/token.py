@@ -9,11 +9,7 @@ from pony.orm import ObjectNotFound, TransactionIntegrityError, commit, select
 
 from y import constants, convert
 from y._db.common import make_executor
-from y._db.decorators import (
-    a_sync_read_db_session,
-    db_session_retry_locked,
-    log_result_count,
-)
+from y._db.decorators import a_sync_read_db_session, db_session_retry_locked, log_result_count
 from y._db.entities import Address, Token, insert
 from y._db.exceptions import EEEError
 from y._db.utils._ep import _get_get_token

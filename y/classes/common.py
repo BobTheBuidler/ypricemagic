@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from asyncio import Task, create_task, ensure_future, get_event_loop
+from collections.abc import Awaitable, Generator
 from decimal import Decimal
 from functools import cached_property
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Final, Literal, NoReturn, Union, final
-from collections.abc import Awaitable, Generator
 
 import a_sync
 from a_sync import cgather
@@ -23,13 +23,7 @@ from y import convert
 from y._decorators import stuck_coro_debugger
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
-from y.contracts import (
-    Contract,
-    build_name,
-    contract_creation_block_async,
-    has_method,
-    probe,
-)
+from y.contracts import Contract, build_name, contract_creation_block_async, has_method, probe
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract, NonStandardERC20
 from y.networks import Network

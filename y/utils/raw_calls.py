@@ -1,7 +1,7 @@
 import logging
+from collections.abc import Callable
 from contextlib import suppress
 from typing import Any, Final, Union
-from collections.abc import Callable
 
 import a_sync
 import brownie
@@ -24,7 +24,6 @@ from y.exceptions import (
     call_reverted,
 )
 from y.networks import Network
-
 
 logger: Final = logging.getLogger(__name__)
 

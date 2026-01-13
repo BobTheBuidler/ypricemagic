@@ -22,7 +22,6 @@ from y.utils.cache import a_sync_ttl_cache, memory
 from y.utils.client import get_ethereum_client, get_ethereum_client_async
 from y.utils.logging import yLazyLogger
 
-
 UnixTimestamp = NewType("UnixTimestamp", int)
 Timestamp = Union[UnixTimestamp, datetime.datetime]
 

@@ -5,7 +5,6 @@ import asyncpg
 
 import y._db.config as db_config
 
-
 POOL_LOCK: Final = asyncio.Lock()
 _asyncpg_pool: asyncpg.Pool | None = None
 

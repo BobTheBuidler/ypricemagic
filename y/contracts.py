@@ -40,7 +40,7 @@ from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
-from y._db.brownie import DISCARD_SOURCE_KEYS, sqlite_lock, _get_deployment
+from y._db.brownie import DISCARD_SOURCE_KEYS, _get_deployment, sqlite_lock
 from y._decorators import stuck_coro_debugger
 from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import (

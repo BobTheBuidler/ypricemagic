@@ -17,7 +17,6 @@ from y.classes.common import UsdPrice
 from y.constants import CHAINID, NETWORK_NAME
 from y.datatypes import Address, Block
 
-
 logger: Final = logging.getLogger(__name__)
 
 # current

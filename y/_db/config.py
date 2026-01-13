@@ -31,7 +31,6 @@ from typing import Final
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 
-
 DEFAULT_SQLITE_DIR: Final = f"{path.expanduser( '~' )}/.ypricemagic"
 
 db_provider: Final = str(ENVS.DB_PROVIDER)

@@ -31,8 +31,7 @@ if not network.is_connected():
 # for backwards-compatability
 from dank_mids import dank_web3 as dank_w3
 
-
-from y import convert, time
+from y import convert, exceptions, monkey_patches, time
 from y.classes.common import ERC20
 from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN, dai, usdc, wbtc, weth
 from y.contracts import (
@@ -56,16 +55,11 @@ from y.exceptions import (
     PriceError,
     UnsupportedNetwork,
 )
-from y import exceptions, monkey_patches
 from y.networks import Network
 from y.prices import magic
 from y.prices.magic import get_price, get_prices, map_prices
 from y.prices.utils import check_bucket
-from y.time import (
-    get_block_at_timestamp,
-    get_block_timestamp,
-    get_block_timestamp_async,
-)
+from y.time import get_block_at_timestamp, get_block_timestamp, get_block_timestamp_async
 from y.utils.events import Events, LogFilter, ProcessedEvents
 from y.utils.logging import enable_debug_logging
 from y.utils.middleware import setup_getcode_cache_middleware, setup_geth_poa_middleware

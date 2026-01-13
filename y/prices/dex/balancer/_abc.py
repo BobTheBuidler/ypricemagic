@@ -5,8 +5,8 @@ import a_sync
 
 import y.ENVIRONMENT_VARIABLES as ENVS
 from y import contracts
-from y.classes._abc import LiquidityPool
 from y._decorators import stuck_coro_debugger
+from y.classes._abc import LiquidityPool
 from y.datatypes import AddressOrContract, AnyAddressType, Block, Pool, UsdPrice
 
 
