@@ -24,28 +24,17 @@ from y import convert
 from y.classes.common import ERC20, WeiBalance, _EventsLoader, _Loader
 from y.constants import CHAINID, CONNECTED_TO_MAINNET
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import (
-    Address,
-    AddressOrContract,
-    AnyAddressType,
-    Block,
-    Pool,
-    UsdPrice,
-    UsdValue,
-)
-from y.exceptions import (
-    ContractNotVerified,
-    MessedUpBrownieContract,
-    PriceError,
-    UnsupportedNetwork,
-    yPriceMagicError,
-    call_reverted,
-)
+from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
+                         Pool, UsdPrice, UsdValue)
+from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
+                          PriceError, UnsupportedNetwork, call_reverted,
+                          yPriceMagicError)
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
 from y.networks import Network
 from y.utils import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
-from y.utils.multicall import multicall_same_func_same_contract_different_inputs
+from y.utils.multicall import \
+    multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
 
 T = TypeVar("T")

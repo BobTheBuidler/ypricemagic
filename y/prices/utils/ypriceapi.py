@@ -8,7 +8,8 @@ from typing import Any, Final, final
 
 import dank_mids
 from aiohttp import ClientResponse, ClientSession, ClientTimeout, TCPConnector
-from aiohttp.client_exceptions import ClientConnectorSSLError, ClientError, ContentTypeError
+from aiohttp.client_exceptions import (ClientConnectorSSLError, ClientError,
+                                       ContentTypeError)
 from async_lru import alru_cache
 from dank_mids.helpers._session import HTTPStatusExtended
 
@@ -16,7 +17,6 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import UsdPrice
 from y.constants import CHAINID, NETWORK_NAME
 from y.datatypes import Address, Block
-
 
 logger: Final = logging.getLogger(__name__)
 

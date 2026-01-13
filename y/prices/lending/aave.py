@@ -1,8 +1,8 @@
 import logging
 from abc import abstractmethod
+from collections.abc import Awaitable
 from decimal import Decimal
 from typing import Union
-from collections.abc import Awaitable
 
 import a_sync
 from a_sync import cgather, igather
@@ -16,7 +16,8 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20, ContractBase
 from y.contracts import Contract
-from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, UsdPrice
+from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
+                         UsdPrice)
 from y.networks import Network
 from y.utils import hasall
 from y.utils.logging import get_price_logger

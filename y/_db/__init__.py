@@ -1,6 +1,6 @@
 import os
 
-from pony.orm import Database, BindingError, DatabaseError, TransactionError
+from pony.orm import BindingError, Database, DatabaseError, TransactionError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 

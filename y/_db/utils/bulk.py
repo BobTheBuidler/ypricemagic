@@ -1,15 +1,14 @@
 import logging
-from typing import Any
 from collections.abc import Iterable, Sequence
-from pony.orm import Database, DatabaseError, commit
+from typing import Any
 
 from a_sync import a_sync
+from pony.orm import Database, DatabaseError, commit
 
 from y._db import entities
 from y._db.common import make_executor
 from y._db.decorators import db_session_retry_locked, retry_locked
 from y._db.utils.stringify import build_query
-
 
 logger = logging.getLogger(__name__)
 _logger_debug = logger.debug

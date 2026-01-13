@@ -11,7 +11,6 @@ import sys
 
 from sphinx.util import logging
 
-
 project = "ypricemagic"
 copyright = "2024, BobTheBuidler"
 author = "BobTheBuidler"

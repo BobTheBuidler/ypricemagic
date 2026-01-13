@@ -9,16 +9,11 @@ from y import convert
 from y.classes.common import ERC20
 from y.constants import CONNECTED_TO_MAINNET
 from y.contracts import has_method, has_methods
-from y.datatypes import (
-    Address,
-    AddressOrContract,
-    AnyAddressType,
-    Block,
-    UsdPrice,
-    UsdValue,
-)
+from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
+                         UsdPrice, UsdValue)
 from y.prices import magic
-from y.utils.multicall import multicall_same_func_same_contract_different_inputs
+from y.utils.multicall import \
+    multicall_same_func_same_contract_different_inputs
 
 logger = logging.getLogger(__name__)
 

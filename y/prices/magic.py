@@ -1,8 +1,7 @@
+from collections.abc import Callable, Iterable
 from functools import wraps
 from logging import DEBUG, Logger, getLogger
 from typing import Literal, TypeVar, overload
-from collections.abc import Callable
-from collections.abc import Iterable
 
 import a_sync
 import dank_mids
@@ -18,18 +17,8 @@ from y._decorators import stuck_coro_debugger
 from y.classes import ERC20
 from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
-from y.prices import (
-    band,
-    chainlink,
-    convex,
-    one_to_one,
-    pendle,
-    popsicle,
-    rkp3r,
-    solidex,
-    utils,
-    yearn,
-)
+from y.prices import (band, chainlink, convex, one_to_one, pendle, popsicle,
+                      rkp3r, solidex, utils, yearn)
 from y.prices.dex import *
 from y.prices.dex.uniswap import UniswapV2Pool, uniswap_multiplexer
 from y.prices.eth_derivs import *

@@ -16,7 +16,6 @@ from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2
 from y.utils.cache import optional_async_diskcache
 
-
 logger: Final = logging.getLogger(__name__)
 
 

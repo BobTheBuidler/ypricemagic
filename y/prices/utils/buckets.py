@@ -1,6 +1,6 @@
 from asyncio import as_completed, ensure_future, iscoroutine
-from logging import DEBUG, getLogger
 from collections.abc import Awaitable, Callable
+from logging import DEBUG, getLogger
 
 import a_sync
 
@@ -8,7 +8,8 @@ from y import convert
 from y.classes.common import ERC20
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
-from y.prices import convex, one_to_one, pendle, popsicle, rkp3r, solidex, yearn
+from y.prices import (convex, one_to_one, pendle, popsicle, rkp3r, solidex,
+                      yearn)
 from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
@@ -20,10 +21,12 @@ from y.prices.gearbox import gearbox
 from y.prices.lending import ib
 from y.prices.lending.aave import aave
 from y.prices.lending.compound import compound
-from y.prices.stable_swap import belt, ellipsis, froyo, mstablefeederpool, saddle
+from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
+                                  saddle)
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
-from y.prices.tokenized_fund import basketdao, gelato, piedao, reserve, tokensets
+from y.prices.tokenized_fund import (basketdao, gelato, piedao, reserve,
+                                     tokensets)
 from y.utils.logging import get_price_logger
 
 logger = getLogger(__name__)

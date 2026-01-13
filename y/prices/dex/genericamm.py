@@ -14,7 +14,6 @@ from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import MessedUpBrownieContract
 from y.utils import gather_methods, hasall
 
-
 _CHECK_METHODS: Final = "getReserves", "token0", "token1"
 _TOKEN_METHODS: Final = "token0()(address)", "token1()(address)"
 

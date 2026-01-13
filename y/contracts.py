@@ -11,22 +11,19 @@ from urllib.parse import urlparse
 
 import dank_mids
 import eth_retry
-from a_sync import SmartProcessingQueue, ThreadsafeSemaphore, a_sync, cgather, igather
+from a_sync import (SmartProcessingQueue, ThreadsafeSemaphore, a_sync, cgather,
+                    igather)
 from aiohttp import ClientSession
 from aiolimiter import AsyncLimiter
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie._config import CONFIG, REQUEST_HEADERS
-from brownie.exceptions import BrownieEnvironmentWarning, CompilerError, ContractNotFound
-from brownie.network.contract import (
-    ContractEvents,
-    _add_deployment,
-    _ContractBase,
-    _DeployedContractBase,
-    _fetch_from_explorer,
-    _resolve_address,
-    _unverified_addresses,
-)
+from brownie.exceptions import (BrownieEnvironmentWarning, CompilerError,
+                                ContractNotFound)
+from brownie.network.contract import (ContractEvents, _add_deployment,
+                                      _ContractBase, _DeployedContractBase,
+                                      _fetch_from_explorer, _resolve_address,
+                                      _unverified_addresses)
 from brownie.typing import AccountsType
 from brownie.utils import color
 from cachetools.func import ttl_cache
@@ -40,16 +37,11 @@ from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
-from y._db.brownie import DISCARD_SOURCE_KEYS, sqlite_lock, _get_deployment
+from y._db.brownie import DISCARD_SOURCE_KEYS, _get_deployment, sqlite_lock
 from y._decorators import stuck_coro_debugger
 from y.datatypes import Address, AnyAddressType, Block
-from y.exceptions import (
-    ContractNotVerified,
-    InvalidAPIKeyError,
-    NodeNotSynced,
-    call_reverted,
-    contract_not_verified,
-)
+from y.exceptions import (ContractNotVerified, InvalidAPIKeyError,
+                          NodeNotSynced, call_reverted, contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 from y.time import check_node, check_node_async

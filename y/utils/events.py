@@ -1,14 +1,13 @@
 from abc import abstractmethod
 from asyncio import as_completed, get_event_loop, sleep
 from collections import Counter, defaultdict
+from collections.abc import AsyncGenerator, Awaitable, Callable, Iterable
 from functools import cached_property, wraps
 from inspect import isawaitable
 from itertools import zip_longest
 from logging import getLogger
 from threading import current_thread, main_thread
 from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
-from collections.abc import Callable
-from collections.abc import AsyncGenerator, Awaitable, Iterable
 
 import a_sync
 import dank_mids
@@ -17,13 +16,9 @@ from a_sync import igather
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property  # type: ignore [import-untyped]
 from brownie import web3
-from brownie.network.event import (
-    _EventItem,
-    _add_deployment_topics,
-    _decode_logs,
-    _deployment_topics,
-    EventDict,
-)
+from brownie.network.event import (EventDict, _add_deployment_topics,
+                                   _decode_logs, _deployment_topics,
+                                   _EventItem)
 from eth_typing import ChecksumAddress
 from eth_utils.toolz import concat, groupby
 from evmspec import Log

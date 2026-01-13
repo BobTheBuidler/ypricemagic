@@ -1,22 +1,14 @@
 import logging
+from collections.abc import Callable
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
-from typing import TYPE_CHECKING, Any, TypeVar
-from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 from typing import Optional as typing_Optional
+from typing import TypeVar
 
-from pony.orm import (
-    Database,
-    InterfaceError,
-    Optional,
-    PrimaryKey,
-    Required,
-    Set,
-    TransactionIntegrityError,
-    commit,
-    composite_index,
-    db_session,
-)
+from pony.orm import (Database, InterfaceError, Optional, PrimaryKey, Required,
+                      Set, TransactionIntegrityError, commit, composite_index,
+                      db_session)
 from typing_extensions import ParamSpec
 
 from y._db.decorators import retry_locked, ydb_write_threads

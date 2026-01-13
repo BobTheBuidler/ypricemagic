@@ -2,14 +2,13 @@
 Utility functions for gathering method results asynchronously.
 """
 
-from typing import Any, Final
 from collections.abc import Iterable
+from typing import Any, Final
 
 import a_sync
 import multicall
 
 from y._decorators import stuck_coro_debugger
-
 
 Call: Final = multicall.Call
 

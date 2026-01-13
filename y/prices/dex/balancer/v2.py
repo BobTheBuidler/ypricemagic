@@ -1,9 +1,9 @@
 from asyncio import Task, create_task
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import suppress
 from enum import IntEnum
 from logging import DEBUG, getLogger
 from typing import Any, NewType, TypeVar
-from collections.abc import AsyncIterator, Awaitable, Callable
 
 import a_sync
 from a_sync import cgather
@@ -23,14 +23,14 @@ from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import CHAINID, CONNECTED_TO_MAINNET
 from y.contracts import Contract
-from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice, UsdValue
+from y.datatypes import (Address, AnyAddressType, Block, Pool, UsdPrice,
+                         UsdValue)
 from y.exceptions import ContractNotVerified, TokenNotFound
 from y.networks import Network
 from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
 from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
-
 
 BALANCER_V2_VAULTS = {
     Network.Mainnet: [

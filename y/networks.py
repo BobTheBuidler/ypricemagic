@@ -3,7 +3,6 @@ from typing import Final, final
 
 from brownie import chain
 
-
 CHAINID: Final[int] = chain.id
 """
 The chainid for the connected rpc.

@@ -18,7 +18,6 @@ from y.exceptions import UnsupportedNetwork, call_reverted
 from y.networks import Network
 from y.utils import a_sync_ttl_cache
 
-
 logger: Final = logging.getLogger(__name__)
 
 addresses: Final = {

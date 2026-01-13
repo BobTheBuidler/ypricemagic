@@ -9,7 +9,6 @@ from eth_typing import AnyAddress, ChecksumAddress, HexAddress
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import AnyAddressType
 
-
 HexBytes: Final = hexbytes.HexBytes
 
 to_checksum_address: Final = cchecksum.to_checksum_address

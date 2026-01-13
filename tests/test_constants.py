@@ -1,8 +1,8 @@
 import pytest
-from y.constants import STABLECOINS
-from y.prices import magic
 
 from tests.fixtures import blocks_for_contract
+from y.constants import STABLECOINS
+from y.prices import magic
 
 
 @pytest.mark.parametrize("token", STABLECOINS)
