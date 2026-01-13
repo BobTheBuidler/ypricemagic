@@ -17,8 +17,7 @@ from y.exceptions import NonStandardERC20, contract_not_verified
 from y.prices.dex.solidly import SolidlyRouter
 from y.prices.dex.uniswap import v3
 from y.prices.dex.uniswap.v1 import UniswapV1
-from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapRouterV2,
-                                     UniswapV2Pool)
+from y.prices.dex.uniswap.v2 import NotAUniswapV2Pool, UniswapRouterV2, UniswapV2Pool
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
 from y.prices.dex.uniswap.v3 import UniswapV3, uniswap_v3
 from y.prices.dex.velodrome import VelodromeRouterV2

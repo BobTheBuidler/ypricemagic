@@ -15,10 +15,8 @@ from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
 from y import convert
-from y._db.common import (DiskCache, default_filter_threads, enc_hook,
-                          make_executor)
-from y._db.decorators import (db_session_cached, db_session_retry_locked,
-                              retry_locked)
+from y._db.common import DiskCache, default_filter_threads, enc_hook, make_executor
+from y._db.decorators import db_session_cached, db_session_retry_locked, retry_locked
 from y._db.entities import Block, Hashes
 from y._db.entities import Log as DbLog
 from y._db.entities import LogCacheInfo, LogTopic

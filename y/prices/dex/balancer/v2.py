@@ -23,8 +23,7 @@ from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import CHAINID, CONNECTED_TO_MAINNET
 from y.contracts import Contract
-from y.datatypes import (Address, AnyAddressType, Block, Pool, UsdPrice,
-                         UsdValue)
+from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice, UsdValue
 from y.exceptions import ContractNotVerified, TokenNotFound
 from y.networks import Network
 from y.prices.dex.balancer._abc import BalancerABC, BalancerPool

@@ -24,8 +24,7 @@ from y.classes.common import ERC20, ContractBase
 from y.constants import CHAINID, CONNECTED_TO_MAINNET, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
-from y.exceptions import (ContractNotVerified, NonStandardERC20, TokenNotFound,
-                          call_reverted)
+from y.exceptions import ContractNotVerified, NonStandardERC20, TokenNotFound, call_reverted
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
 from y.utils.events import ProcessedEvents

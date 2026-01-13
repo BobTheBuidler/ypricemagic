@@ -24,20 +24,31 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import continue_on_revert, stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import (CHAINID, CONNECTED_TO_MAINNET, STABLECOINS,
-                         WRAPPED_GAS_COIN, sushi, usdc, weth)
+from y.constants import (
+    CHAINID,
+    CONNECTED_TO_MAINNET,
+    STABLECOINS,
+    WRAPPED_GAS_COIN,
+    sushi,
+    usdc,
+    weth,
+)
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
-                         Pool, UsdPrice)
-from y.exceptions import (CantFindSwapPath, ContractNotVerified,
-                          NonStandardERC20, NotAUniswapV2Pool, TokenNotFound,
-                          call_reverted, continue_if_call_reverted,
-                          reraise_excs_with_extra_context)
+from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, UsdPrice
+from y.exceptions import (
+    CantFindSwapPath,
+    ContractNotVerified,
+    NonStandardERC20,
+    NotAUniswapV2Pool,
+    TokenNotFound,
+    call_reverted,
+    continue_if_call_reverted,
+    reraise_excs_with_extra_context,
+)
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.prices import magic
-from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
-                                           ROUTER_TO_PROTOCOL, special_paths)
+from y.prices.dex.uniswap.v2_forks import ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL, special_paths
 from y.utils.events import ProcessedEvents
 from y.utils.raw_calls import raw_call
 

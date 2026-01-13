@@ -13,8 +13,7 @@ from y.classes.common import ERC20
 from y.constants import usdc
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, Block, Pool, UsdPrice
-from y.exceptions import (ContractNotVerified, UnsupportedNetwork,
-                          continue_if_call_reverted)
+from y.exceptions import ContractNotVerified, UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
 from y.utils.raw_calls import _decimals
 

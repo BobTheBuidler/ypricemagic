@@ -9,8 +9,7 @@ from pony.orm import select
 
 import y._db.config as db_config
 from y import constants
-from y._db.decorators import (a_sync_read_db_session, log_result_count,
-                              retry_locked)
+from y._db.decorators import a_sync_read_db_session, log_result_count, retry_locked
 from y._db.entities import Price, insert_nowait
 from y._db.utils.asyncpg import get_asyncpg_pool
 from y._db.utils.token import ensure_token

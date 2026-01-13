@@ -34,25 +34,35 @@ from dank_mids import dank_web3 as dank_w3
 from y import convert, exceptions, monkey_patches, time
 from y.classes.common import ERC20
 from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN, dai, usdc, wbtc, weth
-from y.contracts import (Contract, Contract_erc20,
-                         Contract_with_erc20_fallback, contract_creation_block,
-                         contract_creation_block_async, has_method,
-                         has_methods)
+from y.contracts import (
+    Contract,
+    Contract_erc20,
+    Contract_with_erc20_fallback,
+    contract_creation_block,
+    contract_creation_block_async,
+    has_method,
+    has_methods,
+)
 from y.datatypes import Address, Block
-from y.exceptions import (CalldataPreparationError, CallReverted,
-                          ContractNotVerified, MessedUpBrownieContract,
-                          NonStandardERC20, NotABalancerV2Pool,
-                          NotAUniswapV2Pool, PriceError, UnsupportedNetwork)
+from y.exceptions import (
+    CalldataPreparationError,
+    CallReverted,
+    ContractNotVerified,
+    MessedUpBrownieContract,
+    NonStandardERC20,
+    NotABalancerV2Pool,
+    NotAUniswapV2Pool,
+    PriceError,
+    UnsupportedNetwork,
+)
 from y.networks import Network
 from y.prices import magic
 from y.prices.magic import get_price, get_prices, map_prices
 from y.prices.utils import check_bucket
-from y.time import (get_block_at_timestamp, get_block_timestamp,
-                    get_block_timestamp_async)
+from y.time import get_block_at_timestamp, get_block_timestamp, get_block_timestamp_async
 from y.utils.events import Events, LogFilter, ProcessedEvents
 from y.utils.logging import enable_debug_logging
-from y.utils.middleware import (setup_getcode_cache_middleware,
-                                setup_geth_poa_middleware)
+from y.utils.middleware import setup_getcode_cache_middleware, setup_geth_poa_middleware
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import balanceOf, raw_call
 

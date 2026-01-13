@@ -7,8 +7,7 @@ import y.ENVIRONMENT_VARIABLES as ENVS
 from y import contracts
 from y._decorators import stuck_coro_debugger
 from y.classes._abc import LiquidityPool
-from y.datatypes import (AddressOrContract, AnyAddressType, Block, Pool,
-                         UsdPrice)
+from y.datatypes import AddressOrContract, AnyAddressType, Block, Pool, UsdPrice
 
 
 class BalancerPool(LiquidityPool):

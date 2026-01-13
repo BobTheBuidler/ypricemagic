@@ -16,9 +16,13 @@ from faster_eth_utils import function_signature_to_4byte_selector
 from y.contracts import Contract, proxy_implementation
 from y.convert import to_address, to_address_async
 from y.datatypes import Address, AddressOrContract, Block
-from y.exceptions import (CalldataPreparationError, ContractNotVerified,
-                          NonStandardERC20, NoProxyImplementation,
-                          call_reverted)
+from y.exceptions import (
+    CalldataPreparationError,
+    ContractNotVerified,
+    NonStandardERC20,
+    NoProxyImplementation,
+    call_reverted,
+)
 from y.networks import Network
 
 logger: Final = logging.getLogger(__name__)

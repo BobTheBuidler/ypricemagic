@@ -12,8 +12,7 @@ from a_sync import SmartProcessingQueue
 from aiosqlite.context import Result
 from brownie._config import CONFIG, _get_data_folder
 from brownie.exceptions import BrownieEnvironmentError
-from brownie.network.contract import \
-    _resolve_address  # type: ignore [attr-defined]
+from brownie.network.contract import _resolve_address  # type: ignore [attr-defined]
 
 SourceKey = Literal[
     "address",

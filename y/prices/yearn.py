@@ -16,9 +16,13 @@ from y.classes.common import ERC20
 from y.constants import CHAINID, CONNECTED_TO_MAINNET, weth
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
-from y.exceptions import (CantFetchParam, ContractNotVerified,
-                          MessedUpBrownieContract, PriceError,
-                          yPriceMagicError)
+from y.exceptions import (
+    CantFetchParam,
+    ContractNotVerified,
+    MessedUpBrownieContract,
+    PriceError,
+    yPriceMagicError,
+)
 from y.utils.cache import optional_async_diskcache
 from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
