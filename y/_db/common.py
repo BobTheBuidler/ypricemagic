@@ -1,10 +1,10 @@
 from abc import ABCMeta, abstractmethod
 from asyncio import Task, TimeoutError, create_task, get_event_loop, shield, sleep, wait_for
+from collections.abc import AsyncIterator, Awaitable, Callable, Container
 from copy import copy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
 from typing import TYPE_CHECKING, Any, Generic, NoReturn, Optional, TypeVar, final
-from collections.abc import AsyncIterator, Awaitable, Callable, Container
 
 import a_sync
 import dank_mids
@@ -25,8 +25,8 @@ from pony.orm import OptimisticCheckError, TransactionIntegrityError, db_session
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
-from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y import convert
 from y._db.decorators import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
 from y._decorators import stuck_coro_debugger

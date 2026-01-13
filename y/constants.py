@@ -9,7 +9,6 @@ from y.contracts import Contract
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 
-
 CHAINID: Final[int] = chain.id
 """
 The chainid for the connected rpc.

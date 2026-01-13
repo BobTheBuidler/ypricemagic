@@ -1,7 +1,6 @@
 import logging
+from collections.abc import Callable, KeysView
 from typing import Any
-from collections.abc import Callable
-from collections.abc import KeysView
 
 import a_sync
 import brownie

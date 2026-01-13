@@ -1,8 +1,7 @@
+from collections.abc import Iterable
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Final
-from collections.abc import Iterable
-
 
 UTC: Final = timezone.utc
 

@@ -5,7 +5,6 @@ from logging import DEBUG, getLogger
 
 import a_sync
 import eth_retry
-
 from a_sync._typing import AnyFn, P, T
 from a_sync.a_sync.function import ASyncDecorator
 from brownie import chain

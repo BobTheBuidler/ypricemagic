@@ -1,6 +1,6 @@
+from collections.abc import Callable
 from logging import DEBUG, getLogger
 from typing import Any
-from collections.abc import Callable
 
 import eth_retry
 from brownie import chain, web3

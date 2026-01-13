@@ -1,8 +1,7 @@
+from collections.abc import Callable, Iterable
 from functools import wraps
 from logging import DEBUG, Logger, getLogger
 from typing import Literal, TypeVar, overload
-from collections.abc import Callable
-from collections.abc import Iterable
 
 import a_sync
 import dank_mids

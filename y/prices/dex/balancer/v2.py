@@ -1,9 +1,9 @@
 from asyncio import Task, create_task
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import suppress
 from enum import IntEnum
 from logging import DEBUG, getLogger
 from typing import Any, NewType, TypeVar
-from collections.abc import AsyncIterator, Awaitable, Callable
 
 import a_sync
 from a_sync import cgather
@@ -30,7 +30,6 @@ from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
 from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
-
 
 BALANCER_V2_VAULTS = {
     Network.Mainnet: [

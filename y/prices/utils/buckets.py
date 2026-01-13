@@ -1,6 +1,6 @@
 from asyncio import as_completed, ensure_future, iscoroutine
-from logging import DEBUG, getLogger
 from collections.abc import Awaitable, Callable
+from logging import DEBUG, getLogger
 
 import a_sync
 

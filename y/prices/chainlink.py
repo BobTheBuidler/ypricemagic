@@ -3,7 +3,6 @@ from collections.abc import AsyncIterator
 
 import a_sync
 import dank_mids
-from y import time
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS
 from brownie.network.event import _EventItem
@@ -11,7 +10,7 @@ from multicall import Call
 from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y import convert
+from y import convert, time
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.constants import CHAINID

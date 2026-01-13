@@ -1,8 +1,9 @@
 from asyncio import Task, sleep
-from logging import DEBUG, Logger, StreamHandler, getLogger, _lock
+from logging import DEBUG, Logger, StreamHandler, _lock, getLogger
 from types import MethodType
 from typing import Final, NoReturn, Optional, TypeVar, final
-from weakref import WeakValueDictionary, ref as weak_ref
+from weakref import WeakValueDictionary
+from weakref import ref as weak_ref
 
 import a_sync
 from brownie import chain
@@ -12,7 +13,6 @@ from typing_extensions import ParamSpec
 
 from y.datatypes import AnyAddressType, Block
 from y.networks import Network
-
 
 T = TypeVar("T")
 P = ParamSpec("P")

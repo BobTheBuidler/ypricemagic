@@ -1,11 +1,11 @@
 import math
 from collections import defaultdict
+from collections.abc import AsyncIterator, Iterable
 from decimal import Decimal
 from functools import cached_property, lru_cache
 from itertools import cycle, islice
 from logging import DEBUG, getLogger
 from typing import DefaultDict, Final, Literal, Union
-from collections.abc import AsyncIterator, Iterable
 
 import a_sync
 import eth_retry
@@ -17,23 +17,17 @@ from eth_typing import BlockNumber, HexAddress
 from faster_eth_abi.packed import encode_packed
 from typing_extensions import Self
 
-from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y import convert
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase
 from y.constants import CHAINID, CONNECTED_TO_MAINNET, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
-from y.exceptions import (
-    ContractNotVerified,
-    NonStandardERC20,
-    TokenNotFound,
-    call_reverted,
-)
+from y.exceptions import ContractNotVerified, NonStandardERC20, TokenNotFound, call_reverted
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
 from y.utils.events import ProcessedEvents
-
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
 UNISWAP_V3_FACTORY: Final = "0x1F98431c8aD98523631AE4a59f267346ea31F984"

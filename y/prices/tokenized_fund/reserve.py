@@ -10,7 +10,6 @@ from y.contracts import Contract, has_methods
 from y.datatypes import Address, Block
 from y.utils.cache import optional_async_diskcache
 
-
 METHODS = "main()(address)", "issuanceAvailable()(uint)", "redemptionAvailable()(uint)"
 
 

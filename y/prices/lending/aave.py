@@ -1,8 +1,8 @@
 import logging
 from abc import abstractmethod
+from collections.abc import Awaitable
 from decimal import Decimal
 from typing import Union
-from collections.abc import Awaitable
 
 import a_sync
 from a_sync import cgather, igather

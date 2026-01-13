@@ -1,8 +1,7 @@
 import contextlib
 import logging
+from collections.abc import Callable, Iterable
 from typing import Any
-from collections.abc import Callable
-from collections.abc import Iterable
 
 import a_sync
 import brownie

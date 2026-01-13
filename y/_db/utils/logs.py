@@ -17,8 +17,9 @@ from pony.orm.core import Query
 from y import convert
 from y._db.common import DiskCache, default_filter_threads, enc_hook, make_executor
 from y._db.decorators import db_session_cached, db_session_retry_locked, retry_locked
-from y._db.entities import Block, Hashes, LogCacheInfo, LogTopic
+from y._db.entities import Block, Hashes
 from y._db.entities import Log as DbLog
+from y._db.entities import LogCacheInfo, LogTopic
 from y._db.log import Log
 from y._db.utils._ep import _get_get_block
 from y._db.utils.bulk import insert as _bulk_insert

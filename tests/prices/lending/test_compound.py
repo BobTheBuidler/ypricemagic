@@ -1,4 +1,5 @@
 import pytest
+
 from tests.fixtures import blocks_for_contract
 from y.prices.lending.compound import CToken, compound
 

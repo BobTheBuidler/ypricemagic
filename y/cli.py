@@ -5,14 +5,14 @@ A Python CLI tool for managing the database and debugging price retrieval.
 __all__ = ["db_nuke", "db_clear", "db_info", "db_vacuum", "db_select", "main"]
 
 import argparse
-import sys
 import os
 import subprocess
+import sys
 from pprint import pprint
 
 from cchecksum import to_checksum_address
 from faster_eth_utils import is_address
-from pony.orm import db_session, commit, delete, count, select
+from pony.orm import commit, count, db_session, delete, select
 
 from y.prices.utils.debug import debug_price
 

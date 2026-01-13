@@ -2,14 +2,13 @@ from decimal import Decimal
 
 from a_sync import a_sync, cgather
 from async_lru import alru_cache
-
 from web3.exceptions import ContractLogicError
+
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method, is_contract
 from y.datatypes import Address, Block
 from y.exceptions import ContractNotVerified
-
 
 try:
     oracle = "0x9a9Fa8338dd5E5B2188006f1Cd2Ef26d921650C2"

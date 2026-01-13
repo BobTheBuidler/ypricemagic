@@ -6,13 +6,13 @@ from brownie import Contract as BrownieContract
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from eth_utils.toolz import concat
+
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import Address, Block
-from y.prices.dex.uniswap.v1 import UniswapV1
-
 from y.networks import Network
+from y.prices.dex.uniswap.v1 import UniswapV1
 
 mainnet_only = pytest.mark.skipif(
     chain.id != Network.Mainnet, reason="This test is only applicable on mainnet"

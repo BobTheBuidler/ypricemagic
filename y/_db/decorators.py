@@ -1,10 +1,8 @@
 import logging
 import time
+from collections.abc import Callable, Iterable, Sized
 from functools import lru_cache, wraps
 from typing import Final, TypeVar
-from collections.abc import Callable
-from collections.abc import Iterable, Sized
-from typing_extensions import ParamSpec
 
 from a_sync import PruningThreadPoolExecutor, a_sync
 from a_sync.a_sync import ASyncFunction
@@ -17,9 +15,9 @@ from pony.orm import (
     commit,
     db_session,
 )
+from typing_extensions import ParamSpec
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-
 
 _T = TypeVar("_T")
 _S = TypeVar("_S", bound=Sized)

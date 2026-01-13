@@ -3,7 +3,6 @@ from typing import Final
 
 from typed_envs import EnvVarFactory, create_env
 
-
 _envs: Final = EnvVarFactory("YPRICEMAGIC")
 
 CACHE_TTL: Final = _envs.create_env("CACHE_TTL", int, default=60 * 60, verbose=False)

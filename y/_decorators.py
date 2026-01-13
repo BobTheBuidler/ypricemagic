@@ -1,12 +1,11 @@
 from asyncio import iscoroutinefunction
+from collections.abc import Callable
 from functools import partial, wraps
 from logging import getLogger
 from typing import TypeVar
-from collections.abc import Callable
 
 from a_sync import debugging
 from typing_extensions import ParamSpec
-
 
 P = ParamSpec("P")
 T = TypeVar("T")
