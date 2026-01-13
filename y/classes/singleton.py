@@ -65,7 +65,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
         cls.__locks_lock: threading.Lock = threading.Lock()
         """A lock to ensure thread-safe access to the locks dictionary."""
 
-    def __call__(cls, address: AnyAddressOrContract, *args, **kwargs) -> T:  # type: ignore
+    def __call__(cls, address: AnyAddressOrContract, *args, **kwargs) -> T:
         """
         Create or retrieve a singleton instance for the given address.
 
