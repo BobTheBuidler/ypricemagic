@@ -29,6 +29,7 @@ jobs:
         python-version: ${{ matrix.pyversion }}
 
     - name: Restore .mypy_cache
+      id: mypy-cache
       uses: actions/cache/restore@v5
       with:
         path: .mypy_cache
@@ -52,7 +53,7 @@ jobs:
       run: mypy . --strict --pretty --show-error-codes --show-error-context --install-types --non-interactive
 
     - name: Save .mypy_cache
-      if: always()
+      if: success() && steps.mypy-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v5
       with:
         path: .mypy_cache
