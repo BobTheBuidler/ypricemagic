@@ -2,7 +2,7 @@ from asyncio import iscoroutinefunction
 from collections.abc import Callable
 from functools import partial, wraps
 from logging import getLogger
-from typing import TypeVar
+from typing import Awaitable, Final, TypeAlias, TypeVar
 
 from a_sync import debugging
 from typing_extensions import ParamSpec
@@ -10,9 +10,11 @@ from typing_extensions import ParamSpec
 P = ParamSpec("P")
 T = TypeVar("T")
 
+CoroFn: TypeAlias = Callable[P, Awaitable[T]]
 
-stuck_coro_logger = getLogger("y.stuck?")
-stuck_coro_debugger = partial(debugging.stuck_coro_debugger, logger=stuck_coro_logger)
+
+stuck_coro_logger: Final = getLogger("y.stuck?")
+stuck_coro_debugger: Final[Callable[[CoroFn[P, T]], CoroFn[P, T]]] = partial(debugging.stuck_coro_debugger, logger=stuck_coro_logger)
 
 
 def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
