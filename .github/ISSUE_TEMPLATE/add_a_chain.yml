@@ -86,43 +86,47 @@ body:
       label: Additional Information
       description: "Add any extra details, context, links, or considerations here."
       placeholder: "Anything else reviewers should know?"
+  - type: markdown
+    attributes:
+      value: |
+        ## Yearn integration checklist
 
+        - in `./yearn/prices/chainlink.py`:
+          - [ ] specify any chainlink feeds available on the chain in `feeds`.
+          - [ ] specify the chainlink registry address in `registries` if applicable, or specify None if not applicable.
 
-- in ./yearn/prices/chainlink.py:
-  - [ ] specify any chainlink feeds available on the chain in `feeds`.
-  - [ ] specify the chainlink registry address in `registries` if applicable, or specify None if not applicable.
+        - in `./yearn/ironbank.py`:
+          - [ ] add ironbank deployment address
 
-- in ./yearn/ironbank.py:
-  - [ ] add ironbank deployment address
+        - in `./yearn/prices/compound.py`:
+          - [ ] add ib comptroller
 
-- in ./yearn/prices/compound.py:
-  - [ ] add ib comptroller
+        - in `./yearn/v2/registry.py`:
+          - [ ] add v2 vault registry
 
-- in ./yearn/v2/registry.py:
-  - [ ] add v2 vault registry
+        - in `yearn/yearn.py`:
+          - [ ] add v2 vault registry
+          - [ ] add ironbank registry
 
-- in yearn/yearn.py:
-  - [ ] add v2 vault registry and 
-  - [ ]ironbank registry
+        - in `./yearn/prices/constants.py`:
+          - [ ] specify `ib_snapshot_block_by_network`, if any, the start block of Ironbank on this network or specify '1' if not applicable.
 
-- in ./yearn/prices/constants.py:
-  - [ ] specify `ib_snapshot_block_by_network`, if any, the start block of Ironbank on this network or specify '1' if not applicable.
+        - in `./yearn/prices/uniswap/v2.py`:
+          - [ ] specify the factory and router address for any important uni v2 forks on the chain.
 
-- in ./yearn/prices/uniswap/v2.py:
-  - [ ] specify the factory and router address for any important uni v2 forks on the chain.
+        - in `./yearn/prices/uniswap/v3.py`:
+          - [ ] add info about uni v3 deployed on network
 
-in ./yearn/prices/uniswap/v3.py:
-  - [ ] add info about uni v3 deployed on network
+        - in `./yearn/utils.py`:
+          - [ ] specify `BINARY_SEARCH_BARRIER` as 0 if all historical data is available. If historical data not available due to a network upgrade/etc, specify the first block of the available historical data.
 
-- in ./yearn/utils.py:
-  - [ ] specify `BINARY_SEARCH_BARRIER` as 0 if all historical data is available. If historical data not available due to a network upgrade/etc, specify the first block of the available historical data.
+        - in `./yearn/middleware/middleware.py`:
+          - [ ] specify `BATCH_SIZE` of approx 1 day based on avg block times on the chain.
 
-- in ./yearn/middleware/middleware.py:
-  - [ ] specify `BATCH_SIZE` of approx 1 day based on avg block times on the chain.
+        ## Testing
 
+        It's important to test to make sure everything works!
 
-It's important to test to make sure everything works!
+        Once you've handled everything above, type `make up <network>` into your terminal replacing network with your network name at the project root. The network specific exporters will start running in docker and any exceptions will show in your terminal. If there are no exceptions, and everything appears to be running smoothly then it should be working correctly.
 
-Once you've handled everything above, type `make up <network>` into your terminal replacing network with your network name at the project root. The network specific exporters will start running in docker and any exceptions will show in your terminal. If there are no exceptions, and everything appears to be running smoothly then it should be working correctly.
-
-- [ ] yes I have tested it and it is running as expected
+        - [ ] yes I have tested it and it is running as expected
