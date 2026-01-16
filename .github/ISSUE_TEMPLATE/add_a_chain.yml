@@ -57,7 +57,7 @@ body:
             - [ ] Add the symbol for the wrapped form of the network's gas token. For example, on Ethereum, Optimism, and Arbitrum it would be "WETH" but on Polygon it is "WMATIC"
 
         - label: "Add Uniswap V2 deployment details and any forks to `./y/prices/dex/uniswap/v2_forks.py`"
-          description:
+          description: |
             - [ ] Add the factory and router addresses for Uniswap V2 and all known direct forks
 
         - label: "Add Uniswap V3 deployment details to `./y/prices/dex/uniswap/v3.py`"
