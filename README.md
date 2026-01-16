@@ -52,6 +52,9 @@ prices = await get_prices(tokens, block, sync=False)
 
 See the [docs](https://bobthebuidler.github.io/ypricemagic) for more usage information.
 
+## Debug logging
+If you need to spot long-running async calls, enable the `y.stuck?` logger at DEBUG to get periodic "still executing" messages. Details: [y.stuck? logger](CONTRIBUTING.md#y-stuck-logger).
+
 ## Extras
 You can also import protocol specific modules. For example:
 ```python
