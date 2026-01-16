@@ -15,4 +15,5 @@ __pycache__/
 .mypy_cache
 .coverage
 .pytest_cache
+.worktrees
 *.log*
