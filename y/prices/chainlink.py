@@ -207,7 +207,6 @@ class Feed:
         "latest_answer",
         "latest_timestamp",
         "start_block",
-        "_stale_thru_block",
     )
 
     def __init__(
@@ -224,7 +223,6 @@ class Feed:
         # we could make less calls by using latestRoundData but then we have to repeatedly decode a bunch of useless data
         self.latest_answer = Call(self.address, "latestAnswer()(int256)").coroutine
         self.latest_timestamp = Call(self.address, "latestTimestamp()(uint256)").coroutine
-        self._stale_thru_block = None
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} address={self.address} asset={self.asset}>"
@@ -263,10 +261,6 @@ class Feed:
         See Also:
             - :func:`~y.prices.chainlink.Chainlink.get_price`
         """
-        if self._stale_thru_block and self._stale_thru_block > block:
-            logger.debug("%s is stale, must fetch price from elsewhere", self)
-            return None
-
         try:
             updated_at = await self.latest_timestamp(block_id=block)
         except ContractLogicError:
@@ -276,8 +270,6 @@ class Feed:
             # if 24h have passed since last feed update, we can't trust it
             # NOTE: is there a way to tell on chain if a feed is retired? I haven't yet seen one go stale and come back
             logger.debug("%s is stale, must fetch price from elsewhere", self)
-            if self._stale_thru_block is None or block > self._stale_thru_block:
-                self._stale_thru_block = block
             return None
 
         latest_answer = await self.latest_answer(block_id=block)
