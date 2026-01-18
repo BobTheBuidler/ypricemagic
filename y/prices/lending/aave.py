@@ -86,7 +86,7 @@ class AaveMarketBase(ContractBase):
             >>> token in market
             True
         """
-        if not self.asynchronous:
+        if self.asynchronous:
             cls = self.__class__.__name__
             raise RuntimeError(
                 f"'self.asynchronous' must be False to use {cls}.__contains__.\nYou may wish to use {cls}.is_atoken instead."
