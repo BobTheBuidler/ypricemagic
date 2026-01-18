@@ -215,7 +215,10 @@ class Network(IntEnum):
         """
         if chain_id is None:
             chain_id = CHAINID
-        return Network.name(chain_id) or f"chain {chain_id}"
+        try:
+            return Network.name(chain_id)
+        except ValueError:
+            return f"chain {chain_id}"
 
 
 NETWORK_NAME: Final = Network.name()
