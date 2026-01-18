@@ -1,11 +1,11 @@
 import logging
 import threading
 
-from a_sync import ProcessingQueue, a_sync
+from a_sync import ProcessingQueue
 from cachetools import TTLCache, cached
 from pony.orm import select
 
-from y._db.decorators import db_session_retry_locked, log_result_count
+from y._db.decorators import db_a_sync, db_session_retry_locked, log_result_count
 from y._db.entities import Contract
 from y._db.utils._ep import _get_get_token
 from y._db.utils.utils import ensure_block, make_executor
@@ -21,7 +21,7 @@ _deploy_block_read_executor = make_executor(2, 4, "ypricemagic db executor [depl
 _deploy_block_write_executor = make_executor(1, 4, "ypricemagic db executor [deploy block]")
 
 
-@a_sync(
+@db_a_sync(
     default="async",
     executor=_deploy_block_read_executor,
 )
@@ -65,7 +65,7 @@ def get_deploy_block(address: str) -> int | None:
     _logger_debug("%s deploy block not cached, fetching from chain", address)
 
 
-@a_sync(default="async", executor=_deploy_block_write_executor)
+@db_a_sync(default="async", executor=_deploy_block_write_executor)
 @db_session_retry_locked
 def _set_deploy_block(address: str, deploy_block: int) -> None:
     """Set the deployment block number for a contract address in the database.
