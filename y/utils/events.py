@@ -335,11 +335,10 @@ def _get_logs(
         response = _get_logs_batch_cached(address, topics, start, end)
     else:
         response = _get_logs_no_cache(address, topics, start, end)
-    for log in response:
-        if address and log.address != address:
-            """I have this due to a corrupt cache on my local box that I would prefer not to lose."""
-            """ It will not impact your scripts. """
-            response.remove(log)
+    if address:
+        """I have this due to a corrupt cache on my local box that I would prefer not to lose."""
+        """ It will not impact your scripts. """
+        response = [log for log in response if log.address == address]
     return response
 
 
