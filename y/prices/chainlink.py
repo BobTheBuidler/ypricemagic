@@ -263,7 +263,7 @@ class Feed:
         See Also:
             - :func:`~y.prices.chainlink.Chainlink.get_price`
         """
-        if self._stale_thru_block and self._stale_thru_block > block:
+        if self._stale_thru_block and block >= self._stale_thru_block:
             logger.debug("%s is stale, must fetch price from elsewhere", self)
             return None
 
