@@ -28586,21 +28586,25 @@ PyObject *CPyDef_networks___printable_Network_obj_____call__(PyObject *cpy_r___m
     PyObject **cpy_r_r11;
     PyObject *cpy_r_r12;
     PyObject *cpy_r_r13;
-    char cpy_r_r14;
+    tuple_T3OOO cpy_r_r14;
     PyObject *cpy_r_r15;
     PyObject *cpy_r_r16;
-    CPyTagged cpy_r_r17;
-    PyObject *cpy_r_r18;
+    PyObject *cpy_r_r17;
+    char cpy_r_r18;
     PyObject *cpy_r_r19;
-    PyObject *cpy_r_r20;
-    if (cpy_r_chain_id != NULL) goto CPyL18;
+    CPyTagged cpy_r_r20;
+    PyObject *cpy_r_r21;
+    PyObject *cpy_r_r22;
+    char cpy_r_r23;
+    PyObject *cpy_r_r24;
+    if (cpy_r_chain_id != NULL) goto CPyL22;
     cpy_r_r0 = Py_None;
     cpy_r_chain_id = cpy_r_r0;
 CPyL2: ;
     cpy_r_r1 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r2 = cpy_r_chain_id == cpy_r_r1;
     if (cpy_r_r2) {
-        goto CPyL19;
+        goto CPyL23;
     } else
         goto CPyL7;
 CPyL3: ;
@@ -28610,7 +28614,7 @@ CPyL3: ;
     cpy_r_r4 = 0;
     if (unlikely(!cpy_r_r4)) {
         CPy_AddTraceback("y/networks.py", "printable", DIFFCHECK_PLACEHOLDER, CPyStatic_networks___globals);
-        goto CPyL17;
+        goto CPyL21;
     }
     CPy_Unreachable();
 CPyL6: ;
@@ -28625,7 +28629,7 @@ CPyL7: ;
     }
     if (unlikely(cpy_r_r6 == CPY_INT_TAG)) {
         CPy_AddTraceback("y/networks.py", "printable", DIFFCHECK_PLACEHOLDER, CPyStatic_networks___globals);
-        goto CPyL20;
+        goto CPyL11;
     }
     cpy_r_r7 = (PyObject *)CPyType_networks___Network;
     cpy_r_r8 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'name' */
@@ -28635,72 +28639,104 @@ CPyL7: ;
     cpy_r_r12 = PyObject_VectorcallMethod(cpy_r_r8, cpy_r_r11, 9223372036854775810ULL, 0);
     if (unlikely(cpy_r_r12 == NULL)) {
         CPy_AddTraceback("y/networks.py", "printable", DIFFCHECK_PLACEHOLDER, CPyStatic_networks___globals);
-        goto CPyL21;
+        goto CPyL24;
     }
     CPy_DECREF(cpy_r_r9);
     if (likely(PyUnicode_Check(cpy_r_r12)))
         cpy_r_r13 = cpy_r_r12;
     else {
-        CPy_TypeErrorTraceback("y/networks.py", "printable", 218, CPyStatic_networks___globals, "str", cpy_r_r12);
-        goto CPyL20;
+        CPy_TypeError("str", cpy_r_r12); 
+        cpy_r_r13 = NULL;
     }
-    cpy_r_r14 = CPyStr_IsTrue(cpy_r_r13);
-    if (cpy_r_r14) {
-        goto CPyL22;
+    if (unlikely(cpy_r_r13 == NULL)) {
+        CPy_AddTraceback("y/networks.py", "printable", DIFFCHECK_PLACEHOLDER, CPyStatic_networks___globals);
+        goto CPyL11;
     } else
-        goto CPyL23;
+        goto CPyL25;
+CPyL10: ;
+    return cpy_r_r13;
 CPyL11: ;
-    cpy_r_r15 = cpy_r_r13;
-    goto CPyL16;
-CPyL12: ;
-    cpy_r_r16 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'chain ' */
+    cpy_r_r14 = CPy_CatchError();
+    cpy_r_r15 = CPyModule_builtins;
+    cpy_r_r16 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'ValueError' */
+    cpy_r_r17 = CPyObject_GetAttr(cpy_r_r15, cpy_r_r16);
+    if (unlikely(cpy_r_r17 == NULL)) {
+        CPy_AddTraceback("y/networks.py", "printable", DIFFCHECK_PLACEHOLDER, CPyStatic_networks___globals);
+        goto CPyL26;
+    }
+    cpy_r_r18 = CPy_ExceptionMatches(cpy_r_r17);
+    CPy_DecRef(cpy_r_r17);
+    if (!cpy_r_r18) goto CPyL27;
+    cpy_r_r19 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'chain ' */
     if (likely(PyLong_Check(cpy_r_chain_id)))
-        cpy_r_r17 = CPyTagged_FromObject(cpy_r_chain_id);
+        cpy_r_r20 = CPyTagged_FromObject(cpy_r_chain_id);
     else {
-        CPy_TypeError("int", cpy_r_chain_id); cpy_r_r17 = CPY_INT_TAG;
+        CPy_TypeError("int", cpy_r_chain_id); cpy_r_r20 = CPY_INT_TAG;
     }
-    CPy_DECREF(cpy_r_chain_id);
-    if (unlikely(cpy_r_r17 == CPY_INT_TAG)) {
+    CPy_DecRef(cpy_r_chain_id);
+    if (unlikely(cpy_r_r20 == CPY_INT_TAG)) {
         CPy_AddTraceback("y/networks.py", "printable", DIFFCHECK_PLACEHOLDER, CPyStatic_networks___globals);
-        goto CPyL17;
+        goto CPyL19;
     }
-    cpy_r_r18 = CPyTagged_Str(cpy_r_r17);
-    CPyTagged_DECREF(cpy_r_r17);
-    if (unlikely(cpy_r_r18 == NULL)) {
+    cpy_r_r21 = CPyTagged_Str(cpy_r_r20);
+    CPyTagged_DecRef(cpy_r_r20);
+    if (unlikely(cpy_r_r21 == NULL)) {
         CPy_AddTraceback("y/networks.py", "printable", DIFFCHECK_PLACEHOLDER, CPyStatic_networks___globals);
-        goto CPyL17;
+        goto CPyL19;
     }
-    cpy_r_r19 = CPyStr_Build(2, cpy_r_r16, cpy_r_r18);
-    CPy_DECREF(cpy_r_r18);
-    if (unlikely(cpy_r_r19 == NULL)) {
+    cpy_r_r22 = CPyStr_Build(2, cpy_r_r19, cpy_r_r21);
+    CPy_DecRef(cpy_r_r21);
+    if (unlikely(cpy_r_r22 == NULL)) {
         CPy_AddTraceback("y/networks.py", "printable", DIFFCHECK_PLACEHOLDER, CPyStatic_networks___globals);
-        goto CPyL17;
+        goto CPyL19;
     }
-    cpy_r_r15 = cpy_r_r19;
-CPyL16: ;
-    return cpy_r_r15;
+    CPy_RestoreExcInfo(cpy_r_r14);
+    CPy_DecRef(cpy_r_r14.f0);
+    CPy_DecRef(cpy_r_r14.f1);
+    CPy_DecRef(cpy_r_r14.f2);
+    return cpy_r_r22;
 CPyL17: ;
-    cpy_r_r20 = NULL;
-    return cpy_r_r20;
+    CPy_Reraise();
+    if (!0) {
+        goto CPyL19;
+    } else
+        goto CPyL28;
 CPyL18: ;
+    CPy_Unreachable();
+CPyL19: ;
+    CPy_RestoreExcInfo(cpy_r_r14);
+    CPy_DecRef(cpy_r_r14.f0);
+    CPy_DecRef(cpy_r_r14.f1);
+    CPy_DecRef(cpy_r_r14.f2);
+    cpy_r_r23 = CPy_KeepPropagating();
+    if (!cpy_r_r23) goto CPyL21;
+    CPy_Unreachable();
+CPyL21: ;
+    cpy_r_r24 = NULL;
+    return cpy_r_r24;
+CPyL22: ;
     CPy_INCREF(cpy_r_chain_id);
     goto CPyL2;
-CPyL19: ;
+CPyL23: ;
     CPy_DECREF(cpy_r_chain_id);
     goto CPyL3;
-CPyL20: ;
-    CPy_DecRef(cpy_r_chain_id);
-    goto CPyL17;
-CPyL21: ;
-    CPy_DecRef(cpy_r_chain_id);
+CPyL24: ;
     CPy_DecRef(cpy_r_r9);
-    goto CPyL17;
-CPyL22: ;
-    CPy_DECREF(cpy_r_chain_id);
     goto CPyL11;
-CPyL23: ;
-    CPy_DECREF(cpy_r_r13);
-    goto CPyL12;
+CPyL25: ;
+    CPy_DECREF(cpy_r_chain_id);
+    goto CPyL10;
+CPyL26: ;
+    CPy_DecRef(cpy_r_chain_id);
+    goto CPyL19;
+CPyL27: ;
+    CPy_DecRef(cpy_r_chain_id);
+    goto CPyL17;
+CPyL28: ;
+    CPy_DecRef(cpy_r_r14.f0);
+    CPy_DecRef(cpy_r_r14.f1);
+    CPy_DecRef(cpy_r_r14.f2);
+    goto CPyL18;
 }
 
 PyObject *CPyPy_networks___printable_Network_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
@@ -29778,7 +29814,7 @@ CPyL20: ;
     if (likely(PyUnicode_Check(cpy_r_r286)))
         cpy_r_r287 = cpy_r_r286;
     else {
-        CPy_TypeErrorTraceback("y/networks.py", "<module>", 221, CPyStatic_networks___globals, "str", cpy_r_r286);
+        CPy_TypeErrorTraceback("y/networks.py", "<module>", 224, CPyStatic_networks___globals, "str", cpy_r_r286);
         goto CPyL98;
     }
     CPyStatic_networks___NETWORK_NAME = cpy_r_r287;
