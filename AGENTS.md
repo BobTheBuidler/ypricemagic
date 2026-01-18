@@ -14,5 +14,6 @@ All agents must follow these rules:
 8) When adding or refactoring async RPC/price-fetching code, keep or add `y._decorators.stuck_coro_debugger` so the `y.stuck?` DEBUG logger continues emitting "still executing" messages at the default 5-minute interval (via `a_sync.debugging.stuck_coro_debugger`).
 9) If you touch ypricemagic-driven price lookups or related docs, keep the `y.stuck?` logger guidance accurate (DEBUG-only, 5-minute interval) so long-running calls can be diagnosed.
 10) If the repo uses mypyc, verify tests run against compiled extensions (not interpreted Python) and note how you confirmed.
+11) The mypy configuration should go in pyproject.toml.
 
 Reference: https://www.conventionalcommits.org/en/v1.0.0/
