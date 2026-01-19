@@ -15,8 +15,11 @@ requires = [
   "eth-typing==5.2.1",
   "ez-a-sync==0.33.11",
   "faster-eth-abi>=5.2.12,<6",
-  "typed-envs==0.2.3",
+  "typed-envs==0.2.4",
 ]
+
+[tool.mypy]
+plugins = ["typed_envs.mypy_plugin"]
 
 [tool.black]
 line-length = 100
