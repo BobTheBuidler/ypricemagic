@@ -6,6 +6,7 @@ requires = [
   "pony-stubs==0.5.2",
   "types-python-dateutil",
   "types-cachetools",
+  "types-pony==0.7.0.20250822",
   "types-requests",
   "aiosqlite==0.22.1",
   "bobs_lazy_logging==0.0.5",
