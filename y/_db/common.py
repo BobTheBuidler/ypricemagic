@@ -200,7 +200,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
         Returns:
             A list of cached objects.
         """
-        return self._select(from_block, to_block)
+        return list(self._select(from_block, to_block))
 
     @db_session
     @retry_locked
