@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - '**.py'
+      - '.github/workflows/mypy.yaml'
+      - 'pyproject.toml'
       
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
