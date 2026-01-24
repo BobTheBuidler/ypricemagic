@@ -45,7 +45,7 @@ acceptable_all_chains: Final[set[ChecksumAddress]] = {
     wbtc.address,
 }
 
-ACCEPTABLE_HIGH_PRICES: Final[set[ChecksumAddress]] = {  # type: ignore [operator, assignment, call-overload]
+ACCEPTABLE_HIGH_PRICES: Final[set[ChecksumAddress]] = {  # type: ignore [call-overload]
     Network.Mainnet: {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
