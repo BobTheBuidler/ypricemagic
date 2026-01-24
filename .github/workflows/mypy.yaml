@@ -6,6 +6,8 @@ on:
       - '**.py'
       - '.github/workflows/mypy.yaml'
       - 'pyproject.toml'
+      - 'setup.py'
+      - 'requirements.txt'
       
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
