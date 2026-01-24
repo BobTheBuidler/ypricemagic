@@ -9,7 +9,7 @@ CACHE_TTL: Final = _envs.create_env("CACHE_TTL", int, default=60 * 60, verbose=F
 """TTL for various in-memory caches throughout the library"""
 
 CONTRACT_CACHE_TTL: Final = _envs.create_env(
-    "CONTRACT_CACHE_TTL", int, default=int(CACHE_TTL), verbose=False  # type: ignore [call-overload]
+    "CONTRACT_CACHE_TTL", int, default=CACHE_TTL, verbose=False
 )
 """TTL for contract cache, defaults to :obj:`CACHE_TTL` if not set"""
 
