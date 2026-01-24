@@ -136,22 +136,19 @@ def get_block_timestamp(number: int) -> int | None:
     Examples:
         >>> timestamp = get_block_timestamp(123456)
         >>> print(timestamp)
-
-    See Also:
-        - :func:`known_block_timestamps`
     """
-    if (ts := known_block_timestamps().pop(number, None)) is None:
-        from y._db.utils._ep import _get_get_block
+    from y._db.utils._ep import _get_get_block
 
-        get_block = _get_get_block()
-        ts = get_block(number, sync=True).timestamp
-    if ts:
-        # some db providers return a string here, we must parse it
-        if isinstance(ts, str):
-            ts = parser.parse(ts)
-        unix = ts.timestamp()
-        _logger_debug(f"got Block[{CHAINID}, %s].timestamp from cache: %s, %s", number, unix, ts)
-        return unix
+    get_block = _get_get_block()
+    ts = get_block(number, sync=True).timestamp
+    if ts is None:
+        return None
+    # some db providers return a string here, we must parse it
+    if isinstance(ts, str):
+        ts = parser.parse(ts)
+    unix = ts.timestamp()
+    _logger_debug("got Block[%s, %s].timestamp from cache: %s, %s", CHAINID, number, unix, ts)
+    return unix
 
 
 @a_sync_read_db_session
@@ -264,30 +261,6 @@ def known_blocks() -> set[int]:
         - :class:`Block`
     """
     return set(select(b.number for b in Block if b.chain.id == CHAINID))
-
-
-@lru_cache(maxsize=1)
-@log_result_count("block timestamps")
-def known_block_timestamps() -> dict[int, datetime]:
-    """Cache and return all known block timestamps for this chain to minimize db reads.
-
-    Returns:
-        A dictionary mapping block numbers to their timestamps.
-
-    Examples:
-        >>> timestamps = known_block_timestamps()
-        >>> print(len(timestamps))
-
-    See Also:
-        - :class:`Block`
-    """
-    query = select((b.number, b.timestamp) for b in Block if b.chain.id == CHAINID and b.timestamp)
-    page_size = 100_000
-    timestamps = {}
-    for i in range((query.count() // page_size) + 1):
-        for block, timestamp in query.page(i + 1, page_size):
-            timestamps[block] = timestamp
-    return timestamps
 
 
 @lru_cache(maxsize=1)

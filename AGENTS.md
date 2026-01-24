@@ -14,5 +14,11 @@ All agents must follow these rules:
 8) When adding or refactoring async RPC/price-fetching code, keep or add `y._decorators.stuck_coro_debugger` so the `y.stuck?` DEBUG logger continues emitting "still executing" messages at the default 5-minute interval (via `a_sync.debugging.stuck_coro_debugger`).
 9) If you touch ypricemagic-driven price lookups or related docs, keep the `y.stuck?` logger guidance accurate (DEBUG-only, 5-minute interval) so long-running calls can be diagnosed.
 10) If the repo uses mypyc, verify tests run against compiled extensions (not interpreted Python) and note how you confirmed.
+11) Maximize the use of caching in GitHub workflow files to minimize run duration.
+12) Use one of `paths` or `paths-ignore` in every workflow file to make sure workflows only run when required.
+13) All mypy configuration (flags, overrides, per-module ignores, and file targets) should go in pyproject.toml. Do not split config across CLI args, mypy.ini, setup.cfg, or workflow steps.
+14) Centralize pytest settings (flags, markers, ignore patterns, and targets) in pyproject.toml, pytest.ini, setup.cfg, or tox.ini; workflows/hooks should call pytest without inline args.
+15) If the branch you're assigned to work on is from a remote (ie origin/master or upstream/awesome-feature) you must ensure you fetch and pull from the remote before you begin your work.
 
+16) Local pip install . generates build/; clean up before closing a worktree to avoid dirty state.
 Reference: https://www.conventionalcommits.org/en/v1.0.0/
