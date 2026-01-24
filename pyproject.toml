@@ -13,7 +13,7 @@ requires = [
   "eth-brownie==1.22.0.dev2; platform_system == 'Linux' and platform_machine != 'i686'",
   "eth-retry==0.3.6",
   "eth-typing==5.2.1",
-  "ez-a-sync==0.33.11",
+  "ez-a-sync==0.33.12",
   "faster-eth-abi>=5.2.12,<6",
   "typed-envs==0.2.4",
 ]
