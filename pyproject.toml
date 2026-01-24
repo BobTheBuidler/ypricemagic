@@ -20,6 +20,13 @@ requires = [
 
 [tool.mypy]
 plugins = ["typed_envs.mypy_plugin"]
+files = ["."]
+strict = true
+pretty = true
+show_error_codes = true
+show_error_context = true
+install_types = true
+non_interactive = true
 
 [tool.black]
 line-length = 100
