@@ -311,7 +311,7 @@ async def _exit_sense_check(token_address: ChecksumAddress) -> bool:
         return True
 
     elif bucket == "atoken":
-        underlying = await aave.underlying(token_address, sync=False)  # type: ignore [var-annotated]
+        underlying = await aave.underlying(token_address, sync=False)
     elif bucket == "compound":
         underlying = await CToken(token_address, asynchronous=True).underlying  # type: ignore [call-overload]
     elif bucket == "solidex":
