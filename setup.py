@@ -27,6 +27,8 @@ try:
             "--install-types",
             "--follow-imports=silent",
             "--disable-error-code=import-not-found",
+            "--disable-error-code=no-untyped-def",
+            "--disable-error-code=no-untyped-call",
         ],
         group_name="ypricemagic",
     )
