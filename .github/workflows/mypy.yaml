@@ -28,8 +28,9 @@ jobs:
       with:
         python-version: ${{ matrix.pyversion }}
 
-    - name: Cache .mypy_cache
-      uses: actions/cache@v5
+    - name: Restore .mypy_cache
+      id: mypy-cache
+      uses: actions/cache/restore@v5
       with:
         path: .mypy_cache
         key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
@@ -50,3 +51,10 @@ jobs:
 
     - name: Run MyPy
       run: mypy . --strict --pretty --show-error-codes --show-error-context --install-types --non-interactive
+
+    - name: Save .mypy_cache
+      if: success() && steps.mypy-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v5
+      with:
+        path: .mypy_cache
+        key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}

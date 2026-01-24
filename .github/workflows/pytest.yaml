@@ -56,8 +56,9 @@ jobs:
             requirements.txt
             requirements-dev.txt
 
-      - name: Cache .mypy_cache
-        uses: actions/cache@v5
+      - name: Restore .mypy_cache
+        id: mypy-cache
+        uses: actions/cache/restore@v5
         with:
           path: .mypy_cache
           key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
@@ -117,6 +118,13 @@ jobs:
         with:
           path: ${{ matrix.home }}/.ypricemagic/ypricemagic.sqlite
           key: ydb-${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Save .mypy_cache
+        if: success() && steps.mypy-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: .mypy_cache
+          key: mypy-cache-${{ runner.os }}-${{ hashFiles('**/*.py', 'pyproject.toml') }}
 
       - name: Save joblib cache
         if: always()
