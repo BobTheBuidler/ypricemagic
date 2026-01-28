@@ -8,8 +8,15 @@ long_description = (this_directory / "README.md").read_text()
 
 with open("requirements.txt") as f:
     requirements = [line.strip() for line in f.read().splitlines() if line.strip()]
-    
-try:
+
+SKIP_MYPYC = any(
+    cmd in sys.argv
+    for cmd in ("sdist", "egg_info", "--name", "--version", "--help", "--help-commands")
+)
+
+if SKIP_MYPYC:
+    ext_modules = []
+else:
     from mypyc.build import mypycify
 
     mypyc_args = [
@@ -36,8 +43,8 @@ try:
         mypyc_args.append("--disable-error-code=unused-ignore")
         
     ext_modules = mypycify(mypyc_args, group_name="ypricemagic")
-except ImportError:
-    ext_modules = []
+    
+
 
 setup(
     name="ypricemagic",
