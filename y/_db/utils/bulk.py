@@ -2,12 +2,11 @@ import logging
 from collections.abc import Iterable, Sequence
 from typing import Any
 
-from a_sync import a_sync
 from pony.orm import Database, DatabaseError, commit
 
 from y._db import entities
 from y._db.common import make_executor
-from y._db.decorators import db_session_retry_locked, retry_locked
+from y._db.decorators import db_a_sync, db_session_retry_locked, retry_locked
 from y._db.utils.stringify import build_query
 
 logger = logging.getLogger(__name__)
@@ -62,7 +61,7 @@ def execute(sql: str, *, db: Database = entities.db) -> None:
         raise SQLError(e, sql) from e
 
 
-@a_sync(default="async", executor=_bulk_executor)
+@db_a_sync(default="async", executor=_bulk_executor)
 @db_session_retry_locked
 def insert(
     entity_type: entities.db.Entity,  # type: ignore [name-defined]
