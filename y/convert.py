@@ -178,9 +178,9 @@ def __normalize_input_to_string(address: AnyAddressType) -> HexAddress:
         return address  # type: ignore [return-value]
     elif issubclass(address_type, bytes):
         return (
-            address.hex()  # type: ignore [union-attr, return-value]
+            address.hex()
             if address_type.__name__ == "HexBytes"
-            else HexBytes(address).hex()  # type: ignore [arg-type]
+            else HexBytes(address).hex()
         )
     elif address_type is int:
         return _int_to_address(address)  # type: ignore [arg-type]
