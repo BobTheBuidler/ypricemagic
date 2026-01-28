@@ -45,7 +45,7 @@ acceptable_all_chains: Final[set[ChecksumAddress]] = {
     wbtc.address,
 }
 
-ACCEPTABLE_HIGH_PRICES: Final[set[ChecksumAddress]] = {  # type: ignore [operator, assignment, call-overload]
+ACCEPTABLE_HIGH_PRICES: Final[set[ChecksumAddress]] = {  # type: ignore [call-overload]
     Network.Mainnet: {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
@@ -305,20 +305,20 @@ async def _exit_sense_check(token_address: ChecksumAddress) -> bool:
         if questionable_underlyings := [
             und.address for und in underlyings if und.address not in ACCEPTABLE_HIGH_PRICES
         ]:
-            return await a_sync.map(_exit_sense_check, questionable_underlyings).all(  # type: ignore [call-overload]
+            return await a_sync.map(_exit_sense_check, questionable_underlyings).all(  # type: ignore [call-overload, no-any-return]
                 sync=False
             )
         return True
 
     elif bucket == "atoken":
-        underlying = await aave.underlying(token_address, sync=False)  # type: ignore [call-overload, var-annotated]
+        underlying = await aave.underlying(token_address, sync=False)
     elif bucket == "compound":
         underlying = await CToken(token_address, asynchronous=True).underlying  # type: ignore [call-overload]
     elif bucket == "solidex":
         contract = await Contract.coroutine(token_address)
-        underlying = await contract.pool  # type: ignore [attr-defined]
+        underlying = await contract.pool
     elif bucket == "yearn or yearn-like":
-        underlying = await YearnInspiredVault(  # type: ignore [call-overload]
+        underlying = await YearnInspiredVault(
             token_address, asynchronous=True
         ).underlying
     else:

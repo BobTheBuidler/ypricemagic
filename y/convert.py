@@ -64,11 +64,11 @@ def to_address(address: AnyAddressType) -> ChecksumAddress:
         - :func:`__normalize_input_to_string` for input normalization.
     """
     address = __normalize_input_to_string(address)
-    if checksummed := __get_checksum_from_cache(address):
-        return checksummed
+    if cached := __get_checksum_from_cache(address):
+        return cached
     checksummed = checksum(address)
     __cache_if_is_checksummed(address, checksummed)
-    return checksummed  # type: ignore [return-value]
+    return checksummed
 
 
 _checksum_thread: Final = a_sync.ThreadPoolExecutor(1)
@@ -96,9 +96,9 @@ async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
         - :func:`__normalize_input_to_string` for input normalization.
     """
     normalized = __normalize_input_to_string(address)
-    if checksummed := __get_checksum_from_cache(normalized):
-        return checksummed
-    checksummed = await _checksum_thread.run(checksum, normalized)
+    if cached := __get_checksum_from_cache(normalized):
+        return cached
+    checksummed: ChecksumAddress = await _checksum_thread.run(checksum, normalized)
     __cache_if_is_checksummed(normalized, checksummed)
     return checksummed
 

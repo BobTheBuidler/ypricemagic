@@ -308,9 +308,10 @@ typedef struct {
     PyObject *___mypyc_generator_attribute__address;
     int32_t ___mypyc_next_label__;
     PyObject *___mypyc_generator_attribute__normalized;
-    PyObject *___mypyc_generator_attribute__checksummed;
+    PyObject *___mypyc_generator_attribute__cached;
     PyObject *___mypyc_temp__0;
     tuple_T3OOO ___mypyc_temp__1;
+    PyObject *___mypyc_generator_attribute__checksummed;
 } y___convert___to_address_async_genObject;
 
 typedef struct {
