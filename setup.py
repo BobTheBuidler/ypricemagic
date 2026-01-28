@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 from setuptools import find_packages, setup
@@ -7,31 +8,34 @@ long_description = (this_directory / "README.md").read_text()
 
 with open("requirements.txt") as f:
     requirements = [line.strip() for line in f.read().splitlines() if line.strip()]
-
+    
 try:
     from mypyc.build import mypycify
 
-    ext_modules = mypycify(
-        [
-            "y/_db/brownie.py",
-            "y/_db/config.py",
-            "y/_db/decorators.py",
-            "y/_db/utils/stringify.py",
-            "y/ENVIRONMENT_VARIABLES.py",
-            "y/convert.py",
-            "y/exceptions.py",
-            "y/networks.py",
-            "y/prices/utils/sense_check.py",
-            "y/utils/gather.py",
-            "--pretty",
-            "--install-types",
-            "--follow-imports=silent",
-            "--disable-error-code=import-not-found",
-            "--disable-error-code=no-untyped-def",
-            "--disable-error-code=no-untyped-call",
-        ],
-        group_name="ypricemagic",
-    )
+    mypyc_args = [
+        "y/_db/brownie.py",
+        "y/_db/config.py",
+        "y/_db/decorators.py",
+        "y/_db/utils/stringify.py",
+        "y/ENVIRONMENT_VARIABLES.py",
+        "y/convert.py",
+        "y/exceptions.py",
+        "y/networks.py",
+        "y/prices/utils/sense_check.py",
+        "y/utils/gather.py",
+        "--pretty",
+        "--install-types",
+        "--follow-imports=silent",
+        "--disable-error-code=import-not-found",
+        "--disable-error-code=no-untyped-def",
+        "--disable-error-code=no-untyped-call",
+    ]
+    if not sys.platform.startswith("linux") or sys.maxsize < 2**32:
+        # Some deps dont install properly at build time except on 64-bit Python on Linux
+        # That's okay for us, we only use the [unused-ignore] code for housekeeping
+        mypyc_args.append("--disable-error-code=unused-ignore")
+        
+    ext_modules = mypycify(mypyc_args, group_name="ypricemagic")
 except ImportError:
     ext_modules = []
 
