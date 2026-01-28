@@ -35,7 +35,7 @@ try:
         # That's okay for us, we only use the [unused-ignore] code for housekeeping
         mypyc_args.append("--disable-error-code=unused-ignore")
         
-    ext_modules = mypycify(*mypyc_args, group_name="ypricemagic")
+    ext_modules = mypycify(mypyc_args, group_name="ypricemagic")
 except ImportError:
     ext_modules = []
 
