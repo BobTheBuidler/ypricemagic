@@ -21,10 +21,7 @@ from y.datatypes import Address, Block
 logger: Final = logging.getLogger(__name__)
 
 # current
-header_env_names: Final = {
-    "X-Signer": "YPRICEAPI_SIGNER",
-    "X-Signature": "YPRICEAPI_SIGNATURE",
-}
+header_env_names: Final = {"X-Signer": "YPRICEAPI_SIGNER", "X-Signature": "YPRICEAPI_SIGNATURE"}
 AUTH_HEADERS: Final = {header: os.environ.get(env) for header, env in header_env_names.items()}
 AUTH_HEADERS_PRESENT: Final = all(AUTH_HEADERS.values())
 
