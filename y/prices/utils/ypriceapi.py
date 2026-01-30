@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import os
+from json import JSONDecodeError
 from random import randint
 from time import time
 from typing import Any, Final, final
@@ -20,10 +21,7 @@ from y.datatypes import Address, Block
 logger: Final = logging.getLogger(__name__)
 
 # current
-header_env_names: Final = {
-    "X-Signer": "YPRICEAPI_SIGNER",
-    "X-Signature": "YPRICEAPI_SIGNATURE",
-}
+header_env_names: Final = {"X-Signer": "YPRICEAPI_SIGNER", "X-Signature": "YPRICEAPI_SIGNATURE"}
 AUTH_HEADERS: Final = {header: os.environ.get(env) for header, env in header_env_names.items()}
 AUTH_HEADERS_PRESENT: Final = all(AUTH_HEADERS.values())
 
@@ -290,7 +288,10 @@ async def read_response(
     }:
         logger.warning("ypriceAPI returned status code %s", _get_err_reason(response))
         try:
-            msg = await response.json(content_type=None) or await response.text()
+            try:
+                msg = await response.json(content_type=None) or await response.text()
+            except JSONDecodeError:
+                msg = await response.text()
         except Exception:
             logger.warning(
                 "exception decoding ypriceapi %s response.%s",
@@ -299,6 +300,7 @@ async def read_response(
                 exc_info=True,
             )
             msg = ""
+                
         if msg:
             logger.warning(msg)
         _set_resume_at(_get_retry_header(response))
