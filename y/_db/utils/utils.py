@@ -121,13 +121,12 @@ def ensure_block(number: int) -> None:
         - :func:`get_block`
         - :func:`known_blocks`
     """
-    if number not in known_blocks():
-        get_get_block = _get_get_block or _import_get_get_block()
-        get_block = get_get_block()
-        try:
-            get_block(number, sync=True)
-        except TransactionIntegrityError:
-            get_block(number, sync=True)
+    get_get_block = _get_get_block or _import_get_get_block()
+    get_block = get_get_block()
+    try:
+        get_block(number, sync=True)
+    except TransactionIntegrityError:
+        get_block(number, sync=True)
 
 
 @a_sync_read_db_session
@@ -178,10 +177,7 @@ def get_block_at_timestamp(timestamp: datetime) -> BlockNumber | None:
     See Also:
         - :class:`BlockAtTimestamp`
     """
-    if block := known_blocks_for_timestamps().pop(timestamp, None):
-        _logger_debug("found block %s for %s in ydb", block, timestamp)
-        return block
-    elif entity := BlockAtTimestamp.get(chainid=CHAINID, timestamp=timestamp):
+    if entity := BlockAtTimestamp.get(chainid=CHAINID, timestamp=timestamp):
         block = entity.block
         _logger_debug("found block %s for %s in ydb", block, timestamp)
         return block
@@ -248,41 +244,3 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
 
 
 set_block_at_timestamp = ProcessingQueue(_set_block_at_timestamp, num_workers=2, return_data=False)
-
-# startup caches
-
-
-@lru_cache(maxsize=1)
-@log_result_count("blocks")
-def known_blocks() -> set[int]:
-    """Cache and return all known blocks for this chain to minimize db reads.
-
-    Returns:
-        A set of all known block numbers for the current chain.
-
-    Examples:
-        >>> blocks = known_blocks()
-        >>> print(len(blocks))
-
-    See Also:
-        - :class:`Block`
-    """
-    return set(select(b.number for b in Block if b.chain.id == CHAINID))
-
-
-@lru_cache(maxsize=1)
-@log_result_count("blocks for timestamps")
-def known_blocks_for_timestamps() -> dict[datetime, int]:
-    """Cache and return all known blocks for timestamps for this chain to minimize db reads.
-
-    Returns:
-        A dictionary mapping timestamps to block numbers.
-
-    Examples:
-        >>> blocks_for_timestamps = known_blocks_for_timestamps()
-        >>> print(len(blocks_for_timestamps))
-
-    See Also:
-        - :class:`BlockAtTimestamp`
-    """
-    return dict(select((x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == CHAINID))
