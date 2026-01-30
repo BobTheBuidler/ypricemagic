@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from functools import lru_cache
 from logging import getLogger
+from typing import Callable
 
 from a_sync import ProcessingQueue, a_sync
 from brownie import chain
@@ -26,6 +27,16 @@ del chain
 
 _block_executor = make_executor(2, 8, "ypricemagic db executor [block]")
 _timestamp_executor = make_executor(1, 4, "ypricemagic db executor [timestamp]")
+
+_get_get_block: Callable[..., Block] | None = None
+
+
+def _import_get_get_block() -> None:
+    # this helper resolves a goofy interplay between ypricemagic and eth-portfolio
+    global _get_get_block
+    import y._db.utils._ep
+    _get_get_block = y._db.utils._ep._get_get_block
+    return _get_get_block
 
 
 @a_sync_read_db_session
@@ -110,9 +121,8 @@ def ensure_block(number: int) -> None:
         - :func:`get_block`
         - :func:`known_blocks`
     """
-    from y._db.utils._ep import _get_get_block
-
-    get_block = _get_get_block()
+    get_get_block = _get_get_block or _import_get_get_block()
+    get_block = get_get_block()
     try:
         get_block(number, sync=True)
     except TransactionIntegrityError:
@@ -135,9 +145,8 @@ def get_block_timestamp(number: int) -> int | None:
         >>> timestamp = get_block_timestamp(123456)
         >>> print(timestamp)
     """
-    from y._db.utils._ep import _get_get_block
-
-    get_block = _get_get_block()
+    get_get_block = _get_get_block or _import_get_get_block()
+    get_block = get_get_block()
     ts = get_block(number, sync=True).timestamp
     if ts is None:
         return None
@@ -189,9 +198,8 @@ def _set_block_timestamp(block: int, timestamp: int) -> None:
     See Also:
         - :func:`get_block`
     """
-    from y._db.utils._ep import _get_get_block
-
-    get_block = _get_get_block()
+    get_get_block = _get_get_block or _import_get_get_block()
+    get_block = get_get_block()
     block = get_block(block, sync=True)
     timestamp = datetime.fromtimestamp(timestamp, tz=timezone.utc)
     block.timestamp = timestamp
