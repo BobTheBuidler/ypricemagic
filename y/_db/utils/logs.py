@@ -1,7 +1,7 @@
 import itertools
 import logging
 
-from a_sync import a_sync, cgather, igather
+from a_sync import cgather, igather
 from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
 from brownie.network.event import _EventItem
@@ -16,7 +16,7 @@ from pony.orm.core import Query
 
 from y import convert
 from y._db.common import DiskCache, default_filter_threads, enc_hook, make_executor
-from y._db.decorators import db_session_cached, db_session_retry_locked, retry_locked
+from y._db.decorators import db_a_sync, db_session_cached, db_session_retry_locked, retry_locked
 from y._db.entities import Block, Hashes
 from y._db.entities import Log as DbLog
 from y._db.entities import LogCacheInfo, LogTopic
@@ -182,7 +182,7 @@ async def bulk_insert(logs: list[Log], executor: AsyncExecutor = default_filter_
     )
 
 
-@a_sync(default="async", executor=_topic_executor, ram_cache_maxsize=None)
+@db_a_sync(default="async", executor=_topic_executor, ram_cache_maxsize=None)
 @db_session_cached
 def get_topic_dbid(topic: Topic) -> int:
     topic = _remove_0x_prefix(topic.strip())
@@ -197,7 +197,7 @@ async def get_hash_dbid(txhash: HexStr) -> int:
     return await _get_hash_dbid(txhash)
 
 
-@a_sync(default="async", executor=_hash_executor)
+@db_a_sync(default="async", executor=_hash_executor)
 @db_session_retry_locked
 def _get_hash_dbid(hexstr: HexStr) -> int:
     if len(hexstr) == 42:

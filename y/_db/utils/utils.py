@@ -3,7 +3,7 @@ from functools import lru_cache
 from logging import getLogger
 from typing import Callable
 
-from a_sync import ProcessingQueue, a_sync
+from a_sync import ProcessingQueue
 from brownie import chain
 from dateutil import parser
 from eth_typing import BlockNumber
@@ -12,6 +12,7 @@ from pony.orm import TransactionIntegrityError, commit, select
 from y._db.common import make_executor
 from y._db.decorators import (
     a_sync_read_db_session,
+    db_a_sync,
     db_session_cached,
     db_session_retry_locked,
     log_result_count,
@@ -100,7 +101,7 @@ def get_block(number: int) -> Block:
     return insert(type=Block, chain=CHAINID, number=number) or get_block(number, sync=True)
 
 
-@a_sync(
+@db_a_sync(
     default="async",
     executor=_block_executor,
     ram_cache_maxsize=None,
@@ -183,7 +184,7 @@ def get_block_at_timestamp(timestamp: datetime) -> BlockNumber | None:
         return block
 
 
-@a_sync(default="async", executor=_timestamp_executor)
+@db_a_sync(default="async", executor=_timestamp_executor)
 @db_session_retry_locked
 def _set_block_timestamp(block: int, timestamp: int) -> None:
     """Set the timestamp for a specific block in the database.
@@ -224,7 +225,7 @@ def set_block_timestamp(block: int, timestamp: int) -> None:
 set_block_timestamp = ProcessingQueue(_set_block_timestamp, num_workers=2, return_data=False)
 
 
-@a_sync(default="async", executor=_timestamp_executor)
+@db_a_sync(default="async", executor=_timestamp_executor)
 @db_session_retry_locked
 def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     """Insert a block number for a specific timestamp in the database.
