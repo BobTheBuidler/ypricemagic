@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import os
+from json import JSONDecodeError
 from random import randint
 from time import time
 from typing import Any, Final, final
@@ -290,7 +291,10 @@ async def read_response(
     }:
         logger.warning("ypriceAPI returned status code %s", _get_err_reason(response))
         try:
-            msg = await response.json(content_type=None) or await response.text()
+            try:
+                msg = await response.json(content_type=None) or await response.text()
+            except JSONDecodeError:
+                msg = await response.text()
         except Exception:
             logger.warning(
                 "exception decoding ypriceapi %s response.%s",
@@ -299,6 +303,7 @@ async def read_response(
                 exc_info=True,
             )
             msg = ""
+                
         if msg:
             logger.warning(msg)
         _set_resume_at(_get_retry_header(response))
