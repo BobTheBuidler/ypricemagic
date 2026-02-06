@@ -2,6 +2,7 @@ from asyncio import sleep
 from collections.abc import AsyncIterator
 from contextlib import suppress
 from decimal import Decimal
+from itertools import islice
 from logging import DEBUG, getLogger
 from typing import Any
 
@@ -430,14 +431,25 @@ def _log_factory_helper_failure(e: Exception, token_address, block, _ignore_pool
     else:
         raise e
 
+    ignore_pools_count, ignore_pools_sample = _summarize_ignore_pools(_ignore_pools)
     logger.debug(
-        "helper %s for %s at block %s ignore_pools %s: %s",
+        "helper %s for %s at block %s ignore_pools_count=%s ignore_pools_sample=%s: %s",
         msg,
         token_address,
         block,
-        _ignore_pools,
+        ignore_pools_count,
+        ignore_pools_sample,
         e,
     )
+
+
+def _summarize_ignore_pools(_ignore_pools, sample_size: int = 3) -> tuple[int, tuple[str, ...]]:
+    if not _ignore_pools:
+        return 0, ()
+    sample = tuple(
+        str(getattr(pool, "address", pool)) for pool in islice(_ignore_pools, sample_size)
+    )
+    return len(_ignore_pools), sample
 
 
 class UniswapRouterV2(ContractBase):
