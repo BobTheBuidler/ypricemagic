@@ -446,13 +446,10 @@ def _log_factory_helper_failure(e: Exception, token_address, block, _ignore_pool
 def _summarize_ignore_pools(_ignore_pools, sample_size: int = 3) -> tuple[int, tuple[str, ...]]:
     if not _ignore_pools:
         return 0, ()
-    sample = []
-    for pool in islice(_ignore_pools, sample_size):
-        address = getattr(pool, "address", None)
-        if address is None:
-            address = pool
-        sample.append(str(address))
-    return len(_ignore_pools), tuple(sample)
+    sample = tuple(
+        str(getattr(pool, "address", pool)) for pool in islice(_ignore_pools, sample_size)
+    )
+    return len(_ignore_pools), sample
 
 
 class UniswapRouterV2(ContractBase):
