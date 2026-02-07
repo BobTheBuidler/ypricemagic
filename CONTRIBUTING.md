@@ -17,6 +17,21 @@ logging.getLogger("y.stuck?").setLevel(logging.DEBUG)
 
 If you add new async RPC or price-fetching functions that might stall, prefer `@stuck_coro_debugger` from `y._decorators` so this logger stays consistent across the codebase.
 
+## a_sync and dank_mids conventions
+
+a_sync:
+- Use `@a_sync.a_sync(default="sync")` for user-facing helpers (e.g., `y.prices.magic.get_price/get_prices`, `y.utils.multicall.*`) and `default="async"` for DB/worker functions that run on explicit executors (e.g., `y._db.utils.token`, `y._db.utils.traces`).
+- Prefer `a_sync_ttl_cache` from `y.utils.cache` for TTL caching and `@memory.cache` for disk-backed caching. Keep TTLs aligned with `ENVS.CACHE_TTL` unless there is a specific reason.
+- Use `@a_sync.aka.property` / `@a_sync.aka.cached_property` for async properties on `ASyncGenericBase`/`ASyncGenericSingleton` classes (e.g., `y.classes.common`, `y.prices.gearbox`, `y.prices.band`).
+- Use `cgather`, `igather`, `a_sync.map`, and `a_sync.as_completed` for batching and concurrency (e.g., `y.utils.events`, `y.prices.magic`, `y.utils.multicall`).
+- Use a_sync primitives (`ProcessingQueue`, `SmartProcessingQueue`, `ThreadsafeSemaphore`, `AsyncThreadPoolExecutor`, `PruningThreadPoolExecutor`) to keep concurrency bounded and predictable (e.g., `y._db.common`, `y._db.utils.token`, `y.contracts`).
+
+dank_mids:
+- `y.contracts.Contract` extends `dank_mids.Contract`. Prefer `.coroutine` for async calls (batched by dank_mids).
+- Use `dank_mids.eth` for RPC (block numbers, get_code, get_logs, get_block_timestamp) instead of raw web3 where possible (e.g., `y.time`, `y.utils.events`).
+- Use `dank_mids.BlockSemaphore` for block-based throttling (e.g., `y._db.common`, `y.utils.events`, `y.prices.utils.ypriceapi`).
+- Keep the checksum monkey patch: `dank_mids.brownie_patch.call.to_checksum_address = y.convert.to_address` (see `y.monkey_patches`).
+
 ## Adding new protocols
 
 I will add info to this document over time. For now, it will be sparse. Very sparse.
