@@ -9,7 +9,7 @@ requires = [
   "types-requests",
   "aiosqlite==0.22.1",
   "bobs_lazy_logging==0.0.5",
-  "dank-mids==4.20.195; platform_system == 'MacOS' or (platform_system == 'Linux' and platform_machine != 'i686')",
+  "dank-mids==4.20.196; platform_system == 'MacOS' or (platform_system == 'Linux' and platform_machine != 'i686')",
   "eth-brownie==1.22.0.dev2; platform_system == 'Linux' and platform_machine != 'i686'",
   "eth-retry==0.3.7",
   "eth-typing==5.2.1",
