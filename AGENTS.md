@@ -19,6 +19,7 @@ All agents must follow these rules:
 13) All mypy configuration (flags, overrides, per-module ignores, and file targets) should go in pyproject.toml. Do not split config across CLI args, mypy.ini, setup.cfg, or workflow steps.
 14) Centralize pytest settings (flags, markers, ignore patterns, and targets) in pyproject.toml, pytest.ini, setup.cfg, or tox.ini; workflows/hooks should call pytest without inline args.
 15) If the branch you're assigned to work on is from a remote (ie origin/master or upstream/awesome-feature) you must ensure you fetch and pull from the remote before you begin your work.
-
-16) Local pip install . generates build/; clean up before closing a worktree to avoid dirty state.
+16) For testing: use Python 3.12 and run `PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet make test`.
+    Note: in a clean env this currently fails (ContractLogicError / aggregator assertions) even with `setuptools<81` and `click` installed. As long as the tests run, and no new failures pop up, we're good. If working on a section of the codebase with existing test failures, try to fix those particular tests.
+17) Local pip install . generates build/; clean up before closing a worktree to avoid dirty state.
 Reference: https://www.conventionalcommits.org/en/v1.0.0/
