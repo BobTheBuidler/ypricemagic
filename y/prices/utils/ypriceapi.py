@@ -28,6 +28,7 @@ AUTH_HEADERS_PRESENT: Final = all(AUTH_HEADERS.values())
 # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
 ONE_MINUTE: Final = 60
 FIVE_MINUTES: Final = ONE_MINUTE * 5
+TEN_MINUTES: Final = ONE_MINUTE * 10
 ONE_HOUR: Final = ONE_MINUTE * 60
 FALLBACK_STR: Final = "Falling back to your node for pricing."
 
@@ -120,7 +121,7 @@ async def get_session() -> ClientSession:
     )
 
 
-@alru_cache(ttl=ONE_HOUR)
+@alru_cache(ttl=TEN_MINUTES)
 async def get_chains() -> dict[int, str]:
     """Get the supported chains from ypriceAPI.
 
@@ -138,7 +139,7 @@ async def get_chains() -> dict[int, str]:
     return {int(k): v for k, v in chains.items()}
 
 
-@alru_cache(ttl=ONE_HOUR)
+@alru_cache(ttl=TEN_MINUTES)
 async def chain_supported(chainid: int) -> bool:
     """Check if a chain is supported by ypriceAPI.
 
