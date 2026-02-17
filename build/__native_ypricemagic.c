@@ -39409,18 +39409,19 @@ PyObject *CPyDef_gather____gather_methods_brownie_gen_____mypyc_generator_helper
     PyObject *cpy_r_r102;
     PyObject *cpy_r_r103;
     PyObject *cpy_r_r104;
-    char cpy_r_r105;
+    PyObject *cpy_r_r105;
     char cpy_r_r106;
     char cpy_r_r107;
     char cpy_r_r108;
     char cpy_r_r109;
-    PyObject *cpy_r_r110;
+    char cpy_r_r110;
+    PyObject *cpy_r_r111;
     cpy_r_r0 = NULL;
     cpy_r_r1 = cpy_r_r0;
     cpy_r_r2 = NULL;
     cpy_r_r3 = cpy_r_r2;
     cpy_r_r4 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__;
-    goto CPyL97;
+    goto CPyL98;
 CPyL1: ;
     cpy_r_r5 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r6 = cpy_r_type != cpy_r_r5;
@@ -39428,7 +39429,7 @@ CPyL1: ;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPy_Unreachable();
 CPyL4: ;
@@ -39438,7 +39439,7 @@ CPyL4: ;
     cpy_r_r10 = CPyImport_ImportFromMany(cpy_r_r8, cpy_r_r7, cpy_r_r7, cpy_r_r9);
     if (unlikely(cpy_r_r10 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPyModule_y = cpy_r_r10;
     CPy_INCREF(CPyModule_y);
@@ -39448,12 +39449,12 @@ CPyL4: ;
     cpy_r_r13 = CPyDict_GetItem(cpy_r_r11, cpy_r_r12);
     if (unlikely(cpy_r_r13 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r14 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__address;
     if (unlikely(cpy_r_r14 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "address", 94, CPyStatic_gather___globals);
-        goto CPyL103;
+        goto CPyL104;
     }
     CPy_INCREF(cpy_r_r14);
 CPyL7: ;
@@ -39463,7 +39464,7 @@ CPyL7: ;
     cpy_r_r18 = PyObject_VectorcallMethod(cpy_r_r15, cpy_r_r17, 9223372036854775810ULL, 0);
     if (unlikely(cpy_r_r18 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL104;
+        goto CPyL105;
     }
     CPy_DECREF(cpy_r_r13);
     CPy_DECREF(cpy_r_r14);
@@ -39471,7 +39472,7 @@ CPyL7: ;
     CPy_DECREF(cpy_r_r18);
     if (unlikely(cpy_r_r19 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     if (((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4 != NULL) {
         CPy_DECREF(((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4);
@@ -39480,12 +39481,12 @@ CPyL7: ;
     cpy_r_r20 = 1;
     if (unlikely(!cpy_r_r20)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", -1, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r21 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
     if (unlikely(cpy_r_r21 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__4", -1, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPy_INCREF(cpy_r_r21);
 CPyL11: ;
@@ -39495,7 +39496,7 @@ CPyL11: ;
     cpy_r_r23 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r23 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r24 = cpy_r_r23;
     cpy_r_r25 = NULL;
@@ -39506,7 +39507,7 @@ CPyL11: ;
     cpy_r_r26 = 1;
     if (unlikely(!cpy_r_r26)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL105;
+        goto CPyL106;
     } else
         goto CPyL36;
 CPyL14: ;
@@ -39517,13 +39518,13 @@ CPyL15: ;
 CPyL16: ;
     cpy_r_r29 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r30 = cpy_r_type != cpy_r_r29;
-    if (!cpy_r_r30) goto CPyL106;
+    if (!cpy_r_r30) goto CPyL107;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
         goto CPyL20;
     } else
-        goto CPyL107;
+        goto CPyL108;
 CPyL18: ;
     CPy_Unreachable();
 CPyL19: ;
@@ -39540,13 +39541,13 @@ CPyL20: ;
     cpy_r_r32 = 1;
     if (unlikely(!cpy_r_r32)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", -1, CPyStatic_gather___globals);
-        goto CPyL108;
+        goto CPyL109;
     }
     cpy_r_r33 = (PyObject **)&cpy_r_r1;
     cpy_r_r34 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
     if (unlikely(cpy_r_r34 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__4", -1, CPyStatic_gather___globals);
-        goto CPyL108;
+        goto CPyL109;
     }
     CPy_INCREF(cpy_r_r34);
 CPyL22: ;
@@ -39554,14 +39555,14 @@ CPyL22: ;
     CPy_DecRef(cpy_r_r34);
     if (unlikely(cpy_r_r35 == 2)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL108;
+        goto CPyL109;
     }
     if (cpy_r_r35) goto CPyL26;
     cpy_r_r27 = cpy_r_r1;
     cpy_r_r36 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5;
     if (unlikely(cpy_r_r36.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__5", -1, CPyStatic_gather___globals);
-        goto CPyL109;
+        goto CPyL110;
     }
     CPy_INCREF(cpy_r_r36.f0);
     CPy_INCREF(cpy_r_r36.f1);
@@ -39577,7 +39578,7 @@ CPyL26: ;
     cpy_r_r37 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5;
     if (unlikely(cpy_r_r37.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__5", -1, CPyStatic_gather___globals);
-        goto CPyL110;
+        goto CPyL111;
     }
     CPy_INCREF(cpy_r_r37.f0);
     CPy_INCREF(cpy_r_r37.f1);
@@ -39592,7 +39593,7 @@ CPyL28: ;
     cpy_r_r38 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__5;
     if (unlikely(cpy_r_r38.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__5", -1, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPy_INCREF(cpy_r_r38.f0);
     CPy_INCREF(cpy_r_r38.f1);
@@ -39603,13 +39604,13 @@ CPyL29: ;
     CPy_DecRef(cpy_r_r38.f1);
     CPy_DecRef(cpy_r_r38.f2);
     cpy_r_r39 = CPy_KeepPropagating();
-    if (!cpy_r_r39) goto CPyL102;
+    if (!cpy_r_r39) goto CPyL103;
     CPy_Unreachable();
 CPyL31: ;
     cpy_r_r40 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__4;
     if (unlikely(cpy_r_r40 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__4", -1, CPyStatic_gather___globals);
-        goto CPyL111;
+        goto CPyL112;
     }
     CPy_INCREF(cpy_r_r40);
 CPyL32: ;
@@ -39623,7 +39624,7 @@ CPyL34: ;
     cpy_r_r42 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r42 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r24 = cpy_r_r42;
 CPyL36: ;
@@ -39634,12 +39635,12 @@ CPyL36: ;
     cpy_r_r43 = 1;
     if (unlikely(!cpy_r_r43)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r44 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__methods;
     if (unlikely(cpy_r_r44 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "methods", 96, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPy_INCREF(cpy_r_r44);
 CPyL38: ;
@@ -39648,7 +39649,7 @@ CPyL38: ;
     cpy_r_r47 = PyList_New(cpy_r_r46);
     if (unlikely(cpy_r_r47 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL112;
+        goto CPyL113;
     }
     if (((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6 != NULL) {
         CPy_DECREF(((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6);
@@ -39657,31 +39658,31 @@ CPyL38: ;
     cpy_r_r48 = 1;
     if (unlikely(!cpy_r_r48)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", -1, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
     ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7 = cpy_r_r46;
     cpy_r_r49 = 1;
     if (unlikely(!cpy_r_r49)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", -1, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
     ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8 = 0;
     cpy_r_r50 = 1;
     if (unlikely(!cpy_r_r50)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", -1, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
 CPyL42: ;
     cpy_r_r51 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__7;
     if (unlikely(cpy_r_r51 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__7", 96, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
 CPyL43: ;
     cpy_r_r52 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
     if (unlikely(cpy_r_r52 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__8", 96, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
 CPyL44: ;
     cpy_r_r53 = cpy_r_r52 < cpy_r_r51;
@@ -39689,14 +39690,14 @@ CPyL44: ;
     cpy_r_r54 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__6;
     if (unlikely(cpy_r_r54 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__6", 96, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
     CPy_INCREF(cpy_r_r54);
 CPyL46: ;
     cpy_r_r55 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
     if (unlikely(cpy_r_r55 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__8", 96, CPyStatic_gather___globals);
-        goto CPyL114;
+        goto CPyL115;
     }
 CPyL47: ;
     cpy_r_r56 = CPySequenceTuple_GetItemUnsafe(cpy_r_r54, cpy_r_r55);
@@ -39705,7 +39706,7 @@ CPyL47: ;
         cpy_r_r57 = cpy_r_r56;
     else {
         CPy_TypeErrorTraceback("y/utils/gather.py", "_gather_methods_brownie", 96, CPyStatic_gather___globals, "str", cpy_r_r56);
-        goto CPyL113;
+        goto CPyL114;
     }
     if (((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__method != NULL) {
         CPy_DECREF(((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__method);
@@ -39714,25 +39715,25 @@ CPyL47: ;
     cpy_r_r58 = 1;
     if (unlikely(!cpy_r_r58)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
     cpy_r_r59 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
     if (unlikely(cpy_r_r59 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__8", -1, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
 CPyL50: ;
     cpy_r_r60 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__contract;
     if (unlikely(cpy_r_r60 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "contract", 96, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
     CPy_INCREF(cpy_r_r60);
 CPyL51: ;
     cpy_r_r61 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__method;
     if (unlikely(cpy_r_r61 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "method", 96, CPyStatic_gather___globals);
-        goto CPyL115;
+        goto CPyL116;
     }
     CPy_INCREF(cpy_r_r61);
 CPyL52: ;
@@ -39741,12 +39742,12 @@ CPyL52: ;
     CPy_DECREF(cpy_r_r61);
     if (unlikely(cpy_r_r62 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
     cpy_r_r63 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__block;
     if (unlikely(cpy_r_r63 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "block", 96, CPyStatic_gather___globals);
-        goto CPyL116;
+        goto CPyL117;
     }
     CPy_INCREF(cpy_r_r63);
 CPyL54: ;
@@ -39757,7 +39758,7 @@ CPyL54: ;
     cpy_r_r68 = PyObject_VectorcallMethod(cpy_r_r64, cpy_r_r66, 9223372036854775809ULL, cpy_r_r67);
     if (unlikely(cpy_r_r68 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL117;
+        goto CPyL118;
     }
     CPy_DECREF(cpy_r_r62);
     CPy_DECREF(cpy_r_r63);
@@ -39765,7 +39766,7 @@ CPyL54: ;
     cpy_r_r69 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__8;
     if (unlikely(cpy_r_r69 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__8", 96, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     }
 CPyL57: ;
     cpy_r_r70 = cpy_r_r69 + 1;
@@ -39773,7 +39774,7 @@ CPyL57: ;
     cpy_r_r71 = 1;
     if (unlikely(!cpy_r_r71)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL113;
+        goto CPyL114;
     } else
         goto CPyL42;
 CPyL58: ;
@@ -39781,17 +39782,17 @@ CPyL58: ;
     CPy_DECREF_NO_IMM(cpy_r_r47);
     if (unlikely(cpy_r_r72 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r73 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__return_exceptions;
     if (unlikely(cpy_r_r73 == 2)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "return_exceptions", 97, CPyStatic_gather___globals);
-        goto CPyL118;
+        goto CPyL119;
     }
 CPyL60: ;
     cpy_r_r74 = CPyStatic_gather___igather;
     if (unlikely(cpy_r_r74 == NULL)) {
-        goto CPyL119;
+        goto CPyL120;
     } else
         goto CPyL63;
 CPyL61: ;
@@ -39799,7 +39800,7 @@ CPyL61: ;
     cpy_r_r75 = 0;
     if (unlikely(!cpy_r_r75)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPy_Unreachable();
 CPyL63: ;
@@ -39810,14 +39811,14 @@ CPyL63: ;
     cpy_r_r80 = PyObject_Vectorcall(cpy_r_r74, cpy_r_r78, 1, cpy_r_r79);
     if (unlikely(cpy_r_r80 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL118;
+        goto CPyL119;
     }
     CPy_DECREF(cpy_r_r72);
     cpy_r_r81 = CPy_GetCoro(cpy_r_r80);
     CPy_DECREF(cpy_r_r80);
     if (unlikely(cpy_r_r81 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     if (((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9 != NULL) {
         CPy_DECREF(((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9);
@@ -39826,12 +39827,12 @@ CPyL63: ;
     cpy_r_r82 = 1;
     if (unlikely(!cpy_r_r82)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", -1, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r83 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
     if (unlikely(cpy_r_r83 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__9", -1, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPy_INCREF(cpy_r_r83);
 CPyL67: ;
@@ -39841,7 +39842,7 @@ CPyL67: ;
     cpy_r_r85 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r85 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r86 = cpy_r_r85;
     cpy_r_r87 = NULL;
@@ -39852,7 +39853,7 @@ CPyL67: ;
     cpy_r_r88 = 1;
     if (unlikely(!cpy_r_r88)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL120;
+        goto CPyL121;
     } else
         goto CPyL92;
 CPyL70: ;
@@ -39863,13 +39864,13 @@ CPyL71: ;
 CPyL72: ;
     cpy_r_r91 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r92 = cpy_r_type != cpy_r_r91;
-    if (!cpy_r_r92) goto CPyL121;
+    if (!cpy_r_r92) goto CPyL122;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
         goto CPyL76;
     } else
-        goto CPyL122;
+        goto CPyL123;
 CPyL74: ;
     CPy_Unreachable();
 CPyL75: ;
@@ -39886,13 +39887,13 @@ CPyL76: ;
     cpy_r_r94 = 1;
     if (unlikely(!cpy_r_r94)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", -1, CPyStatic_gather___globals);
-        goto CPyL123;
+        goto CPyL124;
     }
     cpy_r_r95 = (PyObject **)&cpy_r_r3;
     cpy_r_r96 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
     if (unlikely(cpy_r_r96 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__9", -1, CPyStatic_gather___globals);
-        goto CPyL123;
+        goto CPyL124;
     }
     CPy_INCREF(cpy_r_r96);
 CPyL78: ;
@@ -39900,14 +39901,14 @@ CPyL78: ;
     CPy_DecRef(cpy_r_r96);
     if (unlikely(cpy_r_r97 == 2)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL123;
+        goto CPyL124;
     }
     if (cpy_r_r97) goto CPyL82;
     cpy_r_r89 = cpy_r_r3;
     cpy_r_r98 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
     if (unlikely(cpy_r_r98.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__10", -1, CPyStatic_gather___globals);
-        goto CPyL124;
+        goto CPyL125;
     }
     CPy_INCREF(cpy_r_r98.f0);
     CPy_INCREF(cpy_r_r98.f1);
@@ -39923,7 +39924,7 @@ CPyL82: ;
     cpy_r_r99 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
     if (unlikely(cpy_r_r99.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__10", -1, CPyStatic_gather___globals);
-        goto CPyL125;
+        goto CPyL126;
     }
     CPy_INCREF(cpy_r_r99.f0);
     CPy_INCREF(cpy_r_r99.f1);
@@ -39938,7 +39939,7 @@ CPyL84: ;
     cpy_r_r100 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__10;
     if (unlikely(cpy_r_r100.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__10", -1, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPy_INCREF(cpy_r_r100.f0);
     CPy_INCREF(cpy_r_r100.f1);
@@ -39949,13 +39950,13 @@ CPyL85: ;
     CPy_DecRef(cpy_r_r100.f1);
     CPy_DecRef(cpy_r_r100.f2);
     cpy_r_r101 = CPy_KeepPropagating();
-    if (!cpy_r_r101) goto CPyL102;
+    if (!cpy_r_r101) goto CPyL103;
     CPy_Unreachable();
 CPyL87: ;
     cpy_r_r102 = ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__9;
     if (unlikely(cpy_r_r102 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_brownie", "_gather_methods_brownie_gen", "__mypyc_temp__9", -1, CPyStatic_gather___globals);
-        goto CPyL126;
+        goto CPyL127;
     }
     CPy_INCREF(cpy_r_r102);
 CPyL88: ;
@@ -39969,135 +39970,141 @@ CPyL90: ;
     cpy_r_r104 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r104 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     cpy_r_r86 = cpy_r_r104;
 CPyL92: ;
+    if (likely(PyList_Check(cpy_r_r86)))
+        cpy_r_r105 = cpy_r_r86;
+    else {
+        CPy_TypeErrorTraceback("y/utils/gather.py", "_gather_methods_brownie", 95, CPyStatic_gather___globals, "list", cpy_r_r86);
+        goto CPyL103;
+    }
     ((y___utils___gather____gather_methods_brownie_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
-    if (cpy_r_stop_iter_ptr != NULL) goto CPyL96;
-    CPyGen_SetStopIterationValue(cpy_r_r86);
-    CPy_DECREF(cpy_r_r86);
-    if (!0) goto CPyL102;
+    if (cpy_r_stop_iter_ptr != NULL) goto CPyL97;
+    CPyGen_SetStopIterationValue(cpy_r_r105);
+    CPy_DECREF_NO_IMM(cpy_r_r105);
+    if (!0) goto CPyL103;
     CPy_Unreachable();
-CPyL96: ;
-    *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r86;
-    return 0;
 CPyL97: ;
-    cpy_r_r106 = cpy_r_r4 == 0;
-    if (cpy_r_r106) goto CPyL127;
-    cpy_r_r107 = cpy_r_r4 == 1;
-    if (cpy_r_r107) {
-        goto CPyL128;
-    } else
-        goto CPyL129;
-CPyL99: ;
-    cpy_r_r108 = cpy_r_r4 == 2;
+    *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r105;
+    return 0;
+CPyL98: ;
+    cpy_r_r107 = cpy_r_r4 == 0;
+    if (cpy_r_r107) goto CPyL128;
+    cpy_r_r108 = cpy_r_r4 == 1;
     if (cpy_r_r108) {
-        goto CPyL72;
+        goto CPyL129;
     } else
         goto CPyL130;
 CPyL100: ;
+    cpy_r_r109 = cpy_r_r4 == 2;
+    if (cpy_r_r109) {
+        goto CPyL72;
+    } else
+        goto CPyL131;
+CPyL101: ;
     PyErr_SetNone(PyExc_StopIteration);
-    cpy_r_r109 = 0;
-    if (unlikely(!cpy_r_r109)) {
+    cpy_r_r110 = 0;
+    if (unlikely(!cpy_r_r110)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_brownie", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL102;
+        goto CPyL103;
     }
     CPy_Unreachable();
-CPyL102: ;
-    cpy_r_r110 = NULL;
-    return cpy_r_r110;
 CPyL103: ;
-    CPy_DecRef(cpy_r_r13);
-    goto CPyL102;
+    cpy_r_r111 = NULL;
+    return cpy_r_r111;
 CPyL104: ;
     CPy_DecRef(cpy_r_r13);
-    CPy_DecRef(cpy_r_r14);
-    goto CPyL102;
+    goto CPyL103;
 CPyL105: ;
-    CPy_DecRef(cpy_r_r24);
-    goto CPyL102;
+    CPy_DecRef(cpy_r_r13);
+    CPy_DecRef(cpy_r_r14);
+    goto CPyL103;
 CPyL106: ;
-    CPy_XDECREF(cpy_r_r1);
-    goto CPyL19;
+    CPy_DecRef(cpy_r_r24);
+    goto CPyL103;
 CPyL107: ;
     CPy_XDECREF(cpy_r_r1);
-    goto CPyL18;
+    goto CPyL19;
 CPyL108: ;
+    CPy_XDECREF(cpy_r_r1);
+    goto CPyL18;
+CPyL109: ;
     CPy_XDecRef(cpy_r_r1);
     goto CPyL28;
-CPyL109: ;
+CPyL110: ;
     CPy_DecRef(cpy_r_r27);
     goto CPyL28;
-CPyL110: ;
+CPyL111: ;
     CPy_DecRef(cpy_r_r24);
     goto CPyL28;
-CPyL111: ;
-    CPy_DecRef(cpy_r_arg);
-    goto CPyL102;
 CPyL112: ;
-    CPy_DecRef(cpy_r_r44);
-    goto CPyL102;
+    CPy_DecRef(cpy_r_arg);
+    goto CPyL103;
 CPyL113: ;
-    CPy_DecRef(cpy_r_r47);
-    goto CPyL102;
+    CPy_DecRef(cpy_r_r44);
+    goto CPyL103;
 CPyL114: ;
     CPy_DecRef(cpy_r_r47);
-    CPy_DecRef(cpy_r_r54);
-    goto CPyL102;
+    goto CPyL103;
 CPyL115: ;
     CPy_DecRef(cpy_r_r47);
-    CPy_DecRef(cpy_r_r60);
-    goto CPyL102;
+    CPy_DecRef(cpy_r_r54);
+    goto CPyL103;
 CPyL116: ;
     CPy_DecRef(cpy_r_r47);
-    CPy_DecRef(cpy_r_r62);
-    goto CPyL102;
+    CPy_DecRef(cpy_r_r60);
+    goto CPyL103;
 CPyL117: ;
     CPy_DecRef(cpy_r_r47);
     CPy_DecRef(cpy_r_r62);
-    CPy_DecRef(cpy_r_r63);
-    goto CPyL102;
+    goto CPyL103;
 CPyL118: ;
-    CPy_DecRef(cpy_r_r72);
-    goto CPyL102;
+    CPy_DecRef(cpy_r_r47);
+    CPy_DecRef(cpy_r_r62);
+    CPy_DecRef(cpy_r_r63);
+    goto CPyL103;
 CPyL119: ;
     CPy_DecRef(cpy_r_r72);
-    goto CPyL61;
+    goto CPyL103;
 CPyL120: ;
-    CPy_DecRef(cpy_r_r86);
-    goto CPyL102;
+    CPy_DecRef(cpy_r_r72);
+    goto CPyL61;
 CPyL121: ;
-    CPy_XDECREF(cpy_r_r3);
-    goto CPyL75;
+    CPy_DecRef(cpy_r_r86);
+    goto CPyL103;
 CPyL122: ;
     CPy_XDECREF(cpy_r_r3);
-    goto CPyL74;
+    goto CPyL75;
 CPyL123: ;
+    CPy_XDECREF(cpy_r_r3);
+    goto CPyL74;
+CPyL124: ;
     CPy_XDecRef(cpy_r_r3);
     goto CPyL84;
-CPyL124: ;
+CPyL125: ;
     CPy_DecRef(cpy_r_r89);
     goto CPyL84;
-CPyL125: ;
+CPyL126: ;
     CPy_DecRef(cpy_r_r86);
     goto CPyL84;
-CPyL126: ;
-    CPy_DecRef(cpy_r_arg);
-    goto CPyL102;
 CPyL127: ;
+    CPy_DecRef(cpy_r_arg);
+    goto CPyL103;
+CPyL128: ;
     CPy_XDECREF(cpy_r_r1);
     CPy_XDECREF(cpy_r_r3);
     goto CPyL1;
-CPyL128: ;
+CPyL129: ;
     CPy_XDECREF(cpy_r_r3);
     goto CPyL16;
-CPyL129: ;
-    CPy_XDECREF(cpy_r_r1);
-    goto CPyL99;
 CPyL130: ;
-    CPy_XDECREF(cpy_r_r3);
+    CPy_XDECREF(cpy_r_r1);
     goto CPyL100;
+CPyL131: ;
+    CPy_XDECREF(cpy_r_r3);
+    goto CPyL101;
 }
 
 PyObject *CPyDef_gather____gather_methods_brownie_gen_____next__(PyObject *cpy_r___mypyc_self__) {
@@ -40590,15 +40597,16 @@ PyObject *CPyDef_gather____gather_methods_raw_gen_____mypyc_generator_helper__(P
     PyObject *cpy_r_r66;
     PyObject *cpy_r_r67;
     PyObject *cpy_r_r68;
-    char cpy_r_r69;
+    PyObject *cpy_r_r69;
     char cpy_r_r70;
     char cpy_r_r71;
     char cpy_r_r72;
-    PyObject *cpy_r_r73;
+    char cpy_r_r73;
+    PyObject *cpy_r_r74;
     cpy_r_r0 = NULL;
     cpy_r_r1 = cpy_r_r0;
     cpy_r_r2 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__;
-    goto CPyL67;
+    goto CPyL68;
 CPyL1: ;
     cpy_r_r3 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r4 = cpy_r_type != cpy_r_r3;
@@ -40606,14 +40614,14 @@ CPyL1: ;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     CPy_Unreachable();
 CPyL4: ;
     cpy_r_r5 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__methods;
     if (unlikely(cpy_r_r5 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "methods", 131, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     CPy_INCREF(cpy_r_r5);
 CPyL5: ;
@@ -40622,7 +40630,7 @@ CPyL5: ;
     cpy_r_r8 = PyList_New(cpy_r_r7);
     if (unlikely(cpy_r_r8 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL72;
+        goto CPyL73;
     }
     if (((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11 != NULL) {
         CPy_DECREF(((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11);
@@ -40631,31 +40639,31 @@ CPyL5: ;
     cpy_r_r9 = 1;
     if (unlikely(!cpy_r_r9)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", -1, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
     ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12 = cpy_r_r7;
     cpy_r_r10 = 1;
     if (unlikely(!cpy_r_r10)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", -1, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
     ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13 = 0;
     cpy_r_r11 = 1;
     if (unlikely(!cpy_r_r11)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", -1, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
 CPyL9: ;
     cpy_r_r12 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__12;
     if (unlikely(cpy_r_r12 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__12", 131, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
 CPyL10: ;
     cpy_r_r13 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
     if (unlikely(cpy_r_r13 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__13", 131, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
 CPyL11: ;
     cpy_r_r14 = cpy_r_r13 < cpy_r_r12;
@@ -40663,14 +40671,14 @@ CPyL11: ;
     cpy_r_r15 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__11;
     if (unlikely(cpy_r_r15 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__11", 131, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
     CPy_INCREF(cpy_r_r15);
 CPyL13: ;
     cpy_r_r16 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
     if (unlikely(cpy_r_r16 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__13", 131, CPyStatic_gather___globals);
-        goto CPyL74;
+        goto CPyL75;
     }
 CPyL14: ;
     cpy_r_r17 = CPySequenceTuple_GetItemUnsafe(cpy_r_r15, cpy_r_r16);
@@ -40679,7 +40687,7 @@ CPyL14: ;
         cpy_r_r18 = cpy_r_r17;
     else {
         CPy_TypeErrorTraceback("y/utils/gather.py", "_gather_methods_raw", 131, CPyStatic_gather___globals, "str", cpy_r_r17);
-        goto CPyL73;
+        goto CPyL74;
     }
     if (((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__method != NULL) {
         CPy_DECREF(((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__method);
@@ -40688,32 +40696,32 @@ CPyL14: ;
     cpy_r_r19 = 1;
     if (unlikely(!cpy_r_r19)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
     cpy_r_r20 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
     if (unlikely(cpy_r_r20 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__13", -1, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
 CPyL17: ;
     cpy_r_r21 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__address;
     if (unlikely(cpy_r_r21 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "address", 131, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
     CPy_INCREF(cpy_r_r21);
 CPyL18: ;
     cpy_r_r22 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__method;
     if (unlikely(cpy_r_r22 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "method", 131, CPyStatic_gather___globals);
-        goto CPyL75;
+        goto CPyL76;
     }
     CPy_INCREF(cpy_r_r22);
 CPyL19: ;
     cpy_r_r23 = PyList_New(1);
     if (unlikely(cpy_r_r23 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL76;
+        goto CPyL77;
     }
     cpy_r_r24 = (CPyPtr)&((PyListObject *)cpy_r_r23)->ob_item;
     cpy_r_r25 = *(CPyPtr *)cpy_r_r24;
@@ -40721,13 +40729,13 @@ CPyL19: ;
     cpy_r_r26 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__block;
     if (unlikely(cpy_r_r26 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "block", 131, CPyStatic_gather___globals);
-        goto CPyL77;
+        goto CPyL78;
     }
     CPy_INCREF(cpy_r_r26);
 CPyL21: ;
     cpy_r_r27 = CPyStatic_gather___Call;
     if (unlikely(cpy_r_r27 == NULL)) {
-        goto CPyL78;
+        goto CPyL79;
     } else
         goto CPyL24;
 CPyL22: ;
@@ -40735,7 +40743,7 @@ CPyL22: ;
     cpy_r_r28 = 0;
     if (unlikely(!cpy_r_r28)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     CPy_Unreachable();
 CPyL24: ;
@@ -40745,7 +40753,7 @@ CPyL24: ;
     cpy_r_r32 = PyObject_Vectorcall(cpy_r_r27, cpy_r_r30, 2, cpy_r_r31);
     if (unlikely(cpy_r_r32 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL79;
+        goto CPyL80;
     }
     CPy_DECREF(cpy_r_r21);
     CPy_DECREF_NO_IMM(cpy_r_r23);
@@ -40754,7 +40762,7 @@ CPyL24: ;
     cpy_r_r33 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__13;
     if (unlikely(cpy_r_r33 == -113)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__13", 131, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     }
 CPyL27: ;
     cpy_r_r34 = cpy_r_r33 + 1;
@@ -40762,7 +40770,7 @@ CPyL27: ;
     cpy_r_r35 = 1;
     if (unlikely(!cpy_r_r35)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL73;
+        goto CPyL74;
     } else
         goto CPyL9;
 CPyL28: ;
@@ -40770,17 +40778,17 @@ CPyL28: ;
     CPy_DECREF_NO_IMM(cpy_r_r8);
     if (unlikely(cpy_r_r36 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     cpy_r_r37 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_generator_attribute__return_exceptions;
     if (unlikely(cpy_r_r37 == 2)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "return_exceptions", 132, CPyStatic_gather___globals);
-        goto CPyL80;
+        goto CPyL81;
     }
 CPyL30: ;
     cpy_r_r38 = CPyStatic_gather___igather;
     if (unlikely(cpy_r_r38 == NULL)) {
-        goto CPyL81;
+        goto CPyL82;
     } else
         goto CPyL33;
 CPyL31: ;
@@ -40788,7 +40796,7 @@ CPyL31: ;
     cpy_r_r39 = 0;
     if (unlikely(!cpy_r_r39)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     CPy_Unreachable();
 CPyL33: ;
@@ -40799,14 +40807,14 @@ CPyL33: ;
     cpy_r_r44 = PyObject_Vectorcall(cpy_r_r38, cpy_r_r42, 1, cpy_r_r43);
     if (unlikely(cpy_r_r44 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL80;
+        goto CPyL81;
     }
     CPy_DECREF(cpy_r_r36);
     cpy_r_r45 = CPy_GetCoro(cpy_r_r44);
     CPy_DECREF(cpy_r_r44);
     if (unlikely(cpy_r_r45 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     if (((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14 != NULL) {
         CPy_DECREF(((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14);
@@ -40815,12 +40823,12 @@ CPyL33: ;
     cpy_r_r46 = 1;
     if (unlikely(!cpy_r_r46)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", -1, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     cpy_r_r47 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14;
     if (unlikely(cpy_r_r47 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__14", -1, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     CPy_INCREF(cpy_r_r47);
 CPyL37: ;
@@ -40830,7 +40838,7 @@ CPyL37: ;
     cpy_r_r49 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r49 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     cpy_r_r50 = cpy_r_r49;
     cpy_r_r51 = NULL;
@@ -40841,7 +40849,7 @@ CPyL37: ;
     cpy_r_r52 = 1;
     if (unlikely(!cpy_r_r52)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL82;
+        goto CPyL83;
     } else
         goto CPyL62;
 CPyL40: ;
@@ -40852,13 +40860,13 @@ CPyL41: ;
 CPyL42: ;
     cpy_r_r55 = (PyObject *)&_Py_NoneStruct;
     cpy_r_r56 = cpy_r_type != cpy_r_r55;
-    if (!cpy_r_r56) goto CPyL83;
+    if (!cpy_r_r56) goto CPyL84;
     CPyErr_SetObjectAndTraceback(cpy_r_type, cpy_r_value, cpy_r_traceback);
     if (unlikely(!0)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
         goto CPyL46;
     } else
-        goto CPyL84;
+        goto CPyL85;
 CPyL44: ;
     CPy_Unreachable();
 CPyL45: ;
@@ -40875,13 +40883,13 @@ CPyL46: ;
     cpy_r_r58 = 1;
     if (unlikely(!cpy_r_r58)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", -1, CPyStatic_gather___globals);
-        goto CPyL85;
+        goto CPyL86;
     }
     cpy_r_r59 = (PyObject **)&cpy_r_r1;
     cpy_r_r60 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14;
     if (unlikely(cpy_r_r60 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__14", -1, CPyStatic_gather___globals);
-        goto CPyL85;
+        goto CPyL86;
     }
     CPy_INCREF(cpy_r_r60);
 CPyL48: ;
@@ -40889,14 +40897,14 @@ CPyL48: ;
     CPy_DecRef(cpy_r_r60);
     if (unlikely(cpy_r_r61 == 2)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL85;
+        goto CPyL86;
     }
     if (cpy_r_r61) goto CPyL52;
     cpy_r_r53 = cpy_r_r1;
     cpy_r_r62 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15;
     if (unlikely(cpy_r_r62.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__15", -1, CPyStatic_gather___globals);
-        goto CPyL86;
+        goto CPyL87;
     }
     CPy_INCREF(cpy_r_r62.f0);
     CPy_INCREF(cpy_r_r62.f1);
@@ -40912,7 +40920,7 @@ CPyL52: ;
     cpy_r_r63 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15;
     if (unlikely(cpy_r_r63.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__15", -1, CPyStatic_gather___globals);
-        goto CPyL87;
+        goto CPyL88;
     }
     CPy_INCREF(cpy_r_r63.f0);
     CPy_INCREF(cpy_r_r63.f1);
@@ -40927,7 +40935,7 @@ CPyL54: ;
     cpy_r_r64 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__15;
     if (unlikely(cpy_r_r64.f0 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__15", -1, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     CPy_INCREF(cpy_r_r64.f0);
     CPy_INCREF(cpy_r_r64.f1);
@@ -40938,13 +40946,13 @@ CPyL55: ;
     CPy_DecRef(cpy_r_r64.f1);
     CPy_DecRef(cpy_r_r64.f2);
     cpy_r_r65 = CPy_KeepPropagating();
-    if (!cpy_r_r65) goto CPyL71;
+    if (!cpy_r_r65) goto CPyL72;
     CPy_Unreachable();
 CPyL57: ;
     cpy_r_r66 = ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_temp__14;
     if (unlikely(cpy_r_r66 == NULL)) {
         CPy_AttributeError("y/utils/gather.py", "_gather_methods_raw", "_gather_methods_raw_gen", "__mypyc_temp__14", -1, CPyStatic_gather___globals);
-        goto CPyL88;
+        goto CPyL89;
     }
     CPy_INCREF(cpy_r_r66);
 CPyL58: ;
@@ -40958,107 +40966,113 @@ CPyL60: ;
     cpy_r_r68 = CPy_FetchStopIterationValue();
     if (unlikely(cpy_r_r68 == NULL)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     cpy_r_r50 = cpy_r_r68;
 CPyL62: ;
+    if (likely(PyList_Check(cpy_r_r50)))
+        cpy_r_r69 = cpy_r_r50;
+    else {
+        CPy_TypeErrorTraceback("y/utils/gather.py", "_gather_methods_raw", 130, CPyStatic_gather___globals, "list", cpy_r_r50);
+        goto CPyL72;
+    }
     ((y___utils___gather____gather_methods_raw_genObject *)cpy_r___mypyc_self__)->___mypyc_next_label__ = -1;
-    if (cpy_r_stop_iter_ptr != NULL) goto CPyL66;
-    CPyGen_SetStopIterationValue(cpy_r_r50);
-    CPy_DECREF(cpy_r_r50);
-    if (!0) goto CPyL71;
+    if (cpy_r_stop_iter_ptr != NULL) goto CPyL67;
+    CPyGen_SetStopIterationValue(cpy_r_r69);
+    CPy_DECREF_NO_IMM(cpy_r_r69);
+    if (!0) goto CPyL72;
     CPy_Unreachable();
-CPyL66: ;
-    *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r50;
-    return 0;
 CPyL67: ;
-    cpy_r_r70 = cpy_r_r2 == 0;
-    if (cpy_r_r70) goto CPyL89;
-    cpy_r_r71 = cpy_r_r2 == 1;
-    if (cpy_r_r71) {
+    *(PyObject * *)cpy_r_stop_iter_ptr = cpy_r_r69;
+    return 0;
+CPyL68: ;
+    cpy_r_r71 = cpy_r_r2 == 0;
+    if (cpy_r_r71) goto CPyL90;
+    cpy_r_r72 = cpy_r_r2 == 1;
+    if (cpy_r_r72) {
         goto CPyL42;
     } else
-        goto CPyL90;
-CPyL69: ;
+        goto CPyL91;
+CPyL70: ;
     PyErr_SetNone(PyExc_StopIteration);
-    cpy_r_r72 = 0;
-    if (unlikely(!cpy_r_r72)) {
+    cpy_r_r73 = 0;
+    if (unlikely(!cpy_r_r73)) {
         CPy_AddTraceback("y/utils/gather.py", "_gather_methods_raw", DIFFCHECK_PLACEHOLDER, CPyStatic_gather___globals);
-        goto CPyL71;
+        goto CPyL72;
     }
     CPy_Unreachable();
-CPyL71: ;
-    cpy_r_r73 = NULL;
-    return cpy_r_r73;
 CPyL72: ;
-    CPy_DecRef(cpy_r_r5);
-    goto CPyL71;
+    cpy_r_r74 = NULL;
+    return cpy_r_r74;
 CPyL73: ;
-    CPy_DecRef(cpy_r_r8);
-    goto CPyL71;
+    CPy_DecRef(cpy_r_r5);
+    goto CPyL72;
 CPyL74: ;
     CPy_DecRef(cpy_r_r8);
-    CPy_DecRef(cpy_r_r15);
-    goto CPyL71;
+    goto CPyL72;
 CPyL75: ;
     CPy_DecRef(cpy_r_r8);
-    CPy_DecRef(cpy_r_r21);
-    goto CPyL71;
+    CPy_DecRef(cpy_r_r15);
+    goto CPyL72;
 CPyL76: ;
     CPy_DecRef(cpy_r_r8);
     CPy_DecRef(cpy_r_r21);
-    CPy_DecRef(cpy_r_r22);
-    goto CPyL71;
+    goto CPyL72;
 CPyL77: ;
     CPy_DecRef(cpy_r_r8);
     CPy_DecRef(cpy_r_r21);
-    CPy_DecRef(cpy_r_r23);
-    goto CPyL71;
+    CPy_DecRef(cpy_r_r22);
+    goto CPyL72;
 CPyL78: ;
     CPy_DecRef(cpy_r_r8);
     CPy_DecRef(cpy_r_r21);
     CPy_DecRef(cpy_r_r23);
-    CPy_DecRef(cpy_r_r26);
-    goto CPyL22;
+    goto CPyL72;
 CPyL79: ;
     CPy_DecRef(cpy_r_r8);
     CPy_DecRef(cpy_r_r21);
     CPy_DecRef(cpy_r_r23);
     CPy_DecRef(cpy_r_r26);
-    goto CPyL71;
+    goto CPyL22;
 CPyL80: ;
-    CPy_DecRef(cpy_r_r36);
-    goto CPyL71;
+    CPy_DecRef(cpy_r_r8);
+    CPy_DecRef(cpy_r_r21);
+    CPy_DecRef(cpy_r_r23);
+    CPy_DecRef(cpy_r_r26);
+    goto CPyL72;
 CPyL81: ;
     CPy_DecRef(cpy_r_r36);
-    goto CPyL31;
+    goto CPyL72;
 CPyL82: ;
-    CPy_DecRef(cpy_r_r50);
-    goto CPyL71;
+    CPy_DecRef(cpy_r_r36);
+    goto CPyL31;
 CPyL83: ;
-    CPy_XDECREF(cpy_r_r1);
-    goto CPyL45;
+    CPy_DecRef(cpy_r_r50);
+    goto CPyL72;
 CPyL84: ;
     CPy_XDECREF(cpy_r_r1);
-    goto CPyL44;
+    goto CPyL45;
 CPyL85: ;
+    CPy_XDECREF(cpy_r_r1);
+    goto CPyL44;
+CPyL86: ;
     CPy_XDecRef(cpy_r_r1);
     goto CPyL54;
-CPyL86: ;
+CPyL87: ;
     CPy_DecRef(cpy_r_r53);
     goto CPyL54;
-CPyL87: ;
+CPyL88: ;
     CPy_DecRef(cpy_r_r50);
     goto CPyL54;
-CPyL88: ;
-    CPy_DecRef(cpy_r_arg);
-    goto CPyL71;
 CPyL89: ;
-    CPy_XDECREF(cpy_r_r1);
-    goto CPyL1;
+    CPy_DecRef(cpy_r_arg);
+    goto CPyL72;
 CPyL90: ;
     CPy_XDECREF(cpy_r_r1);
-    goto CPyL69;
+    goto CPyL1;
+CPyL91: ;
+    CPy_XDECREF(cpy_r_r1);
+    goto CPyL70;
 }
 
 PyObject *CPyDef_gather____gather_methods_raw_gen_____next__(PyObject *cpy_r___mypyc_self__) {
