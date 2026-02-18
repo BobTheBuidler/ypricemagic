@@ -52,6 +52,14 @@ y.prices.stable\_swap.saddle module
    :show-inheritance:
    :undoc-members:
 
+y.prices.stable\_swap.stargate module
+-------------------------------------
+
+.. automodule:: y.prices.stable_swap.stargate
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 Module contents
 ---------------
 
