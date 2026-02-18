@@ -7,6 +7,13 @@ from y.datatypes import Block, UsdPrice
 from y.networks import Network
 from y.prices import magic
 
+# NOTE: This map is for strict 1:1 wrappers where we intentionally price by the
+#       underlying asset. For vbTokens (Agglayer Vault Bridge ERC-4626), we
+#       should ONLY use this path when:
+#       - the token is allowlisted (known vbToken address)
+#       - the vault is solvent within a tight threshold (see spec)
+#       - any failure to verify solvency fails closed (return None / PriceError)
+#       ERC-4626 conversion/totalAssets are estimates, not price oracles.
 MAPPING = {
     Network.Mainnet: {
         "0x4da27a545c0c5B758a6BA100e3a049001de870f5": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",  # stkaave -> aave
@@ -14,6 +21,9 @@ MAPPING = {
         # TODO: algorithmically get gauges
         "0xcF5136C67fA8A375BaBbDf13c0307EF994b5681D": "0x425BfB93370F14fF525aDb6EaEAcfE1f4e3b5802",  # sdai-usdm-gauge -> sdai-usdm
         "0x590f7e2b211Fa5Ff7840Dd3c425B543363797701": "0x5756bbdDC03DaB01a3900F01Fb15641C3bfcc457",  # YFImkUSD-gauge -> YFImkUSD
+        # TODO: vbTokens (Agglayer Vault Bridge ERC-4626) should live here as an
+        # explicit allowlist with their underlying assets. This must only be used
+        # after a solvency guard + implementation verification check passes.
     },
 }.get(chain.id, {})
 
@@ -67,6 +77,9 @@ async def get_price(
     See Also:
         - :func:`y.prices.magic.get_price` for the underlying price fetching logic.
     """
+    # Safety note: for vbTokens, add a solvency guard here before returning the
+    # underlying price. If the guard fails, do NOT fall back to DEX pricing. Also
+    # verify the implementation code hash / address to detect upgrades.
     return await magic.get_price(
         MAPPING[token_address], block=block, skip_cache=skip_cache, sync=False
     )
