@@ -1,72 +1,86 @@
-import a_sync
-from brownie import chain
-from eth_typing import ChecksumAddress
+import asyncio
+from typing import Iterable
 
-from y import ENVIRONMENT_VARIABLES as ENVS
-from y.datatypes import Block, UsdPrice
+from brownie import ZERO_ADDRESS
+
+from y import convert
+from y.datatypes import AnyAddressType, UsdPrice
 from y.networks import Network
 from y.prices import magic
+from y.prices.yearn import YearnInspiredVault
 
-MAPPING = {
-    Network.Mainnet: {
-        "0x4da27a545c0c5B758a6BA100e3a049001de870f5": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",  # stkaave -> aave
-        "0x27D22A7648e955E510a40bDb058333E9190d12D4": "0x0cec1a9154ff802e7934fc916ed7ca50bde6844e",  # ppool -> pool
-        # TODO: algorithmically get gauges
-        "0xcF5136C67fA8A375BaBbDf13c0307EF994b5681D": "0x425BfB93370F14fF525aDb6EaEAcfE1f4e3b5802",  # sdai-usdm-gauge -> sdai-usdm
-        "0x590f7e2b211Fa5Ff7840Dd3c425B543363797701": "0x5756bbdDC03DaB01a3900F01Fb15641C3bfcc457",  # YFImkUSD-gauge -> YFImkUSD
-    },
-}.get(chain.id, {})
+# NOTE: vbTokens rely on vbToken-specific solvency checks, not Yearn share-price helpers.
+
+# Mapping for tokens that should always price 1-to-1 with another token, e.g. 0xB0C7aFf... (Curve.fi yDAI/yUSDC/yUSDT/yTUSD) is 1-to-1 with 0xdF5e0e81... (Curve.fi yDAI/yUSDC/yUSDT/yTUSD).
+MAPPINGS = {}
 
 
-def is_one_to_one_token(token_address: ChecksumAddress) -> bool:
-    """
-    Check if a token address is a one-to-one token.
+async def _build_mappings() -> None:
+    """Builds the MAPPINGS dictionary if it's empty."""
+    if MAPPINGS:
+        return
+    if Network.Mainnet:
+        MAPPINGS.update(
+            {
+                # curve.fi yDAI/yUSDC/yUSDT/yTUSD
+                "0xB0c7aFf0e02e70eCaB0d96c8bbBE93150B1bF0B8": "0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8",  # noqa: E501
+                # curve.fi DAI/USDC/USDT
+                "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490": "0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B",  # noqa: E501
+                # curve.fi DAI/USDC/USDT/sUSD
+                "0xC25a3A3b969415c80451098fa907EC722572917F": "0xA5407eAE9Ba41422680e2e00537571bcC53efBfD",  # noqa: E501
+                # curve.fi DAI/USDC/USDT/sUSD
+                "0xC25a3A3b969415c80451098fa907EC722572917F": "0xA5407eAE9Ba41422680e2e00537571bcC53efBfD",  # noqa: E501
+                # curve.fi DAI/USDC/USDT/sUSD
+                "0xC25a3A3b969415c80451098fa907EC722572917F": "0xA5407eAE9Ba41422680e2e00537571bcC53efBfD",  # noqa: E501
+                # curve.fi DAI/USDC/USDT/sUSD
+                "0xC25a3A3b969415c80451098fa907EC722572917F": "0xA5407eAE9Ba41422680e2e00537571bcC53efBfD",  # noqa: E501
+                # curve.fi DAI/USDC/USDT/sUSD
+                "0xC25a3A3b969415c80451098fa907EC722572917F": "0xA5407eAE9Ba41422680e2e00537571bcC53efBfD",  # noqa: E501
+                # curve.fi DAI/USDC/USDT/sUSD
+                "0xC25a3A3b969415c80451098fa907EC722572917F": "0xA5407eAE9Ba41422680e2e00537571bcC53efBfD",  # noqa: E501
+            }
+        )
 
-    Args:
-        token_address: The address of the token to check.
 
-    Returns:
-        True if the token is a one-to-one token, False otherwise.
-
-    Examples:
-        >>> is_one_to_one_token("0x4da27a545c0c5B758a6BA100e3a049001de870f5")
-        True
-
-        >>> is_one_to_one_token("0x0000000000000000000000000000000000000000")
-        False
-    """
-    return token_address in MAPPING
+async def _one_to_one(
+    token_address: AnyAddressType, block: int | None = None, skip_cache: bool = False
+) -> UsdPrice | None:
+    """Check if token_address should be priced 1-to-1 with another token."""
+    await _build_mappings()
+    if token_address in MAPPINGS:
+        return await magic.get_price(MAPPINGS[token_address], block, skip_cache=skip_cache)
 
 
-@a_sync.a_sync(default="sync")
+async def _dollar(
+    token_address: AnyAddressType, block: int | None = None, skip_cache: bool = False
+) -> UsdPrice | None:
+    """Check if token_address is a stablecoin pegged to the US dollar."""
+    if token_address in convert.STABLECOINS.values():
+        return 1
+
+
+async def _yearn(
+    token_address: AnyAddressType, block: int | None = None, skip_cache: bool = False
+) -> UsdPrice | None:
+    """Check if token_address is a Yearn vault. If so, use Yearn vault pricing."""
+    if Network.Mainnet:
+        return await YearnInspiredVault(token_address, asynchronous=True).price(
+            block, skip_cache=skip_cache, sync=False
+        )
+
+
+one_to_one_checks = (_one_to_one, _dollar, _yearn)
+
+
 async def get_price(
-    token_address: ChecksumAddress,
-    block: Block | None = None,
-    skip_cache: bool = ENVS.SKIP_CACHE,
-) -> UsdPrice:
-    """
-    Get the USD price of a one-to-one token by mapping it to its corresponding token.
-
-    This function supports both synchronous and asynchronous execution.
-
-    Args:
-        token_address: The address of the token to get the price for.
-        block: The block number to get the price at. Defaults to the latest block.
-        skip_cache: Whether to skip the cache when fetching the price. Defaults to the value of `ENVS.SKIP_CACHE`.
-
-    Returns:
-        The USD price of the token.
-
-    Examples:
-        Synchronous usage:
-        >>> get_price("0x4da27a545c0c5B758a6BA100e3a049001de870f5")
-
-        Asynchronous usage:
-        >>> await get_price("0x4da27a545c0c5B758a6BA100e3a049001de870f5", sync=False)
-
-    See Also:
-        - :func:`y.prices.magic.get_price` for the underlying price fetching logic.
-    """
-    return await magic.get_price(
-        MAPPING[token_address], block=block, skip_cache=skip_cache, sync=False
+    token_address: AnyAddressType, block: int | None = None, skip_cache: bool = False
+) -> UsdPrice | None:
+    """Get the price of a token based on one-to-one checks or as a Yearn vault."""
+    check = await asyncio.gather(
+        *(
+            check(token_address, block, skip_cache=skip_cache) for check in one_to_one_checks
+        )
     )
+    for price in check:
+        if price:
+            return price
