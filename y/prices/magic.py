@@ -27,6 +27,7 @@ from y.prices import (
     rkp3r,
     solidex,
     utils,
+    vbtoken,
     yearn,
 )
 from y.prices.dex import *
@@ -340,16 +341,30 @@ async def _get_price(
     logger.debug("fetching price for %s", symbol)
     try:
         price = await _get_price_from_api(token, block, logger)
+        bucket = None
         if price is None:
-            price = await _exit_early_for_known_tokens(
+            price, bucket = await _exit_early_for_known_tokens(
                 token,
                 block=block,
                 ignore_pools=ignore_pools,
                 skip_cache=skip_cache,
                 logger=logger,
             )
+        # NOTE: vbTokens must fail closed on guard failure; never fall back to DEX pricing.
         if price is None:
-            price = await _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
+            if bucket == "pendle lp":
+                logger.warning(
+                    "Pendle Market/LP oracle failed for %s at %s. Falling back to DEX pricing.",
+                    token,
+                    block,
+                )
+                price = await _get_price_from_dexes(
+                    token, block, ignore_pools, skip_cache, logger
+                )
+            elif bucket != "vbtoken":
+                price = await _get_price_from_dexes(
+                    token, block, ignore_pools, skip_cache, logger
+                )
         if price:
             await utils.sense_check(token, block, price)
         else:
@@ -368,7 +383,7 @@ async def _exit_early_for_known_tokens(
     logger: Logger,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
-) -> UsdPrice | None:  # sourcery skip: low-code-quality
+) -> tuple[UsdPrice | None, str | None]:  # sourcery skip: low-code-quality
     """
     Attempt to get the price for known token types without having to fully load everything.
 
@@ -383,7 +398,7 @@ async def _exit_early_for_known_tokens(
         ignore_pools: A tuple of pool addresses to ignore when fetching the price.
 
     Returns:
-        The price of the token if it can be determined early, or None otherwise.
+        A tuple of (price, bucket) if it can be determined early, or (None, bucket).
     """
     bucket = await utils.check_bucket(token_address, sync=False)
 
@@ -458,6 +473,11 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == "mstable feeder pool":
         price = await mstablefeederpool.get_price(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+
+    elif bucket == "vbtoken":
+        price = await vbtoken.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
 
@@ -541,7 +561,7 @@ async def _exit_early_for_known_tokens(
 
     logger.debug("%s -> %s", bucket, price)
 
-    return price
+    return price, bucket
 
 
 async def _get_price_from_api(
