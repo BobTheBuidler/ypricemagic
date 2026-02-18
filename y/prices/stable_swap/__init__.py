@@ -1,4 +1,4 @@
-from y.prices.stable_swap import belt, ellipsis, froyo, mstablefeederpool, saddle
+from y.prices.stable_swap import belt, ellipsis, froyo, mstablefeederpool, saddle, stargate
 from y.prices.stable_swap.curve import curve
 
 __all__ = [
@@ -8,4 +8,5 @@ __all__ = [
     "froyo",
     "mstablefeederpool",
     "saddle",
+    "stargate",
 ]
