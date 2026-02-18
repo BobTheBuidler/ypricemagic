@@ -1,6 +1,6 @@
 import pytest
 
-from tests.fixtures import mutate_address, mutate_contract
+from tests.fixtures import mainnet_only, mutate_address, mutate_contract
 from tests.prices.lending.test_aave import ATOKENS
 from tests.prices.lending.test_compound import CTOKENS
 from tests.prices.test_chainlink import FEEDS
@@ -10,6 +10,8 @@ from tests.test_constants import STABLECOINS
 from y import convert
 from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN
 from y.prices.utils.buckets import check_bucket
+
+STARGATE_LPS = ("0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56",)
 
 # @pytest.mark.parametrize('token',ATOKENS)
 # def test_check_bucket_aave(token):
@@ -56,3 +58,10 @@ async def test_check_bucket_stablecoins(token):
 @pytest.mark.asyncio_cooperative
 async def test_check_bucket_synthetix(token):
     assert await check_bucket(token, sync=False) == "synthetix"
+
+
+@mainnet_only
+@pytest.mark.parametrize("token", STARGATE_LPS)
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_stargate(token):
+    assert await check_bucket(token, sync=False) == "stargate lp"

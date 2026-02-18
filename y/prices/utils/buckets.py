@@ -20,7 +20,7 @@ from y.prices.gearbox import gearbox
 from y.prices.lending import ib
 from y.prices.lending.aave import aave
 from y.prices.lending.compound import compound
-from y.prices.stable_swap import belt, ellipsis, froyo, mstablefeederpool, saddle
+from y.prices.stable_swap import belt, ellipsis, froyo, mstablefeederpool, saddle, stargate
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, reserve, tokensets
@@ -192,6 +192,7 @@ calls_only = {
     "basketdao": basketdao.is_basketdao_index,
     "popsicle": popsicle.is_popsicle_lp,
     "reserve": reserve.is_rtoken,
+    "stargate lp": stargate.is_stargate_lp,
 }
 
 

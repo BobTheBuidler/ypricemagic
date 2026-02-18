@@ -488,6 +488,11 @@ async def _exit_early_for_known_tokens(
     elif bucket == "saddle":
         price = await saddle.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
+    elif bucket == "stargate lp":
+        price = await stargate.get_price(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+
     elif bucket == "solidex":
         price = await solidex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
