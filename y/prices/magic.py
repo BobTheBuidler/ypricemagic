@@ -121,78 +121,244 @@ async def get_price(
             skip_cache=skip_cache,
             silent=silent,
         )
-    except yPriceMagicError as e:
-        if skip_cache:
-            raise
-        if token_address in [
-            ZERO_ADDRESS,
-            constants.EEE_ADDRESS,
-            constants.WRAPPED_GAS_COIN,
-        ]:
-            return await get_price(
-                token_address,
-                block,
-                fail_to_None=fail_to_None,
-                skip_cache=True,
-                ignore_pools=ignore_pools,
-                silent=silent,
-                sync=False,
-            )
-        if getattr(e, "exception", None) == "price return 0":
-            logger = get_price_logger(token_address, block, extra="cache")
-            logger.warning("price return 0 for %s. refreshing cache.", token_address)
-            logger.close()
-            return await get_price(
-                token_address,
-                block,
-                fail_to_None=fail_to_None,
-                skip_cache=True,
-                ignore_pools=ignore_pools,
-                silent=silent,
-                sync=False,
-            )
-        raise
+    except (ContractNotFound, NonStandardERC20, PriceError) as e:
+        symbol = await ERC20(token_address, asynchronous=True).symbol
+        if not fail_to_None:
+            raise_from = None if isinstance(e, PriceError) else e
+            raise yPriceMagicError(e, token_address, block, symbol) from raise_from
 
 
-@a_sync.a_sync(default="sync")
+@overload
 async def get_prices(
-    tokens: Iterable[AnyAddressType],
+    token_addresses: Iterable[AnyAddressType],
+    block: Block | None = None,
+    *,
+    fail_to_None: Literal[True],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> list[UsdPrice | None]: ...
+
+
+@overload
+async def get_prices(
+    token_addresses: Iterable[AnyAddressType],
     block: Block | None = None,
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
-    ignore_pools: tuple[Pool, ...] = (),
-) -> dict[AnyAddressType, UsdPrice | None]:
-    """Get the prices of multiple tokens in USD.
+    silent: bool = False,
+) -> list[UsdPrice]: ...
+
+
+@a_sync.a_sync(default="sync")
+async def get_prices(
+    token_addresses: Iterable[AnyAddressType],
+    block: Block | None = None,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> list[UsdPrice | None]:
+    """
+    Get prices for multiple tokens in USD.
+
+    This function is optimized for parallel execution and should be preferred over
+    :func:`get_price` when querying prices in bulk.
 
     Args:
-        tokens: Iterable of token addresses to price.
-        block (optional): The block number at which to get the prices. If None, uses the latest block.
-        fail_to_None (optional): If True, return None instead of raising a :class:`~yPriceMagicError` on failure. Defaults to False.
-        skip_cache (optional): If True, bypass the cache and fetch the prices directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
-        ignore_pools (optional): A tuple of pool addresses to ignore when fetching the price.
+        token_addresses: An iterable of token addresses to price.
+        block (optional): The block number at which to get the prices. If None, defaults to the latest block.
+        fail_to_None (optional): If True, return None for tokens whose price couldn't be determined. Defaults to False.
+        skip_cache (optional): If True, bypass the cache and fetch prices directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
+        silent (optional): If True, suppress error logging and any progress indicators. Defaults to False.
 
     Returns:
-        A dictionary mapping token addresses to their prices in USD, or None for tokens whose price couldn't be determined and fail_to_None is True.
+        A list of token prices in USD, in the same order as the input :samp:`token_addresses`.
 
-    Note:
-        ypricemagic accepts integers as valid token_address values for convenience.
-        For example, you can use :samp:`y.get_prices([0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e])` to save keystrokes
-        while testing in an interactive console.
+    Examples:
+        >>> from y import get_prices
+        >>> prices = get_prices(["0x123...", "0x456..."], block=12345678)
+        >>> print(prices)
 
     See Also:
-        :func:`get_price`
+        :func:`get_price` and :func:`map_prices`
     """
-    tokens = await convert.to_addresses_async(tokens)
-    block = int(block or await dank_mids.eth.block_number)
-    return await utils.map_prices(
-        tokens,
-        block=block,
-        ignore_pools=ignore_pools,
-        skip_cache=skip_cache,
+    return await map_prices(
+        token_addresses,
+        block or await dank_mids.eth.block_number,
         fail_to_None=fail_to_None,
-        sync=False,
+        skip_cache=skip_cache,
+        silent=silent,
+    ).values(pop=True)
+
+
+@overload
+def map_prices(
+    token_addresses: Iterable[_TAddress],
+    block: Block,
+    *,
+    fail_to_None: Literal[True],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> a_sync.TaskMapping[_TAddress, UsdPrice | None]: ...
+
+
+@overload
+def map_prices(
+    token_addresses: Iterable[_TAddress],
+    block: Block,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> a_sync.TaskMapping[_TAddress, UsdPrice]: ...
+
+
+def map_prices(
+    token_addresses: Iterable[_TAddress],
+    block: Block,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> a_sync.TaskMapping[_TAddress, UsdPrice | None]:
+    """
+    Map token addresses to their prices asynchronously.
+
+    Args:
+        token_addresses: An iterable of token addresses to price.
+        block (optional): The block number at which to get the prices.
+        fail_to_None (optional): If True, map tokens whose price couldn't be determined to None. Defaults to False.
+        skip_cache (optional): If True, bypass the cache and fetch prices directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
+        silent (optional): If True, suppress error logging. Defaults to False.
+
+    Returns:
+        A :class:`~a_sync.TaskMapping` object mapping token addresses to their USD prices.
+
+    Examples:
+        >>> from y import map_prices
+        >>> task_map = map_prices(["0xabc...", "0xdef..."], 12345678)
+        >>> results = await task_map.values(pop=True)
+        >>> print(results)
+        [1.234, 2.345]
+
+    See Also:
+        :func:`get_prices`
+    """
+    return a_sync.map(
+        get_price,
+        token_addresses,
+        block=block,
+        fail_to_None=fail_to_None,
+        skip_cache=skip_cache,
+        silent=silent,
     )
+
+
+def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
+    """
+    A decorator to cache the results of the get_price function.
+
+    Args:
+        get_price: The function to be cached.
+
+    Returns:
+        A wrapped version of the input function with caching functionality.
+    """
+
+    @wraps(get_price)
+    async def cache_wrap(
+        token: ChecksumAddress,
+        block: BlockNumber,
+        *,
+        fail_to_None: bool = False,
+        skip_cache: bool = ENVS.SKIP_CACHE,
+        ignore_pools: tuple[Pool, ...] = (),
+        silent: bool = False,
+    ) -> UsdPrice | None:
+        from y._db.utils import price as db
+
+        if not skip_cache and (price := await db.get_price(token, block)):
+            cache_logger.debug("disk cache -> %s", price)
+            return price
+        price = await get_price(
+            token,
+            block=block,
+            fail_to_None=fail_to_None,
+            ignore_pools=ignore_pools,
+            silent=silent,
+        )
+        if price and not skip_cache:
+            db.set_price(token, block, price)
+        return price
+
+    return cache_wrap
+
+
+@stuck_coro_debugger
+@a_sync.a_sync(default="async", cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
+@__cache
+async def _get_price(
+    token: ChecksumAddress,
+    block: BlockNumber,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    ignore_pools: tuple[Pool, ...] = (),
+    silent: bool = False,
+) -> UsdPrice | None:  # sourcery skip: remove-redundant-if
+    """
+    Internal function to get the price of a token.
+
+    This function implements the core logic for fetching token prices.
+
+    Args:
+        token: The address of the token to price.
+        block: The block number at which to get the price.
+        fail_to_None: If True, return None instead of raising an exception on failure.
+        skip_cache: If True, bypass the cache and fetch the price directly.
+        ignore_pools: A tuple of pool addresses to ignore when fetching the price.
+        silent: If True, suppress error logging.
+
+    Returns:
+        The price of the token in USD, or None if the price couldn't be determined and fail_to_None is True.
+    """
+    if token == ZERO_ADDRESS:
+        logger = get_price_logger(
+            token, block, symbol="[ZERO_ADDRESS]", extra="magic", start_task=True
+        )
+        _fail_appropriately(logger, "[ZERO_ADDRESS]", fail_to_None, silent)
+        return None
+
+    try:
+        # We do this to cache the symbol for later, otherwise some repr woudl break
+        symbol = await ERC20(token, asynchronous=True).symbol
+    except NonStandardERC20:
+        symbol = None
+
+    logger = get_price_logger(token, block, symbol=symbol, extra="magic", start_task=True)
+    logger.debug("fetching price for %s", symbol)
+    try:
+        price = await _get_price_from_api(token, block, logger)
+        if price is None:
+            price = await _exit_early_for_known_tokens(
+                token,
+                block=block,
+                ignore_pools=ignore_pools,
+                skip_cache=skip_cache,
+                logger=logger,
+            )
+        if price is None:
+            price = await _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
+        if price:
+            await utils.sense_check(token, block, price)
+        else:
+            _fail_appropriately(logger, symbol, fail_to_None, silent)
+        logger.debug("%s price: %s", symbol, price)
+        if price:  # checks for the erroneous 0 value we see once in a while
+            return price
+    finally:
+        logger.close()
 
 
 @stuck_coro_debugger

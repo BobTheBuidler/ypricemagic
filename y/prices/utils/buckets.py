@@ -198,35 +198,72 @@ calls_only = {
 
 async def _chainlink_and_band(token_address) -> bool:
     """
-    Check if a token is a chainlink feed + band asset.
+    Check if a token is supported by both Chainlink and Band oracles.
+
+    This function is primarily used for historical data on the Fantom network,
+    where Band was used before Chainlink became available.
 
     Args:
-        token_address: The token address to check.
+        token_address: The address of the token to check.
 
-    Returns:
-        True if the token is a chainlink feed and a band asset, False otherwise.
+    Examples:
+        >>> is_supported = await _chainlink_and_band("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(is_supported)
+        True
+
+    See Also:
+        - :func:`y.prices.chainlink.has_feed`
     """
-    if not band or not chainlink:
-        return False
-    if await band.has_feed(token_address, sync=False):
-        if await chainlink.has_feed(token_address, sync=False):
-            return True
-    return False
+    return (
+        chainlink and await chainlink.has_feed(token_address, sync=False) and token_address in band
+    )
 
 
-async def __log_bucket(token_address: Address, bucket: str | None) -> None:
-    _logger = get_price_logger(token_address, block=None, extra="buckets")
-    _logger.debug("%s is in the %s bucket", token_address, bucket)
+async def _check_bucket_helper(
+    bucket: str, check: Callable[[Address], Awaitable[bool]], address: Address
+) -> tuple[str, bool]:
+    """
+    Asynchronously check if a token belongs to a specified bucket.
+
+    This helper function is designed to be executed concurrently as part of the
+    "calls-only" checks in :func:`check_bucket`. It invokes a callable that returns
+    a boolean indicating whether the token meets the criterion for the specified bucket.
+    If the result is not immediately boolean, it awaits the result further.
+
+    Args:
+        bucket: The name of the bucket to check.
+        check: A callable that checks if the token belongs to the bucket.
+        address: The address of the token to check.
+
+    Examples:
+        >>> async def dummy_check(addr):
+        ...     return addr.startswith("0x")
+        >>> result = await _check_bucket_helper("dummy", dummy_check, "0x123")
+        >>> print(result)
+        ('dummy', True)
+
+    See Also:
+        - :func:`check_bucket`
+    """
+    result = await check(address, sync=False)
+
+    # TODO: debug why we have to re-await sometimes when @optional_async_diskcache is used
+    if not isinstance(result, bool):
+        if not iscoroutine(result):
+            raise TypeError(f"{bucket} result must be boolean. You passed {result}")
+        result = await result
+    if not isinstance(result, bool):
+        # if not iscoroutine(result):
+        raise TypeError(f"{bucket} result must be boolean. You passed {result}")
+        # result = await result
+    return bucket, result
 
 
-async def __log_not_bucket(token_address: Address, bucket: str) -> None:
-    _logger = get_price_logger(token_address, block=None, extra="buckets")
-    _logger.debug("%s is not in the %s bucket", token_address, bucket)
+async def __log_bucket(token, bucket):
+    symbol = await ERC20(token, asynchronous=True).symbol
+    logger._log(DEBUG, "%s %s bucket is %s", (symbol, token, bucket))
 
 
-@a_sync.a_sync
-async def _check_bucket_helper(bucket: str, check: Callable, token_address: Address):
-    is_member = check(token_address)
-    if iscoroutine(is_member):
-        is_member = await is_member
-    return bucket, is_member
+async def __log_not_bucket(token, bucket):
+    symbol = await ERC20(token, asynchronous=True).symbol
+    logger._log(DEBUG, "%s %s bucket is not %s", (symbol, token, bucket))
