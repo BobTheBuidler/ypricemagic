@@ -27,7 +27,6 @@ from y.prices import (
     rkp3r,
     solidex,
     utils,
-    vbtoken,
     yearn,
 )
 from y.prices.dex import *
@@ -270,7 +269,7 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
     @wraps(get_price)
     async def cache_wrap(
         token: ChecksumAddress,
-        block: BlockNumber,
+        block: Block,
         *,
         fail_to_None: bool = False,
         skip_cache: bool = ENVS.SKIP_CACHE,
@@ -350,7 +349,6 @@ async def _get_price(
                 skip_cache=skip_cache,
                 logger=logger,
             )
-        # NOTE: vbTokens must fail closed on guard failure; never fall back to DEX pricing.
         if price is None:
             if bucket == "pendle lp":
                 logger.warning(
@@ -361,7 +359,7 @@ async def _get_price(
                 price = await _get_price_from_dexes(
                     token, block, ignore_pools, skip_cache, logger
                 )
-            elif bucket != "vbtoken":
+            else:
                 price = await _get_price_from_dexes(
                     token, block, ignore_pools, skip_cache, logger
                 )
@@ -473,11 +471,6 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == "mstable feeder pool":
         price = await mstablefeederpool.get_price(
-            token_address, block=block, skip_cache=skip_cache, sync=False
-        )
-
-    elif bucket == "vbtoken":
-        price = await vbtoken.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
 
