@@ -20,7 +20,7 @@ requires = [
 ]
 
 [tool.mypy]
-plugins = ["typed_envs.mypy_plugin"]
+plugins = ["typed_envs.mypy_plugin", "a_sync_mypy_plugin"]
 files = ["."]
 strict = true
 pretty = true
