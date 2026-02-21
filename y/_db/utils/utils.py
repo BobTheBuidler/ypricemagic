@@ -1,20 +1,19 @@
+from collections.abc import Callable
 from datetime import datetime, timezone
 from functools import lru_cache
 from logging import getLogger
-from typing import Callable
 
 from a_sync import ProcessingQueue, a_sync
 from brownie import chain
 from dateutil import parser
 from eth_typing import BlockNumber
-from pony.orm import TransactionIntegrityError, commit, select
+from pony.orm import TransactionIntegrityError, commit
 
 from y._db.common import make_executor
 from y._db.decorators import (
     a_sync_read_db_session,
     db_session_cached,
     db_session_retry_locked,
-    log_result_count,
 )
 from y._db.entities import Block, BlockAtTimestamp, Chain, insert
 
@@ -35,6 +34,7 @@ def _import_get_get_block() -> None:
     # this helper resolves a goofy interplay between ypricemagic and eth-portfolio
     global _get_get_block
     import y._db.utils._ep
+
     _get_get_block = y._db.utils._ep._get_get_block
     return _get_get_block
 
