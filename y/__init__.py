@@ -29,7 +29,9 @@ if not network.is_connected():
     network.connect(os.environ["BROWNIE_NETWORK_ID"])
 
 # for backwards-compatability
-from dank_mids import dank_web3 as dank_w3
+from y._dank_import_guard import import_dank_w3
+
+dank_w3 = import_dank_w3()
 
 from y import convert, exceptions, monkey_patches, time
 from y.classes.common import ERC20
