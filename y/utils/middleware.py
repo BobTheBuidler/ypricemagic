@@ -7,7 +7,11 @@ from brownie import chain, web3
 from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider, Web3
-from web3.middleware.geth_poa import geth_poa_middleware
+
+try:
+    from web3.middleware.geth_poa import geth_poa_middleware as _poa_middleware
+except ImportError:
+    from web3.middleware import ExtraDataToPOAMiddleware as _poa_middleware
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.networks import Network
@@ -167,9 +171,10 @@ def setup_geth_poa_middleware() -> None:
 
     See Also:
         - :func:`web3.middleware.geth_poa.geth_poa_middleware`
+        - :class:`web3.middleware.ExtraDataToPOAMiddleware`
     """
     try:
-        web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+        web3.middleware_onion.inject(_poa_middleware, layer=0)
     except ValueError as e:
         if str(e) != "You can't add the same un-named instance twice":
             raise
