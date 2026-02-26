@@ -7,11 +7,8 @@ from brownie import chain, web3
 from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider, Web3
-
-try:
-    from web3.middleware.geth_poa import geth_poa_middleware as _poa_middleware
-except ImportError:
-    from web3.middleware import ExtraDataToPOAMiddleware as _poa_middleware
+from web3.middleware import ExtraDataToPOAMiddleware as _poa_middleware
+from web3.middleware.base import Web3Middleware
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.networks import Network
@@ -85,49 +82,47 @@ def should_cache(method: str, params: Any) -> bool:
     return method == "eth_getCode" and params[1] == "latest"
 
 
-def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
+class GetCodeCacheMiddleware(Web3Middleware):
     """
-    Middleware for caching eth_getCode calls.
+    web3 v7 middleware for caching eth_getCode calls.
+    """
+
+    def wrap_make_request(self, make_request: Callable) -> Callable:
+        @memory.cache
+        def make_request_cached(method: str, params: Any) -> Any:
+            return make_request(method, params)
+
+        if logger.isEnabledFor(DEBUG):
+
+            @eth_retry.auto_retry
+            def middleware(method: str, params: Any) -> Any:
+                logger._log(DEBUG, "%s %s", (method, params))
+                if should_cache(method, params):
+                    return make_request_cached(method, params)
+                return make_request(method, params)
+
+        else:
+
+            @eth_retry.auto_retry
+            def middleware(method: str, params: Any) -> Any:
+                if should_cache(method, params):
+                    return make_request_cached(method, params)
+                return make_request(method, params)
+
+        return middleware
+
+
+def getcode_cache_middleware(w3: Web3) -> GetCodeCacheMiddleware:
+    """
+    Build the getCode cache middleware in web3 v7 middleware-builder format.
 
     Args:
-        make_request: The original request function.
-        web3: The Web3 instance.
+        w3: The Web3 instance.
 
     Returns:
-        A middleware function that caches eth_getCode calls.
-
-    Examples:
-        >>> from web3 import Web3
-        >>> w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
-        >>> middleware = getcode_cache_middleware(w3.manager.request_blocking, w3)
-        >>> w3.middleware_onion.add(middleware)
-
-    See Also:
-        - :func:`should_cache`
+        A configured web3 middleware instance.
     """
-
-    @memory.cache
-    def make_request_cached(method: str, params: Any) -> Any:
-        return make_request(method, params)
-
-    if logger.isEnabledFor(DEBUG):
-
-        @eth_retry.auto_retry
-        def middleware(method: str, params: Any) -> Any:
-            logger._log(DEBUG, "%s %s", (method, params))
-            if should_cache(method, params):
-                return make_request_cached(method, params)
-            return make_request(method, params)
-
-    else:
-
-        @eth_retry.auto_retry
-        def middleware(method: str, params: Any) -> Any:
-            if should_cache(method, params):
-                return make_request_cached(method, params)
-            return make_request(method, params)
-
-    return middleware
+    return GetCodeCacheMiddleware(w3)
 
 
 def setup_getcode_cache_middleware() -> None:
@@ -170,7 +165,6 @@ def setup_geth_poa_middleware() -> None:
         >>> setup_geth_poa_middleware()
 
     See Also:
-        - :func:`web3.middleware.geth_poa.geth_poa_middleware`
         - :class:`web3.middleware.ExtraDataToPOAMiddleware`
     """
     try:
