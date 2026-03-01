@@ -1,0 +1,32 @@
+commands:
+  install: .venv/bin/python -m pip install -e . -r requirements-dev.txt && .venv/bin/python -m pip install "setuptools<82" click
+  test: >-
+    cd /Users/bryan/code/ypricemagic &&
+    ETHERSCAN_TOKEN=$(grep ETHERSCAN_TOKEN .env 2>/dev/null | cut -d= -f2) 
+    BROWNIE_NETWORK=mainnet
+    TYPEDENVS_SHUTUP=1
+    .venv/bin/python -c "
+    import concurrent.futures.process as cfp;
+    _orig = cfp._SafeQueue.__init__;
+    cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw);
+    import sys; sys.exit(__import__('pytest').main([
+      'tests/', '-x', '-p', 'no:pytest_ethereum', '-W', 'ignore', '-s',
+      '--asyncio-task-timeout', '7200'
+    ]))
+    "
+  test-single: >-
+    cd /Users/bryan/code/ypricemagic &&
+    ETHERSCAN_TOKEN=$(grep ETHERSCAN_TOKEN .env 2>/dev/null | cut -d= -f2)
+    BROWNIE_NETWORK=mainnet
+    TYPEDENVS_SHUTUP=1
+    .venv/bin/python -c "
+    import concurrent.futures.process as cfp;
+    _orig = cfp._SafeQueue.__init__;
+    cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw);
+    import sys; sys.exit(__import__('pytest').main(sys.argv[1:]))
+    "
+  typecheck: .venv/bin/python -m mypy y/
+  format-check: .venv/bin/python -m black --check .
+  format: .venv/bin/python -m black .
+
+services: {}
