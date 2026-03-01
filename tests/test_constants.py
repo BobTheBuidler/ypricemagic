@@ -1,7 +1,9 @@
 import pytest
+from eth_utils import is_checksum_address
 
 from tests.fixtures import blocks_for_contract
-from y.constants import STABLECOINS
+from y.constants import ROUTING_TOKENS, STABLECOINS, usdc, weth
+from y.networks import Network
 from y.prices import magic
 
 
@@ -25,3 +27,20 @@ def test_stablecoins(token):
     for block in blocks_for_contract(token, 20):
         # NOTE Placeholder.
         assert magic.get_price(token, block, skip_cache=True) == 1, "Stablecoin price not $1"
+
+
+def test_routing_tokens_shape():
+    expected = {
+        Network.Mainnet: 4,
+        Network.Arbitrum: 3,
+        Network.Optimism: 3,
+        Network.Base: 3,
+    }
+
+    assert set(expected).issubset(ROUTING_TOKENS)
+    assert ROUTING_TOKENS[Network.Mainnet][:2] == [weth.address, usdc.address]
+
+    for chain_id, expected_len in expected.items():
+        tokens = ROUTING_TOKENS[chain_id]
+        assert len(tokens) == expected_len
+        assert all(is_checksum_address(address) for address in tokens)
