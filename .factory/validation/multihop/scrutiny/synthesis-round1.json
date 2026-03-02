@@ -1,0 +1,47 @@
+{
+  "milestone": "multihop",
+  "round": 1,
+  "status": "fail",
+  "validatorsRun": {
+    "test": {
+      "passed": true,
+      "command": "BROWNIE_NETWORK=mainnet TYPEDENVS_SHUTUP=1 .venv/bin/python -c \"import concurrent.futures.process as cfp; ...; pytest tests/test_constants.py -x -p no:pytest_ethereum -W ignore --timeout 120\"",
+      "exitCode": 0,
+      "notes": "6/6 passed. A UnicodeDecodeError in brownie's teardown phase is pre-existing and unrelated to mission changes."
+    },
+    "typecheck": {
+      "passed": false,
+      "command": ".venv/bin/python -m mypy --follow-imports=skip --disable-error-code unused-ignore y/",
+      "exitCode": 1,
+      "notes": "1132 errors in 83 files. Pre-existing baseline: 69 errors in v2.py before mission, 71 after (2 new errors from new methods following same patterns as existing code). v3.py (28 errors) and uniswap.py (7 errors) unchanged. y/constants.py passes clean. Failures are pre-existing technical debt in this codebase."
+    },
+    "lint": {
+      "passed": false,
+      "command": ".venv/bin/python -m black --check .",
+      "exitCode": 1,
+      "notes": "7 files need reformatting. 6 were pre-existing before the mission. tests/prices/dex/test_v2_multipool.py is new (added by mission) and needs black formatting."
+    }
+  },
+  "reviewsSummary": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1,
+    "failedFeatures": ["v2-multipool-candidates"]
+  },
+  "blockingIssues": [
+    {
+      "featureId": "v2-multipool-candidates",
+      "severity": "blocking",
+      "description": "top_pools() is an async generator wrapped by ASyncGeneratorFunction (via ASyncMeta metaclass), which does NOT accept a `sync` keyword argument. The call `self.top_pools(..., sync=False)` on y/prices/dex/uniswap/v2.py:992 will raise `TypeError: UniswapRouterV2.top_pools() got an unexpected keyword argument 'sync'` at runtime. This breaks the entire multi-pool routing feature for any token that doesn't have a direct stable pool. Same bug exists in two test calls (tests/prices/dex/test_v2_multipool.py:56,81). Fix: remove `sync=False` from all top_pools() calls in both files.",
+      "suggestedFix": "Remove `sync=False` from the top_pools() call in y/prices/dex/uniswap/v2.py:992 and from test calls at tests/prices/dex/test_v2_multipool.py:56,81. The async generator does not support the sync kwarg; it already returns an async iterator. Also run `black tests/prices/dex/test_v2_multipool.py` to fix formatting."
+    }
+  ],
+  "appliedUpdates": [
+    {
+      "target": "library",
+      "description": "Added 'a_sync: Methods vs Async Generators' section to .factory/library/architecture.md documenting that ASyncGeneratorFunction-wrapped async generators do NOT support the sync kwarg, unlike @a_sync.a_sync-decorated methods. Includes code example showing correct vs incorrect usage.",
+      "sourceFeature": "v2-multipool-candidates"
+    }
+  ],
+  "previousRound": null
+}

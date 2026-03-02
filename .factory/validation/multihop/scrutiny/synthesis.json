@@ -1,136 +1,73 @@
 {
   "milestone": "multihop",
-  "round": 1,
-  "status": "fail",
+  "round": 2,
+  "status": "pass",
   "validatorsRun": {
     "test": {
       "passed": true,
       "command": "BROWNIE_NETWORK=mainnet TYPEDENVS_SHUTUP=1 .venv/bin/python -c \"import concurrent.futures.process as cfp; ...; pytest tests/test_constants.py -x -p no:pytest_ethereum -W ignore --timeout 120\"",
       "exitCode": 0,
-      "notes": "6/6 passed. A UnicodeDecodeError in brownie's teardown phase is pre-existing and unrelated to mission changes."
+      "notes": "6/6 passed. UnicodeDecodeError in brownie's teardown phase is pre-existing and unrelated to mission changes."
     },
     "typecheck": {
       "passed": false,
       "command": ".venv/bin/python -m mypy --follow-imports=skip --disable-error-code unused-ignore y/",
       "exitCode": 1,
-      "notes": "1132 errors in 83 files. Pre-existing baseline: 69 errors in v2.py before mission, 71 after (2 new errors from new methods following same patterns as existing code). v3.py (28 errors) and uniswap.py (7 errors) unchanged. y/constants.py passes clean. Failures are pre-existing technical debt in this codebase."
+      "notes": "100 errors across v2.py and v3.py — all pre-existing technical debt. No new errors introduced by mission changes. Mission-specific additions (ROUTING_TOKENS in constants.py, new methods following existing patterns) follow the same type-annotation patterns as surrounding code."
     },
     "lint": {
       "passed": false,
       "command": ".venv/bin/python -m black --check .",
       "exitCode": 1,
-      "notes": "7 files need reformatting. 6 were pre-existing before the mission. tests/prices/dex/test_v2_multipool.py is new (added by mission) and needs black formatting."
+      "notes": "6 files need reformatting (setup.py, y/_db/utils/utils.py, y/prices/utils/sense_check.py, y/prices/utils/ypriceapi.py, y/utils/raw_calls.py, y/contracts.py) — all pre-existing before the mission. Mission-added tests/prices/dex/test_v2_multipool.py now passes black --check (fixed in fix-multihop-scrutiny-findings)."
     }
   },
   "reviewsSummary": {
-    "total": 4,
-    "passed": 3,
-    "failed": 1,
-    "failedFeatures": ["v2-multipool-candidates"]
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "failedFeatures": [],
+    "notes": "Round 2 only reviewed fix-multihop-scrutiny-findings (the fix for v2-multipool-candidates which failed in round 1). All round 1 reviews are carried forward: routing-tokens-constants (pass), v3-amount-aware-liquidity (pass), v3-multihop-expansion (pass). Fix review passed."
   },
-  "blockingIssues": [
-    {
-      "featureId": "v2-multipool-candidates",
-      "severity": "blocking",
-      "description": "top_pools() is an async generator wrapped by ASyncGeneratorFunction (via ASyncMeta metaclass), which does NOT accept a `sync` keyword argument. The call `self.top_pools(..., sync=False)` on y/prices/dex/uniswap/v2.py:992 will raise `TypeError: UniswapRouterV2.top_pools() got an unexpected keyword argument 'sync'` at runtime. This breaks the entire multi-pool routing feature for any token that doesn't have a direct stable pool. Same bug exists in two test calls (tests/prices/dex/test_v2_multipool.py:56,81). Fix: remove `sync=False` from all top_pools() calls in both files.",
-      "suggestedFix": "Remove `sync=False` from the top_pools() call in y/prices/dex/uniswap/v2.py:992 and from test calls at tests/prices/dex/test_v2_multipool.py:56,81. The async generator does not support the sync kwarg; it already returns an async iterator. Also run `black tests/prices/dex/test_v2_multipool.py` to fix formatting."
-    }
-  ],
-  "nonBlockingIssues": [
-    {
-      "featureId": "routing-tokens-constants",
-      "severity": "non_blocking",
-      "description": "Mainnet ROUTING_TOKENS entry uses runtime weth.address/usdc.address (chain-sensitive). Safe in practice since only ROUTING_TOKENS.get(CHAINID, []) is accessed, but semantically incorrect for non-mainnet chains."
-    },
-    {
-      "featureId": "routing-tokens-constants",
-      "severity": "non_blocking",
-      "description": "L2 addresses in ROUTING_TOKENS intentionally differ from existing bridged contract objects (native tokens chosen for better liquidity). No documentation of this divergence exists for future maintainers."
-    },
-    {
-      "featureId": "v3-amount-aware-liquidity",
-      "severity": "non_blocking",
-      "description": "UniswapRouterV2.check_liquidity uses mutable default `ignore_pools=[]` (line 1032). Pre-existing antipattern, not introduced by this commit."
-    },
-    {
-      "featureId": "v3-amount-aware-liquidity",
-      "severity": "non_blocking",
-      "description": "The `_ = amount` idiom in V2 check_liquidity (line 915) is unconventional. A comment like `# amount unused in V2` would be clearer."
-    },
-    {
-      "featureId": "v3-multihop-expansion",
-      "severity": "non_blocking",
-      "description": "USDC is included in ROUTING_TOKENS, so 16 wasteful TOKEN→USDC→USDC paths are generated per call (USDC as both intermediary and destination). Fix: skip routing_token == usdc.address alongside existing self-loop check."
-    },
-    {
-      "featureId": "v3-multihop-expansion",
-      "severity": "non_blocking",
-      "description": "Missing integration test for the core feature value: token with USDT V3 pool but no USDC/WETH pool returning valid price. Mission AGENTS.md documents SIX token (0x61C6eBf443AD613c9648762585B3cFD3BA1F3fA8) at block 18000000 as a suitable test case."
-    },
-    {
-      "featureId": "v3-multihop-expansion",
-      "severity": "non_blocking",
-      "description": "Path count grew from 8 to 68 per call on mainnet (8.5× more RPC calls). Acceptable given igather parallelism, but the 16 wasteful USDC→USDC paths exacerbate this."
-    },
-    {
-      "featureId": "v2-multipool-candidates",
-      "severity": "non_blocking",
-      "description": "black formatting fails on tests/prices/dex/test_v2_multipool.py. Run: black tests/prices/dex/test_v2_multipool.py"
-    },
-    {
-      "featureId": "v2-multipool-candidates",
-      "severity": "non_blocking",
-      "description": "top_pools() on non-mainnet chains (where _supports_factory_helper is True) delegates to deepest_pool_for() which returns only a single pool, effectively disabling multi-pool feature on those chains."
-    }
-  ],
-  "appliedUpdates": [
-    {
-      "target": "library",
-      "description": "Added 'a_sync: Methods vs Async Generators' section to .factory/library/architecture.md documenting that ASyncGeneratorFunction-wrapped async generators do NOT support the sync kwarg, unlike @a_sync.a_sync-decorated methods. Includes code example showing correct vs incorrect usage.",
-      "sourceFeature": "v2-multipool-candidates"
-    }
-  ],
+  "blockingIssues": [],
+  "appliedUpdates": [],
   "suggestedGuidanceUpdates": [
     {
       "target": "AGENTS.md",
       "suggestion": "Add a coding convention: 'When calling async generators on ASyncGenericBase subclasses, do NOT pass sync=True/False — only @a_sync.a_sync-decorated methods support that kwarg. Use `async for item in self.method()` directly.'",
-      "evidence": "v2-multipool-candidates feature had a blocking runtime bug (TypeError) from passing sync=False to an async generator (top_pools). The architecture.md library note has been added, but a worker-facing rule in AGENTS.md would prevent recurrence.",
+      "evidence": "v2-multipool-candidates had a blocking runtime bug (TypeError) from passing sync=False to an async generator (top_pools). The fix-multihop-scrutiny-findings worker correctly fixed this, and architecture.md library note has been added. A worker-facing rule in AGENTS.md would prevent recurrence. Same observation carried from round 1 synthesis — still not actioned.",
       "isSystemic": false
     },
     {
       "target": "AGENTS.md",
       "suggestion": "Add a note about the intentional divergence between ROUTING_TOKENS L2 addresses and the existing bridged contract objects: 'ROUTING_TOKENS uses native token addresses for L2 chains, not the existing bridged usdc/usdt Contract objects, because native tokens have deeper liquidity.'",
-      "evidence": "routing-tokens-constants review flagged this divergence as undocumented, which could confuse future maintainers.",
+      "evidence": "routing-tokens-constants review flagged this divergence as undocumented, which could confuse future maintainers. Carried from round 1.",
       "isSystemic": false
     },
     {
       "target": "skill",
       "suggestion": "In python-lib-worker skill's 'Finding Test Tokens' section, add: 'Check mission AGENTS.md for a pre-documented test tokens table BEFORE searching on-chain.' v3-multihop-expansion worker used MIC (which failed) instead of the SIX token documented in mission AGENTS.md.",
-      "evidence": "Both v3-multihop-expansion and v2-multipool-candidates reviewers noted that the mission AGENTS.md 'Useful Test Tokens' section was underutilized.",
+      "evidence": "Both v3-multihop-expansion and v2-multipool-candidates reviewers noted that the mission AGENTS.md 'Useful Test Tokens' section was underutilized. Carried from round 1.",
       "isSystemic": true
     },
     {
       "target": "skill",
       "suggestion": "In python-lib-worker skill, add a note about the async generator sync kwarg limitation as a common pitfall: 'Before calling any method with sync=False, verify it is decorated with @a_sync.a_sync (not a plain async generator). Async generators on ASyncGenericBase get ASyncGeneratorFunction wrapping which does not support sync kwarg.'",
-      "evidence": "v2-multipool-candidates blocking bug caused by this exact mistake.",
+      "evidence": "v2-multipool-candidates blocking bug caused by this exact mistake. Round 2 fix-multihop-scrutiny-findings reviewer also noted this convention gap still exists in AGENTS.md.",
       "isSystemic": false
     },
     {
       "target": "services.yaml",
       "suggestion": "Add a `test-slow` command that appends --runslow to the test-full command. The --runslow pytest option added in conftest.py is not exposed in services.yaml, making it hard for workers to discover how to run slow V3 integration tests.",
-      "evidence": "v3-amount-aware-liquidity reviewer noted that @pytest.mark.slow tests are skipped by default and --runslow is undocumented in services.yaml.",
+      "evidence": "v3-amount-aware-liquidity reviewer noted that @pytest.mark.slow tests are skipped by default and --runslow is undocumented in services.yaml. Carried from round 1.",
       "isSystemic": false
     }
   ],
   "rejectedObservations": [
     {
-      "observation": "AGENTS.md already documents scoped mypy workaround (--follow-imports=skip)",
-      "reason": "already-documented — confirmed in AGENTS.md 'Scoped Validation Commands' section"
-    },
-    {
-      "observation": "AGENTS.md already documents that V3 integration tests should be marked @pytest.mark.slow",
-      "reason": "already-documented — confirmed in AGENTS.md"
+      "observation": "v3.py USDC skip uses string comparison instead of Address-type comparison",
+      "reason": "non-blocking style note — consistent with pre-existing patterns in surrounding code, no functional impact"
     }
   ],
-  "previousRound": null
+  "previousRound": ".factory/validation/multihop/scrutiny/synthesis-round1.json"
 }

@@ -1,0 +1,28 @@
+{
+  "featureId": "fix-multihop-scrutiny-findings",
+  "reviewedAt": "2026-03-02T06:25:00.000Z",
+  "commitId": "e3b3992",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "All three requested fixes were correctly implemented. (1) The blocking bug — sync=False on the async generator top_pools() — was removed from v2.py:991 and from test_v2_multipool.py at the two async-for comprehensions (previously lines 56 and 81). The remaining sync=False usages in the test file (lines 74, 100, 126, 160, 174, 194, 199) are all on @a_sync-decorated methods (deepest_pool, get_price, get_path_to_stables), not async generators, and are correct. (2) The V3 USDC→USDC redundant path skip was added at v3.py:548-549, correctly placed after the existing self-loop check. This prevents wasteful TOKEN→USDC→USDC multi-hop paths while preserving all other valid multi-hop paths (e.g., TOKEN→WETH→USDC, TOKEN→USDT→USDC). Direct TOKEN→USDC paths are unaffected since they're built separately above. (3) Black formatting was applied to the test file (trailing whitespace fixed at line 157). No new issues were introduced.",
+    "issues": [
+      {
+        "file": "y/prices/dex/uniswap/v3.py",
+        "line": 548,
+        "severity": "non_blocking",
+        "description": "Minor: The USDC skip uses string comparison `str(routing_token).lower() == str(usdc.address).lower()`. This is consistent with the self-loop check on the line above, but both comparisons could be more efficient using Address-type comparison if the addresses were normalized. This is a pre-existing style choice, not introduced by this fix, and doesn't affect correctness."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "The mission AGENTS.md documents the async pattern convention ('Use @a_sync.a_sync(default=\"sync\") for new public functions') but does not explicitly document the critical distinction: @a_sync-decorated methods accept sync=True/False, but plain async generators on ASyncGenericBase (wrapped by ASyncGeneratorFunction via ASyncMeta) do NOT support the sync kwarg. This distinction caused the original blocking bug and was noted in the prior review. The fix worker correctly identified and fixed this, but the convention gap still exists in AGENTS.md.",
+      "evidence": "Prior review v2-multipool-candidates.json sharedStateObservations already flagged this. The fix worker did not update AGENTS.md (not in scope). The original v2-multipool-candidates worker passed sync=False to top_pools() because the pattern is pervasive in the codebase for @a_sync methods (99 occurrences of sync=False in v2.py alone)."
+    }
+  ],
+  "addressesFailureFrom": "/Users/bryan/code/ypricemagic/.factory/validation/multihop/scrutiny/reviews/v2-multipool-candidates.json",
+  "summary": "PASS: The fix correctly addresses all three issues identified in the prior v2-multipool-candidates review. The blocking bug (sync=False on async generator top_pools()) is fully resolved in both production code (v2.py:991) and tests (test_v2_multipool.py). The V3 USDC redundant path optimization is correctly scoped — it eliminates wasteful TOKEN→USDC→USDC paths without affecting valid multi-hop routing. Black formatting is clean. Verification commands (black --check, scoped mypy, baseline tests) all passed per the handoff. The worker followed a methodical approach: read the files, understood each issue, applied minimal targeted fixes, and verified. No new issues introduced."
+}
