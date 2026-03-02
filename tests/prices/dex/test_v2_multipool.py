@@ -53,7 +53,7 @@ async def test_v2_top_pools_returns_multiple(uniswap_v2_router) -> None:
     pools = [
         pool
         async for pool in uniswap_v2_router.top_pools(
-            WETH, BLOCK, n=MAX_CANDIDATE_POOLS, _ignore_pools=(), sync=False
+            WETH, BLOCK, n=MAX_CANDIDATE_POOLS, _ignore_pools=()
         )
     ]
 
@@ -77,9 +77,7 @@ async def test_v2_top_pools_respects_ignore_pools(uniswap_v2_router) -> None:
     # Now get top pools with the deepest pool ignored
     pools = [
         pool
-        async for pool in uniswap_v2_router.top_pools(
-            USDC, BLOCK, n=5, _ignore_pools=(deepest,), sync=False
-        )
+        async for pool in uniswap_v2_router.top_pools(USDC, BLOCK, n=5, _ignore_pools=(deepest,))
     ]
 
     # The ignored pool should not be in the results
@@ -154,7 +152,7 @@ async def test_v2_cant_find_swap_path_after_all_candidates() -> None:
     # Use a token that has no path to stables via V2
     # We'll use an address that has no V2 pools deployed
     from y.constants import EEE_ADDRESS
-    
+
     # The EEE_ADDRESS is a special placeholder that has no V2 pools
     invalid_token = EEE_ADDRESS
 

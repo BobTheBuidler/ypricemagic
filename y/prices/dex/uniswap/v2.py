@@ -989,7 +989,7 @@ class UniswapRouterV2(ContractBase):
         last_error = None
 
         async for candidate_pool in self.top_pools(
-            token_address, block, n=MAX_CANDIDATE_POOLS, _ignore_pools=_ignore_pools, sync=False
+            token_address, block, n=MAX_CANDIDATE_POOLS, _ignore_pools=_ignore_pools
         ):
             candidates_tried += 1
             paired_with = await candidate_pool.get_token_out(token_address, sync=False)

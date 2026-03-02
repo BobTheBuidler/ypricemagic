@@ -548,6 +548,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
             # Skip self-loop paths where token == routing_token
             if str(routing_token).lower() == token_str:
                 continue
+            # Skip redundant paths where routing_token is USDC (TOKEN→USDC→USDC is wasteful)
+            if str(routing_token).lower() == str(usdc.address).lower():
+                continue
             # Generate paths through this routing token
             # Try multiple fee tiers for both hops to maximize coverage
             for fee in self.fee_tiers:
