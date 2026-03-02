@@ -1,0 +1,41 @@
+{
+  "featureId": "v3-amount-aware-liquidity",
+  "milestone": "multihop",
+  "workerSession": "9cf19c5e-5b48-486f-a69f-2b96da3db808",
+  "status": "pass",
+  "issues": [
+    {
+      "severity": "non_blocking",
+      "description": "UniswapRouterV2.check_liquidity uses a mutable default `ignore_pools=[]` (line 1032). This is a well-known Python antipattern where the list is shared across all calls. V1 and V3 correctly use `tuple[Pool, ...] = ()`. Pre-existing issue, not introduced by this commit, but worth noting since this method was touched.",
+      "location": "y/prices/dex/uniswap/v2.py:1032"
+    },
+    {
+      "severity": "non_blocking",
+      "description": "The `_ = amount` idiom in V2's check_liquidity (line 915) suppresses unused-variable warnings but is unconventional. A comment like `# amount unused in V2` would be clearer, or simply omitting the assignment since the parameter is already documented as unused via its presence in the signature.",
+      "location": "y/prices/dex/uniswap/v2.py:915"
+    },
+    {
+      "severity": "suggestion",
+      "description": "The tests are all marked @pytest.mark.slow and skipped by default (require --runslow). While this is appropriate given V3 pool discovery latency, it means CI won't exercise these tests unless --runslow is explicitly added. Consider adding a CI job or a note in services.yaml for slow test execution.",
+      "location": "tests/prices/dex/test_v3_liquidity.py"
+    }
+  ],
+  "sharedStateObservations": [
+    {
+      "target": "services.yaml",
+      "observation": "The --runslow pytest option (added in conftest.py) is not documented in any services.yaml test command. Workers needing to run slow V3 integration tests would need to discover this flag themselves. Consider adding a `test-slow` command like: `test-full` but with `--runslow` appended.",
+      "action": "recommend"
+    },
+    {
+      "target": "AGENTS.md",
+      "observation": "AGENTS.md already documents that V3 integration tests should be marked @pytest.mark.slow and run with --runslow, with a 600s+ timeout. This is accurate and matches the implementation. No gap here.",
+      "action": "reject"
+    },
+    {
+      "target": "library",
+      "observation": "The amount-aware liquidity pattern (passing amount through check_liquidity to bypass thresholds) is a new cross-cutting concern that touches magic.py -> uniswap.py -> v3.py -> v2.py -> v1.py. A brief note in architecture.md about this flow would help future workers understand the amount threading pattern.",
+      "action": "recommend"
+    }
+  ],
+  "summary": "Clean, well-structured implementation. The `amount` parameter correctly flows from `get_price()` through `_get_price_from_dexes()` → `UniswapMultiplexer.get_price()` → `routers_by_depth()` → `UniswapV3.check_liquidity()`. The 10 ETH WETH threshold is preserved for unit-price queries (amount=None) while amount-aware queries bypass it when token-side liquidity covers the user's amount. V1 and V2 accept but ignore the parameter for interface compatibility. The disk cache in magic.py correctly skips caching for amount-aware queries. All three expectedBehavior items (VAL-LIQ-001, VAL-LIQ-002, VAL-LIQ-003) are covered by the tests. No blocking issues found."
+}

@@ -44,3 +44,20 @@ y.get_price(token, block)
 - All pricing functions use `a_sync` decorator for dual sync/async support
 - `igather` used for parallel RPC calls
 - `stuck_coro_debugger` decorator for long-running calls (must be preserved)
+
+## a_sync: Methods vs Async Generators
+
+**Critical distinction:** `@a_sync.a_sync`-decorated methods accept `sync=True`/`sync=False` keyword arguments. Plain async generator methods on `ASyncGenericBase` subclasses are wrapped by `ASyncGeneratorFunction` via the `ASyncMeta` metaclass — this wrapper does **NOT** support the `sync` keyword argument.
+
+```python
+# This works — @a_sync.a_sync method, supports sync kwarg
+price = await self.get_price(token, block, sync=False)
+
+# This raises TypeError — async generator, ASyncGeneratorFunction does NOT support sync kwarg
+async for pool in self.top_pools(token, block, sync=False):  # WRONG
+    ...
+async for pool in self.top_pools(token, block):  # CORRECT
+    ...
+```
+
+Always check whether a method is decorated with `@a_sync.a_sync` or is a plain `async def` generator before passing `sync=False`.

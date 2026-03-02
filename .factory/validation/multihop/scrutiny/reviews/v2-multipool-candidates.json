@@ -1,0 +1,56 @@
+{
+  "featureId": "v2-multipool-candidates",
+  "milestone": "multihop",
+  "workerSession": "df3ae33e-4d44-4450-ae63-5d6f639ffb65",
+  "status": "fail",
+  "issues": [
+    {
+      "severity": "blocking",
+      "description": "top_pools() is an async generator wrapped by ASyncGeneratorFunction (via ASyncMeta metaclass), which does NOT accept a `sync` keyword argument. The call `self.top_pools(..., sync=False)` on line 992 of v2.py will raise `TypeError: UniswapRouterV2.top_pools() got an unexpected keyword argument 'sync'` at runtime. This breaks the entire multi-pool routing feature — any token that doesn't have a direct stable pool will fail. Confirmed via minimal reproduction: creating a class inheriting from ASyncGenericBase with an async generator and calling it with sync=False raises TypeError. Fix: remove `sync=False` from the top_pools call in get_path_to_stables (v2.py:992) and from the test calls (test_v2_multipool.py:56,81). The async generator already returns an async iterator; `sync=False` is neither needed nor supported.",
+      "location": "y/prices/dex/uniswap/v2.py:992"
+    },
+    {
+      "severity": "blocking",
+      "description": "Same sync=False bug in test file. top_pools() called with sync=False on lines 56 and 81, which will raise TypeError. Both test assertions (test_v2_top_pools_returns_multiple and test_v2_top_pools_respects_ignore_pools) are broken.",
+      "location": "tests/prices/dex/test_v2_multipool.py:56,81"
+    },
+    {
+      "severity": "non_blocking",
+      "description": "black --check fails on test file. The handoff claims 'Both files formatted successfully' but running `black --check tests/prices/dex/test_v2_multipool.py` shows the file would be reformatted.",
+      "location": "tests/prices/dex/test_v2_multipool.py"
+    },
+    {
+      "severity": "non_blocking",
+      "description": "When _supports_factory_helper is True (non-mainnet chains), top_pools() delegates to deepest_pool_for() which returns only a SINGLE pool. The multi-pool feature is effectively disabled on those chains. Mainnet is unaffected (factory helper excluded). This is a design limitation that could be addressed later.",
+      "location": "y/prices/dex/uniswap/v2.py:899-913"
+    },
+    {
+      "severity": "non_blocking",
+      "description": "Tests were never actually executed to completion. The handoff notes 'timeout due to slow pool loading'. None of the 7 test cases were confirmed to pass. Even after fixing the sync=False bug, test execution needs verification.",
+      "location": "tests/prices/dex/test_v2_multipool.py"
+    },
+    {
+      "severity": "suggestion",
+      "description": "Behavioral change in stable pool fast path: the new get_path_to_stables always uses deepest_stable_pool if one exists, regardless of whether it equals the overall deepest pool. The old code only used it when deepest_pool == deepest_stable_pool. This is actually a sensible optimization (shorter path to stablecoins) but changes pricing behavior for tokens whose deepest pool leads to a non-stablecoin while a shallower stable-paired pool exists.",
+      "location": "y/prices/dex/uniswap/v2.py:978-984"
+    }
+  ],
+  "sharedStateObservations": [
+    {
+      "target": "library",
+      "observation": "The .factory/library/ docs don't document that async generators on ASyncGenericBase subclasses (wrapped by ASyncGeneratorFunction via ASyncMeta) do NOT accept the `sync` keyword argument, unlike methods decorated with @a_sync.a_sync(). This is a non-obvious API difference that caused a blocking bug. Should add a note to architecture.md or a new library/a-sync-patterns.md explaining: '@a_sync.a_sync-decorated methods accept sync=True/False; plain async generators on ASyncGenericBase only get ASyncGeneratorFunction wrapping which does not support sync kwarg.'",
+      "action": "apply"
+    },
+    {
+      "target": "skill",
+      "observation": "The python-lib-worker skill's TDD procedure (Step 2: write tests first, verify they fail) was not followed. Worker wrote tests and implementation together, then tests timed out. The skill should also mention the async generator sync kwarg limitation as a common pitfall when working with this codebase.",
+      "action": "recommend"
+    },
+    {
+      "target": "AGENTS.md",
+      "observation": "Mission AGENTS.md doesn't document the sync kwarg constraint for async generators vs @a_sync.a_sync-decorated methods. Adding this under Coding Conventions would prevent future workers from making the same mistake.",
+      "action": "recommend"
+    }
+  ],
+  "summary": "FAIL: The implementation has a blocking runtime bug. top_pools() is an async generator that gets wrapped by ASyncGeneratorFunction (via the ASyncMeta metaclass), which does NOT support the `sync` keyword argument. The call on line 992 of v2.py passes sync=False to top_pools(), which will raise TypeError at runtime for any token requiring multi-hop routing (i.e., tokens without a direct stable pool). The same bug exists in two test cases. Additionally, black formatting fails on the test file despite the handoff claiming formatting was clean. The core design (MAX_CANDIDATE_POOLS constant, top_pools method, multi-candidate iteration in get_path_to_stables, accumulating ignore_pools, CantFindSwapPath after all candidates exhausted) is sound and well-structured. The fix is straightforward: remove sync=False from the top_pools calls in both v2.py and the test file, and run black on the test file."
+}

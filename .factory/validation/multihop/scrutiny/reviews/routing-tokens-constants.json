@@ -1,0 +1,41 @@
+{
+  "featureId": "routing-tokens-constants",
+  "milestone": "multihop",
+  "workerSession": "36fbc9a3-b22f-4642-9525-78d29f02bd6c",
+  "status": "pass",
+  "issues": [
+    {
+      "severity": "non_blocking",
+      "description": "Mainnet entry in ROUTING_TOKENS uses runtime `weth.address` and `usdc.address` which are set based on CHAINID, not hardcoded to Mainnet. When connected to a non-Mainnet chain, ROUTING_TOKENS[Network.Mainnet] would contain wrong addresses. In practice this is safe because consumers only access ROUTING_TOKENS.get(CHAINID, []) (see v3.py:541), but it makes the dict semantically incorrect on non-Mainnet chains. The feature spec explicitly required using existing weth/usdc constants for Mainnet, so this matches requirements.",
+      "location": "y/constants.py:397-398"
+    },
+    {
+      "severity": "non_blocking",
+      "description": "Arbitrum USDC in ROUTING_TOKENS (0xaf88d065e77c8cC2239327C5EDb3A432268e5831, native USDC) differs from existing `usdc` Contract for Arbitrum (0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8, bridged USDC.e). Similarly, Optimism USDC in ROUTING_TOKENS (0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85) differs from existing `usdc` for Optimism (0x7F5c764cBc14f9669B88837ca1490cCa17c31607). Base USDT in ROUTING_TOKENS (0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2) differs from existing `usdt` for Base (0x4A3A6Dd60A34bB2Aba60D73B4C88315E9CeB6A3D). These are intentional choices (native tokens have more liquidity for routing) and match the feature spec addresses exactly, but the divergence from existing constants is worth noting for future maintainers.",
+      "location": "y/constants.py:402-421"
+    },
+    {
+      "severity": "suggestion",
+      "description": "Test verifies list lengths and checksum formatting but does not assert exact addresses for L2 chains. If an address were accidentally swapped or changed, only the count check would catch length changes, not address correctness. Consider adding spot-check assertions for at least one known address per L2 chain.",
+      "location": "tests/test_constants.py:43-46"
+    }
+  ],
+  "sharedStateObservations": [
+    {
+      "target": "skill",
+      "observation": "Worker did not follow TDD (Red-Green-Refactor) procedure from python-lib-worker skill. Implemented constant and test in one pass. Worker's justification (small deterministic constant) is reasonable for this scope. Skill's TDD-first requirement may be overly strict for pure data/constant features.",
+      "action": "recommend"
+    },
+    {
+      "target": "AGENTS.md",
+      "observation": "AGENTS.md documents that ROUTING_TOKENS uses native token addresses for L2 chains (not the same as the existing bridged `usdc`/`usdt` Contract objects). This divergence is intentional but not explicitly documented in AGENTS.md's Key Files section or anywhere else. Future workers modifying routing tokens should know about this distinction.",
+      "action": "recommend"
+    },
+    {
+      "target": "AGENTS.md",
+      "observation": "Worker used scoped mypy (--follow-imports=skip --disable-error-code unused-ignore) instead of repo-wide mypy due to pre-existing failures. This is already documented in AGENTS.md 'Scoped Validation Commands' section, confirming the workaround is known and acceptable.",
+      "action": "reject"
+    }
+  ],
+  "summary": "ROUTING_TOKENS constant is correctly implemented in y/constants.py with proper typing (Final[dict[Network, list[ChecksumAddress]]]), correct placement following existing patterns (after _STABLECOINS, before STABLECOINS), and all specified chains/addresses present. Mainnet has 4 tokens (WETH, USDC, USDT, DAI); Arbitrum, Optimism, and Base each have 3 (WETH, USDC, USDT) with chain-specific addresses matching the feature spec exactly. All addresses are properly checksummed. The test validates shape, counts, checksumming, and mainnet weth/usdc ordering. Two non-blocking issues noted: (1) mainnet entry uses runtime weth/usdc references instead of hardcoded addresses (safe in practice since only current chain is accessed), (2) L2 routing token addresses intentionally differ from existing bridged contract objects (native tokens chosen for better liquidity). Code quality is good and follows existing codebase conventions."
+}
