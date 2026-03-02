@@ -569,7 +569,8 @@ class UniswapRouterV2(ContractBase):
                     log_debug("routed to target %s", token_out)
 
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
-        if path is None and (
+        # NOTE: This fallback only works for USD targets because magic.get_price always returns USD
+        if path is None and is_usd_price and (
             deepest_pool := await self.deepest_pool(
                 token_in, block, _ignore_pools=ignore_pools, sync=False
             )
@@ -596,10 +597,7 @@ class UniswapRouterV2(ContractBase):
                 )
 
                 if paired_with_price:
-                    result = amount_out * Decimal(paired_with_price) / _amount
-                    if is_usd_price:
-                        return UsdPrice(result)
-                    return Price(result)
+                    return UsdPrice(amount_out * Decimal(paired_with_price) / _amount)
 
         # If we still don't have a workable path, try this smol brain method
         if path is None:
