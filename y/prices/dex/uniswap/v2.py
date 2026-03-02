@@ -55,6 +55,10 @@ from y.utils.raw_calls import raw_call
 
 logger = getLogger(__name__)
 
+# Maximum number of candidate pools to evaluate when building swap paths.
+# This bounds the search to prevent excessive RPC calls for tokens with many pools.
+MAX_CANDIDATE_POOLS: int = 5
+
 Path = list[AddressOrContract]
 Reserves = tuple[int, int, int]
 
@@ -852,6 +856,85 @@ class UniswapRouterV2(ContractBase):
                 return deepest_stable_pool
 
     @stuck_coro_debugger
+    async def top_pools(
+        self,
+        token_address: AnyAddressType,
+        block: Block | None = None,
+        *,
+        n: int = MAX_CANDIDATE_POOLS,
+        _ignore_pools: tuple[UniswapV2Pool, ...] = (),
+    ) -> AsyncIterator[UniswapV2Pool]:
+        """Yield the top N pools for `token_address` sorted by liquidity (descending).
+
+        This method is used by :meth:`get_path_to_stables` to evaluate multiple
+        candidate pools instead of only the single deepest pool. The number of
+        pools returned is bounded by `n` (default: MAX_CANDIDATE_POOLS).
+
+        Args:
+            token_address: The token address to find pools for.
+            block: The block number to query. Defaults to latest block.
+            n: Maximum number of pools to return. Defaults to MAX_CANDIDATE_POOLS.
+            _ignore_pools: Pools to exclude from consideration.
+
+        Yields:
+            :class:`~UniswapV2Pool` objects sorted by liquidity (deepest first).
+
+        Examples:
+            >>> router = UniswapRouterV2("0x...")
+            >>> async for pool in router.top_pools(WETH, block=18_000_000, n=3):
+            ...     print(pool, await pool.check_liquidity(WETH, block))
+
+        See Also:
+            - :meth:`deepest_pool` for single deepest pool
+            - :meth:`get_path_to_stables` for path building using top pools
+        """
+        token_address = await convert.to_address_async(token_address)
+
+        # For wrapped gas coin or stablecoins, delegate to deepest_stable_pool logic
+        if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
+            if pool := await self.deepest_stable_pool(token_address, block, sync=False):
+                yield pool
+            return
+
+        # Try factory helper first if available
+        if self._supports_factory_helper and (
+            block is None or block >= await contract_creation_block_async(FACTORY_HELPER)
+        ):
+            try:
+                # Factory helper returns single deepest, we yield it and return
+                deepest, _ = await self.deepest_pool_for(
+                    token_address, block, ignore_pools=_ignore_pools
+                )
+                if deepest != brownie.ZERO_ADDRESS:
+                    yield UniswapV2Pool(deepest, asynchronous=self.asynchronous)
+                return
+            except (Revert, ValueError, ContractLogicError) as e:
+                if "invalid request" in str(e):
+                    self._skip_factory_helper.add(token_address)
+                _log_factory_helper_failure(e, token_address, block, _ignore_pools)
+
+        # Get all pools for token and sort by liquidity
+        pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
+        if logger.isEnabledFor(DEBUG):
+            log_debug(
+                "checking %s %s liquidity at block %s for top pools",
+                await ERC20(token_address, asynchronous=True).symbol,
+                token_address,
+                block,
+            )
+
+        count = 0
+        async for pool in (
+            UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block)
+            .keys(pop=True)
+            .aiterbyvalues(reverse=True)
+        ):
+            yield pool
+            count += 1
+            if count >= n:
+                break
+
+    @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
     async def get_path_to_stables(
         self,
@@ -860,43 +943,85 @@ class UniswapRouterV2(ContractBase):
         _loop_count: int = 0,
         _ignore_pools: tuple[UniswapV2Pool, ...] = (),
     ) -> Path:
+        """Build a swap path from `token` to a stablecoin through V2 pools.
+
+        This method tries multiple candidate pools (up to MAX_CANDIDATE_POOLS)
+        instead of only the single deepest pool. It returns the first viable
+        path found, or raises CantFindSwapPath if all candidates fail.
+
+        Args:
+            token: The token address to find a swap path for.
+            block: The block number to query. Defaults to latest block.
+            _loop_count: Internal recursion counter (prevents infinite loops).
+            _ignore_pools: Pools to exclude from consideration.
+
+        Returns:
+            A list of token addresses representing the swap path.
+
+        Raises:
+            CantFindSwapPath: If no viable path can be found after trying all candidates.
+
+        Examples:
+            >>> router = UniswapRouterV2("0x...")
+            >>> path = await router.get_path_to_stables(WBTC, block=18_000_000)
+            >>> print(path)  # ['0x...', '0x...', '0x...']
+
+        Note:
+            The number of candidate pools evaluated is bounded by MAX_CANDIDATE_POOLS
+            to ensure evaluation completes in reasonable time.
+        """
         if _loop_count > 10:
             raise CantFindSwapPath
         token_address = await convert.to_address_async(token)
-        path = [token_address]
-        deepest_pool = await self.deepest_pool(token_address, block, _ignore_pools, sync=False)
-        if deepest_pool:
-            paired_with = await deepest_pool.get_token_out(token_address, sync=False)
+
+        # Check if we have a direct stable pool first (fast path)
+        deepest_stable_pool = await self.deepest_stable_pool(
+            token_address, block, _ignore_pools=_ignore_pools, sync=False
+        )
+        if deepest_stable_pool:
+            return [
+                token_address,
+                await deepest_stable_pool.get_token_out(token_address, sync=False),
+            ]
+
+        # Try multiple candidate pools
+        candidates_tried = 0
+        last_error = None
+
+        async for candidate_pool in self.top_pools(
+            token_address, block, n=MAX_CANDIDATE_POOLS, _ignore_pools=_ignore_pools, sync=False
+        ):
+            candidates_tried += 1
+            paired_with = await candidate_pool.get_token_out(token_address, sync=False)
+
             from y.prices.utils.buckets import check_bucket
 
             if await check_bucket(paired_with, sync=False) and _loop_count == 0:
-                # let's just use the other token to get the price
+                # Let's just use the other token to get the price
                 return None
-            deepest_stable_pool = await self.deepest_stable_pool(
-                token_address, block, _ignore_pools=_ignore_pools, sync=False
-            )
-            if deepest_stable_pool and deepest_pool == deepest_stable_pool:
-                path.append(await deepest_stable_pool.get_token_out(token_address, sync=False))
-                return path
 
-            if path == [token_address]:
-                with suppress(CantFindSwapPath):
-                    path.extend(
-                        await self.get_path_to_stables(
-                            paired_with,
-                            block=block,
-                            _loop_count=_loop_count + 1,
-                            _ignore_pools=tuple(list(_ignore_pools) + [deepest_pool]),
-                            sync=False,
-                        )
-                    )
+            # Try to build a path through this candidate
+            try:
+                extended_path = await self.get_path_to_stables(
+                    paired_with,
+                    block=block,
+                    _loop_count=_loop_count + 1,
+                    _ignore_pools=tuple(list(_ignore_pools) + [candidate_pool]),
+                    sync=False,
+                )
+                if extended_path:
+                    return [token_address] + extended_path
+            except CantFindSwapPath as e:
+                last_error = e
+                # Continue to try next candidate
 
-        if path == [token_address]:
-            raise CantFindSwapPath(
-                f"Unable to find swap path for {token_address} on {Network.printable()}"
-            )
-
-        return path
+        # All candidates failed
+        if last_error:
+            raise last_error
+        raise CantFindSwapPath(
+            f"Unable to find swap path for {token_address} on {Network.printable()} "
+            f"after trying {candidates_tried} candidate pools"
+        )
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
