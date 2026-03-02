@@ -28,6 +28,7 @@ from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import (
     CHAINID,
     CONNECTED_TO_MAINNET,
+    ROUTING_TOKENS,
     STABLECOINS,
     WRAPPED_GAS_COIN,
     sushi,
@@ -499,22 +500,39 @@ class UniswapRouterV2(ContractBase):
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: tuple[Pool, ...] = (),
         amount: Decimal | int | float | None = None,
-    ) -> UsdPrice | None:
+    ) -> UsdPrice | float | None:
         """
         Calculate a price based on Uniswap Router quote for selling `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
 
         When `amount` is provided (in human-readable token units), the quote accounts
-        for price impact. The returned price is still per-unit (USD per token).
+        for price impact. The returned price is still per-unit (USD per token) when
+        token_out is USDC, or the price in token_out units otherwise.
+
+        Args:
+            token_in: The token to price.
+            block: The block number to query.
+            token_out: The target token for the price quote. Defaults to USDC.
+            paired_against: Default intermediary for path building.
+            skip_cache: Whether to skip cache.
+            ignore_pools: Pools to exclude from consideration.
+            amount: The amount of tokens to quote (in human-readable units).
+
+        Returns:
+            UsdPrice when token_out is USDC, float representing price in token_out units
+            otherwise, or None if no price available.
         """
+        from y.datatypes import Price
 
         token_in, token_out, path = str(token_in), str(token_out), None
+        is_usd_price = str(token_out).lower() == str(usdc.address).lower()
 
         if CHAINID == Network.BinanceSmartChain and token_out == usdc.address:
             busd = await Contract.coroutine("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
 
-        if token_in in STABLECOINS:
+        # Return 1 only when pricing a stablecoin to USD (or another stablecoin)
+        if token_in in STABLECOINS and str(token_out) in STABLECOINS:
             return 1
 
         try:
@@ -541,6 +559,15 @@ class UniswapRouterV2(ContractBase):
                 )
                 if debug_logs:
                     log_debug("smrt")
+
+        # For non-stablecoin targets, try to route directly or through routing tokens
+        elif not is_usd_price:
+            with suppress(CantFindSwapPath):
+                path = await self.get_path_to_target(
+                    token_in, token_out, block, _ignore_pools=ignore_pools, sync=False
+                )
+                if debug_logs:
+                    log_debug("routed to target %s", token_out)
 
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
         if path is None and (
@@ -585,7 +612,11 @@ class UniswapRouterV2(ContractBase):
         if quote is not None:
             out_scale = await ERC20._get_scale_for(path[-1])
             amount_out = Decimal(quote[-1]) / out_scale
-            return UsdPrice(amount_out / fees / _amount)
+            result = amount_out / fees / _amount
+            # Return UsdPrice for USDC target, Price for other targets
+            if is_usd_price:
+                return UsdPrice(result)
+            return Price(result)
 
     @continue_on_revert
     @stuck_coro_debugger
@@ -1020,6 +1051,100 @@ class UniswapRouterV2(ContractBase):
             raise last_error
         raise CantFindSwapPath(
             f"Unable to find swap path for {token_address} on {Network.printable()} "
+            f"after trying {candidates_tried} candidate pools"
+        )
+
+    @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=500)
+    async def get_path_to_target(
+        self,
+        token: AnyAddressType,
+        target_token: Address,
+        block: Block | None = None,
+        _loop_count: int = 0,
+        _ignore_pools: tuple[UniswapV2Pool, ...] = (),
+    ) -> Path:
+        """Build a swap path from `token` to a target token through V2 pools.
+
+        This method routes to an arbitrary target token (not just stablecoins).
+        It first checks for direct pools, then tries routing through ROUTING_TOKENS
+        as intermediaries.
+
+        Args:
+            token: The token address to find a swap path for.
+            target_token: The target token to route to.
+            block: The block number to query. Defaults to latest block.
+            _loop_count: Internal recursion counter (prevents infinite loops).
+            _ignore_pools: Pools to exclude from consideration.
+
+        Returns:
+            A list of token addresses representing the swap path.
+
+        Raises:
+            CantFindSwapPath: If no viable path can be found.
+
+        Examples:
+            >>> router = UniswapRouterV2("0x...")
+            >>> path = await router.get_path_to_target(WBTC, WETH, block=18_000_000)
+            >>> print(path)  # ['0x...', '0x...']
+        """
+        if _loop_count > 10:
+            raise CantFindSwapPath
+        token_address = await convert.to_address_async(token)
+        target_address = str(target_token).lower()
+
+        # Check if we have a direct pool with target token first (fast path)
+        pools_to_target = []
+        async for pool in self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools):
+            paired_with = await pool.get_token_out(token_address, sync=False)
+            if str(paired_with).lower() == target_address:
+                pools_to_target.append(pool)
+
+        # If we have direct pools, use the deepest one
+        if pools_to_target:
+            async for pool in (
+                UniswapV2Pool.check_liquidity.map(pools_to_target, token=token_address, block=block)
+                .keys(pop=True)
+                .aiterbyvalues(reverse=True)
+            ):
+                return [token_address, await pool.get_token_out(token_address, sync=False)]
+
+        # No direct pool - try routing through routing tokens
+        routing_tokens = ROUTING_TOKENS.get(CHAINID, [])
+        candidates_tried = 0
+        last_error = None
+
+        async for candidate_pool in self.top_pools(
+            token_address, block, n=MAX_CANDIDATE_POOLS, _ignore_pools=_ignore_pools
+        ):
+            candidates_tried += 1
+            paired_with = await candidate_pool.get_token_out(token_address, sync=False)
+
+            # Skip if paired_with is the target (should have been caught by direct pool check)
+            if str(paired_with).lower() == target_address:
+                return [token_address, paired_with]
+
+            # Try to extend the path to the target
+            try:
+                extended_path = await self.get_path_to_target(
+                    paired_with,
+                    target_token,
+                    block=block,
+                    _loop_count=_loop_count + 1,
+                    _ignore_pools=tuple(list(_ignore_pools) + [candidate_pool]),
+                    sync=False,
+                )
+                if extended_path:
+                    return [token_address] + extended_path
+            except CantFindSwapPath as e:
+                last_error = e
+                # Continue to try next candidate
+
+        # All candidates failed
+        if last_error:
+            raise last_error
+        raise CantFindSwapPath(
+            f"Unable to find swap path from {token_address} to {target_token} on {Network.printable()} "
             f"after trying {candidates_tried} candidate pools"
         )
 

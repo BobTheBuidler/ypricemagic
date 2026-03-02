@@ -182,8 +182,8 @@ async def get_price_in(
     Get the price of a token denominated in a quote token.
 
     This function returns the price of a token expressed in terms of another token
-    (the quote token). It uses USD cross-rate calculation: the USD price of the token
-    divided by the USD price of the quote token.
+    (the quote token). It first tries on-chain DEX routing to the quote token,
+    falling back to USD cross-rate calculation if no on-chain path exists.
 
     Args:
         token_address: The address of the token to price.
@@ -214,8 +214,8 @@ async def get_price_in(
         >>> print(price)  # 1.0
 
     Note:
-        This is the initial implementation using USD cross-rate calculation.
-        Future versions will support on-chain routing to the quote token.
+        On-chain routing is attempted first using DEX pools. If no direct or multi-hop
+        path exists, USD cross-rate is used: get_price(token) / get_price(quote_token).
 
     See Also:
         :func:`get_price`
@@ -228,7 +228,20 @@ async def get_price_in(
     if token_address == quote_token:
         return Price(1.0)
 
-    # Get USD prices for both tokens
+    # Try on-chain routing first
+    on_chain_price = await _get_price_on_chain(
+        token_address,
+        quote_token,
+        block,
+        ignore_pools=ignore_pools,
+        skip_cache=skip_cache,
+        amount=amount,
+        sync=False,
+    )
+    if on_chain_price is not None:
+        return Price(on_chain_price)
+
+    # Fall back to USD cross-rate
     token_usd_price = await get_price(
         token_address,
         block,
@@ -258,6 +271,73 @@ async def get_price_in(
 
     # Calculate cross-rate: token price in terms of quote token
     return Price(token_usd_price / quote_usd_price)
+
+
+@stuck_coro_debugger
+@a_sync.a_sync(default="async")
+async def _get_price_on_chain(
+    token_address: ChecksumAddress,
+    quote_token: ChecksumAddress,
+    block: Block,
+    *,
+    ignore_pools: tuple[Pool, ...] = (),
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    amount: Decimal | int | float | None = None,
+) -> float | None:
+    """
+    Try to get price via on-chain DEX routing to the quote token.
+
+    This function attempts to route through DEX pools (Uniswap V3, V2, etc.)
+    to find a direct or multi-hop path from token to quote_token.
+
+    Args:
+        token_address: The token to price.
+        quote_token: The target quote token.
+        block: The block number.
+        ignore_pools: Pools to exclude.
+        skip_cache: Whether to skip cache.
+        amount: Amount for price impact.
+
+    Returns:
+        The price in quote_token units, or None if no on-chain path exists.
+    """
+    # Try V3 first (more efficient path encoding)
+    from y.prices.dex.uniswap.v3 import uniswap_v3
+
+    if uniswap_v3:
+        try:
+            price = await uniswap_v3.get_price(
+                token_address,
+                block,
+                ignore_pools=ignore_pools,
+                skip_cache=skip_cache,
+                amount=amount,
+                target_token=quote_token,
+                sync=False,
+            )
+            if price is not None:
+                return float(price)
+        except Exception:
+            pass  # Fall through to V2
+
+    # Try V2 routers
+    for router in uniswap_multiplexer.v2_routers.values():
+        try:
+            price = await router.get_price(
+                token_address,
+                block,
+                token_out=quote_token,
+                skip_cache=skip_cache,
+                ignore_pools=ignore_pools,
+                amount=amount,
+                sync=False,
+            )
+            if price is not None:
+                return float(price)
+        except Exception:
+            continue
+
+    return None
 
 
 @overload
