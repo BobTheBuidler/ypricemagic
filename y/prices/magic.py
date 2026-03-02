@@ -16,7 +16,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, convert
 from y._decorators import stuck_coro_debugger
 from y.classes import ERC20
-from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
+from y.datatypes import AnyAddressType, Block, Pool, Price, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
 from y.prices import (
     band,
@@ -136,6 +136,128 @@ async def get_price(
         if not fail_to_None:
             raise_from = None if isinstance(e, PriceError) else e
             raise yPriceMagicError(e, token_address, block, symbol) from raise_from
+
+
+@overload
+async def get_price_in(
+    token_address: AnyAddressType,
+    quote_token: AnyAddressType,
+    block: Block | None = None,
+    *,
+    fail_to_None: Literal[True],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    ignore_pools: tuple[Pool, ...] = (),
+    silent: bool = False,
+    amount: Decimal | int | float | None = None,
+) -> Price | None: ...
+
+
+@overload
+async def get_price_in(
+    token_address: AnyAddressType,
+    quote_token: AnyAddressType,
+    block: Block | None = None,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    ignore_pools: tuple[Pool, ...] = (),
+    silent: bool = False,
+    amount: Decimal | int | float | None = None,
+) -> Price: ...
+
+
+@a_sync.a_sync(default="sync")
+async def get_price_in(
+    token_address: AnyAddressType,
+    quote_token: AnyAddressType,
+    block: Block | None = None,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    ignore_pools: tuple[Pool, ...] = (),
+    silent: bool = False,
+    amount: Decimal | int | float | None = None,
+) -> Price | None:
+    """
+    Get the price of a token denominated in a quote token.
+
+    This function returns the price of a token expressed in terms of another token
+    (the quote token). It uses USD cross-rate calculation: the USD price of the token
+    divided by the USD price of the quote token.
+
+    Args:
+        token_address: The address of the token to price.
+        quote_token: The address of the token to use as the quote currency.
+        block (optional): The block number at which to get the price. If None, uses the latest block.
+        fail_to_None (optional): If True, return None instead of raising an exception on failure. Defaults to False.
+        skip_cache (optional): If True, bypass the cache and fetch prices directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
+        ignore_pools (optional): A tuple of pool addresses to ignore when fetching prices.
+        silent: If True, suppress error logging. Defaults to False.
+        amount: The amount of tokens to quote in human-readable units (e.g. 1000 = 1000 tokens).
+            When provided, the price accounts for price impact on DEX sources. The returned
+            price is still per-unit (quote tokens per token). Defaults to None (spot price).
+
+    Returns:
+        The price of the token denominated in the quote token, or None if the price
+        couldn't be determined and fail_to_None is True.
+
+    Raises:
+        yPriceMagicError: If the price couldn't be determined and fail_to_None is False.
+
+    Examples:
+        >>> from y import get_price_in
+        >>> # Get USDC price in ETH (how much ETH per USDC)
+        >>> price = get_price_in("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", 18_000_000)
+        >>> print(price)  # ~0.0005 (roughly 2000 USDC per ETH)
+        >>> # Same token returns 1.0
+        >>> price = get_price_in(usdc, usdc, 18_000_000)
+        >>> print(price)  # 1.0
+
+    Note:
+        This is the initial implementation using USD cross-rate calculation.
+        Future versions will support on-chain routing to the quote token.
+
+    See Also:
+        :func:`get_price`
+    """
+    block = int(block or await dank_mids.eth.block_number)
+    token_address = await convert.to_address_async(token_address)
+    quote_token = await convert.to_address_async(quote_token)
+
+    # If token == quote_token, return 1.0 without any RPC calls
+    if token_address == quote_token:
+        return Price(1.0)
+
+    # Get USD prices for both tokens
+    token_usd_price = await get_price(
+        token_address,
+        block,
+        fail_to_None=fail_to_None,
+        skip_cache=skip_cache,
+        ignore_pools=ignore_pools,
+        silent=silent,
+        amount=amount,
+        sync=False,
+    )
+
+    if token_usd_price is None:
+        return None
+
+    quote_usd_price = await get_price(
+        quote_token,
+        block,
+        fail_to_None=fail_to_None,
+        skip_cache=skip_cache,
+        ignore_pools=ignore_pools,
+        silent=silent,
+        sync=False,
+    )
+
+    if quote_usd_price is None:
+        return None
+
+    # Calculate cross-rate: token price in terms of quote token
+    return Price(token_usd_price / quote_usd_price)
 
 
 @overload
