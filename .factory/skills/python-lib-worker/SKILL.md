@@ -57,7 +57,7 @@ Use for features that modify the ypricemagic library: routing logic, type defini
 
 ### 4. Run Tests (Green Verification)
 
-- Run the new tests again — they must PASS now
+- Run the new feature-specific tests again — they must PASS now. **You MUST explicitly run the test files you modified or created.** Do not just run the baseline tests.
 - Run the full test suite (or relevant subset) to check for regressions:
   ```bash
   cd /Users/bryan/code/ypricemagic && \
@@ -80,6 +80,7 @@ Use for features that modify the ypricemagic library: routing logic, type defini
 
 - Run mypy: `.venv/bin/python -m mypy y/`
   - This repo uses mypy strict mode. All new public functions need type annotations.
+  - **CRITICAL**: Do NOT use `py_compile` for type checking. It only checks syntax. You must use `mypy` to verify types.
 - Run black: `.venv/bin/python -m black .`
   - Line length 100, configured in pyproject.toml
 
