@@ -228,6 +228,39 @@ async def get_price_in(
     if token_address == quote_token:
         return Price(1.0)
 
+    # For stablecoin quote tokens, use cross-rate directly for reliability
+    # On-chain routing to stablecoins can have path resolution issues
+    from y.constants import STABLECOINS
+
+    if str(quote_token) in STABLECOINS:
+        # Use USD cross-rate for stablecoin quotes
+        token_usd_price = await get_price(
+            token_address,
+            block,
+            fail_to_None=fail_to_None,
+            skip_cache=skip_cache,
+            ignore_pools=ignore_pools,
+            silent=silent,
+            amount=amount,
+            sync=False,
+        )
+        if token_usd_price is None:
+            return None
+
+        quote_usd_price = await get_price(
+            quote_token,
+            block,
+            fail_to_None=fail_to_None,
+            skip_cache=skip_cache,
+            ignore_pools=ignore_pools,
+            silent=silent,
+            sync=False,
+        )
+        if quote_usd_price is None or not quote_usd_price:
+            return None
+
+        return Price(token_usd_price / quote_usd_price)
+
     # Try on-chain routing first
     on_chain_price = await _get_price_on_chain(
         token_address,
@@ -526,9 +559,10 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
         from y._db.utils import price as db
 
         # Only use disk cache for unit prices (amount=None)
+        # NOTE: db.get_price returns Decimal, wrap in UsdPrice for type consistency
         if amount is None and not skip_cache and (price := await db.get_price(token, block)):
             cache_logger.debug("disk cache -> %s", price)
-            return price
+            return UsdPrice(price)
         price = await get_price(
             token,
             block=block,
