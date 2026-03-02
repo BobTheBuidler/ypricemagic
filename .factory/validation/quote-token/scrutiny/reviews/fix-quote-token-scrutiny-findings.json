@@ -1,0 +1,38 @@
+{
+  "featureId": "fix-quote-token-scrutiny-findings",
+  "reviewedAt": "2026-03-02T11:00:00.000Z",
+  "commitId": "7377b09",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The fix correctly addresses all four non-blocking issues (black formatting, ZeroDivisionError guard, return type annotation, debug logging). However, the blocking bug fix is incomplete: the deepest_pool fallback in V2 still returns a USD-denominated numerical value for non-USD quote tokens — only the wrapper type changed from UsdPrice to Price, but the underlying float is still in USD terms. The feature description specified `if paired_with_price and is_usd_price: return UsdPrice(...)` (skip the return entirely for non-USD) but the implementation added `return Price(result)` for the non-USD branch, where `result` is computed from `magic.get_price()` which always returns USD values. The caller `_get_price_on_chain` does `return float(price)`, so the type wrapper is irrelevant — the wrong USD numerical value propagates as if it were quote-token-denominated.",
+    "issues": [
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 601,
+        "severity": "blocking",
+        "description": "Deepest_pool fallback still returns USD-denominated value for non-USD targets. The fix changed `return UsdPrice(result)` to a branching `if is_usd_price: return UsdPrice(result)` / `return Price(result)`, but `result` is ALWAYS computed as `amount_out * Decimal(paired_with_price) / _amount` where `paired_with_price` comes from `magic.get_price()` which returns a USD price. So `result` is always USD-denominated regardless of the branch taken. For non-USD quote tokens (e.g., WETH), returning Price(USD_value) produces a value that is orders of magnitude wrong (e.g., ~$1000 instead of ~0.55 WETH). The feature description specified the fix as `if paired_with_price and is_usd_price: return UsdPrice(...)` — meaning skip the return entirely when is_usd_price is False, letting execution fall through to smol_brain_path or return None (triggering the cross-rate fallback in get_price_in). The correct fix is: `if paired_with_price and is_usd_price: return UsdPrice(result)` with NO else branch."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "Worker did not run the feature's own test file (tests/prices/test_quote_token_routing.py) during verification — only ran baseline tests/test_constants.py. The feature's verificationSteps explicitly list `pytest tests/prices/test_quote_token_routing.py -v passes`. Running the actual routing tests could have caught the incomplete blocking fix if any test exercises the deepest_pool fallback path with a non-USD target.",
+      "evidence": "Handoff verification.commandsRun shows only: black --check, py_compile, and tests/test_constants.py. No test_quote_token_routing.py run."
+    },
+    {
+      "area": "conventions",
+      "observation": "Worker ran py_compile instead of mypy for type checking. The feature's verificationSteps specify `mypy y/prices/magic.py y/prices/dex/uniswap/v2.py`. The services.yaml provides a typecheck command. py_compile only checks syntax, not types.",
+      "evidence": "Handoff verification shows `py_compile y/prices/magic.py y/prices/dex/uniswap/v2.py` instead of `mypy --follow-imports=skip --disable-error-code unused-ignore y/prices/magic.py y/prices/dex/uniswap/v2.py`."
+    },
+    {
+      "area": "skills",
+      "observation": "The skill defines a TDD workflow (Write Tests First → Red Phase → Implement → Green Phase). For a bug-fix feature with no new tests added, TDD is not strictly applicable, but the skill's Step 4 (Run Tests - Green Verification) still applies. The worker skipped running the relevant test file entirely. The skill's procedure should clarify that for fix-only features, the relevant existing tests MUST still be run to verify the fix.",
+      "evidence": "Transcript shows Read → Edit → black → py_compile → baseline test only. No test_quote_token_routing.py execution. skillFeedback.followedProcedure is true despite skipping test verification."
+    }
+  ],
+  "addressesFailureFrom": "/Users/bryan/code/ypricemagic/.factory/validation/quote-token/scrutiny/reviews/router-quote-token-generalization.json",
+  "summary": "The fix correctly resolves all four non-blocking issues from the round-1 review: (1) test file is now black-formatted, (2) ZeroDivisionError guard added for quote_usd_price==0, (3) return type annotation updated to UsdPrice|Price|None, (4) bare except blocks now log at DEBUG level with exc_info. However, the blocking bug fix is INCOMPLETE. The original issue was that V2's deepest_pool fallback returns USD-denominated prices for non-USD quote targets. The feature description specified the fix as `if paired_with_price and is_usd_price:` (skipping the return entirely for non-USD), but the implementation instead adds a `return Price(result)` branch where `result` is still computed from `magic.get_price()` (always USD). The type wrapper changed from UsdPrice to Price, but the numerical value is unchanged — still USD-denominated. For non-USD targets like WETH, this produces values that are orders of magnitude wrong. The correct fix is to remove the `return Price(result)` line so non-USD cases fall through to smol_brain_path or return None, allowing get_price_in's cross-rate fallback to handle them."
+}
