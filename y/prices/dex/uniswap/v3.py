@@ -21,7 +21,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase
-from y.constants import CHAINID, CONNECTED_TO_MAINNET, usdc, weth
+from y.constants import CHAINID, CONNECTED_TO_MAINNET, ROUTING_TOKENS, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, NonStandardERC20, TokenNotFound, call_reverted
@@ -538,12 +538,21 @@ class UniswapV3(a_sync.ASyncGenericBase):
         if block and block < await contract_creation_block_async(quoter, True):
             return None
 
+        # Direct paths to USDC for each fee tier
         paths: list[Path] = [(token, fee, usdc.address) for fee in self.fee_tiers]
-        if token != weth:
-            paths += [
-                (token, fee, weth.address, self.fee_tiers[0], usdc.address)
-                for fee in self.fee_tiers
-            ]
+
+        # Multi-hop paths through all routing tokens as intermediaries
+        routing_tokens = ROUTING_TOKENS.get(CHAINID, [])
+        token_str = str(token).lower()
+        for routing_token in routing_tokens:
+            # Skip self-loop paths where token == routing_token
+            if str(routing_token).lower() == token_str:
+                continue
+            # Generate paths through this routing token
+            # Try multiple fee tiers for both hops to maximize coverage
+            for fee in self.fee_tiers:
+                for fee2 in self.fee_tiers:
+                    paths.append((token, fee, routing_token, fee2, usdc.address))
 
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(DEBUG, "paths: %s", (paths,))
