@@ -154,7 +154,7 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         token_in = await convert.to_address_async(token_in)
         logger = get_price_logger(token_in, block, extra=type(self).__name__)
         routers_by_depth = await self.routers_by_depth(
-            token_in, block=block, ignore_pools=ignore_pools, sync=False
+            token_in, block=block, ignore_pools=ignore_pools, amount=amount, sync=False
         )
         logger.debug("uniswap routers by depth: %s", routers_by_depth)
         for router in routers_by_depth:
@@ -179,6 +179,7 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         token_in: AnyAddressType,
         block: Block | None = None,
         ignore_pools: tuple[Pool, ...] = (),
+        amount: Decimal | int | float | None = None,
     ) -> list[UniswapRouterV2]:
         """
         Get Uniswap routers sorted by liquidity depth for a given token.
@@ -190,6 +191,8 @@ class UniswapMultiplexer(ASyncGenericSingleton):
             token_in: The address of the input token to check liquidity for.
             block (optional): The block number to query. Defaults to latest block.
             ignore_pools (optional): A tuple of Pool objects to ignore when checking liquidity.
+            amount (optional): The amount of tokens to quote (in human-readable units).
+                When provided, routers may use it to apply amount-aware liquidity checks.
 
         Returns:
             A list of UniswapRouterV2 objects sorted by liquidity depth in descending order.
@@ -205,7 +208,9 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         """
         token_in = await convert.to_address_async(token_in)
         liquidity = await igather(
-            uniswap.check_liquidity(token_in, block, ignore_pools=ignore_pools, sync=False)
+            uniswap.check_liquidity(
+                token_in, block, ignore_pools=ignore_pools, amount=amount, sync=False
+            )
             for uniswap in self.uniswaps
         )
         depth_to_router = dict(zip(liquidity, self.uniswaps))
@@ -219,6 +224,7 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         token: Address,
         block: Block,
         ignore_pools: tuple[Pool, ...] = (),
+        amount: Decimal | int | float | None = None,
     ) -> int:
         """
         Check the maximum liquidity for a token across all Uniswap instances.
@@ -238,7 +244,9 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         """
         return max(
             await igather(
-                uniswap.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False)
+                uniswap.check_liquidity(
+                    token, block, ignore_pools=ignore_pools, amount=amount, sync=False
+                )
                 for uniswap in self.uniswaps
             )
         )

@@ -900,7 +900,13 @@ class UniswapRouterV2(ContractBase):
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
-    async def check_liquidity(self, token: Address, block: Block, ignore_pools=[]) -> int:
+    async def check_liquidity(
+        self,
+        token: Address,
+        block: Block,
+        ignore_pools=[],
+        amount: Decimal | int | float | None = None,
+    ) -> int:
         if debug_logs := logger.isEnabledFor(DEBUG):
             log_debug(
                 "checking %s liquidity for %s %s at %s",
@@ -909,6 +915,7 @@ class UniswapRouterV2(ContractBase):
                 token,
                 block,
             )
+        _ = amount
         if block and block < await contract_creation_block_async(self.factory):
             if debug_logs:
                 log_debug(

@@ -141,7 +141,11 @@ class UniswapV1(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
     async def check_liquidity(
-        self, token_address: Address, block: Block, ignore_pools: tuple[Pool, ...] = ()
+        self,
+        token_address: Address,
+        block: Block,
+        ignore_pools: tuple[Pool, ...] = (),
+        amount: Decimal | int | float | None = None,
     ) -> int:
         """
         Check the liquidity of a token in its exchange.
@@ -150,6 +154,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
             token_address: The address of the token to check liquidity for.
             block: The block number at which to check liquidity.
             ignore_pools: A tuple of pools to ignore when checking liquidity.
+            amount: Unused. Included for interface compatibility across routers.
 
         Returns:
             The liquidity of the token in its exchange.

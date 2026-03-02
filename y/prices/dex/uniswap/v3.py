@@ -571,7 +571,11 @@ class UniswapV3(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
     async def check_liquidity(
-        self, token: Address, block: Block, ignore_pools: tuple[Pool, ...] = ()
+        self,
+        token: Address,
+        block: Block,
+        ignore_pools: tuple[Pool, ...] = (),
+        amount: Decimal | int | float | None = None,
     ) -> int:
         """
         Check the liquidity of a token in the Uniswap V3 protocol.
@@ -580,6 +584,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
             token: The address of the token.
             block: The block number to check liquidity at.
             ignore_pools: Pools to ignore.
+            amount: The amount of tokens to quote (in human-readable units).
+                When provided, low-WETH-liquidity pools may be accepted if token-side
+                liquidity is sufficient for this amount.
 
         Returns:
             The liquidity of the token.
@@ -656,7 +663,14 @@ class UniswapV3(a_sync.ASyncGenericBase):
             token_out: min(liquidities) for token_out, liquidities in token_out_liquidity.items()
         }
 
+        required_token_in_liquidity = None
+        if amount is not None:
+            required_token_in_liquidity = int(
+                Decimal(str(amount)) * await ERC20._get_scale_for(token)
+            )
+
         token_in_tasks = UniswapV3Pool.check_liquidity.map(token=token, block=block)
+        amount_adjusted_liquidities: list[int] = []
         async for pool, liquidity in token_out_tasks.map(pop=True):
             token_out = pool._get_token_out(token)
             if (
@@ -666,13 +680,34 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 if debug_logs_enabled:
                     logger._log(DEBUG, "ignoring liquidity for %s", (pool,))
             elif token_out == weth and liquidity < 10**19:  # 10 ETH
-                # NOTE: this is totally arbitrary, works for all known cases but eventually will probably cause issues
-                if debug_logs_enabled:
-                    logger._log(DEBUG, "insufficient liquidity for %s", (pool,))
+                if required_token_in_liquidity is None:
+                    # NOTE: this is totally arbitrary, works for all known cases but eventually will probably cause issues
+                    if debug_logs_enabled:
+                        logger._log(DEBUG, "insufficient liquidity for %s", (pool,))
+                else:
+                    token_in_liquidity = (
+                        await pool.check_liquidity(token, block=block, sync=False)
+                    ) or 0
+                    if token_in_liquidity >= required_token_in_liquidity:
+                        if debug_logs_enabled:
+                            logger._log(
+                                DEBUG,
+                                "accepting low-WETH-liquidity pool %s because token liquidity %s covers required %s",
+                                (pool, token_in_liquidity, required_token_in_liquidity),
+                            )
+                        amount_adjusted_liquidities.append(token_in_liquidity)
+                    elif debug_logs_enabled:
+                        logger._log(
+                            DEBUG,
+                            "insufficient liquidity for %s: token liquidity %s below required %s",
+                            (pool, token_in_liquidity, required_token_in_liquidity),
+                        )
             else:
                 token_in_tasks[pool]
 
         liquidity = await token_in_tasks.max(pop=True, sync=False) if token_in_tasks else 0
+        if amount_adjusted_liquidities:
+            liquidity = max(liquidity, max(amount_adjusted_liquidities))
         if debug_logs_enabled:
             await log_liquidity(self, token, block, liquidity)
         return liquidity

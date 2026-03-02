@@ -647,9 +647,13 @@ async def _get_price_from_dexes(
     # dexes_by_depth = dict(
     #     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)
     # )
-    liquidity = await igather(
-        dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes
-    )
+    liquidity_tasks = []
+    for dex in dexes:
+        kwargs = {"ignore_pools": ignore_pools, "sync": False}
+        if dex is uniswap_multiplexer:
+            kwargs["amount"] = amount
+        liquidity_tasks.append(dex.check_liquidity(token, block, **kwargs))
+    liquidity = await igather(liquidity_tasks)
     depth_to_dex: dict[int, object] = dict(zip(liquidity, dexes))
     dexes_by_depth: dict[int, object] = {
         depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True) if depth
