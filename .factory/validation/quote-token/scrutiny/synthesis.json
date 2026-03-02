@@ -1,0 +1,72 @@
+{
+  "milestone": "quote-token",
+  "round": 1,
+  "status": "fail",
+  "validatorsRun": {
+    "test": {
+      "passed": true,
+      "command": "ETHERSCAN_TOKEN=... BROWNIE_NETWORK=mainnet TYPEDENVS_SHUTUP=1 .venv/bin/python -c \"import concurrent.futures.process as cfp; ...; pytest tests/test_constants.py -x -p no:pytest_ethereum -W ignore --timeout 120\"",
+      "exitCode": 0,
+      "notes": "6/6 passed in 0.92s. The command timed out at 180s due to brownie's teardown phase triggering a UnicodeDecodeError on generated .so files — this is pre-existing and unrelated to mission changes. Test results themselves are clean: all 6 passed."
+    },
+    "typecheck": {
+      "passed": false,
+      "command": ".venv/bin/python -m mypy --follow-imports=skip --disable-error-code unused-ignore",
+      "exitCode": 2,
+      "notes": "The services.yaml command runs mypy without a path argument, using pyproject.toml's `files = [\".\"]`, which picks up the auto-generated cache/1/joblib/... directory and fails on a syntax error in a generated file. When run on `y/` specifically (as in the previous multihop synthesis), there are 1140 pre-existing errors across 83 files. The quote-token milestone introduced 5 new errors in y/prices/magic.py (get_price_in function) — all following the same patterns as the 49 pre-existing errors in that file. No new errors were introduced in y/prices/dex/uniswap/v3.py (28 errors before and after). The mypy error count increase is consistent with the project's accepted pre-existing technical debt."
+    },
+    "lint": {
+      "passed": false,
+      "command": ".venv/bin/python -m black --check .",
+      "exitCode": 1,
+      "notes": "7 files would be reformatted. 6 are pre-existing failures carried from the multihop milestone (setup.py, y/_db/utils/utils.py, y/prices/utils/sense_check.py, y/prices/utils/ypriceapi.py, y/utils/raw_calls.py, y/contracts.py). 1 is NEW and introduced by the quote-token milestone: tests/prices/test_quote_token_routing.py — the worker ran `black` on source files but forgot to run it on the new test file."
+    }
+  },
+  "reviewsSummary": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1,
+    "failedFeatures": ["router-quote-token-generalization"],
+    "notes": "misc-multihop-validation (pass): no-op bookkeeping feature, 18 deferred assertion IDs correctly claimed. price-type-and-api (pass): Price type and get_price_in USD cross-rate implementation clean, 2 non-blocking issues. router-quote-token-generalization (fail): 1 blocking bug in V2 deepest_pool fallback, 3 non-blocking issues."
+  },
+  "blockingIssues": [
+    {
+      "featureId": "router-quote-token-generalization",
+      "severity": "blocking",
+      "description": "V2 deepest_pool fallback path (y/prices/dex/uniswap/v2.py, lines ~572-599) always returns USD-denominated price via `return UsdPrice(amount_out * Decimal(paired_with_price) / _amount)` regardless of whether `is_usd_price` is True or False. When `token_out` is a non-USD target (e.g., WETH) and `get_path_to_target` fails but a deepest pool exists, the caller (_get_price_on_chain in magic.py) receives a USD-denominated value wrapped as UsdPrice and treats it as if it were denominated in the quote token. This produces silently wrong results (orders of magnitude off for non-dollar-pegged targets). Fix: guard with `if is_usd_price: return UsdPrice(...)` to skip this fallback for non-USD targets (letting execution fall through to return None), OR divide by the quote_token USD price to convert correctly.",
+      "suggestedFix": "In y/prices/dex/uniswap/v2.py around line 598, change `if paired_with_price: return UsdPrice(amount_out * Decimal(paired_with_price) / _amount)` to `if paired_with_price and is_usd_price: return UsdPrice(amount_out * Decimal(paired_with_price) / _amount)`. This skips the deepest_pool fallback for non-USD quote tokens, allowing get_price_in to fall back to the USD cross-rate instead."
+    }
+  ],
+  "appliedUpdates": [],
+  "suggestedGuidanceUpdates": [
+    {
+      "target": "AGENTS.md",
+      "suggestion": "Add a coding convention: 'When calling async generators on ASyncGenericBase subclasses, do NOT pass sync=True/False — only @a_sync.a_sync-decorated methods support that kwarg. Use `async for item in self.method()` directly. Async generators wrapped in ASyncGeneratorFunction (from a_sync) do NOT support the sync kwarg.'",
+      "evidence": "This was flagged in the multihop milestone by v2-multipool-candidates (blocking runtime bug) and fix-multihop-scrutiny-findings reviews, and carried forward by misc-multihop-validation review. The convention gap persists in the repo AGENTS.md despite being documented in the mission AGENTS.md. The top_pools sync=False bug was a real production-blocking issue.",
+      "isSystemic": true
+    },
+    {
+      "target": "skill",
+      "suggestion": "In python-lib-worker skill's verification steps, explicitly require: 'Run black on ALL changed files including test files: `.venv/bin/python -m black .` or at minimum include newly created test files in the black command.' The current step says 'Run black' but the router-generalization worker only ran it on source files (y/prices/...) and missed tests/prices/test_quote_token_routing.py.",
+      "evidence": "router-quote-token-generalization handoff shows: `.venv/bin/python -m black y/prices/magic.py y/prices/dex/uniswap/v3.py y/prices/dex/uniswap/v2.py y/prices/dex/uniswap/uniswap.py`. The test file was not included. Both price-type-and-api and router-generalization workers showed this pattern.",
+      "isSystemic": true
+    },
+    {
+      "target": "skill",
+      "suggestion": "In python-lib-worker skill's TDD section, add a verification gate: 'After writing tests (Red Phase), run them once to confirm they FAIL before implementing. Record the failing output in your handoff. If you cannot confirm Red Phase, note this explicitly.' Currently, TDD Red Phase is not enforced and both quote-token workers appeared to implement before tests or did not verify failing tests.",
+      "evidence": "Both price-type-and-api and router-quote-token-generalization reviewers noted the TDD Red Phase was not visible in transcripts. router-generalization transcript shows implementation before test creation.",
+      "isSystemic": true
+    }
+  ],
+  "rejectedObservations": [
+    {
+      "observation": "price-type-and-api: Worker ran type hierarchy tests as manual Python assertions rather than pytest",
+      "reason": "The worker did run pytest — the handoff shows test execution. The manual Python assertions were supplemental verification in addition to pytest. Not a real issue."
+    },
+    {
+      "observation": "price-type-and-api: mypy scoped verification was skipped on new files",
+      "reason": "Merged into the broader TDD/verification guidance suggestion above. Not worth a separate AGENTS.md entry since the existing guideline already mentions mypy."
+    }
+  ],
+  "previousRound": null
+}

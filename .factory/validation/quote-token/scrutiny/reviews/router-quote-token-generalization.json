@@ -1,0 +1,51 @@
+{
+  "featureId": "router-quote-token-generalization",
+  "reviewedAt": "2026-03-02T10:15:00.000Z",
+  "commitId": "f8ed7ba",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The implementation covers all five steps from the feature description and addresses VAL-QT-004, VAL-QT-005, VAL-QT-011, and VAL-CROSS-002. V3 target_token generalization, V2 get_path_to_target, on-chain routing in get_price_in, and USD cross-rate fallback are all implemented correctly for the common case. However, there is a blocking bug in V2's deepest_pool fallback path: when token_out is non-USDC and get_path_to_target fails, the deepest_pool fallback always returns a USD-denominated value wrapped in UsdPrice, which _get_price_on_chain accepts as a valid quote-token-denominated result. This silently returns wrong prices for edge-case tokens. The test file is also not black-formatted.",
+    "issues": [
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 600,
+        "severity": "blocking",
+        "description": "V2 deepest_pool fallback returns USD-denominated price for non-USD targets. When is_usd_price is False, get_path_to_target fails (CantFindSwapPath suppressed), and a deepest_pool exists, the code at lines ~572-601 computes: amount_out * paired_with_price (USD) / _amount and returns UsdPrice(...). This is always a USD value, but the caller (_get_price_on_chain) expects a value denominated in quote_token. For non-dollar-pegged targets (e.g., WETH), the returned value is orders of magnitude wrong. The deepest_pool fallback should either be skipped when is_usd_price is False (letting execution fall through to smol_brain_path or return None), or the result should be divided by the target token's USD price."
+      },
+      {
+        "file": "tests/prices/test_quote_token_routing.py",
+        "line": 1,
+        "severity": "non_blocking",
+        "description": "Test file is not black-formatted. Running `black --check tests/prices/test_quote_token_routing.py` reports it would be reformatted. The worker's verification only ran black on the source files (y/prices/...), not the test file. The AGENTS.md coding conventions require black formatting."
+      },
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 502,
+        "severity": "non_blocking",
+        "description": "Return type annotation is `-> UsdPrice | float | None` but the method can return `Price(result)` (line ~618). Since Price is a subclass of float this is technically compatible, but the annotation should be `-> UsdPrice | Price | None` for accuracy and to match the V3 and multiplexer signatures."
+      },
+      {
+        "file": "y/prices/magic.py",
+        "line": 310,
+        "severity": "non_blocking",
+        "description": "Bare `except Exception: pass` in _get_price_on_chain (V3 branch, line ~310, and V2 branch, line ~327) silently swallows all exceptions. Consider logging at DEBUG level to aid diagnosis of unexpected failures, consistent with the codebase's use of stuck_coro_debugger for long-running call visibility."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "Worker ran black only on source files (y/prices/...) but not on the test file. AGENTS.md says 'Formatting: black with line-length 100' but doesn't explicitly state tests must also be formatted. The skill's Step 5 says 'Run black: .venv/bin/python -m black .' which would format all files. The worker deviated by formatting only source files.",
+      "evidence": "Handoff verification shows: '.venv/bin/python -m black y/prices/magic.py y/prices/dex/uniswap/v3.py y/prices/dex/uniswap/v2.py y/prices/dex/uniswap/uniswap.py'. Running `black --check tests/prices/test_quote_token_routing.py` confirms it would be reformatted."
+    },
+    {
+      "area": "skills",
+      "observation": "The skill specifies a TDD workflow (Write Tests First → Red Phase → Implement → Green Phase). The transcript shows the worker read files, implemented all changes, then wrote tests — implementation-before-tests, not TDD. skillFeedback.followedProcedure is True, which is inaccurate. The deviation is minor since tests were still written and cover the requirements, but the skill's TDD emphasis was not followed.",
+      "evidence": "Transcript skeleton shows: Read source files → Edit v3.py → Edit v2.py → Edit uniswap.py → Edit magic.py → then test creation. The skill's Step 2 says 'Write Tests First (Red Phase)' before Step 3 'Implement the Feature (Green Phase)'."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "The feature implements all required functionality: V3 target_token generalization with self-loop prevention, V2 get_path_to_target for arbitrary routing, on-chain routing in get_price_in with USD cross-rate fallback, and 8 integration tests covering all 4 validation assertions. Cache isolation is correctly maintained since V3's cache_type='memory' and V2's ram_cache include the target_token/token_out parameter in their cache keys, keeping non-USD price lookups separate from USD lookups. However, there is one blocking bug: V2's pre-existing deepest_pool fallback path (lines ~572-601) always computes and returns a USD-denominated price regardless of the target token. When get_path_to_target fails and a deepest pool exists, _get_price_on_chain receives and returns this USD value as if it were denominated in the quote token, producing silently wrong results for edge-case tokens. This should be fixed by guarding the deepest_pool fallback with `if is_usd_price` or converting the result to target-token units."
+}

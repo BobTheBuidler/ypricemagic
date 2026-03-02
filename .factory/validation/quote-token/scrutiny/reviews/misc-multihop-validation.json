@@ -1,0 +1,21 @@
+{
+  "featureId": "misc-multihop-validation",
+  "reviewedAt": "2026-03-02T09:30:00.000Z",
+  "commitId": "0165ef3",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "No-op feature — no code changes to review. The sole commit (0165ef3) added `.factory/validation/multihop/user-testing/synthesis.json` (12 lines) to override the timed-out multihop user-testing validator and defer 18 assertion IDs to the quote-token milestone. The feature's `fulfills` list in features.json exactly matches the `deferredAssertions` array in the synthesis override file: VAL-CONST-001 through VAL-CONST-003, VAL-LIQ-001 through VAL-LIQ-003, VAL-V3-001 through VAL-V3-005, VAL-V2-001 through VAL-V2-006, and VAL-CROSS-001. All 18 assertions are backed by implementation features that passed scrutiny review in the multihop milestone: routing-tokens-constants (pass), v3-amount-aware-liquidity (pass), v3-multihop-expansion (pass), v2-multipool-candidates (initially failed, then fixed and passed via fix-multihop-scrutiny-findings). The worker ran baseline tests (tests/test_constants.py — 6 passed) and verified the existence of all integration test files covering these assertions.",
+    "issues": []
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "The async generator sync kwarg limitation (top_pools sync=False bug found in v2-multipool-candidates review, fixed in fix-multihop-scrutiny-findings) was flagged in both prior scrutiny reviews as needing documentation in AGENTS.md. The fix review confirmed the gap still exists. This misc-multihop-validation worker did not address it (not in scope), but the convention gap persists: AGENTS.md documents '@a_sync.a_sync(default=\"sync\")' for new public functions but does not warn that async generators on ASyncGenericBase do NOT accept sync kwarg.",
+      "evidence": "v2-multipool-candidates.json sharedStateObservations[0] and fix-multihop-scrutiny-findings.json sharedStateObservations[0] both flagged this. AGENTS.md 'Async generators' bullet was added but only in the mission AGENTS.md, not the repo-level AGENTS.md."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "PASS: This is a legitimate no-op bookkeeping feature. The 18 multihop assertion IDs deferred from the multihop milestone's timed-out user-testing validator are correctly claimed in the quote-token milestone. All assertions are backed by scrutiny-validated implementation features (5 features, all passing after the fix round). The commit only modifies validation metadata (synthesis.json override). No code changes, no bugs, no issues. The worker verified baseline tests pass and confirmed all integration test files exist."
+}
