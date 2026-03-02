@@ -269,6 +269,10 @@ async def get_price_in(
     if quote_usd_price is None:
         return None
 
+    # Guard against division by zero
+    if not quote_usd_price:
+        return None
+
     # Calculate cross-rate: token price in terms of quote token
     return Price(token_usd_price / quote_usd_price)
 
@@ -318,7 +322,7 @@ async def _get_price_on_chain(
             if price is not None:
                 return float(price)
         except Exception:
-            pass  # Fall through to V2
+            getLogger(__name__).debug("V3 routing failed in _get_price_on_chain", exc_info=True)
 
     # Try V2 routers
     for router in uniswap_multiplexer.v2_routers.values():
@@ -335,6 +339,7 @@ async def _get_price_on_chain(
             if price is not None:
                 return float(price)
         except Exception:
+            getLogger(__name__).debug("V2 routing failed in _get_price_on_chain", exc_info=True)
             continue
 
     return None

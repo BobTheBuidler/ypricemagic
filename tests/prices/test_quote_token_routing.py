@@ -174,9 +174,7 @@ class TestCacheIsolation:
         should return UsdPrice (USD-denominated), not an ETH-denominated value.
         """
         # Clear any cached price by using skip_cache first
-        weth_price_before = await get_price(
-            WETH_ADDRESS, BLOCK, skip_cache=True, sync=False
-        )
+        weth_price_before = await get_price(WETH_ADDRESS, BLOCK, skip_cache=True, sync=False)
 
         # Call get_price_in with WETH as quote token
         # This returns an ETH-denominated price
@@ -190,18 +188,16 @@ class TestCacheIsolation:
 
         # Now call get_price for WETH - should return UsdPrice, not Price
         # Use skip_cache=False to test that cache returns correct type
-        weth_price_after = await get_price(
-            WETH_ADDRESS, BLOCK, skip_cache=False, sync=False
-        )
+        weth_price_after = await get_price(WETH_ADDRESS, BLOCK, skip_cache=False, sync=False)
 
         assert weth_price_after is not None, "get_price should return a result"
         assert isinstance(weth_price_after, UsdPrice), (
             f"get_price should return UsdPrice, got {type(weth_price_after)}. "
             "Cache may be polluted by get_price_in."
         )
-        assert not isinstance(weth_price_after, Price), (
-            "UsdPrice should not be instance of Price. Cache pollution detected."
-        )
+        assert not isinstance(
+            weth_price_after, Price
+        ), "UsdPrice should not be instance of Price. Cache pollution detected."
 
         # The USD price should still be correct (not ~0.0005 like the ETH-denominated one)
         # WETH should be ~$1800-2000 at block 18M
@@ -233,7 +229,9 @@ class TestCacheIsolation:
         weth_usd = await get_price(WETH_ADDRESS, BLOCK, skip_cache=True, sync=False)
 
         assert isinstance(usdc_in_eth, Price), "get_price_in should return Price"
-        assert isinstance(weth_usd, UsdPrice), f"get_price should return UsdPrice, got {type(weth_usd)}"
+        assert isinstance(
+            weth_usd, UsdPrice
+        ), f"get_price should return UsdPrice, got {type(weth_usd)}"
 
         # The values should be drastically different
         # usdc_in_eth should be ~0.0005, weth_usd should be ~1800-2000

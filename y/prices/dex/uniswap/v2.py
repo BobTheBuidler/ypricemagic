@@ -36,7 +36,7 @@ from y.constants import (
     weth,
 )
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, UsdPrice
+from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, Price, UsdPrice
 from y.exceptions import (
     CantFindSwapPath,
     ContractNotVerified,
@@ -500,7 +500,7 @@ class UniswapRouterV2(ContractBase):
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: tuple[Pool, ...] = (),
         amount: Decimal | int | float | None = None,
-    ) -> UsdPrice | float | None:
+    ) -> UsdPrice | Price | None:
         """
         Calculate a price based on Uniswap Router quote for selling `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
@@ -519,10 +519,9 @@ class UniswapRouterV2(ContractBase):
             amount: The amount of tokens to quote (in human-readable units).
 
         Returns:
-            UsdPrice when token_out is USDC, float representing price in token_out units
+            UsdPrice when token_out is USDC, Price representing price in token_out units
             otherwise, or None if no price available.
         """
-        from y.datatypes import Price
 
         token_in, token_out, path = str(token_in), str(token_out), None
         is_usd_price = str(token_out).lower() == str(usdc.address).lower()
@@ -597,7 +596,10 @@ class UniswapRouterV2(ContractBase):
                 )
 
                 if paired_with_price:
-                    return UsdPrice(amount_out * Decimal(paired_with_price) / _amount)
+                    result = amount_out * Decimal(paired_with_price) / _amount
+                    if is_usd_price:
+                        return UsdPrice(result)
+                    return Price(result)
 
         # If we still don't have a workable path, try this smol brain method
         if path is None:
