@@ -26,7 +26,9 @@ def _memory():
 
 memory = _memory()
 
-a_sync_ttl_cache: ASyncDecorator = a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+a_sync_ttl_cache: ASyncDecorator = a_sync.a_sync(
+    ram_cache_ttl=ENVS.CACHE_TTL, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE
+)
 
 
 # NOTE: we have an optional disk cache that I made for debugging and decided to keep in for my own convenience.
