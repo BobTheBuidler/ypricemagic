@@ -58,7 +58,7 @@ logger = getLogger(__name__)
 
 # Maximum number of candidate pools to evaluate when building swap paths.
 # This bounds the search to prevent excessive RPC calls for tokens with many pools.
-MAX_CANDIDATE_POOLS: int = 5
+MAX_CANDIDATE_POOLS: int = 3
 
 Path = list[AddressOrContract]
 Reserves = tuple[int, int, int]

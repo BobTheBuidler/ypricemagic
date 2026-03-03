@@ -563,11 +563,16 @@ class UniswapV3(a_sync.ASyncGenericBase):
             # Skip redundant paths where routing_token == target_token (TOKEN→TARGET→TARGET is wasteful)
             if routing_str == target_str:
                 continue
-            # Generate paths through this routing token
-            # Try multiple fee tiers for both hops to maximize coverage
+            # Generate paths through this routing token.
+            # Use same fee for both hops (most common case) plus a small set of
+            # cross-fee pairs for the two most liquid tiers (500, 3000) to avoid
+            # the N^2 combinatorial explosion of trying every fee_tier x fee_tier.
             for fee in self.fee_tiers:
-                for fee2 in self.fee_tiers:
-                    paths.append((token, fee, routing_token, fee2, target_token))
+                paths.append((token, fee, routing_token, fee, target_token))
+            # Add cross-fee pairs only for the two most common tiers when available
+            if 500 in self.fee_tiers and 3000 in self.fee_tiers:
+                paths.append((token, 500, routing_token, 3000, target_token))
+                paths.append((token, 3000, routing_token, 500, target_token))
 
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(DEBUG, "paths: %s", (paths,))
