@@ -18,6 +18,12 @@ else
     .venv/bin/python -m pip install "setuptools<82" click -q
 fi
 
+# Ensure cachebox is installed
+if ! .venv/bin/python -c "import cachebox" 2>/dev/null; then
+    echo "Installing cachebox..."
+    .venv/bin/python -m pip install cachebox -q
+fi
+
 # Configure Brownie network (fast, idempotent)
 .venv/bin/brownie networks modify mainnet host=http://10.11.12.43:8545 2>/dev/null || true
 
