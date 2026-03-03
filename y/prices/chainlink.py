@@ -405,9 +405,11 @@ class Chainlink(a_sync.ASyncGenericBase):
             - :meth:`~y.prices.chainlink.Chainlink.has_feed`
         """
         asset = await convert.to_address_async(asset)
+        latest_feed = None
         async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):
             if asset == feed.asset:
-                return feed
+                latest_feed = feed
+        return latest_feed
 
     async def has_feed(self, asset: AnyAddressType) -> bool:
         """Check if a feed exists for a specific asset.
