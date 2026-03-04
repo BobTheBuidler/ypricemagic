@@ -103,8 +103,16 @@ async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
     return checksummed
 
 
-_is_checksummed: Final[set[ChecksumAddress]] = set()
-_is_not_checksummed: Final[set[HexAddress]] = set()
+# Bounded caches for checksum status tracking.
+# These are accessed from multiple threads (main thread + _checksum_thread),
+# so we use thread-safe cachebox.LRUCache instead of unbounded sets.
+# We store True as the value since we only need membership testing.
+_is_checksummed: Final[cachebox.LRUCache[ChecksumAddress, bool]] = cachebox.LRUCache(
+    int(ENVS.CHECKSUM_CACHE_MAXSIZE)
+)
+_is_not_checksummed: Final[cachebox.LRUCache[HexAddress, bool]] = cachebox.LRUCache(
+    int(ENVS.CHECKSUM_CACHE_MAXSIZE)
+)
 
 
 def __get_checksum_from_cache(address: HexAddress) -> ChecksumAddress | None:
@@ -136,17 +144,17 @@ def __get_checksum_from_cache(address: HexAddress) -> ChecksumAddress | None:
 def __cache_if_is_checksummed(address: HexAddress, checksummed: ChecksumAddress) -> None:
     """Cache the address based on whether it is checksummed.
 
-    This function adds the address to the `_is_checksummed` set if it is already
-    checksummed, otherwise it adds it to the `_is_not_checksummed` set.
+    This function adds the address to the `_is_checksummed` cache if it is already
+    checksummed, otherwise it adds it to the `_is_not_checksummed` cache.
 
     Args:
         address: The original Ethereum address.
         checksummed: The checksummed Ethereum address.
     """
     if address == checksummed:
-        _is_checksummed.add(cast(ChecksumAddress, address))
+        _is_checksummed[cast(ChecksumAddress, address)] = True
     else:
-        _is_not_checksummed.add(address)
+        _is_not_checksummed[address] = True
 
 
 def __normalize_input_to_string(address: AnyAddressType) -> HexAddress:
