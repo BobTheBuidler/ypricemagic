@@ -409,7 +409,7 @@ async def get_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
     amounts: Iterable[Decimal | int | float | None] | None = None,
-) -> list[UsdPrice | None]: ...
+) -> list[PriceResult | None]: ...
 
 
 @overload
@@ -421,7 +421,7 @@ async def get_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
     amounts: Iterable[Decimal | int | float | None] | None = None,
-) -> list[UsdPrice]: ...
+) -> list[PriceResult]: ...
 
 
 @a_sync.a_sync(default="sync")
@@ -433,7 +433,7 @@ async def get_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
     amounts: Iterable[Decimal | int | float | None] | None = None,
-) -> list[UsdPrice | None]:
+) -> list[PriceResult | None]:
     """
     Get prices for multiple tokens in USD.
 
@@ -496,7 +496,7 @@ def map_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
     amount: Decimal | int | float | None = None,
-) -> a_sync.TaskMapping[_TAddress, UsdPrice | None]: ...
+) -> a_sync.TaskMapping[_TAddress, PriceResult | None]: ...
 
 
 @overload
@@ -508,7 +508,7 @@ def map_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
     amount: Decimal | int | float | None = None,
-) -> a_sync.TaskMapping[_TAddress, UsdPrice]: ...
+) -> a_sync.TaskMapping[_TAddress, PriceResult]: ...
 
 
 def map_prices(
@@ -519,7 +519,7 @@ def map_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
     amount: Decimal | int | float | None = None,
-) -> a_sync.TaskMapping[_TAddress, UsdPrice | None]:
+) -> a_sync.TaskMapping[_TAddress, PriceResult | None]:
     """
     Map token addresses to their prices asynchronously.
 
