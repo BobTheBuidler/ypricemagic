@@ -66,7 +66,7 @@ def to_address(address: AnyAddressType) -> ChecksumAddress:
     address = __normalize_input_to_string(address)
     if cached := __get_checksum_from_cache(address):
         return cached
-    checksummed = checksum(address)
+    checksummed: ChecksumAddress = checksum(address)
     __cache_if_is_checksummed(address, checksummed)
     return checksummed
 
@@ -139,7 +139,8 @@ def __get_checksum_from_cache(address: HexAddress) -> ChecksumAddress | None:
     elif address in _is_not_checksummed:
         # The checksum value is already in the lru-cache, there
         # is no reason to dispatch this function call to a thread.
-        return checksum(address)
+        result: ChecksumAddress = checksum(address)
+        return result
     else:
         return None
 
