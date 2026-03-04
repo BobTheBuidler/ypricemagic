@@ -1,9 +1,10 @@
 import logging
 import time
 from collections.abc import Callable, Iterable, Sized
-from functools import lru_cache, wraps
+from functools import wraps
 from typing import Final, TypeVar
 
+import cachebox
 from a_sync import PruningThreadPoolExecutor, a_sync
 from a_sync.a_sync import ASyncFunction
 from brownie import chain
@@ -117,9 +118,9 @@ See Also:
 """
 
 
-db_session_cached: Final = lambda func: retry_locked(
-    lru_cache(maxsize=None)(db_session(retry_locked(func)))
-)
+db_session_cached: Final = lambda func: cachebox.cached(
+    cachebox.LRUCache(ENVS.DEFAULT_CACHE_MAXSIZE)
+)(retry_locked(db_session(retry_locked(func))))
 
 
 _result_count_logger: Final = logging.getLogger(f"{__name__}.result_count")

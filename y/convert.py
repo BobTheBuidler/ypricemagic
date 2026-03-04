@@ -1,4 +1,4 @@
-from functools import lru_cache
+import cachebox
 from typing import Final, cast
 
 import a_sync
@@ -14,7 +14,7 @@ HexBytes: Final = hexbytes.HexBytes
 to_checksum_address: Final = cchecksum.to_checksum_address
 
 
-@lru_cache(maxsize=int(ENVS.CHECKSUM_CACHE_MAXSIZE))  # type: ignore [has-type]
+@cachebox.cached(cachebox.LRUCache(int(ENVS.CHECKSUM_CACHE_MAXSIZE)))  # type: ignore [has-type]
 def checksum(address: AnyAddress) -> ChecksumAddress:
     """Convert an address to its checksummed format.
 

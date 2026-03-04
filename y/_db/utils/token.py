@@ -1,9 +1,9 @@
 import logging
 import threading
 import time
-from functools import lru_cache
 
 import a_sync
+import cachebox
 from cachetools import TTLCache, cached
 from pony.orm import ObjectNotFound, TransactionIntegrityError, commit, select
 
@@ -99,7 +99,7 @@ def ensure_token(address: AnyAddressType) -> None:
     return _ensure_token(str(address))  # force to string for cache key
 
 
-@lru_cache(maxsize=512)
+@cachebox.cached(cachebox.LRUCache(512))
 @db_session_retry_locked
 def _ensure_token(address: str) -> None:
     """Helper function to ensure a token entity exists.
