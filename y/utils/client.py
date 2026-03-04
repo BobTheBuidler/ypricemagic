@@ -4,9 +4,9 @@ Utility functions for retrieving Ethereum client information.
 
 import logging
 
+import cachebox
 from async_lru import alru_cache
 from brownie import web3
-from cachetools.func import lru_cache
 from dank_mids import dank_web3
 from web3._utils.rpc_abi import RPC
 
@@ -15,7 +15,7 @@ from y.utils.logging import yLazyLogger
 logger = logging.getLogger(__name__)
 
 
-@lru_cache(1)
+@cachebox.cached(cachebox.LRUCache(1))
 @yLazyLogger(logger)
 def get_ethereum_client() -> str:
     """
