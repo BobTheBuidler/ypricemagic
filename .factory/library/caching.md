@@ -60,3 +60,23 @@ async def _get_price(token, block):
 async def _get_price(token, block):
     ...
 ```
+
+**EXCEPTION**: `_get_price` in magic.py is being migrated from a_sync memory cache to a custom VTTLCache wrapper as part of the current mission. See below.
+
+## VTTLCache Per-Key TTL (CRITICAL API CAVEAT)
+
+`cachebox.VTTLCache` supports per-key TTL via `cache.insert(key, value, ttl=X)`.
+
+**WARNING**: `VTTLCache.__setitem__` (i.e., `cache[key] = value`) creates entries with **infinite TTL** (no expiry), even if a `ttl` was passed to the constructor. The `@cachebox.cached` decorator uses `__setitem__` internally, so it **CANNOT** be used with VTTLCache for per-key TTL differentiation.
+
+```python
+# WRONG — entries get infinite TTL
+cache = cachebox.VTTLCache(1000, ttl=300)
+cache["key"] = "value"  # infinite TTL!
+
+# CORRECT — entries get specified TTL
+cache = cachebox.VTTLCache(1000)
+cache.insert("key", "value", ttl=300)  # expires after 300s
+```
+
+A custom caching wrapper must be written that uses `cache.insert()` instead of `cache[key] = value`.

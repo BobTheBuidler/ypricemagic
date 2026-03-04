@@ -24,7 +24,7 @@ from y._decorators import stuck_coro_debugger
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
 from y.contracts import Contract, build_name, contract_creation_block_async, has_method, probe
-from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
+from y.datatypes import Address, AnyAddressType, Block, Pool, PriceResult, UsdPrice
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract, NonStandardERC20
 from y.networks import Network
 from y.utils import _erc20, logging, raw_calls
@@ -407,7 +407,7 @@ class ERC20(ContractBase):
         return_None_on_failure: bool = False,
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: tuple[Pool, ...] = (),
-    ) -> UsdPrice | None:
+    ) -> PriceResult | None:
         """
         Get the price of the token in USD.
 
@@ -894,14 +894,13 @@ class WeiBalance(a_sync.ASyncGenericBase):
             >>> await balance.price
             Decimal('1.23')
         """
-        price = Decimal(
-            await self.token.price(
-                block=self.block,
-                skip_cache=self._skip_cache,
-                ignore_pools=self._ignore_pools,
-                sync=False,
-            )
+        result = await self.token.price(
+            block=self.block,
+            skip_cache=self._skip_cache,
+            ignore_pools=self._ignore_pools,
+            sync=False,
         )
+        price = Decimal(float(result))
         self._logger.debug("balance: %s  price: %s", self, price)
         return price
 

@@ -7,13 +7,18 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, has_methods
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, PriceResult, PriceStep, UsdPrice
 from y.prices import magic
 
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
+@a_sync.a_sync(
+    default="sync",
+    cache_type="memory",
+    ram_cache_ttl=5 * 60,
+    ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
+)
 async def is_mstable_feeder_pool(address: AnyAddressType) -> bool:
     """
     Check if a given address is an mStable Feeder Pool.
@@ -75,5 +80,13 @@ async def get_price(
         ERC20._get_scale_for(address),
     )
     ratio = ratio[0] / scale
-    underlying_price = await magic.get_price(masset, block, skip_cache=skip_cache, sync=False)
-    return UsdPrice(underlying_price * ratio)
+    inner_result = await magic.get_price(masset, block, skip_cache=skip_cache, sync=False)
+    my_price = inner_result.price * ratio
+    my_step = PriceStep(
+        source="mstable_feeder_pool",
+        input_token=str(address),
+        output_token=str(masset),
+        pool=str(address),
+        price=float(ratio),
+    )
+    return PriceResult(price=UsdPrice(my_price), path=[my_step] + inner_result.path)

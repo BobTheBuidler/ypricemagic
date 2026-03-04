@@ -16,7 +16,16 @@ from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, UsdPrice, UsdValue
+from y.datatypes import (
+    Address,
+    AddressOrContract,
+    AnyAddressType,
+    Block,
+    Pool,
+    PriceResult,
+    UsdPrice,
+    UsdValue,
+)
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
@@ -57,11 +66,14 @@ async def _calc_out_value(
     See Also:
         - :func:`y.prices.magic.get_price`
     """
-    out_scale, out_price = await cgather(
+    out_scale, out_price_result = await cgather(
         ERC20._get_scale_for(token_out),
         magic.get_price(
             token_out, block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False
         ),
+    )
+    out_price = (
+        out_price_result.price if isinstance(out_price_result, PriceResult) else out_price_result
     )
     return (total_outout / out_scale) * float(out_price) / scale
 
@@ -139,7 +151,8 @@ class BalancerV1Pool(BalancerPool):
 
         # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
         good_value = sum(
-            balance * Decimal(price) for balance, price in zip(good_balances.values(), prices)
+            balance * Decimal(float(price))
+            for balance, price in zip(good_balances.values(), prices)
         )
 
         return good_value / len(good_balances) * len(token_balances)

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Union
 
 import evmspec.data
@@ -120,3 +121,109 @@ class UsdPrice(UsdValue):
         >>> str(price)
         '$1234.56780000'
     """
+
+
+@dataclass
+class PriceStep:
+    """
+    Represents a single step in a price derivation path.
+
+    Each step captures how a price was derived at a particular stage of resolution,
+    including the source, input/output tokens, pool address (if applicable), and
+    the intermediate price.
+
+    Attributes:
+        source: The pricing source (e.g., 'chainlink', 'uniswap_v3', 'curve').
+        input_token: The address of the input token for this step.
+        output_token: The address or symbol of the output token for this step.
+        pool: The pool address used for pricing, if applicable.
+        price: The price at this step.
+
+    Examples:
+        >>> step = PriceStep(
+        ...     source='chainlink',
+        ...     input_token='WETH',
+        ...     output_token='USD',
+        ...     pool=None,
+        ...     price=1.0
+        ... )
+        >>> step.source
+        'chainlink'
+    """
+
+    source: str
+    input_token: str
+    output_token: str
+    pool: str | None
+    price: float
+
+    def __repr__(self) -> str:
+        """
+        Return a concise string representation of the price step.
+
+        Shows source, truncated input/output token addresses, and pool (if present).
+        """
+        # Truncate long addresses for readability
+        inp = (
+            self.input_token[:6] + "..." + self.input_token[-4:]
+            if len(self.input_token) > 12
+            else self.input_token
+        )
+        out = (
+            self.output_token[:6] + "..." + self.output_token[-4:]
+            if len(self.output_token) > 12
+            else self.output_token
+        )
+        pool_str = f", pool={self.pool[:6]}...{self.pool[-4:]}" if self.pool else ""
+        return f"PriceStep(source='{self.source}', input_token='{inp}', output_token='{out}'{pool_str})"
+
+
+@dataclass
+class PriceResult:
+    """
+    Represents the result of a price resolution with derivation path information.
+
+    PriceResult wraps the final price with the path of pricing steps that were used
+    to derive it. This enables callers to understand how a price was obtained.
+
+    Attributes:
+        price: The final price (typically UsdPrice for USD-denominated prices).
+        path: List of PriceStep objects showing the derivation path.
+
+    Examples:
+        >>> result = PriceResult(price=UsdPrice(1234.56), path=[])
+        >>> bool(result)
+        True
+        >>> float(result)
+        1234.56
+        >>> result_zero = PriceResult(price=UsdPrice(0), path=[])
+        >>> bool(result_zero)
+        False
+    """
+
+    price: float
+    path: list[PriceStep]
+
+    def __bool__(self) -> bool:
+        """
+        Return truthiness based on the price value.
+
+        PriceResult is falsy when price is 0, truthy otherwise.
+        This enables existing `if price:` guards to work correctly.
+        """
+        return bool(self.price)
+
+    def __float__(self) -> float:
+        """
+        Return the price as a float.
+
+        This is needed for callers that do Decimal(float(result)).
+        """
+        return float(self.price)
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation showing price value and path summary.
+        """
+        path_summary = f"[{len(self.path)} steps]" if self.path else "[]"
+        return f"PriceResult(price={self.price}, path={path_summary})"

@@ -6,7 +6,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.constants import CONNECTED_TO_MAINNET, weth
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, PriceResult, PriceStep, UsdPrice
 from y.prices import magic
 from y.utils.raw_calls import raw_call
 
@@ -59,10 +59,18 @@ async def get_price_creth(
         - :class:`y.classes.common.ERC20`
     """
     address = await convert.to_address_async(token)
-    total_balance, total_supply, weth_price = await cgather(
+    total_balance, total_supply, inner_result = await cgather(
         raw_call(address, "accumulated()", output="int", block=block, sync=False),
         ERC20(address, asynchronous=True).total_supply(block),
         magic.get_price(weth, block, skip_cache=skip_cache, sync=False),
     )
     per_share = total_balance / total_supply
-    return per_share * weth_price
+    my_price = per_share * inner_result.price
+    my_step = PriceStep(
+        source="creth",
+        input_token=str(address),
+        output_token=str(weth),
+        pool=None,
+        price=float(per_share),
+    )
+    return PriceResult(price=UsdPrice(my_price), path=[my_step] + inner_result.path)

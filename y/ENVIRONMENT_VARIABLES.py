@@ -8,6 +8,9 @@ _envs: Final = EnvVarFactory("YPRICEMAGIC")
 CACHE_TTL: Final = _envs.create_env("CACHE_TTL", int, default=60 * 60, verbose=False)
 """TTL for various in-memory caches throughout the library"""
 
+AMOUNT_CACHE_TTL: Final = _envs.create_env("AMOUNT_CACHE_TTL", int, default=300, verbose=False)
+"""TTL for amount-based (non-spot) price cache entries. Defaults to 300 seconds (5 minutes)."""
+
 CONTRACT_CACHE_TTL: Final = _envs.create_env(
     "CONTRACT_CACHE_TTL", int, default=CACHE_TTL, verbose=False
 )
