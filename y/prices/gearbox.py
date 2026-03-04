@@ -55,7 +55,7 @@ class DieselPool(ContractBase):
         underlying = await self.__underlying__
         exchange_rate = await self.exchange_rate(block, sync=False)
         und_price = await underlying.price(block, skip_cache=skip_cache, sync=False)
-        return Decimal(und_price) * exchange_rate
+        return Decimal(float(und_price)) * exchange_rate
 
 
 class Gearbox(a_sync.ASyncGenericBase):

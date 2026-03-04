@@ -7,7 +7,7 @@ from a_sync import cgather
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.constants import CONNECTED_TO_MAINNET
 from y.contracts import Contract
-from y.datatypes import Address, Block
+from y.datatypes import Address, Block, PriceResult, PriceStep, UsdPrice
 from y.prices import magic
 
 logger = logging.getLogger(__name__)
@@ -70,11 +70,20 @@ async def get_price(
         - :func:`~y.prices.magic.get_price`
         - :func:`~y.prices.rkp3r.get_discount`
     """
-    price, discount = await cgather(
+    inner_result, discount = await cgather(
         magic.get_price(KP3R, block=block, skip_cache=skip_cache, sync=False),
         get_discount(block),
     )
-    return Decimal(price) * (100 - discount) / 100
+    discount_factor = (100 - discount) / 100
+    my_price = Decimal(inner_result.price) * discount_factor
+    my_step = PriceStep(
+        source="rkp3r",
+        input_token=str(RKP3R),
+        output_token=str(KP3R),
+        pool=None,
+        price=float(discount_factor),
+    )
+    return PriceResult(price=UsdPrice(my_price), path=[my_step] + inner_result.path)
 
 
 async def get_discount(block: Block | None = None) -> Decimal:

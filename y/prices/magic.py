@@ -259,7 +259,18 @@ async def get_price_in(
         if quote_usd_price is None or not quote_usd_price:
             return None
 
-        return Price(token_usd_price / quote_usd_price)
+        # Extract numeric price from PriceResult if needed
+        _token_price = (
+            token_usd_price.price
+            if isinstance(token_usd_price, PriceResult)
+            else float(token_usd_price)
+        )
+        _quote_price = (
+            quote_usd_price.price
+            if isinstance(quote_usd_price, PriceResult)
+            else float(quote_usd_price)
+        )
+        return Price(_token_price / _quote_price)
 
     # Try on-chain routing first
     on_chain_price = await _get_price_on_chain(
@@ -306,8 +317,19 @@ async def get_price_in(
     if not quote_usd_price:
         return None
 
+    # Extract numeric price from PriceResult if needed
+    _token_price = (
+        token_usd_price.price
+        if isinstance(token_usd_price, PriceResult)
+        else float(token_usd_price)
+    )
+    _quote_price = (
+        quote_usd_price.price
+        if isinstance(quote_usd_price, PriceResult)
+        else float(quote_usd_price)
+    )
     # Calculate cross-rate: token price in terms of quote token
-    return Price(token_usd_price / quote_usd_price)
+    return Price(_token_price / _quote_price)
 
 
 @stuck_coro_debugger
@@ -667,14 +689,19 @@ async def _get_price(
                 pool = dex_info.get("pool") if dex_info else None
 
         if raw_price:
-            # sense_check receives raw numeric price, not PriceResult
-            await utils.sense_check(token, block, raw_price)
+            # If a bucket function returned a PriceResult (from a recursive get_price call),
+            # extract the numeric price for sense_check
+            numeric_price = raw_price.price if isinstance(raw_price, PriceResult) else raw_price
+            await utils.sense_check(token, block, numeric_price)
         else:
             _fail_appropriately(logger, symbol, fail_to_None, silent)
 
         logger.debug("%s price: %s", symbol, raw_price)
 
         if raw_price:  # checks for the erroneous 0 value we see once in a while
+            if isinstance(raw_price, PriceResult):
+                # Bucket returned a PriceResult with its own path — use it directly
+                return raw_price
             # Wrap raw price into PriceResult with path
             price_step = PriceStep(
                 source=source or "unknown",
@@ -695,7 +722,7 @@ async def _exit_early_for_known_tokens(
     logger: Logger,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
-) -> tuple[UsdPrice | float | None, str | None]:  # sourcery skip: low-code-quality
+) -> tuple[UsdPrice | float | PriceResult | None, str | None]:  # sourcery skip: low-code-quality
     """
     Attempt to get the price for known token types without having to fully load everything.
 
@@ -711,6 +738,8 @@ async def _exit_early_for_known_tokens(
 
     Returns:
         A tuple of (price, bucket_name) if the price can be determined early, or (None, None) otherwise.
+        The price may be a PriceResult (from recursive get_price calls in bucket functions),
+        a plain UsdPrice/float, or None.
         The bucket_name string (e.g., 'chainlink feed', 'atoken', 'curve lp') is used to build the PriceStep.
     """
     bucket = await utils.check_bucket(token_address, sync=False)

@@ -191,4 +191,4 @@ async def get_value(
         get_balance(bpool, token, block),
         token.price(block, skip_cache=skip_cache, sync=False),
     )
-    return UsdValue(balance * Decimal(price))
+    return UsdValue(balance * Decimal(float(price)))

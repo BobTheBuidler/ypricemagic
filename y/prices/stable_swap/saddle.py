@@ -9,7 +9,15 @@ from y import convert
 from y.classes.common import ERC20
 from y.constants import CONNECTED_TO_MAINNET
 from y.contracts import has_method, has_methods
-from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, UsdPrice, UsdValue
+from y.datatypes import (
+    Address,
+    AddressOrContract,
+    AnyAddressType,
+    Block,
+    PriceResult,
+    UsdPrice,
+    UsdValue,
+)
 from y.prices import magic
 from y.utils.multicall import multicall_same_func_same_contract_different_inputs
 
@@ -18,7 +26,12 @@ logger = logging.getLogger(__name__)
 _GET_TOKEN_INPUTS = tuple(range(8))
 
 
-@a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
+@a_sync(
+    default="sync",
+    cache_type="memory",
+    ram_cache_ttl=5 * 60,
+    ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
+)
 async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     """
     Determine if a given token is a Saddle LP token.
@@ -149,7 +162,10 @@ async def get_tvl(
         magic.get_prices(tokens, block, skip_cache=skip_cache, silent=True, sync=False),
     )
     return UsdValue(
-        sum(balance / scale * price for balance, scale, price in zip(balances, scales, prices))
+        sum(
+            balance / scale * (price.price if isinstance(price, PriceResult) else price)
+            for balance, scale, price in zip(balances, scales, prices)
+        )
     )
 
 

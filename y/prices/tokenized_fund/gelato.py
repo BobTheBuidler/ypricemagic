@@ -7,14 +7,19 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import has_methods
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, PriceResult, PriceStep, UsdPrice
 from y.utils.cache import optional_async_diskcache
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
 
-@a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
+@a_sync(
+    default="sync",
+    cache_type="memory",
+    ram_cache_ttl=5 * 60,
+    ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
+)
 @optional_async_diskcache
 async def is_gelato_pool(token_address: AnyAddressType) -> bool:
     """
@@ -76,8 +81,8 @@ async def get_price(
         balance1,
         scale0,
         scale1,
-        price0,
-        price1,
+        result0,
+        result1,
         total_supply,
     ) = await cgather(
         raw_call(address, "gelatoBalance0()", block=block, output="int", sync=False),
@@ -90,5 +95,20 @@ async def get_price(
 
     balance0 /= scale0
     balance1 /= scale1
+    price0 = result0.price if isinstance(result0, PriceResult) else result0
+    price1 = result1.price if isinstance(result1, PriceResult) else result1
     totalVal = balance0 * price0 + balance1 * price1
-    return UsdPrice(totalVal / total_supply)
+    pool_price = totalVal / total_supply
+    my_step = PriceStep(
+        source="gelato",
+        input_token=str(address),
+        output_token="USD",
+        pool=str(address),
+        price=float(pool_price),
+    )
+    inner_path = []
+    if isinstance(result0, PriceResult):
+        inner_path.extend(result0.path)
+    if isinstance(result1, PriceResult):
+        inner_path.extend(result1.path)
+    return PriceResult(price=UsdPrice(pool_price), path=[my_step] + inner_path)

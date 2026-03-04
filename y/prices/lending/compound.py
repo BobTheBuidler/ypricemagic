@@ -114,10 +114,11 @@ class CToken(ERC20):
 
         # Or we can just price the underlying token ourselves
         underlying = await self.__underlying__
-        underlying_per_ctoken, underlying_price = await cgather(
+        underlying_per_ctoken, underlying_price_result = await cgather(
             self.underlying_per_ctoken(block=block, asynchronous=True),
             underlying.price(block=block, skip_cache=skip_cache, asynchronous=True),
         )
+        underlying_price = float(underlying_price_result)
         return UsdPrice(underlying_per_ctoken * underlying_price)
 
     @a_sync.aka.cached_property

@@ -8,7 +8,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import has_methods
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, PriceResult, PriceStep, UsdPrice
 from y.prices import magic
 from y.utils import gather_methods
 
@@ -79,12 +79,20 @@ async def get_price(
         - :func:`y.prices.magic.get_price`
     """
     address = await convert.to_address_async(token)
-    token, total_bal, total_supply = await gather_methods(
+    underlying, total_bal, total_supply = await gather_methods(
         address, ("token", "totalToken", "totalSupply"), block=block
     )
-    token_scale, pool_scale = await igather(map(ERC20._get_scale_for, (token, address)))
+    token_scale, pool_scale = await igather(map(ERC20._get_scale_for, (underlying, address)))
     total_bal /= Decimal(token_scale)
     total_supply /= Decimal(pool_scale)
     share_price = total_bal / total_supply
-    token_price = await magic.get_price(token, block, skip_cache=skip_cache, sync=False)
-    return share_price * token_price
+    inner_result = await magic.get_price(underlying, block, skip_cache=skip_cache, sync=False)
+    my_price = share_price * inner_result.price
+    my_step = PriceStep(
+        source="ib_token",
+        input_token=str(address),
+        output_token=str(underlying),
+        pool=None,
+        price=float(share_price),
+    )
+    return PriceResult(price=UsdPrice(my_price), path=[my_step] + inner_result.path)

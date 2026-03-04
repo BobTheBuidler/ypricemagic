@@ -69,7 +69,12 @@ force_false = {
 }
 
 
-@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=30 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
+@a_sync.a_sync(
+    default="sync",
+    cache_type="memory",
+    ram_cache_ttl=30 * 60,
+    ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
+)
 @stuck_coro_debugger
 @optional_async_diskcache
 async def is_yearn_vault(token: AnyAddressType) -> bool:
@@ -355,17 +360,13 @@ class YearnInspiredVault(ERC20):
             return None
         logger.debug("%s share price at block %s: %s", self, block, share_price)
         try:
-            price = UsdPrice(
-                share_price
-                * Decimal(
-                    await underlying.price(
-                        block=block,
-                        ignore_pools=ignore_pools,
-                        skip_cache=skip_cache,
-                        sync=False,
-                    )
-                )
+            underlying_price_result = await underlying.price(
+                block=block,
+                ignore_pools=ignore_pools,
+                skip_cache=skip_cache,
+                sync=False,
             )
+            price = UsdPrice(share_price * Decimal(float(underlying_price_result)))
         except yPriceMagicError as e:
             if not isinstance(e.exception, PriceError):
                 raise

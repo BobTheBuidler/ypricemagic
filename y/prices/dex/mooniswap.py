@@ -10,7 +10,7 @@ from y import convert
 from y.classes.common import ERC20
 from y.constants import weth
 from y.contracts import Contract
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, PriceResult, PriceStep, UsdPrice
 from y.prices import magic
 from y.utils import gather_methods
 
@@ -94,7 +94,7 @@ async def get_pool_price(
     """
     address = await convert.to_address_async(token)
     token0, token1 = await gather_methods(address, ("token0", "token1"))
-    bal0, bal1, price0, price1, total_supply = await cgather(
+    bal0, bal1, result0, result1, total_supply = await cgather(
         (
             dank_mids.eth.get_balance(address, block_identifier=block)
             if token0 == ZERO_ADDRESS
@@ -123,5 +123,23 @@ async def get_pool_price(
     elif token1 == ZERO_ADDRESS:
         bal1 = Decimal(bal1) / 10**18
 
+    price0 = result0.price if isinstance(result0, PriceResult) else result0
+    price1 = result1.price if isinstance(result1, PriceResult) else result1
     totalVal = bal0 * Decimal(price0) + bal1 * Decimal(price1)
-    return totalVal / Decimal(total_supply)
+    pool_price = totalVal / Decimal(total_supply)
+    # Build path from component token prices
+    actual_token0 = gas_coin if token0 == ZERO_ADDRESS else token0
+    actual_token1 = gas_coin if token1 == ZERO_ADDRESS else token1
+    my_step = PriceStep(
+        source="mooniswap",
+        input_token=str(address),
+        output_token="USD",
+        pool=str(address),
+        price=float(pool_price),
+    )
+    inner_path = []
+    if isinstance(result0, PriceResult):
+        inner_path.extend(result0.path)
+    if isinstance(result1, PriceResult):
+        inner_path.extend(result1.path)
+    return PriceResult(price=UsdPrice(pool_price), path=[my_step] + inner_path)

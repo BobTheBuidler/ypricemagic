@@ -7,7 +7,7 @@ from a_sync import cgather
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.constants import CHAINID, CONNECTED_TO_MAINNET, weth
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, PriceResult, PriceStep, UsdPrice
 from y.networks import Network
 from y.prices import magic
 from y.utils.raw_calls import raw_call
@@ -85,12 +85,20 @@ class wstEth(a_sync.ASyncGenericBase):
             - :func:`y.utils.raw_calls.raw_call`
             - :func:`y.prices.magic.get_price`
         """
-        share_price, weth_price = await cgather(
+        share_price, inner_result = await cgather(
             raw_call(self.address, "stEthPerToken()", output="int", block=block, sync=False),
             magic.get_price(weth, block, skip_cache=skip_cache, sync=False),
         )
         share_price /= Decimal(10**18)
-        return UsdPrice(share_price * Decimal(float(weth_price)))
+        my_price = share_price * Decimal(float(inner_result.price))
+        my_step = PriceStep(
+            source="wsteth",
+            input_token=str(self.address),
+            output_token=str(weth),
+            pool=None,
+            price=float(share_price),
+        )
+        return PriceResult(price=UsdPrice(my_price), path=[my_step] + inner_result.path)
 
 
 wsteth = wstEth(asynchronous=True)
