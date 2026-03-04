@@ -16,7 +16,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, convert
 from y._decorators import stuck_coro_debugger
 from y.classes import ERC20
-from y.datatypes import AnyAddressType, Block, Pool, Price, UsdPrice
+from y.datatypes import AnyAddressType, Block, Pool, Price, PriceResult, PriceStep, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
 from y.prices import (
     band,
@@ -57,7 +57,7 @@ async def get_price(
     ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
     amount: Decimal | int | float | None = None,
-) -> UsdPrice | None: ...
+) -> PriceResult | None: ...
 
 
 @overload
@@ -70,7 +70,7 @@ async def get_price(
     ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
     amount: Decimal | int | float | None = None,
-) -> UsdPrice: ...
+) -> PriceResult: ...
 
 
 @a_sync.a_sync(default="sync")
@@ -83,7 +83,7 @@ async def get_price(
     ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
     amount: Decimal | int | float | None = None,
-) -> UsdPrice | None:
+) -> PriceResult | None:
     """
     Get the price of a token in USD.
 
@@ -555,15 +555,16 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
         ignore_pools: tuple[Pool, ...] = (),
         silent: bool = False,
         amount: Decimal | int | float | None = None,
-    ) -> UsdPrice | None:
+    ) -> PriceResult | None:
         from y._db.utils import price as db
 
         # Only use disk cache for unit prices (amount=None)
-        # NOTE: db.get_price returns Decimal, wrap in UsdPrice for type consistency
+        # NOTE: db.get_price returns Decimal, wrap in PriceResult with empty path
         if amount is None and not skip_cache and (price := await db.get_price(token, block)):
             cache_logger.debug("disk cache -> %s", price)
-            return UsdPrice(price)
-        price = await get_price(
+            # DB cache stores only the price value, not the derivation path
+            return PriceResult(price=UsdPrice(price), path=[])
+        result = await get_price(
             token,
             block=block,
             fail_to_None=fail_to_None,
@@ -571,15 +572,21 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
             silent=silent,
             amount=amount,
         )
-        if price and amount is None and not skip_cache:
-            db.set_price(token, block, price)
-        return price
+        if result and amount is None and not skip_cache:
+            # Extract .price from PriceResult for DB storage
+            db.set_price(token, block, result.price)
+        return result
 
     return cache_wrap
 
 
 @stuck_coro_debugger
-@a_sync.a_sync(default="async", cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL, ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE)
+@a_sync.a_sync(
+    default="async",
+    cache_type="memory",
+    ram_cache_ttl=ENVS.CACHE_TTL,
+    ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE,
+)
 @__cache
 async def _get_price(
     token: ChecksumAddress,
@@ -590,7 +597,7 @@ async def _get_price(
     ignore_pools: tuple[Pool, ...] = (),
     silent: bool = False,
     amount: Decimal | int | float | None = None,
-) -> UsdPrice | None:  # sourcery skip: remove-redundant-if
+) -> PriceResult | None:  # sourcery skip: remove-redundant-if
     """
     Internal function to get the price of a token.
 
@@ -606,7 +613,8 @@ async def _get_price(
         amount: The amount of tokens (human-readable units) to use for DEX quotes.
 
     Returns:
-        The price of the token in USD, or None if the price couldn't be determined and fail_to_None is True.
+        A PriceResult containing the price and derivation path, or None if the price
+        couldn't be determined and fail_to_None is True.
     """
     if token == ZERO_ADDRESS:
         logger = get_price_logger(
@@ -624,26 +632,58 @@ async def _get_price(
     logger = get_price_logger(token, block, symbol=symbol, extra="magic", start_task=True)
     logger.debug("fetching price for %s", symbol)
     try:
-        price = await _get_price_from_api(token, block, logger)
-        if price is None:
-            price = await _exit_early_for_known_tokens(
+        # Track source info for PriceStep construction
+        raw_price = None
+        source = None
+        pool = None
+
+        # Try API first
+        price_or_none, api_source = await _get_price_from_api(token, block, logger)
+        if price_or_none is not None:
+            raw_price = price_or_none
+            source = api_source
+
+        # Try bucket functions (known token types)
+        if raw_price is None:
+            price_or_none, bucket_name = await _exit_early_for_known_tokens(
                 token,
                 block=block,
                 ignore_pools=ignore_pools,
                 skip_cache=skip_cache,
                 logger=logger,
             )
-        if price is None:
-            price = await _get_price_from_dexes(
+            if price_or_none is not None:
+                raw_price = price_or_none
+                source = bucket_name
+
+        # Try DEXes
+        if raw_price is None:
+            price_or_none, dex_info = await _get_price_from_dexes(
                 token, block, ignore_pools, skip_cache, logger, amount=amount
             )
-        if price:
-            await utils.sense_check(token, block, price)
+            if price_or_none is not None:
+                raw_price = price_or_none
+                source = dex_info.get("source") if dex_info else None
+                pool = dex_info.get("pool") if dex_info else None
+
+        if raw_price:
+            # sense_check receives raw numeric price, not PriceResult
+            await utils.sense_check(token, block, raw_price)
         else:
             _fail_appropriately(logger, symbol, fail_to_None, silent)
-        logger.debug("%s price: %s", symbol, price)
-        if price:  # checks for the erroneous 0 value we see once in a while
-            return price
+
+        logger.debug("%s price: %s", symbol, raw_price)
+
+        if raw_price:  # checks for the erroneous 0 value we see once in a while
+            # Wrap raw price into PriceResult with path
+            price_step = PriceStep(
+                source=source or "unknown",
+                input_token=str(token),
+                output_token="USD",
+                pool=pool,
+                price=float(raw_price),
+            )
+            return PriceResult(price=UsdPrice(raw_price), path=[price_step])
     finally:
         logger.close()
 
@@ -655,7 +695,7 @@ async def _exit_early_for_known_tokens(
     logger: Logger,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
-) -> UsdPrice | None:  # sourcery skip: low-code-quality
+) -> tuple[UsdPrice | float | None, str | None]:  # sourcery skip: low-code-quality
     """
     Attempt to get the price for known token types without having to fully load everything.
 
@@ -670,7 +710,8 @@ async def _exit_early_for_known_tokens(
         ignore_pools: A tuple of pool addresses to ignore when fetching the price.
 
     Returns:
-        The price of the token if it can be determined early, or None otherwise.
+        A tuple of (price, bucket_name) if the price can be determined early, or (None, None) otherwise.
+        The bucket_name string (e.g., 'chainlink feed', 'atoken', 'curve lp') is used to build the PriceStep.
     """
     bucket = await utils.check_bucket(token_address, sync=False)
 
@@ -784,7 +825,8 @@ async def _exit_early_for_known_tokens(
         price = await solidex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == "stable usd":
-        price = 1
+        # Normalize int literal to UsdPrice for type consistency
+        price = UsdPrice(1)
 
     elif bucket == "synthetix":
         price = await synthetix.get_price(token_address, block, sync=False)
@@ -828,14 +870,16 @@ async def _exit_early_for_known_tokens(
 
     logger.debug("%s -> %s", bucket, price)
 
-    return price
+    # Return tuple of (price, bucket_name) for PriceResult construction
+    # bucket is the source identifier for the pricing path
+    return price, bucket
 
 
 async def _get_price_from_api(
     token: HexAddress,
     block: BlockNumber,
     logger: Logger,
-):
+) -> tuple[UsdPrice | None, str | None]:
     """
     Attempt to get the price from the ypricemagic API.
 
@@ -845,12 +889,14 @@ async def _get_price_from_api(
         logger: A logger instance for recording debug information.
 
     Returns:
-        The price of the token if it can be fetched from the ypricemagic API, or None otherwise.
+        A tuple of (price, 'ypriceapi') if the price can be fetched from the ypricemagic API,
+        or (None, None) otherwise.
     """
     if utils.ypriceapi.should_use and token not in utils.ypriceapi.skip_tokens:
         price = await utils.ypriceapi.get_price(token, block)
         logger.debug("ypriceapi -> %s", price)
-        return price
+        return price, "ypriceapi"
+    return None, None
 
 
 async def _get_price_from_dexes(
@@ -860,7 +906,7 @@ async def _get_price_from_dexes(
     skip_cache: bool,
     logger: Logger,
     amount: Decimal | int | float | None = None,
-):
+) -> tuple[UsdPrice | float | None, dict | None]:
     """
     Attempt to get the price from decentralized exchanges.
 
@@ -876,7 +922,8 @@ async def _get_price_from_dexes(
             When provided, the price accounts for price impact.
 
     Returns:
-        The price of the token if it can be determined from DEXes, or None otherwise.
+        A tuple of (price, source_info) if the price can be determined from DEXes, or (None, None) otherwise.
+        The source_info dict contains keys like 'source' (dex name) and optionally 'pool' (pool address).
     """
     # TODO We need better logic to determine whether to use uniswap, curve, balancer. For now this works for all known cases.
     dexes = [uniswap_multiplexer]
@@ -921,7 +968,10 @@ async def _get_price_from_dexes(
         if debug_logs_enabled:
             log_debug("%s -> %s", dex, price)
         if price:
-            return price
+            # Build source_info for PriceStep
+            dex_name = getattr(dex, "__name__", str(dex))
+            source_info = {"source": dex_name, "pool": None}
+            return price, source_info
 
     if debug_logs_enabled:
         log_debug(
@@ -941,7 +991,10 @@ async def _get_price_from_dexes(
     ):
         if debug_logs_enabled:
             log_debug("balancer -> %s", price)
-        return price
+        source_info = {"source": "balancer", "pool": None}
+        return price, source_info
+
+    return None, None
 
 
 def _fail_appropriately(
