@@ -14,7 +14,7 @@ HexBytes: Final = hexbytes.HexBytes
 to_checksum_address: Final = cchecksum.to_checksum_address
 
 
-@cachebox.cached(cachebox.LRUCache(int(ENVS.CHECKSUM_CACHE_MAXSIZE)))  # type: ignore [has-type]
+@cachebox.cached(cachebox.LRUCache(int(ENVS.CHECKSUM_CACHE_MAXSIZE)))  # type: ignore [has-type, untyped-decorator]
 def checksum(address: AnyAddress) -> ChecksumAddress:
     """Convert an address to its checksummed format.
 
@@ -108,10 +108,10 @@ async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
 # so we use thread-safe cachebox.LRUCache instead of unbounded sets.
 # We store True as the value since we only need membership testing.
 _is_checksummed: Final[cachebox.LRUCache[ChecksumAddress, bool]] = cachebox.LRUCache(
-    int(ENVS.CHECKSUM_CACHE_MAXSIZE)
+    int(ENVS.CHECKSUM_CACHE_MAXSIZE)  # type: ignore [has-type]
 )
 _is_not_checksummed: Final[cachebox.LRUCache[HexAddress, bool]] = cachebox.LRUCache(
-    int(ENVS.CHECKSUM_CACHE_MAXSIZE)
+    int(ENVS.CHECKSUM_CACHE_MAXSIZE)  # type: ignore [has-type]
 )
 
 
@@ -131,8 +131,11 @@ def __get_checksum_from_cache(address: HexAddress) -> ChecksumAddress | None:
     See Also:
         - :func:`checksum` for the checksumming process.
     """
-    if address in _is_checksummed:
-        return address  # type: ignore [return-value]
+    # Cast to ChecksumAddress for membership check in _is_checksummed cache
+    # since the cache is keyed by ChecksumAddress
+    checksummed_key = cast(ChecksumAddress, address)
+    if checksummed_key in _is_checksummed:
+        return checksummed_key
     elif address in _is_not_checksummed:
         # The checksum value is already in the lru-cache, there
         # is no reason to dispatch this function call to a thread.
