@@ -20,7 +20,7 @@ _RESERVES_METHODS = (
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
+@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 @optional_async_diskcache
 async def is_popsicle_lp(token_address: AnyAddressType) -> bool:
     """

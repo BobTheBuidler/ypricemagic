@@ -1,8 +1,7 @@
 import logging
-import threading
 
+import cachebox
 from a_sync import ProcessingQueue, a_sync
-from cachetools import TTLCache, cached
 from pony.orm import select
 
 from y._db.decorators import db_session_retry_locked, log_result_count
@@ -108,7 +107,7 @@ set_deploy_block = ProcessingQueue(_set_deploy_block, num_workers=2, return_data
 # startup caches
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("deploy blocks")
 def known_deploy_blocks() -> dict[Address, Block]:
     """Cache and return all known contract deploy blocks for this chain.

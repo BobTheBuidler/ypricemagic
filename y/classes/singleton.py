@@ -50,6 +50,26 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
 
         super().__init__(name, bases, namespace)
 
+        # NOTE: This dict is intentionally unbounded.
+        #
+        # The singleton pattern REQUIRES instances to persist forever to guarantee
+        # that the same address always returns the same instance. Using
+        # WeakValueDictionary would break this guarantee: if all external references
+        # to an instance are dropped, GC would collect it, and the next lookup for
+        # that address would create a NEW instance instead of returning the existing
+        # singleton. This would violate the singleton contract and could cause
+        # subtle bugs in code that relies on instance identity.
+        #
+        # The memory impact is bounded by the number of unique addresses queried
+        # during the process lifetime. For most use cases, this is acceptable since:
+        # 1. Each entry is a single object reference (small memory footprint)
+        # 2. The number of unique addresses is typically limited by the scope of
+        #    the application (e.g., only tokens/pools relevant to the use case)
+        # 3. Process restart naturally clears all cached instances
+        #
+        # If memory growth becomes a concern in long-running processes with high
+        # address cardinality, consider implementing explicit cache clearing at
+        # the application level rather than automatic eviction here.
         cls.__instances: dict[bool, ChecksumAddressDict[T]] = {
             True: ChecksumAddressDict(),
             False: ChecksumAddressDict(),

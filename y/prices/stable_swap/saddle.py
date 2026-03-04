@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 _GET_TOKEN_INPUTS = tuple(range(8))
 
 
-@a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
+@a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     """
     Determine if a given token is a Saddle LP token.
@@ -46,7 +46,7 @@ async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     )
 
 
-@a_sync(default="sync", ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync(default="sync", ram_cache_ttl=ENVS.CACHE_TTL, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 async def get_pool(token_address: AnyAddressType) -> Address:
     """
     Retrieve the pool address for a given Saddle LP token.

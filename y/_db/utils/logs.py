@@ -1,9 +1,9 @@
 import itertools
 import logging
 
+import cachebox
 from a_sync import a_sync, cgather, igather
 from a_sync.executor import AsyncExecutor
-from async_lru import alru_cache
 from brownie.network.event import _EventItem
 from eth_typing import HexStr
 from eth_utils.toolz import concat
@@ -15,6 +15,7 @@ from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
 from y import convert
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import DiskCache, default_filter_threads, enc_hook, make_executor
 from y._db.decorators import db_session_cached, db_session_retry_locked, retry_locked
 from y._db.entities import Block, Hashes
@@ -182,7 +183,7 @@ async def bulk_insert(logs: list[Log], executor: AsyncExecutor = default_filter_
     )
 
 
-@a_sync(default="async", executor=_topic_executor, ram_cache_maxsize=None)
+@a_sync(default="async", executor=_topic_executor, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 @db_session_cached
 def get_topic_dbid(topic: Topic) -> int:
     topic = _remove_0x_prefix(topic.strip())
@@ -192,7 +193,7 @@ def get_topic_dbid(topic: Topic) -> int:
     return entity.dbid
 
 
-@alru_cache(maxsize=10000, ttl=600)
+@cachebox.cached(cachebox.TTLCache(10000, ttl=600))
 async def get_hash_dbid(txhash: HexStr) -> int:
     return await _get_hash_dbid(txhash)
 

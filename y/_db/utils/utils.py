@@ -10,6 +10,7 @@ from eth_typing import BlockNumber
 from pony.orm import TransactionIntegrityError, commit, select
 
 from y._db.common import make_executor
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.decorators import (
     a_sync_read_db_session,
     db_session_cached,
@@ -104,7 +105,7 @@ def get_block(number: int) -> Block:
 @a_sync(
     default="async",
     executor=_block_executor,
-    ram_cache_maxsize=None,
+    ram_cache_maxsize=ENVS.BLOCK_CACHE_MAXSIZE,
 )
 @db_session_cached
 def ensure_block(number: int) -> None:

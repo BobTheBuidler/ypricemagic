@@ -1,9 +1,8 @@
 import logging
-import threading
 from decimal import Decimal, InvalidOperation
 
+import cachebox
 from a_sync import ProcessingQueue
-from cachetools import TTLCache, cached
 from eth_typing import BlockNumber, ChecksumAddress
 from pony.orm import select
 
@@ -149,7 +148,7 @@ def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> N
 set_price = ProcessingQueue(_set_price_func, num_workers=50, return_data=False)
 
 
-@cached(TTLCache(maxsize=1_000, ttl=5 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1_000, ttl=5 * 60))
 @log_result_count("prices", ("block",))
 def known_prices_at_block(number: BlockNumber) -> dict[ChecksumAddress, Decimal]:
     """

@@ -103,7 +103,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
         return UsdPrice(tvl / total_supply)
 
     @stuck_coro_debugger
-    @a_sync.a_sync(cache_type="memory")
+    @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
     async def get_tokens(self, lp_token_address: ChecksumAddress) -> tuple[ERC20, ERC20]:
         """
         Get the tokens in the AMM pool.

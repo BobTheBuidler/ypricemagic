@@ -58,7 +58,7 @@ class BalancerABC(a_sync.ASyncGenericBase, Generic[_B]):
     def __repr__(self) -> str:
         return f"<{type(self).__name__} object at {hex(id(self))}>"
 
-    @a_sync.a_sync(ram_cache_ttl=5 * 60)
+    @a_sync.a_sync(ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
     @stuck_coro_debugger
     async def is_pool(self, token_address: AnyAddressType) -> bool:
         """

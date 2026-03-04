@@ -505,7 +505,11 @@ class UniswapV3(a_sync.ASyncGenericBase):
             cache[most_recent_deploy_block]
 
     @stuck_coro_debugger
-    @a_sync.a_sync(cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync.a_sync(
+        cache_type="memory",
+        ram_cache_ttl=ENVS.CACHE_TTL,
+        ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE,
+    )
     async def get_price(
         self,
         token: Address,
@@ -834,10 +838,47 @@ def _undo_fees(path: Path) -> Decimal:
     return math.prod(fees)
 
 
+class _BoundedPoolsByTokenCache:
+    """A bounded cache for token -> pools mappings with LRU eviction.
+
+    This wraps a cachebox.LRUCache to provide defaultdict-like behavior while
+    maintaining a bounded size. When the cache is full, LRU entries are evicted.
+
+    The structure maps: token_address -> {block_number: [pool1, pool2, ...]}
+    """
+
+    __slots__ = ("_cache",)
+
+    def __init__(self, maxsize: int) -> None:
+        self._cache: cachebox.LRUCache[Address, DefaultDict[Block, list[UniswapV3Pool]]] = (
+            cachebox.LRUCache(maxsize)
+        )
+
+    def __getitem__(self, token: Address) -> DefaultDict[Block, list[UniswapV3Pool]]:
+        """Get the pools dict for a token, creating an empty defaultdict if missing."""
+        try:
+            return self._cache[token]  # type: ignore [no-any-return]
+        except KeyError:
+            # Create new inner defaultdict and cache it
+            inner: DefaultDict[Block, list[UniswapV3Pool]] = defaultdict(list)
+            self._cache[token] = inner
+            return inner
+
+    def __contains__(self, token: Address) -> bool:
+        return token in self._cache
+
+    def __len__(self) -> int:
+        return len(self._cache)
+
+    def get(self, token: Address) -> DefaultDict[Block, list[UniswapV3Pool]] | None:
+        """Get the pools dict for a token without creating if missing."""
+        return self._cache.get(token)  # type: ignore [no-any-return]
+
+
 class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     """Represents a collection of Uniswap V3 Pools."""
 
-    _pools_by_token_cache: DefaultDict[Address, dict[Block, list[UniswapV3Pool]]]
+    _pools_by_token_cache: _BoundedPoolsByTokenCache
 
     __slots__ = "asynchronous", "_pools_by_token_cache"
 
@@ -858,7 +899,8 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         """
         self.asynchronous = asynchronous
         super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]])
-        self._pools_by_token_cache = defaultdict(lambda: defaultdict(list))
+        # Use bounded cache with DEFAULT_CACHE_MAXSIZE to prevent unbounded memory growth
+        self._pools_by_token_cache = _BoundedPoolsByTokenCache(int(ENVS.DEFAULT_CACHE_MAXSIZE))
 
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         """

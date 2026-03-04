@@ -1,13 +1,12 @@
 import logging
-import threading
 import time
 
 import a_sync
 import cachebox
-from cachetools import TTLCache, cached
 from pony.orm import ObjectNotFound, TransactionIntegrityError, commit, select
 
 from y import constants, convert
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import make_executor
 from y._db.decorators import a_sync_read_db_session, db_session_retry_locked, log_result_count
 from y._db.entities import Address, Token, insert
@@ -82,7 +81,7 @@ def get_token(address: str) -> Token:
         time.sleep(1)
 
 
-@a_sync.a_sync(default="sync", ram_cache_maxsize=None)
+@a_sync.a_sync(default="sync", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 def ensure_token(address: AnyAddressType) -> None:
     """Ensure a token entity exists for a given address.
 
@@ -408,7 +407,7 @@ def _get_token_decimals(address: str) -> int | None:
 # startup caches
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @db_session_retry_locked
 @log_result_count("tokens")
 def known_tokens() -> set[str]:
@@ -427,7 +426,7 @@ def known_tokens() -> set[str]:
     return set(select(t.address for t in Token if t.chain.id == CHAINID))
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("buckets")
 def known_buckets() -> dict[str, str]:
     """Cache and return all known token buckets for this chain.
@@ -445,7 +444,7 @@ def known_buckets() -> dict[str, str]:
     return dict(select((t.address, t.bucket) for t in Token if t.chain.id == CHAINID and t.bucket))
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("token decimals")
 def known_decimals() -> dict[Address, int]:
     """Cache and return all known token decimals for this chain.
@@ -465,7 +464,7 @@ def known_decimals() -> dict[Address, int]:
     )
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("token symbols")
 def known_symbols() -> dict[Address, str]:
     """Cache and return all known token symbols for this chain.
@@ -483,7 +482,7 @@ def known_symbols() -> dict[Address, str]:
     return dict(select((t.address, t.symbol) for t in Token if t.chain.id == CHAINID and t.symbol))
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("token names")
 def known_names() -> dict[Address, str]:
     """Cache and return all known token names for this chain.

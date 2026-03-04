@@ -14,7 +14,7 @@ import eth_retry
 from a_sync import SmartProcessingQueue, ThreadsafeSemaphore, a_sync, cgather, igather
 from aiohttp import ClientSession
 from aiolimiter import AsyncLimiter
-from async_lru import alru_cache
+
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie._config import CONFIG, REQUEST_HEADERS
 from brownie.exceptions import BrownieEnvironmentWarning, CompilerError, ContractNotFound
@@ -29,7 +29,6 @@ from brownie.network.contract import (
 )
 from brownie.typing import AccountsType
 from brownie.utils import color
-from cachetools.func import ttl_cache
 from checksum_dict import ChecksumAddressSingletonMeta
 from hexbytes import HexBytes
 from msgspec import ValidationError
@@ -212,7 +211,7 @@ def _get_code(address: str, block: int) -> HexBytes:
 creation_block_semaphore = ThreadsafeSemaphore(48)
 
 
-@a_sync(cache_type="memory")
+@a_sync(cache_type="memory", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 @stuck_coro_debugger
 @eth_retry.auto_retry
 async def contract_creation_block_async(
@@ -773,7 +772,7 @@ async def has_method(
 ) -> bool: ...
 
 
-@a_sync(default="sync", cache_type="memory")
+@a_sync(default="sync", cache_type="memory", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 async def has_method(address: Address, method: str, return_response: bool = False) -> bool | Any:
     """
     Checks to see if a contract has a `method` view method with no inputs.
@@ -804,7 +803,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
 
 
 @stuck_coro_debugger
-@a_sync(default="sync", cache_type="memory", ram_cache_ttl=15 * 60)
+@a_sync(default="sync", cache_type="memory", ram_cache_ttl=15 * 60, ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 async def has_methods(
     address: AnyAddressType,
     methods: Iterable[str],
@@ -929,7 +928,7 @@ def _squeeze(contract: Contract) -> Contract:
 
 
 # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
-@ttl_cache(maxsize=1000, ttl=60 * 60)
+@cachebox.cached(cachebox.TTLCache(1000, ttl=60 * 60))
 @eth_retry.auto_retry
 def _extract_abi_data(address: Address):
     """
@@ -1055,7 +1054,7 @@ _block_explorer_api_limiter = AsyncLimiter(1, 0.2)
 
 
 # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
-@alru_cache(maxsize=1000, ttl=300)
+@cachebox.cached(cachebox.TTLCache(1000, ttl=300))
 async def _extract_abi_data_async(address: Address):
     """
     Extract ABI data for a contract from the blockchain explorer.
