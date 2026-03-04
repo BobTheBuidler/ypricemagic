@@ -68,18 +68,20 @@ import sys; sys.exit(__import__('pytest').main([
 "
 ```
 
-## Test Files Mapped to Assertions
+## Test Files Mapped to Assertions (Current Mission)
 
 | Test File | Assertions Covered |
 |-----------|-------------------|
-| `tests/test_constants.py` | VAL-CONST-001, VAL-CONST-002, VAL-CONST-003 |
-| `tests/prices/dex/test_v3_liquidity.py` | VAL-LIQ-001, VAL-LIQ-002, VAL-LIQ-003 |
-| `tests/prices/dex/test_v3_multihop.py` | VAL-V3-003, VAL-V3-004, VAL-V3-005, VAL-CROSS-001 |
-| `tests/prices/dex/test_v2_multipool.py` | VAL-V2-001, VAL-V2-002, VAL-V2-003, VAL-V2-004, VAL-V2-005, VAL-V2-006, VAL-CROSS-001 |
+| `tests/test_price_result.py` | VAL-TYPE-*, VAL-CORE-*, VAL-PATH-*, VAL-CALLER-*, VAL-API-*, VAL-CROSS-001/002/003 |
+| `tests/test_vttl_cache.py` | VAL-VTTL-* |
+| `tests/test_purge.py` | VAL-PURGE-* |
+| `tests/test_cache_bounds.py` | Baseline (pre-existing) |
+| `tests/test_constants.py` | Baseline (pre-existing) |
 
-**Note on VAL-V3-001 and VAL-V3-002**: No dedicated pytest test exists. These can be validated by:
-- VAL-V3-001: Inspecting that ROUTING_TOKENS is used in v3 path generation (code inspection)
-- VAL-V3-002: Running a direct Python test with SIX token (0x61C6eBf443AD613c9648762585B3cFD3BA1F3fA8)
+### Previous Mission Test Files (still valid)
+| `tests/prices/dex/test_v3_liquidity.py` | VAL-LIQ-001, VAL-LIQ-002, VAL-LIQ-003 |
+| `tests/prices/dex/test_v3_multihop.py` | VAL-V3-003, VAL-V3-004, VAL-V3-005 |
+| `tests/prices/dex/test_v2_multipool.py` | VAL-V2-001 through VAL-V2-006 |
 
 ## Flow Validator Guidance: pytest tests
 

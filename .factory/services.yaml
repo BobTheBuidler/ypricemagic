@@ -48,5 +48,24 @@ commands:
   test-cache: >-
     cd /Users/bryan/code/ypricemagic &&
     .venv/bin/python -m pytest tests/test_cache_bounds.py -x -v --timeout 60
+  test-price-result: >-
+    cd /Users/bryan/code/ypricemagic &&
+    BROWNIE_NETWORK=mainnet
+    TYPEDENVS_SHUTUP=1
+    .venv/bin/python -c "
+    import concurrent.futures.process as cfp;
+    _orig = cfp._SafeQueue.__init__;
+    cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw);
+    import sys; sys.exit(__import__('pytest').main([
+      'tests/test_price_result.py', '-x', '-p', 'no:pytest_ethereum', '-v',
+      '--timeout', '300'
+    ]))
+    "
+  test-purge: >-
+    cd /Users/bryan/code/ypricemagic &&
+    .venv/bin/python -m pytest tests/test_purge.py -x -v --timeout 60
+  test-vttl: >-
+    cd /Users/bryan/code/ypricemagic &&
+    .venv/bin/python -m pytest tests/test_vttl_cache.py -x -v --timeout 60
 
 services: {}
