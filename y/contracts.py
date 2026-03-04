@@ -211,7 +211,7 @@ def _get_code(address: str, block: int) -> HexBytes:
 creation_block_semaphore = ThreadsafeSemaphore(48)
 
 
-@a_sync(cache_type="memory")
+@a_sync(cache_type="memory", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 @stuck_coro_debugger
 @eth_retry.auto_retry
 async def contract_creation_block_async(
@@ -772,7 +772,7 @@ async def has_method(
 ) -> bool: ...
 
 
-@a_sync(default="sync", cache_type="memory")
+@a_sync(default="sync", cache_type="memory", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 async def has_method(address: Address, method: str, return_response: bool = False) -> bool | Any:
     """
     Checks to see if a contract has a `method` view method with no inputs.
@@ -803,7 +803,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
 
 
 @stuck_coro_debugger
-@a_sync(default="sync", cache_type="memory", ram_cache_ttl=15 * 60)
+@a_sync(default="sync", cache_type="memory", ram_cache_ttl=15 * 60, ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 async def has_methods(
     address: AnyAddressType,
     methods: Iterable[str],

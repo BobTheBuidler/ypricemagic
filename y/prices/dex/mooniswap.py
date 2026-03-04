@@ -27,7 +27,7 @@ else:
     gas_coin = None
 
 
-@a_sync(default="sync", ram_cache_ttl=5 * 60)
+@a_sync(default="sync", ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     """
     Check if the given token address is a Mooniswap pool.

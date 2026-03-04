@@ -5,6 +5,7 @@ from logging import DEBUG, getLogger
 import a_sync
 
 from y import convert
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
@@ -29,7 +30,7 @@ from y.utils.logging import get_price_logger
 logger = getLogger(__name__)
 
 
-@a_sync.a_sync(default="sync", cache_type="memory")
+@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 async def check_bucket(token: AnyAddressType) -> str:
     """Determine and return the category or "bucket" of a given token.
 

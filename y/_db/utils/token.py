@@ -6,6 +6,7 @@ import cachebox
 from pony.orm import ObjectNotFound, TransactionIntegrityError, commit, select
 
 from y import constants, convert
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import make_executor
 from y._db.decorators import a_sync_read_db_session, db_session_retry_locked, log_result_count
 from y._db.entities import Address, Token, insert
@@ -80,7 +81,7 @@ def get_token(address: str) -> Token:
         time.sleep(1)
 
 
-@a_sync.a_sync(default="sync", ram_cache_maxsize=None)
+@a_sync.a_sync(default="sync", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 def ensure_token(address: AnyAddressType) -> None:
     """Ensure a token entity exists for a given address.
 

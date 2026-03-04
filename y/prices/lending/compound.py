@@ -406,7 +406,7 @@ class Compound(a_sync.ASyncGenericSingleton):
                 if token_address in markets:
                     return troller
 
-    @a_sync.a_sync(ram_cache_ttl=5 * 60)
+    @a_sync.a_sync(ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
     async def is_compound_market(self, token_address: AddressOrContract) -> bool:
         """
         Check if a token address is a Compound market.
