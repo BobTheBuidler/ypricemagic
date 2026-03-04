@@ -136,7 +136,7 @@ cur: Final = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
 fetchone: Final = SmartProcessingQueue(cur.fetchone, num_workers=32)
 
 
-@cachebox.cached(cachebox.LRUCache(100))  # type: ignore[misc]
+@cachebox.cached(cachebox.LRUCache(100))  # type: ignore[untyped-decorator]
 def _get_select_statement() -> str:
     try:
         return f"SELECT * FROM chain{CONFIG.active_network['chainid']}"
