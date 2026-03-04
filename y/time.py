@@ -8,7 +8,7 @@ import dank_mids
 import eth_retry
 from async_lru import alru_cache
 from brownie import chain, web3
-from cachetools.func import ttl_cache
+import cachebox
 from eth_typing import BlockNumber
 
 try:
@@ -329,7 +329,7 @@ def _closest_block_after_timestamp_cached(timestamp: int) -> BlockNumber:
     return hi
 
 
-@ttl_cache(ttl=300)
+@cachebox.cached(cachebox.TTLCache(128, ttl=300))
 @eth_retry.auto_retry
 def check_node() -> None:
     """

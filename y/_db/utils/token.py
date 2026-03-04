@@ -1,10 +1,8 @@
 import logging
-import threading
 import time
 
 import a_sync
 import cachebox
-from cachetools import TTLCache, cached
 from pony.orm import ObjectNotFound, TransactionIntegrityError, commit, select
 
 from y import constants, convert
@@ -408,7 +406,7 @@ def _get_token_decimals(address: str) -> int | None:
 # startup caches
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @db_session_retry_locked
 @log_result_count("tokens")
 def known_tokens() -> set[str]:
@@ -427,7 +425,7 @@ def known_tokens() -> set[str]:
     return set(select(t.address for t in Token if t.chain.id == CHAINID))
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("buckets")
 def known_buckets() -> dict[str, str]:
     """Cache and return all known token buckets for this chain.
@@ -445,7 +443,7 @@ def known_buckets() -> dict[str, str]:
     return dict(select((t.address, t.bucket) for t in Token if t.chain.id == CHAINID and t.bucket))
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("token decimals")
 def known_decimals() -> dict[Address, int]:
     """Cache and return all known token decimals for this chain.
@@ -465,7 +463,7 @@ def known_decimals() -> dict[Address, int]:
     )
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("token symbols")
 def known_symbols() -> dict[Address, str]:
     """Cache and return all known token symbols for this chain.
@@ -483,7 +481,7 @@ def known_symbols() -> dict[Address, str]:
     return dict(select((t.address, t.symbol) for t in Token if t.chain.id == CHAINID and t.symbol))
 
 
-@cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
+@cachebox.cached(cachebox.TTLCache(1, ttl=60 * 60))
 @log_result_count("token names")
 def known_names() -> dict[Address, str]:
     """Cache and return all known token names for this chain.

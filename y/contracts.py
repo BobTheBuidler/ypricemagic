@@ -29,7 +29,6 @@ from brownie.network.contract import (
 )
 from brownie.typing import AccountsType
 from brownie.utils import color
-from cachetools.func import ttl_cache
 from checksum_dict import ChecksumAddressSingletonMeta
 from hexbytes import HexBytes
 from msgspec import ValidationError
@@ -929,7 +928,7 @@ def _squeeze(contract: Contract) -> Contract:
 
 
 # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
-@ttl_cache(maxsize=1000, ttl=60 * 60)
+@cachebox.cached(cachebox.TTLCache(1000, ttl=60 * 60))
 @eth_retry.auto_retry
 def _extract_abi_data(address: Address):
     """
