@@ -142,13 +142,13 @@ class PriceStep:
     Examples:
         >>> step = PriceStep(
         ...     source='chainlink',
-        ...     input_token='0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+        ...     input_token='WETH',
         ...     output_token='USD',
         ...     pool=None,
         ...     price=1.0
         ... )
-        >>> repr(step)
-        "PriceStep(source='chainlink', input_token='0xA0b8...6eB48', output_token='USD')"
+        >>> step.source
+        'chainlink'
     """
 
     source: str

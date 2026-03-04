@@ -25,7 +25,7 @@ from y.constants import CHAINID
 logger = logging.getLogger(__name__)
 
 
-@db_session
+@db_session  # type: ignore[untyped-decorator]
 @retry_locked
 def purge_prices_by_token(address: ChecksumAddress) -> int:
     """Delete all cached prices for *address* on the current chain.
@@ -57,7 +57,7 @@ def purge_prices_by_token(address: ChecksumAddress) -> int:
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
 
-    count = delete(p for p in Price if p.token.chain.id == CHAINID and p.token.address == address)
+    count: int = delete(p for p in Price if p.token.chain.id == CHAINID and p.token.address == address)  # type: ignore[attr-defined]
     commit()
 
     if count:
@@ -67,7 +67,7 @@ def purge_prices_by_token(address: ChecksumAddress) -> int:
     return count
 
 
-@db_session
+@db_session  # type: ignore[untyped-decorator]
 @retry_locked
 def purge_prices_by_block_range(start_block: BlockNumber, end_block: BlockNumber) -> int:
     """Delete all cached prices in the block range ``[start_block, end_block]``.
@@ -99,9 +99,9 @@ def purge_prices_by_block_range(start_block: BlockNumber, end_block: BlockNumber
     if start_block > end_block:
         raise ValueError(f"start_block ({start_block}) must be <= end_block ({end_block})")
 
-    count = delete(
+    count: int = delete(
         p
-        for p in Price
+        for p in Price  # type: ignore[attr-defined]
         if p.block.chain.id == CHAINID
         and p.block.number >= start_block
         and p.block.number <= end_block
@@ -121,7 +121,7 @@ def purge_prices_by_block_range(start_block: BlockNumber, end_block: BlockNumber
     return count
 
 
-@db_session
+@db_session  # type: ignore[untyped-decorator]
 @retry_locked
 def purge_prices_by_date_range(start_date: datetime, end_date: datetime) -> int:
     """Delete all cached prices whose block timestamp falls within
@@ -157,9 +157,9 @@ def purge_prices_by_date_range(start_date: datetime, end_date: datetime) -> int:
     if start_date > end_date:
         raise ValueError(f"start_date ({start_date}) must be <= end_date ({end_date})")
 
-    count = delete(
+    count: int = delete(
         p
-        for p in Price
+        for p in Price  # type: ignore[attr-defined]
         if p.block.chain.id == CHAINID
         and p.block.timestamp is not None
         and p.block.timestamp >= start_date
@@ -187,4 +187,4 @@ def _clear_known_prices_cache() -> None:
     """
     from y._db.utils.price import known_prices_at_block
 
-    known_prices_at_block.cache.clear()
+    known_prices_at_block.cache.clear()  # type: ignore[attr-defined]
