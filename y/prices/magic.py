@@ -556,6 +556,69 @@ def map_prices(
     )
 
 
+def __vttl_cache(get_price):
+    """
+    A decorator that caches price results in a VTTLCache with per-key TTL.
+
+    Spot prices (amount=None) use :obj:`ENVS.CACHE_TTL` while amount-based
+    prices use the shorter :obj:`ENVS.AMOUNT_CACHE_TTL`.
+
+    Args:
+        get_price: The async function to be cached.
+
+    Returns:
+        A wrapped version of the input function with VTTLCache caching.
+    """
+    from cachebox import VTTLCache
+
+    _cache = VTTLCache(maxsize=ENVS.PRICE_CACHE_MAXSIZE)
+
+    @wraps(get_price)
+    async def cache_wrap(
+        token: ChecksumAddress,
+        block: BlockNumber,
+        *,
+        fail_to_None: bool = False,
+        skip_cache: bool = ENVS.SKIP_CACHE,
+        ignore_pools: tuple[Pool, ...] = (),
+        silent: bool = False,
+        amount: Decimal | int | float | None = None,
+    ) -> PriceResult | None:
+        if skip_cache:
+            return await get_price(
+                token,
+                block,
+                fail_to_None=fail_to_None,
+                skip_cache=skip_cache,
+                ignore_pools=ignore_pools,
+                silent=silent,
+                amount=amount,
+            )
+
+        key = (token, block, fail_to_None, skip_cache, ignore_pools, silent, amount)
+        try:
+            return _cache[key]
+        except KeyError:
+            pass
+
+        result = await get_price(
+            token,
+            block,
+            fail_to_None=fail_to_None,
+            skip_cache=skip_cache,
+            ignore_pools=ignore_pools,
+            silent=silent,
+            amount=amount,
+        )
+        if result is not None:
+            ttl = ENVS.AMOUNT_CACHE_TTL if amount is not None else ENVS.CACHE_TTL
+            _cache.insert(key, result, ttl=ttl)
+        return result
+
+    cache_wrap.cache = _cache
+    return cache_wrap
+
+
 def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
     """
     A decorator to cache the results of the get_price function.
@@ -603,12 +666,8 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
 
 
 @stuck_coro_debugger
-@a_sync.a_sync(
-    default="async",
-    cache_type="memory",
-    ram_cache_ttl=ENVS.CACHE_TTL,
-    ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE,
-)
+@a_sync.a_sync(default="async")
+@__vttl_cache
 @__cache
 async def _get_price(
     token: ChecksumAddress,
