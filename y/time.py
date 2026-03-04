@@ -4,11 +4,10 @@ import logging
 import time
 from typing import Final, NewType, Union, final
 
+import cachebox
 import dank_mids
 import eth_retry
-from async_lru import alru_cache
 from brownie import chain, web3
-import cachebox
 from eth_typing import BlockNumber
 
 try:
@@ -16,6 +15,7 @@ try:
 except ImportError:
     from dank_mids._config import GANACHE_FORK
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.exceptions import NodeNotSynced
 from y.networks import CHAINID, NETWORK_NAME, Network
 from y.utils.cache import a_sync_ttl_cache, memory
@@ -351,7 +351,7 @@ def check_node() -> None:
         )
 
 
-@alru_cache(ttl=300)
+@cachebox.cached(cachebox.TTLCache(ENVS.DEFAULT_CACHE_MAXSIZE, ttl=300))
 @eth_retry.auto_retry
 async def check_node_async() -> None:
     """

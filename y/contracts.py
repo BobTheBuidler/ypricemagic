@@ -14,7 +14,7 @@ import eth_retry
 from a_sync import SmartProcessingQueue, ThreadsafeSemaphore, a_sync, cgather, igather
 from aiohttp import ClientSession
 from aiolimiter import AsyncLimiter
-from async_lru import alru_cache
+
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie._config import CONFIG, REQUEST_HEADERS
 from brownie.exceptions import BrownieEnvironmentWarning, CompilerError, ContractNotFound
@@ -1054,7 +1054,7 @@ _block_explorer_api_limiter = AsyncLimiter(1, 0.2)
 
 
 # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
-@alru_cache(maxsize=1000, ttl=300)
+@cachebox.cached(cachebox.TTLCache(1000, ttl=300))
 async def _extract_abi_data_async(address: Address):
     """
     Extract ABI data for a contract from the blockchain explorer.

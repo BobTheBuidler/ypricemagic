@@ -1,5 +1,5 @@
 import a_sync
-from async_lru import alru_cache
+import cachebox
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound
 
@@ -77,7 +77,7 @@ async def get_price(
     return await magic.get_price(pool, block, skip_cache=skip_cache, sync=False)
 
 
-@alru_cache(maxsize=None)
+@cachebox.cached(cachebox.LRUCache(ENVS.DEFAULT_CACHE_MAXSIZE))
 async def _get_pool(token) -> EthAddress:
     """
     Retrieve the pool address from a token contract.

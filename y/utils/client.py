@@ -5,7 +5,6 @@ Utility functions for retrieving Ethereum client information.
 import logging
 
 import cachebox
-from async_lru import alru_cache
 from brownie import web3
 from dank_mids import dank_web3
 from web3._utils.rpc_abi import RPC
@@ -47,7 +46,7 @@ def get_ethereum_client() -> str:
     return _get_ethereum_client(version)
 
 
-@alru_cache(maxsize=1)
+@cachebox.cached(cachebox.LRUCache(1))
 async def get_ethereum_client_async() -> str:
     """
     Asynchronously get the Ethereum client type for the current connection.
