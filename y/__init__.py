@@ -45,7 +45,7 @@ from y.contracts import (
     has_method,
     has_methods,
 )
-from y.datatypes import Address, Block, Price
+from y.datatypes import Address, Block, Price, PriceResult, PriceStep
 from y.exceptions import (
     CalldataPreparationError,
     CallReverted,
@@ -86,6 +86,8 @@ __all__ = [
     "check_bucket",
     # types
     "Price",
+    "PriceResult",
+    "PriceStep",
     # erc20
     "ERC20",
     # logs filter,
