@@ -2,12 +2,13 @@ import math
 from collections import defaultdict
 from collections.abc import AsyncIterator, Iterable
 from decimal import Decimal
-from functools import cached_property, lru_cache
+from functools import cached_property
 from itertools import cycle, islice
 from logging import DEBUG, getLogger
 from typing import DefaultDict, Final, Literal, Union
 
 import a_sync
+import cachebox
 import eth_retry
 from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
@@ -268,7 +269,7 @@ class UniswapV3Pool(ContractBase):
         """
         return await self.check_liquidity(self._get_token_out(token_in), block=block, sync=False)
 
-    @lru_cache
+    @cachebox.cached(cachebox.LRUCache(128))
     def _get_token_out(self, token_in: ERC20) -> ERC20:
         """
         Get the token out for a given token in.

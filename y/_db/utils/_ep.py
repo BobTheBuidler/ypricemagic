@@ -1,18 +1,18 @@
-from functools import lru_cache
+import cachebox
 
 from y._db.utils.utils import ensure_chain
 
 """
-This module provides utility functions to retrieve the `get_block` and `get_token` 
-functions from either the `eth_portfolio` or `ypricemagic` database utilities, 
+This module provides utility functions to retrieve the `get_block` and `get_token`
+functions from either the `eth_portfolio` or `ypricemagic` database utilities,
 depending on the availability of the `eth_portfolio` module.
 
-These functions are used to ensure that the correct version of the database 
+These functions are used to ensure that the correct version of the database
 utilities is used, allowing for extended functionality if `eth_portfolio` is installed.
 """
 
 
-@lru_cache(maxsize=1)
+@cachebox.cached(cachebox.LRUCache(1))
 def _get_get_block():
     """Retrieve the `get_block` function from the appropriate module.
 
@@ -39,7 +39,7 @@ def _get_get_block():
     return get_block
 
 
-@lru_cache(maxsize=1)
+@cachebox.cached(cachebox.LRUCache(1))
 def _get_get_token():
     """Retrieve the `get_token` function from the appropriate module.
 

@@ -1,4 +1,4 @@
-from functools import lru_cache
+import cachebox
 
 from dank_mids.types import _DictStruct
 from inflection import underscore
@@ -31,6 +31,6 @@ class Trace(_CamelDictStruct):
     pass
 
 
-@lru_cache(maxsize=None)
+@cachebox.cached(cachebox.LRUCache(256))
 def _make_snake(camel: str) -> str:
     return underscore(camel)

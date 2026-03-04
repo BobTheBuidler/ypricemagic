@@ -3,7 +3,7 @@ import warnings
 from asyncio import Lock, TimerHandle, get_running_loop
 from collections import defaultdict
 from collections.abc import Callable, Iterable
-from functools import lru_cache
+import cachebox
 from logging import getLogger
 from os import getenv
 from typing import TYPE_CHECKING, Any, Final, Literal, overload
@@ -1025,11 +1025,9 @@ def _resolve_proxy(address) -> tuple[str, list]:
 
     # Just leave this code where it is for a helpful debugger as needed.
     if address == "":
-        raise Exception(
-            f"""implementation: {implementation!r}
+        raise Exception(f"""implementation: {implementation!r}
             implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967!r}
-            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}"""
-        )
+            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}""")
 
     if len(implementation_eip1967) > 0 and int(implementation_eip1967.hex(), 16):
         as_proxy_for = _resolve_address(implementation_eip1967[-20:])
@@ -1145,7 +1143,7 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
     return await _fetch_explorer_data(url, silent=silent, params=params)
 
 
-@lru_cache(maxsize=None)
+@cachebox.cached(cachebox.LRUCache(ENVS.DEFAULT_CACHE_MAXSIZE))
 def _get_explorer_api_key(url, silent) -> tuple[str, str]:
     if api_key := getenv("ETHERSCAN_TOKEN"):
         return api_key
@@ -1227,11 +1225,9 @@ async def _resolve_proxy_async(address) -> tuple[str, list]:
 
     # Just leave this code where it is for a helpful debugger as needed.
     if address == "":
-        raise Exception(
-            f"""implementation: {implementation!r}
+        raise Exception(f"""implementation: {implementation!r}
             implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967!r}
-            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}"""
-        )
+            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}""")
 
     if len(implementation_eip1967) > 0 and int(implementation_eip1967.hex(), 16):
         as_proxy_for = _resolve_address(implementation_eip1967[-20:])

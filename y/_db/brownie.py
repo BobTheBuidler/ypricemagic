@@ -2,12 +2,12 @@ import hashlib
 import json
 from asyncio import Lock
 from collections.abc import Callable, Container
-from functools import lru_cache
 from pathlib import Path
 from sqlite3 import OperationalError
 from typing import Any, Final, Literal, cast, final
 
 import aiosqlite
+import cachebox
 from a_sync import SmartProcessingQueue
 from aiosqlite.context import Result
 from brownie._config import CONFIG, _get_data_folder
@@ -136,7 +136,7 @@ cur: Final = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
 fetchone: Final = SmartProcessingQueue(cur.fetchone, num_workers=32)
 
 
-@lru_cache(maxsize=None)
+@cachebox.cached(cachebox.LRUCache(100))
 def _get_select_statement() -> str:
     try:
         return f"SELECT * FROM chain{CONFIG.active_network['chainid']}"

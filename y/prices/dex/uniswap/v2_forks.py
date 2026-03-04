@@ -11,8 +11,8 @@ The module also includes a function for retrieving special token paths for a giv
 """
 
 import logging
-from functools import lru_cache
 
+import cachebox
 from brownie import chain
 
 from y.constants import dai, usdc, usdt, wbtc, weth
@@ -449,7 +449,7 @@ SPECIAL_PATHS = {
 
 
 # yLazyLogger(logger)
-@lru_cache
+@cachebox.cached(cachebox.LRUCache(128))
 def special_paths(router_address: str) -> dict[str, dict[Address, list[Address]]]:
     """
     Retrieves special token paths for a given protocol associated with a router address.

@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
-from functools import lru_cache
 from logging import getLogger
 from typing import Callable
 
+import cachebox
 from a_sync import ProcessingQueue, a_sync
 from brownie import chain
 from dateutil import parser
@@ -35,6 +35,7 @@ def _import_get_get_block() -> None:
     # this helper resolves a goofy interplay between ypricemagic and eth-portfolio
     global _get_get_block
     import y._db.utils._ep
+
     _get_get_block = y._db.utils._ep._get_get_block
     return _get_get_block
 
@@ -59,7 +60,7 @@ def get_chain() -> Chain:
     return Chain.get(id=CHAINID) or insert(type=Chain, id=CHAINID) or Chain[CHAINID]
 
 
-@lru_cache
+@cachebox.cached(cachebox.LRUCache(128))
 def ensure_chain() -> None:
     """Ensures that the chain object for the connected chain has been inserted to the db.
 

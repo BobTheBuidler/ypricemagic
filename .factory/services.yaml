@@ -45,5 +45,8 @@ commands:
   typecheck: .venv/bin/python -m mypy --follow-imports=skip --disable-error-code unused-ignore
   format-check: .venv/bin/python -m black --check .
   format: .venv/bin/python -m black .
+  test-cache: >-
+    cd /Users/bryan/code/ypricemagic &&
+    .venv/bin/python -m pytest tests/test_cache_bounds.py -x -v --timeout 60
 
 services: {}
