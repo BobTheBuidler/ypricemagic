@@ -74,7 +74,14 @@ def get_block_timestamp(height: int) -> int:
     if client in ("tg", "erigon") and CHAINID not in (Network.Polygon,):
         # NOTE: polygon erigon does not support this method
         header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
-        ts = int(header.timestamp, 16)
+        if isinstance(header.timestamp, str):
+            ts = (
+                int(header.timestamp, 16)
+                if header.timestamp.startswith(("0x", "0X"))
+                else int(header.timestamp)
+            )
+        else:
+            ts = int(header.timestamp)
         db.set_block_timestamp(height, ts, sync=True)
         return ts
     return chain[height].timestamp
@@ -108,7 +115,14 @@ async def get_block_timestamp_async(height: int) -> int:
     if client in ("tg", "erigon") and CHAINID not in (Network.Polygon,):
         # NOTE: polygon erigon does not support this method
         header = await dank_mids.web3.manager.coro_request(f"{client}_getHeaderByNumber", [height])
-        ts = int(header.timestamp, 16)
+        if isinstance(header.timestamp, str):
+            ts = (
+                int(header.timestamp, 16)
+                if header.timestamp.startswith(("0x", "0X"))
+                else int(header.timestamp)
+            )
+        else:
+            ts = int(header.timestamp)
     else:
         ts = await dank_mids.eth.get_block_timestamp(height)
     db.set_block_timestamp(height, ts)
