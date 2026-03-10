@@ -24,7 +24,7 @@ from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase
 from y.constants import CHAINID, CONNECTED_TO_MAINNET, ROUTING_TOKENS, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, AnyAddressType, Block, Pool, Price, UsdPrice
+from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, NonStandardERC20, TokenNotFound, call_reverted
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
@@ -517,10 +517,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
         ignore_pools: tuple[Pool, ...] = (),  # unused
         skip_cache: bool = ENVS.SKIP_CACHE,  # unused
         amount: Decimal | int | float | None = None,
-        target_token: Address | None = None,
-    ) -> UsdPrice | Price | None:
+    ) -> UsdPrice | None:
         """
-        Get the price of a token.
+        Get the price of a token in USD.
 
         Args:
             token: The address of the token.
@@ -529,13 +528,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
             skip_cache: Whether to skip cache (unused).
             amount: The amount of tokens to quote (in human-readable units).
                 When provided, the quote accounts for price impact.
-            target_token: The target token for the price quote. If None, defaults to USDC
-                for backward compatibility (returns USD price).
 
         Returns:
-            The per-unit price of the token. Returns UsdPrice when target_token is USDC
-            or None, otherwise returns a float representing the price in target_token units.
-            Returns None if no price is available.
+            The per-unit price of the token in USD, or None if not available.
 
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
@@ -548,36 +543,24 @@ class UniswapV3(a_sync.ASyncGenericBase):
         if block and block < await contract_creation_block_async(quoter, True):
             return None
 
-        # Default target to USDC for backward compatibility
-        if target_token is None:
-            target_token = usdc.address
-        target_token = convert.to_address(target_token)
-
-        # Direct paths to target_token for each fee tier
-        paths: list[Path] = [(token, fee, target_token) for fee in self.fee_tiers]
+        # Direct paths to USDC for each fee tier
+        paths: list[Path] = [(token, fee, usdc.address) for fee in self.fee_tiers]
 
         # Multi-hop paths through all routing tokens as intermediaries
         routing_tokens = ROUTING_TOKENS.get(CHAINID, [])
         token_str = str(token).lower()
-        target_str = str(target_token).lower()
         for routing_token in routing_tokens:
-            routing_str = str(routing_token).lower()
             # Skip self-loop paths where token == routing_token
-            if routing_str == token_str:
+            if str(routing_token).lower() == token_str:
                 continue
-            # Skip redundant paths where routing_token == target_token (TOKEN→TARGET→TARGET is wasteful)
-            if routing_str == target_str:
+            # Skip redundant paths where routing_token is USDC (TOKEN->USDC->USDC is wasteful)
+            if str(routing_token).lower() == str(usdc.address).lower():
                 continue
-            # Generate paths through this routing token.
-            # Use same fee for both hops (most common case) plus a small set of
-            # cross-fee pairs for the two most liquid tiers (500, 3000) to avoid
-            # the N^2 combinatorial explosion of trying every fee_tier x fee_tier.
+            # Generate paths through this routing token
+            # Try multiple fee tiers for both hops to maximize coverage
             for fee in self.fee_tiers:
-                paths.append((token, fee, routing_token, fee, target_token))
-            # Add cross-fee pairs only for the two most common tiers when available
-            if 500 in self.fee_tiers and 3000 in self.fee_tiers:
-                paths.append((token, 500, routing_token, 3000, target_token))
-                paths.append((token, 3000, routing_token, 500, target_token))
+                for fee2 in self.fee_tiers:
+                    paths.append((token, fee, routing_token, fee2, usdc.address))
 
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(DEBUG, "paths: %s", (paths,))
@@ -600,11 +583,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
             logger._log(DEBUG, "outputs: %s", (outputs,))
         if not outputs:
             return None
-        result = max(outputs) / _amount
-        # Return UsdPrice for USDC target, Price for other targets
-        if str(target_token).lower() == str(usdc.address).lower():
-            return UsdPrice(result)
-        return Price(result)
+        return UsdPrice(max(outputs) / _amount)
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)

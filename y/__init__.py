@@ -45,7 +45,7 @@ from y.contracts import (
     has_method,
     has_methods,
 )
-from y.datatypes import Address, Block, Price, PriceResult, PriceStep
+from y.datatypes import Address, Block, PriceResult, PriceStep
 from y.exceptions import (
     CalldataPreparationError,
     CallReverted,
@@ -59,7 +59,7 @@ from y.exceptions import (
 )
 from y.networks import Network
 from y.prices import magic
-from y.prices.magic import get_price, get_price_in, get_prices, map_prices
+from y.prices.magic import get_price, get_prices, map_prices
 from y.prices.utils import check_bucket
 from y.time import get_block_at_timestamp, get_block_timestamp, get_block_timestamp_async
 from y.utils.events import Events, LogFilter, ProcessedEvents
@@ -80,12 +80,10 @@ __all__ = [
     ###  `y.__name__` or `from y import __name__`.  ###
     # prices
     "get_price",
-    "get_price_in",
     "get_prices",
     "map_prices",
     "check_bucket",
     # types
-    "Price",
     "PriceResult",
     "PriceStep",
     # erc20

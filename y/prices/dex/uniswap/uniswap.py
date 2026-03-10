@@ -129,8 +129,7 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         ignore_pools: tuple[Pool, ...] = (),
         skip_cache: bool = ENVS.SKIP_CACHE,
         amount: Decimal | int | float | None = None,
-        target_token: Address | None = None,
-    ) -> UsdPrice | float | None:
+    ) -> UsdPrice | None:
         """
         Calculate a price based on Uniswap Router quote for selling `token_in`.
         Always finds the deepest swap path for `token_in`.
@@ -142,12 +141,6 @@ class UniswapMultiplexer(ASyncGenericSingleton):
             skip_cache: If True, skip using the cache while fetching price data.
             amount: The amount of tokens to quote (in human-readable units).
                 When provided, the quote accounts for price impact.
-            target_token: The target token for the price quote. If None, defaults to USDC
-                for backward compatibility (returns USD price).
-
-        Returns:
-            UsdPrice when target_token is USDC or None, float representing price in
-            target_token units otherwise, or None if no price available.
 
         Examples:
             >>> multiplexer = UniswapMultiplexer(asynchronous=True)
@@ -157,8 +150,6 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         See Also:
             - :meth:`~UniswapMultiplexer.routers_by_depth`
         """
-        from y.datatypes import Price
-
         router: Uniswap
         token_in = await convert.to_address_async(token_in)
         logger = get_price_logger(token_in, block, extra=type(self).__name__)
@@ -170,39 +161,17 @@ class UniswapMultiplexer(ASyncGenericSingleton):
             # tries each known router from most to least liquid
             # returns the first price we get back, almost always from the deepest router
             logger.debug("fetching from %s", router)
-            # Call with target_token for V3 and token_out for V2
-            kwargs = {
-                "block": block,
-                "ignore_pools": ignore_pools,
-                "skip_cache": skip_cache,
-                "amount": amount,
-                "sync": False,
-            }
-            # V3 routers use target_token parameter
-            if isinstance(router, UniswapV3):
-                kwargs["target_token"] = target_token
-            # V2 routers use token_out parameter
-            elif isinstance(router, UniswapRouterV2):
-                # Default to USDC if no target specified
-                from y.constants import usdc
-
-                kwargs["token_out"] = target_token if target_token else usdc.address
-            # V1 and others don't support target_token, skip for non-USD targets
-            elif target_token is not None:
-                continue
-
-            price = await router.get_price(token_in, **kwargs)
+            price = await router.get_price(
+                token_in,
+                block=block,
+                ignore_pools=ignore_pools,
+                skip_cache=skip_cache,
+                amount=amount,
+                sync=False,
+            )
             logger.debug("%s -> %s", router, price)
             if price:
-                # Ensure correct type based on target_token
-                from y.constants import usdc
-
-                if target_token is None or str(target_token).lower() == str(usdc.address).lower():
-                    # Already UsdPrice or needs to be wrapped
-                    return price if isinstance(price, UsdPrice) else UsdPrice(price)
-                else:
-                    # Non-USD target, return as Price
-                    return Price(price) if not isinstance(price, Price) else price
+                return price
 
     @stuck_coro_debugger
     async def routers_by_depth(

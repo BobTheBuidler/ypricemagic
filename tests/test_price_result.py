@@ -14,7 +14,7 @@ import pytest
 # still be collected and unit tests run even when the environment cannot
 # connect to a network.
 try:
-    from y.datatypes import Price, PriceResult, PriceStep, UsdPrice
+    from y.datatypes import PriceResult, PriceStep, UsdPrice
 
     _CAN_IMPORT = True
 except Exception:
@@ -175,9 +175,9 @@ class TestPriceResult:
         result = PriceResult(price=UsdPrice(1234.56), path=[])
         assert float(result) == 1234.56
 
-    def test_float_conversion_with_price_type(self) -> None:
-        """float(PriceResult) works with Price type."""
-        result = PriceResult(price=Price(0.0005), path=[])
+    def test_float_conversion_with_plain_float(self) -> None:
+        """float(PriceResult) works with plain float."""
+        result = PriceResult(price=0.0005, path=[])
         assert float(result) == 0.0005
 
     def test_repr_shows_price_and_path_summary(self) -> None:

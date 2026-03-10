@@ -86,32 +86,6 @@ class UsdValue(float):
         return f"${self:.8f}"
 
 
-class Price(float):
-    """
-    Represents a generic price denominated in a quote token.
-
-    Unlike UsdPrice, Price does not have a $ prefix in its string representation.
-    It is used for prices denominated in non-USD tokens (e.g., ETH, BTC).
-
-    Examples:
-        >>> price = Price(0.0005)
-        >>> str(price)
-        '0.00050000'
-        >>> isinstance(price, Price)
-        True
-        >>> isinstance(price, UsdPrice)
-        False
-    """
-
-    def __str__(self) -> str:
-        """
-        Return a string representation of the price.
-
-        The value is formatted with 8 decimal places without a currency symbol.
-        """
-        return f"{self:.8f}"
-
-
 class UsdPrice(UsdValue):
     """
     Represents a USD price.
