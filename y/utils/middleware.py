@@ -135,7 +135,7 @@ def setup_getcode_cache_middleware() -> None:
     Set up the eth_getCode cache middleware for the current Web3 provider.
 
     This function modifies the Web3 provider to use a custom session with increased
-    connection pool size and timeout, if the provider's endpoint URI starts with "http" or "https".
+    connection pool size, if the provider's endpoint URI starts with "http" or "https".
     If the provider is an IPCProvider, it does not modify the session.
 
     Examples:
@@ -144,7 +144,7 @@ def setup_getcode_cache_middleware() -> None:
     See Also:
         - :func:`getcode_cache_middleware`
     """
-    # patch web3 provider with more connections and higher timeout
+    # patch web3 provider with more connections
     if web3.provider:
         try:
             assert web3.provider.endpoint_uri.startswith(
@@ -154,7 +154,7 @@ def setup_getcode_cache_middleware() -> None:
             session = Session()
             session.mount("http://", adapter)
             session.mount("https://", adapter)
-            web3.provider = HTTPProvider(web3.provider.endpoint_uri, {"timeout": 600}, session)
+            web3.provider = HTTPProvider(web3.provider.endpoint_uri, {}, session)
         except AttributeError as e:
             if "'IPCProvider' object has no attribute 'endpoint_uri'" not in str(e):
                 raise
