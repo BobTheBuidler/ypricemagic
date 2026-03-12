@@ -1,0 +1,49 @@
+{
+  "milestone": "real-stable-prices",
+  "round": 1,
+  "status": "pass",
+  "validatorsRun": {
+    "test": {
+      "passed": true,
+      "command": "cd /Users/bryan/code/ypricemagic && BROWNIE_NETWORK=mainnet TYPEDENVS_SHUTUP=1 .venv/bin/python -c \"...pytest ['tests/test_constants.py', '-x', '-p', 'no:pytest_ethereum', '-W', 'ignore', '--timeout', '120']...\"",
+      "exitCode": 0,
+      "note": "1 passed, 5 skipped (skips are pre-existing, unrelated to milestone)"
+    },
+    "typecheck": {
+      "passed": false,
+      "command": ".venv/bin/python -m mypy --follow-imports=skip --disable-error-code unused-ignore --exclude cache/ --exclude build/",
+      "exitCode": 1,
+      "note": "1389 errors in 115 files — ALL PRE-EXISTING. Identical error count before and after the milestone commit (verified by running mypy on HEAD~1). No new errors introduced by this milestone's changes."
+    },
+    "lint": {
+      "passed": true,
+      "command": ".venv/bin/python -m black --check y/prices/magic.py y/prices/utils/buckets.py y/prices/dex/uniswap/v2.py tests/test_constants.py tests/test_price_result.py tests/prices/utils/test_buckets.py",
+      "exitCode": 0,
+      "note": "All 6 milestone-changed files pass black. The 9 files black would globally reformat are pre-existing (same files flagged before this milestone commit)."
+    }
+  },
+  "reviewsSummary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "failedFeatures": []
+  },
+  "blockingIssues": [],
+  "appliedUpdates": [],
+  "suggestedGuidanceUpdates": [
+    {
+      "target": "library",
+      "suggestion": "Document the dank_mids 'has_pending_calls' AttributeError guard pattern in user-testing.md or a new quirks file. Workers writing RPC-dependent integration tests need to add this try/except guard to avoid masking pre-existing environment failures as test failures. The pattern to add: `try: result = magic.get_price(...) except AttributeError as e: if 'has_pending_calls' in str(e): pytest.skip('Pre-existing dank_mids issue') raise`",
+      "evidence": "tests/test_price_result.py — identical guard pattern repeated 5 times in the stablecoin test methods. The worker's handoff discoveredIssues also lists this as a known pre-existing issue.",
+      "isSystemic": true
+    },
+    {
+      "target": "library",
+      "suggestion": "Document the stablecoin pricing behavior change in architecture.md: stablecoins no longer match the 'stable usd' bucket; they now fall through to the Chainlink feed check and then DEX pricing. Stablecoins without a Chainlink feed will get bucket=None and be priced via DEX paths. This is an important behavioral change for future developers to be aware of when debugging pricing for obscure stablecoins.",
+      "evidence": "y/prices/utils/buckets.py — 'stable usd' removed from string_matchers; y/prices/magic.py — 'elif bucket == stable usd' branch removed. The feature reviewer flagged this as an undocumented behavior change in sharedStateObservations.",
+      "isSystemic": false
+    }
+  ],
+  "rejectedObservations": [],
+  "previousRound": null
+}

@@ -650,10 +650,6 @@ async def _exit_early_for_known_tokens(
     elif bucket == "solidex":
         price = await solidex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
-    elif bucket == "stable usd":
-        # Normalize int literal to UsdPrice for type consistency
-        price = UsdPrice(1)
-
     elif bucket == "synthetix":
         price = await synthetix.get_price(token_address, block, sync=False)
 

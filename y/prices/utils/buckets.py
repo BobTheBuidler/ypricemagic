@@ -7,7 +7,6 @@ import a_sync
 from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
-from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
 from y.prices import convex, one_to_one, pendle, popsicle, rkp3r, solidex, yearn
 from y.prices.band import band
@@ -58,10 +57,10 @@ async def check_bucket(token: AnyAddressType) -> str:
         token: The token address to classify.
 
     Examples:
-        Basic usage with a stable USD token:
+        Basic usage with a chainlink-priced token:
             >>> bucket = check_bucket("0x6B175474E89094C44Da98b954EedeAC495271d0F")
             >>> print(bucket)
-            stable usd
+            chainlink feed
 
         Example triggering a concurrent asynchronous test:
             >>> bucket = check_bucket("0xSomeLPTokenAddress")
@@ -168,7 +167,6 @@ async def check_bucket(token: AnyAddressType) -> str:
 # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
 string_matchers = {
     "wrapped gas coin": lambda address: address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    "stable usd": lambda address: address in STABLECOINS,
     "one to one": one_to_one.is_one_to_one_token,
     "wsteth": wsteth.is_wsteth,
     "creth": creth.is_creth,

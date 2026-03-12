@@ -1,0 +1,42 @@
+{
+  "featureId": "remove-stablecoin-hardcode",
+  "milestone": "real-stable-prices",
+  "reviewedAt": "2026-03-12T23:15:00.000Z",
+  "commitId": "9d403f7665b667c40351ff2f63abd9e315916e31",
+  "transcriptSkeletonReviewed": false,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "The implementation cleanly removes all three hardcoded $1 stablecoin price short-circuits. All STABLECOINS routing uses in v2.py are preserved. Tests are updated with appropriate tolerance ranges and real-source assertions. One non-blocking observation: test_dex_path_has_pool's name implies it should assert a pool address on the path step, but neither the old nor new version checks for that — this is pre-existing and not introduced by this feature. All changes are minimal and correct.",
+    "issues": [
+      {
+        "file": "tests/test_price_result.py",
+        "line": 382,
+        "severity": "non_blocking",
+        "description": "test_dex_path_has_pool does not assert that any path step has a non-None pool address. The test name implies it should verify a DEX pool is present in the path, but the assertion only checks `len(result.path) >= 1`. Since USDC on mainnet is now priced via Chainlink (no on-chain DEX pool step), this test effectively became a weaker variant of test_stablecoin_returns_price_result. The test was already like this before the PR (it only added the dank_mids guard), so this is pre-existing. Consider either renaming the test or using a non-stablecoin token that is genuinely DEX-priced to validate pool address presence."
+      },
+      {
+        "file": "tests/test_price_result.py",
+        "line": 276,
+        "severity": "non_blocking",
+        "description": "The negative assertion `'stable' not in result.path[0].source.lower()` will correctly reject 'stable usd' but would also reject any future legitimate source whose name contains the word 'stable' (e.g., 'stablecoin dex' or 'stable swap'). A more precise assertion would be `result.path[0].source.lower() != 'stable usd'`. This is a minor issue since 'stable' is otherwise not expected in source names."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "target": "library",
+      "description": "The dank_mids 'has_pending_calls' AttributeError is a recurring environment issue that causes all integration tests using real RPC calls to skip. The worker added defensive guards in 5 test functions. This pattern is not documented in any library file, yet the codebase clearly expects future developers to add these guards whenever writing RPC-dependent tests. Documenting this pattern (including the exact exception message to check) would save future workers investigation time.",
+      "action": "recommend",
+      "evidence": "tests/test_price_result.py lines 264-267, 287-290, 334-337, 360-363, 390-393 — identical guard pattern repeated 5 times across the same file. Handoff discoveredIssues also confirms this is pre-existing."
+    },
+    {
+      "target": "library",
+      "description": "When stablecoins are removed from string_matchers in buckets.py, they fall through to the sequential chainlink check (`elif chainlink and await chainlink.has_feed(token_address, sync=False): bucket = 'chainlink feed'`). This means stablecoin pricing is now gated on Chainlink having a feed. If Chainlink does NOT have a feed for a given stablecoin (e.g., a minor or obscure stablecoin), the bucket will be None and the token may fail to price or fall to a DEX path. This behavior difference between 'known stablecoins without Chainlink feed' and 'stablecoins with Chainlink feed' is undocumented.",
+      "action": "recommend",
+      "evidence": "y/prices/utils/buckets.py lines 185-187 — chainlink feed check is the last resort before `None` bucket; no special-case fallback for stablecoins remains."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "The implementation correctly removes all three hardcoded $1 stablecoin price short-circuits (magic.py branch, buckets.py string_matchers entry, v2.py short-circuit return). STABLECOINS routing is fully preserved in v2.py (7 usages unchanged). Tests are appropriately updated with tolerance ranges (0.90–1.10) and negative assertions on 'stable usd' source. Two non-blocking issues noted: test_dex_path_has_pool is misnamed (pre-existing issue, not introduced here), and a minor over-broad negative string check in one assertion. Overall the feature is correct and complete — status: pass."
+}

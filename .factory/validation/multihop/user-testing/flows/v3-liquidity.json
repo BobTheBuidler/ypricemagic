@@ -1,0 +1,71 @@
+{
+  "group": "v3-liquidity",
+  "testedAt": "2026-03-02T06:15:00Z",
+  "assertions": {
+    "VAL-LIQ-001": {
+      "status": "pass",
+      "detail": "test_v3_check_liquidity_accepts_with_amount PASSED. V3 check_liquidity(SPELL, 18M, amount=1000) returned 169267041963402751726624455 (169M SPELL tokens), confirming the WETH pool (7.75 ETH of WETH, below 10 ETH threshold) is accepted when the user's amount=1000 SPELL fits within the pool's ~169M SPELL token-side liquidity.",
+      "steps": [
+        {
+          "action": "Run pytest tests/prices/dex/test_v3_liquidity.py::test_v3_check_liquidity_accepts_with_amount",
+          "expected": "check_liquidity returns >0 when amount=1000 is specified",
+          "observed": "Returned 169267041963402751726624455 (>0). Test PASSED."
+        }
+      ],
+      "evidence": {
+        "terminal": "pytest output: test_v3_check_liquidity_accepts_with_amount PASSED",
+        "poolDetail": "SPELL WETH pool 0xFEbf...: WETH balance=7.75 ETH (below 10 ETH threshold), SPELL balance=169M. Pool accepted because amount=1000 fits within 169M."
+      }
+    },
+    "VAL-LIQ-002": {
+      "status": "fail",
+      "detail": "test_v3_check_liquidity_rejects_without_amount FAILED. The test expected check_liquidity(SPELL, 18M) == 0, but got 355580252880783426. Root cause: SPELL has non-WETH V3 pools (e.g., USDT/USDC pools) whose liquidity is NOT subject to the 10 ETH WETH threshold. The WETH threshold IS correctly applied — all 3 WETH pools (7.75 ETH, 6 wei, 0.001 ETH) are correctly rejected. But non-WETH pools contribute non-zero liquidity, so the aggregate result is non-zero. The underlying behavior is correct (threshold preserved for WETH pools), but the test assumption that SPELL would return 0 is wrong because SPELL has non-WETH V3 pools.",
+      "steps": [
+        {
+          "action": "Run pytest tests/prices/dex/test_v3_liquidity.py::test_v3_check_liquidity_rejects_without_amount",
+          "expected": "check_liquidity returns 0 (threshold rejects WETH pools)",
+          "observed": "Returned 355580252880783426 (non-zero). Test FAILED."
+        },
+        {
+          "action": "Investigate SPELL V3 pool landscape at block 18M",
+          "expected": "SPELL has only WETH V3 pools",
+          "observed": "SPELL has 3 WETH pools AND 7 non-WETH pools. Non-WETH pools bypass the WETH threshold correctly. The 10 ETH threshold IS applied to all 3 WETH pools (all below threshold, all rejected). Non-WETH pools contribute residual liquidity."
+        }
+      ],
+      "evidence": {
+        "terminal": "pytest output: AssertionError: Expected 0 (threshold rejection), got 355580252880783426",
+        "poolDetail": "WETH pools correctly rejected: 0xFEbf (7.75 ETH), 0xAfD9 (6 wei), 0x2138 (0.001 ETH). Non-WETH pools contributing liquidity: 0x841e (112554), 0x842D (35153153), etc."
+      },
+      "issues": "Test uses SPELL which has non-WETH V3 pools that bypass the threshold. The threshold behavior IS correct for WETH pools. Test needs a token with ONLY low-liquidity WETH V3 pools to properly isolate the threshold check."
+    },
+    "VAL-LIQ-003": {
+      "status": "fail",
+      "detail": "test_routers_by_depth_includes_v3_with_amount FAILED. The test expected V3 to be absent from routers_by_depth without amount but present with amount. V3 appears in BOTH cases because SPELL has non-WETH V3 pools providing non-zero liquidity regardless of amount. However, the amount parameter DOES flow through: without amount, liquidity is 355580252880783426 (from non-WETH pools only); with amount=1000, liquidity jumps to 169267041963402751726624455 (169M SPELL from the WETH pool accepted). The behavior is correct but the test's boolean check (V3 present vs absent) doesn't capture the nuance.",
+      "steps": [
+        {
+          "action": "Run pytest tests/prices/dex/test_v3_liquidity.py::test_routers_by_depth_includes_v3_with_amount",
+          "expected": "V3 absent without amount, V3 present with amount",
+          "observed": "V3 present in BOTH cases. Test FAILED."
+        },
+        {
+          "action": "Verify amount flow via direct check_liquidity comparison",
+          "expected": "Liquidity differs significantly between amount=None and amount=1000",
+          "observed": "Without amount: 355580252880783426 (~0.36 ETH). With amount=1000: 169267041963402751726624455 (~169M SPELL). 475x increase confirms amount flows through to pool selection."
+        }
+      ],
+      "evidence": {
+        "terminal": "pytest output: AssertionError: V3 should be filtered out without amount",
+        "poolDetail": "check_liquidity(SPELL, 18M) = 355580252880783426 (non-WETH pools), check_liquidity(SPELL, 18M, amount=1000) = 169267041963402751726624455 (WETH pool accepted). Amount clearly flows through."
+      },
+      "issues": "Same root cause as VAL-LIQ-002: SPELL has non-WETH V3 pools. The test should compare liquidity values rather than V3 presence/absence, or use a token with only low-liquidity WETH pools."
+    }
+  },
+  "frictions": [
+    "V3 pool discovery (scanning PoolCreated events) is very slow (~5-10 minutes per test run). The full test file took 318 seconds.",
+    "SPELL token was chosen assuming it only has WETH V3 pools, but it also has USDT/USDC and other V3 pools which bypass the WETH-specific threshold, causing 2 of 3 tests to fail on incorrect assumptions rather than actual behavior bugs.",
+    "Direct investigation via asyncio.run() required using BROWNIE_NETWORK_ID (not BROWNIE_NETWORK) and timed out at 900s during pool scanning — only completed because of prior cache from the pytest run."
+  ],
+  "blockers": [],
+  "toolsUsed": ["pytest", "python-inline-script"],
+  "summary": "Tested 3 assertions: 1 passed (VAL-LIQ-001), 2 failed (VAL-LIQ-002, VAL-LIQ-003). The 2 failures are caused by incorrect test assumptions about SPELL's V3 pool landscape (it has non-WETH pools that bypass the WETH threshold). The underlying code behavior is correct: the 10 ETH WETH threshold IS preserved for unit queries, and the amount parameter DOES flow through to pool selection. The tests need to be updated to use a token with only low-liquidity WETH V3 pools, or to test at the individual pool level rather than aggregate check_liquidity."
+}

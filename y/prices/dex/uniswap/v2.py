@@ -514,9 +514,6 @@ class UniswapRouterV2(ContractBase):
             busd = await Contract.coroutine("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
 
-        if token_in in STABLECOINS:
-            return 1
-
         try:
             scale = await ERC20._get_scale_for(token_in)
         except NonStandardERC20:

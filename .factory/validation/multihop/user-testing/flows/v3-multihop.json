@@ -1,0 +1,29 @@
+{
+  "group": "v3-multihop",
+  "testedAt": "2026-03-01T23:00:00Z",
+  "assertions": {
+    "VAL-V3-001": {
+      "status": "pass",
+      "detail": "Code inspection of y/prices/dex/uniswap/v3.py confirms get_price() generates multi-hop paths through all ROUTING_TOKENS (WETH, USDT, DAI for mainnet) as intermediaries, not just WETH. The path generation loop at lines ~370-385 iterates over ROUTING_TOKENS, skips self-loops (token==routing_token) and redundant USDC paths, then generates (token, fee, routing_token, fee2, usdc) for all fee tier combinations. ROUTING_TOKENS for mainnet defined in y/constants.py includes WETH, USDC, USDT, and DAI. Paths like TOKEN→USDT→USDC and TOKEN→DAI→USDC are generated alongside TOKEN→WETH→USDC."
+    },
+    "VAL-V3-002": {
+      "status": "pass",
+      "detail": "SIX token (0x61C6eBf443AD613c9648762585B3cFD3BA1F3fA8) at block 18000000 returned price $0.026096 via V3 multi-hop routing. SIX has a V3 USDT pool but no direct USDC/WETH V3 pool, confirming the expanded routing through non-WETH intermediaries works. Pytest test passed in 0.68s."
+    },
+    "VAL-V3-003": {
+      "status": "pass",
+      "detail": "WETH price at block 18000000: $1653.41312070 via test_v3_weth_usdc_regression. Within expected range (1000-5000). Direct USDC V3 pricing unaffected by routing expansion. Pytest test passed."
+    },
+    "VAL-V3-004": {
+      "status": "pass",
+      "detail": "USDT price at block 18000000: $1.00787475 via test_v3_usdt_no_self_loop. Within 2% of $1.00 (actual deviation: 0.79%). Code inspection confirms self-loop prevention: get_price() skips routing tokens where str(routing_token).lower() == token_str. No USDT→USDT→USDC degenerate paths generated. Pytest test passed."
+    },
+    "VAL-V3-005": {
+      "status": "pass",
+      "detail": "Invalid token (0x0000000000000000000000000000000000000001) at block 18000000 returned None via test_v3_no_pools_returns_none. No exception raised. V3 gracefully returns None when all quoteExactInput calls revert. Pytest test passed."
+    }
+  },
+  "frictions": [],
+  "blockers": [],
+  "toolsUsed": ["pytest", "code-inspection"]
+}
