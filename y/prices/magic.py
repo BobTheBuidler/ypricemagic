@@ -442,6 +442,22 @@ async def _get_price(
         _fail_appropriately(logger, "[ZERO_ADDRESS]", fail_to_None, silent)
         return None
 
+    if constants.usdc is not None and token == constants.usdc.address:
+        logger = get_price_logger(token, block, symbol="USDC", extra="magic", start_task=True)
+        logger.debug("usdc short-circuit -> $1.00")
+        return PriceResult(
+            price=UsdPrice(1),
+            path=[
+                PriceStep(
+                    source="usdc",
+                    input_token=str(token),
+                    output_token="USD",
+                    pool=None,
+                    price=1.0,
+                )
+            ],
+        )
+
     try:
         # We do this to cache the symbol for later, otherwise some repr woudl break
         symbol = await ERC20(token, asynchronous=True).symbol
