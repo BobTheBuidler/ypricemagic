@@ -248,35 +248,22 @@ class TestGetPriceReturnsPriceResult:
 
     @pytest.mark.skipif(not ON_MAINNET, reason="Requires mainnet connection")
     def test_stablecoin_returns_price_result(self) -> None:
-        """get_price for stablecoin returns PriceResult with a real market price from a real source.
-
-        Stablecoins are now priced via real oracles/DEX rather than a hardcoded $1, so the
-        price should be within a reasonable range (0.90–1.10) and the source should reflect
-        the actual pricing mechanism (e.g., 'chainlink', a DEX name), NOT 'stable usd'.
-        """
+        """get_price for stablecoin returns PriceResult with price 1 and path containing 'stable'."""
         # Use USDC address on mainnet
         usdc = USDC_ADDRESS
         block = TEST_BLOCK  # A known historical block
 
-        try:
-            result = magic.get_price(usdc, block, skip_cache=True)
-        except AttributeError as e:
-            # Pre-existing issue with dank_mids: 'DankMiddlewareController' object has no attribute 'has_pending_calls'
-            if "has_pending_calls" in str(e):
-                pytest.skip("Pre-existing dank_mids issue: has_pending_calls attribute missing")
-            raise
+        result = magic.get_price(usdc, block, skip_cache=True)
 
         # Should return PriceResult, not plain UsdPrice
         assert isinstance(result, PriceResult), f"Expected PriceResult, got {type(result)}"
-        assert (
-            0.90 <= float(result.price) <= 1.10
-        ), f"Expected stablecoin price within 0.90–1.10, got {result.price}"
+        assert result.price == 1.0, f"Expected price 1.0, got {result.price}"
         assert len(result.path) >= 1, f"Expected non-empty path, got {result.path}"
 
-        # Source should NOT be 'stable usd' — it should be a real pricing source
+        # Path should contain 'stable' in source
         assert (
-            "stable" not in result.path[0].source.lower()
-        ), f"Expected real source (not 'stable'), got {result.path[0].source}"
+            "stable" in result.path[0].source.lower()
+        ), f"Expected 'stable' in source, got {result.path[0].source}"
 
     @pytest.mark.skipif(not ON_MAINNET, reason="Requires mainnet connection")
     def test_weth_returns_price_result(self) -> None:
@@ -329,18 +316,12 @@ class TestGetPriceReturnsPriceResult:
     @pytest.mark.skipif(not ON_MAINNET, reason="Requires mainnet connection")
     def test_db_cache_hit_returns_price_result_empty_path(self) -> None:
         """When price is cached in DB, get_price returns PriceResult with empty path."""
-        # Use USDC - priced via real oracle/DEX now (no hardcoded stablecoin bucket)
+        # Use USDC - it should be in the stablecoin bucket
         usdc = USDC_ADDRESS
         block = TEST_BLOCK
 
-        try:
-            # First call with skip_cache=False to potentially store in DB
-            result1 = magic.get_price(usdc, block, skip_cache=False)
-        except AttributeError as e:
-            # Pre-existing issue with dank_mids: 'DankMiddlewareController' object has no attribute 'has_pending_calls'
-            if "has_pending_calls" in str(e):
-                pytest.skip("Pre-existing dank_mids issue: has_pending_calls attribute missing")
-            raise
+        # First call with skip_cache=False to potentially store in DB
+        result1 = magic.get_price(usdc, block, skip_cache=False)
         assert isinstance(result1, PriceResult)
 
         # Second call should also return PriceResult
@@ -355,18 +336,12 @@ class TestGetPriceReturnsPriceResult:
     @pytest.mark.skipif(not ON_MAINNET, reason="Requires mainnet connection")
     def test_memory_cache_preserves_path(self) -> None:
         """Memory cache preserves the full PriceResult with path."""
-        # Stablecoins now require real oracle/DEX pricing (not hardcoded)
+        # Use a stablecoin which is fast and doesn't hit dank_mids issues
         usdc = USDC_ADDRESS
         block = TEST_BLOCK
 
-        try:
-            # First call - populates memory cache
-            result1 = magic.get_price(usdc, block, skip_cache=True)
-        except AttributeError as e:
-            # Pre-existing issue with dank_mids: 'DankMiddlewareController' object has no attribute 'has_pending_calls'
-            if "has_pending_calls" in str(e):
-                pytest.skip("Pre-existing dank_mids issue: has_pending_calls attribute missing")
-            raise
+        # First call - populates memory cache
+        result1 = magic.get_price(usdc, block, skip_cache=True)
         assert isinstance(result1, PriceResult)
 
         # Second call - should come from memory cache with same path
@@ -381,17 +356,12 @@ class TestGetPriceReturnsPriceResult:
     @pytest.mark.skipif(not ON_MAINNET, reason="Requires mainnet connection")
     def test_dex_path_has_pool(self) -> None:
         """Token priced via DEX has path step with pool address."""
-        # Stablecoins are now priced via real sources (chainlink, DEX), not hardcoded
+        # Use a stablecoin which is fast and doesn't hit dank_mids issues
+        # For stablecoins, the path will have 'stable usd' as source
         usdc = USDC_ADDRESS
         block = TEST_BLOCK
 
-        try:
-            result = magic.get_price(usdc, block, skip_cache=True)
-        except AttributeError as e:
-            # Pre-existing issue with dank_mids: 'DankMiddlewareController' object has no attribute 'has_pending_calls'
-            if "has_pending_calls" in str(e):
-                pytest.skip("Pre-existing dank_mids issue: has_pending_calls attribute missing")
-            raise
+        result = magic.get_price(usdc, block, skip_cache=True)
         assert isinstance(result, PriceResult), f"Expected PriceResult, got {type(result)}"
         assert result.price > 0
 
@@ -409,18 +379,6 @@ class TestGetPriceReturnsPriceResult:
         async def get_async_price():
             return await magic.get_price(usdc, block, skip_cache=True, sync=False)
 
-        try:
-            result = asyncio.run(get_async_price())
-        except AttributeError as e:
-            # Pre-existing issue with dank_mids: 'DankMiddlewareController' object has no attribute 'has_pending_calls'
-            if "has_pending_calls" in str(e):
-                pytest.skip("Pre-existing dank_mids issue: has_pending_calls attribute missing")
-            raise
-        except RuntimeError as e:
-            # Pre-existing issue: asyncio locks bound to a different event loop when called
-            # from a new event loop created by asyncio.run()
-            if "bound to a different event loop" in str(e):
-                pytest.skip("Pre-existing asyncio event loop issue with internal locks")
-            raise
+        result = asyncio.run(get_async_price())
         assert isinstance(result, PriceResult), f"Expected PriceResult, got {type(result)}"
         assert result.price > 0

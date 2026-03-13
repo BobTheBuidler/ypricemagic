@@ -51,13 +51,7 @@ async def test_check_bucket_popsicle(token):
 @pytest.mark.parametrize("token", STABLECOINS)
 @pytest.mark.asyncio_cooperative
 async def test_check_bucket_stablecoins(token):
-    # Stablecoins no longer match the "stable usd" bucket -- they fall through to
-    # normal price resolution (Chainlink, DEX, etc.) for real market prices.
-    # The bucket may be None or another protocol-specific bucket (e.g., "chainlink feed").
-    bucket = await check_bucket(token, sync=False)
-    assert (
-        bucket != "stable usd"
-    ), f"Expected stablecoin {token} to not match 'stable usd' bucket, got {bucket!r}"
+    assert await check_bucket(token, sync=False) == "stable usd"
 
 
 @pytest.mark.parametrize("token", SYNTHS)
