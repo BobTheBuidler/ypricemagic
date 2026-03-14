@@ -10,7 +10,7 @@ import a_sync
 import a_sync.exceptions
 import brownie
 import dank_mids
-from a_sync import cgather
+from a_sync import cgather, igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
@@ -28,6 +28,7 @@ from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import (
     CHAINID,
     CONNECTED_TO_MAINNET,
+    ROUTING_TOKENS,
     STABLECOINS,
     WRAPPED_GAS_COIN,
     sushi,
@@ -671,10 +672,67 @@ class UniswapRouterV2(ContractBase):
         return pool_to_token_out
 
     @stuck_coro_debugger
+    async def get_pools_via_factory_getpair(
+        self, token_in: Address, block: Block | None = None
+    ) -> dict[UniswapV2Pool, Address]:
+        """Find pools for `token_in` using the factory's O(1) getPair view function.
+
+        Builds a candidate list of well-known tokens (stablecoins, wrapped gas coin,
+        routing tokens) and queries the factory for each pair in parallel. This avoids
+        the costly full scan of all pairs performed by :meth:`all_pools_for`.
+
+        Args:
+            token_in: The token address to find pools for.
+            block: The block number to query. Defaults to latest block.
+
+        Returns:
+            A dict mapping :class:`UniswapV2Pool` → paired token address for every
+            non-zero pair returned by the factory.
+        """
+        # Build deduplicated candidate list: stablecoins + wrapped gas coin + routing tokens
+        candidates: list[str] = []
+        seen: set[str] = set()
+        token_in_str = str(token_in).lower()
+        for addr in (
+            list(STABLECOINS.keys()) + [WRAPPED_GAS_COIN] + list(ROUTING_TOKENS.get(CHAINID, []))
+        ):
+            addr_str = str(addr).lower()
+            if addr_str != token_in_str and addr_str not in seen:
+                seen.add(addr_str)
+                candidates.append(str(addr))
+
+        if not candidates:
+            return {}
+
+        # Query factory.getPair for all candidates in parallel
+        pair_addresses: list[str | None] = await igather(
+            Call(
+                self.factory,
+                ["getPair(address,address)(address)", token_in, candidate],
+                block_id=block,
+            )
+            for candidate in candidates
+        )
+
+        pool_to_token_out: dict[UniswapV2Pool, Address] = {}
+        for candidate, pair_address in zip(candidates, pair_addresses):
+            if pair_address and pair_address != brownie.ZERO_ADDRESS:
+                pool = UniswapV2Pool(pair_address, asynchronous=self.asynchronous)
+                pool_to_token_out[pool] = candidate
+
+        return pool_to_token_out
+
+    @stuck_coro_debugger
     async def get_pools_for(
         self, token_in: Address, block: Block | None = None
     ) -> dict[UniswapV2Pool, Address]:
         if self._supports_factory_helper is False or token_in in self._skip_factory_helper:
+            # Fast O(1) path: query factory.getPair for each well-known candidate token.
+            # This avoids the 10+ minute scan of all 330k+ pairs on Mainnet/Arbitrum/Base.
+            fast_pools = await self.get_pools_via_factory_getpair(token_in, block, sync=False)
+            if fast_pools:
+                return fast_pools
+            # Fall back to full scan only if no pools found via fast path
             return await self.all_pools_for(token_in, sync=False)
         try:
             pools: list[HexAddress] = await FACTORY_HELPER.getPairsFor.coroutine(
