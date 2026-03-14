@@ -186,13 +186,13 @@ string_matchers = {
     "creth": creth.is_creth,
     "belt lp": belt.is_belt_lp,
     "froyo": froyo.is_froyo,
-    "convex": convex.is_convex_lp,
     "rkp3r": rkp3r.is_rkp3r,
 }
 
 # these just require calls
 calls_only = {
     "atoken": aave.is_atoken,
+    "convex": convex.is_convex_lp,
     "balancer pool": balancer_multiplexer.is_balancer_pool,
     "curve gauge": curve_gauge.is_curve_gauge,
     "erc4626 vault": erc4626.is_erc4626_vault,
