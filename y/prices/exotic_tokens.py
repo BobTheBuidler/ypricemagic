@@ -5,7 +5,7 @@ buckets but have well-known patterns:
 
 - **Pickle pSLP**: Symbol starts with ``pSLP-``, has ``getRatio()`` and ``token()``.
   Price = underlying × getRatio() / 1e18.
-- **PoolTogether V4 Ticket**: Has ``getTwab()`` + ``controller()`` + name matches
+- **PoolTogether V4 Ticket**: Has ``controller()`` + name matches
   ``'PoolTogether * Ticket'``. Price = 1:1 with ``controller().getToken()``.
 - **xPREMIA**: Symbol == ``'xPREMIA'``, has ``getXPremiaToPremiaRatio()``.
   Price = PREMIA × ratio / 1e18.
@@ -49,6 +49,7 @@ _PREMIA_ADDRESS = "0x6399C842dD2bE3dE30BF99Bc7D1bBF6Fa3650E70"
     ram_cache_ttl=5 * 60,
     ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
 )
+@stuck_coro_debugger
 @optional_async_diskcache
 async def is_pickle_pslp(token_address: AnyAddressType) -> bool:
     """Determine whether a token is a Pickle pSLP token.
@@ -149,13 +150,18 @@ async def get_price_pickle_pslp(
     ram_cache_ttl=5 * 60,
     ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
 )
+@stuck_coro_debugger
 @optional_async_diskcache
 async def is_pool_together_v4_ticket(token_address: AnyAddressType) -> bool:
     """Determine whether a token is a PoolTogether V4 Ticket.
 
     Detection requires:
-    1. The contract exposes ``getTwab()`` and ``controller()``.
-    2. The token name starts with ``'PoolTogether '`` and ends with ``' Ticket'``.
+    1. The contract exposes ``controller()`` (a no-input view returning an address).
+    2. The token name matches ``'PoolTogether * Ticket'``.
+
+    Note: ``getTwab(address,uint32)`` takes inputs and cannot be used with
+    ``has_methods()`` (which only supports no-input view functions).  The
+    ``controller()`` check plus name pattern is sufficient for detection.
 
     Args:
         token_address: The address of the token to check.
@@ -167,7 +173,7 @@ async def is_pool_together_v4_ticket(token_address: AnyAddressType) -> bool:
 
     if not await has_methods(
         token_address,
-        ("getTwab(address,uint32)(uint224,uint32)", "controller()(address)"),
+        ("controller()(address)",),
         all,
         sync=False,
     ):
@@ -249,6 +255,7 @@ async def get_price_pool_together_v4(
     ram_cache_ttl=5 * 60,
     ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
 )
+@stuck_coro_debugger
 @optional_async_diskcache
 async def is_xpremia(token_address: AnyAddressType) -> bool:
     """Determine whether a token is xPREMIA.
@@ -335,6 +342,7 @@ async def get_price_xpremia(
     ram_cache_ttl=5 * 60,
     ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
 )
+@stuck_coro_debugger
 @optional_async_diskcache
 async def is_xtarot(token_address: AnyAddressType) -> bool:
     """Determine whether a token is xTAROT.
@@ -377,6 +385,7 @@ async def is_xtarot(token_address: AnyAddressType) -> bool:
     ram_cache_ttl=5 * 60,
     ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
 )
+@stuck_coro_debugger
 @optional_async_diskcache
 async def is_tarot_supply_vault(token_address: AnyAddressType) -> bool:
     """Determine whether a token is a Tarot SupplyVault.

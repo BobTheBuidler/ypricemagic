@@ -16,6 +16,7 @@ import logging
 from decimal import Decimal
 
 import a_sync
+from brownie import ZERO_ADDRESS
 from dank_mids.exceptions import Revert
 from web3.exceptions import ContractLogicError
 
@@ -122,7 +123,7 @@ async def get_price(
         return_None_on_failure=True,
         sync=False,
     )
-    if not underlying_address:
+    if not underlying_address or underlying_address == ZERO_ADDRESS:
         return None
 
     # Determine the share amount to redeem

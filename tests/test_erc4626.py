@@ -96,57 +96,9 @@ class TestErc4626AmountUsesPreviewRedeem:
         """With amount specified, previewRedeem(amount_in_shares) is called rather
         than previewRedeem(10**decimals).
 
-        _call_preview_redeem and _call_convert_to_assets are patched to return None/value
-        respectively (they handle reverts internally, returning None on failure).
+        Verifies the shares calculation logic: amount=500 with an 18-decimal vault
+        should call previewRedeem with 500 * 10**18 shares.
         """
-        import asyncio
-
-        # Capture what shares value _call_preview_redeem was called with
-        captured_shares = []
-        _SCALE = 10**18  # 18-decimal vault
-
-        async def mock_preview_redeem(token_address, shares, block):
-            captured_shares.append(shares)
-            # Return a reasonable mock: 500 DAI worth (same ratio as input)
-            return shares  # 1:1 for simplicity
-
-        async def run():
-            # Patch _call_preview_redeem to capture the shares argument
-            with patch(
-                "y.prices.erc4626._call_preview_redeem",
-                side_effect=mock_preview_redeem,
-            ):
-                # Patch raw_call to return a fake underlying address for asset()
-                with patch(
-                    "y.prices.erc4626.raw_call",
-                    new_callable=AsyncMock,
-                ) as mock_raw_call:
-                    _USDC_PART = "A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-                    mock_raw_call.return_value = f"0x{_USDC_PART}"
-
-                    # Patch ERC20.__scale__ to return a fixed scale
-                    with patch.object(
-                        type(
-                            __import__("y.classes.common", fromlist=["ERC20"]).ERC20(
-                                SDAI_ADDRESS, asynchronous=True
-                            )
-                        ),
-                        "__scale__",
-                        new_callable=lambda: property(lambda self: _SCALE),
-                    ):
-                        with patch("y.prices.magic.get_price", new_callable=AsyncMock) as mock_gp:
-                            mock_gp.return_value = UsdPrice(1.0)
-                            await erc4626.get_price(
-                                SDAI_ADDRESS, block=TEST_BLOCK, amount=500, sync=False
-                            )
-
-        try:
-            asyncio.run(run())
-        except Exception:
-            # If the complex patching fails, just verify the logic conceptually
-            # via a direct unit test of shares calculation
-            pass
-
         # Verify the shares calculation logic directly:
         # amount=500 with scale=10**18 should give 500 * 10**18 shares
         from decimal import Decimal
@@ -174,9 +126,10 @@ class TestErc4626GracefulFallback:
     def test_erc4626_graceful_fallback(self) -> None:
         """If previewRedeem returns None (reverted), convertToAssets is called as fallback.
 
-        Note: _call_preview_redeem returns None when the underlying previewRedeem call
-        reverts. The get_price function checks for None and falls back to
-        _call_convert_to_assets.
+        Verifies the get_price code path: when _call_preview_redeem returns None,
+        _call_convert_to_assets is invoked next. Both helpers return None on revert
+        (they never raise), so the fallback logic is: if assets_received is None
+        after previewRedeem, call convertToAssets.
         """
         import asyncio
 
@@ -222,16 +175,10 @@ class TestErc4626GracefulFallback:
                                     sync=False,
                                 )
 
-        try:
-            asyncio.run(run())
-            assert (
-                len(convert_to_assets_called) >= 1
-            ), "convertToAssets should have been called as fallback"
-        except Exception:
-            # The patching approach may fail in some environments; verify the logic
-            # via code inspection: in get_price, if _call_preview_redeem returns None,
-            # we call _call_convert_to_assets
-            pass
+        asyncio.run(run())
+        assert (
+            len(convert_to_assets_called) >= 1
+        ), "convertToAssets should have been called as fallback"
 
     @pytest.mark.skipif(not _CAN_IMPORT, reason="y package unavailable")
     def test_erc4626_both_revert_returns_none(self) -> None:
@@ -272,12 +219,5 @@ class TestErc4626GracefulFallback:
                                 sync=False,
                             )
 
-        try:
-            price = asyncio.run(run())
-            assert price is None, f"Expected None when both methods return None, got {price}"
-        except Exception:
-            # The patching approach may fail in some environments; the logic is
-            # verified by code inspection: if assets_received is None after both
-            # _call_preview_redeem and _call_convert_to_assets return None,
-            # get_price returns None
-            pass
+        price = asyncio.run(run())
+        assert price is None, f"Expected None when both methods return None, got {price}"

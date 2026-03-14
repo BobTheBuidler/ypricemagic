@@ -11,7 +11,7 @@ This module tests the following token types:
 
 import pytest
 
-from tests.fixtures import mainnet_only
+from tests.fixtures import fantom_only, mainnet_only
 from y.prices import magic
 from y.prices.utils.buckets import check_bucket
 
@@ -216,3 +216,64 @@ async def test_pickle_pslp_price():
 
     price = float(result.price if isinstance(result, PriceResult) else result)
     assert price > 0, f"Pickle pSLP price should be positive, got {price}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# xTAROT tests (Fantom only)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@fantom_only
+@pytest.mark.asyncio_cooperative
+async def test_xtarot_bucket():
+    """xTAROT should be bucketed as 'xtarot'."""
+    bucket = await check_bucket(XTAROT, sync=False)
+    assert bucket == "xtarot", f"Expected 'xtarot' bucket for xTAROT, got '{bucket}'"
+
+
+@fantom_only
+@pytest.mark.asyncio_cooperative
+async def test_xtarot_price():
+    """xTAROT should resolve to a nonzero price related to the underlying TAROT token."""
+    # xTAROT was deployed on Fantom; use a block number after xTAROT was active.
+    # Block 25_000_000 is mid-2022 on Fantom when xTAROT was live.
+    result = await magic.get_price(
+        XTAROT, 25_000_000, fail_to_None=True, skip_cache=True, sync=False
+    )
+    assert result is not None, "xTAROT price should not be None"
+
+    from y.datatypes import PriceResult
+
+    price = float(result.price if isinstance(result, PriceResult) else result)
+    assert price > 0, f"xTAROT price should be positive, got {price}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tarot SupplyVault tests (Fantom only)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@fantom_only
+@pytest.mark.asyncio_cooperative
+async def test_tarot_supply_vault_bucket():
+    """A Tarot SupplyVault should be bucketed as 'tarot supply vault'."""
+    bucket = await check_bucket(TAROT_SUPPLY_VAULT, sync=False)
+    assert (
+        bucket == "tarot supply vault"
+    ), f"Expected 'tarot supply vault' bucket for {TAROT_SUPPLY_VAULT}, got '{bucket}'"
+
+
+@fantom_only
+@pytest.mark.asyncio_cooperative
+async def test_tarot_supply_vault_price():
+    """A Tarot SupplyVault should resolve to a nonzero price."""
+    # Use a block number after the SupplyVault was active on Fantom.
+    result = await magic.get_price(
+        TAROT_SUPPLY_VAULT, 25_000_000, fail_to_None=True, skip_cache=True, sync=False
+    )
+    assert result is not None, "Tarot SupplyVault price should not be None"
+
+    from y.datatypes import PriceResult
+
+    price = float(result.price if isinstance(result, PriceResult) else result)
+    assert price > 0, f"Tarot SupplyVault price should be positive, got {price}"
