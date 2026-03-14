@@ -996,7 +996,11 @@ class UniswapRouterV2(ContractBase):
             from y.prices.utils.buckets import check_bucket
 
             if await check_bucket(paired_with, sync=False) and _loop_count == 0:
-                # Let's just use the other token to get the price
+                # If the paired token is a non-USDC stablecoin, return the direct path so
+                # get_price() can extend it to USDC for an atomic multi-hop.
+                # Otherwise, let deepest_pool handle it via the fallback path.
+                if usdc is not None and paired_with != usdc.address and paired_with in STABLECOINS:
+                    return [token_address, paired_with]
                 return None
 
             # Try to build a path through this candidate
