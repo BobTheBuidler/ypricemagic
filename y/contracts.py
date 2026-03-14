@@ -803,7 +803,12 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
 
 
 @stuck_coro_debugger
-@a_sync(default="sync", cache_type="memory", ram_cache_ttl=15 * 60, ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
+@a_sync(
+    default="sync",
+    cache_type="memory",
+    ram_cache_ttl=15 * 60,
+    ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE,
+)
 async def has_methods(
     address: AnyAddressType,
     methods: Iterable[str],

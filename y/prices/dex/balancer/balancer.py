@@ -212,7 +212,11 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
                 return price
 
     # cached forever because not many items
-    @a_sync.a_sync(cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
+    @a_sync.a_sync(
+        cache_type="memory",
+        ram_cache_ttl=ENVS.CACHE_TTL,
+        ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
+    )
     async def get_version(self, token_address: AnyAddressType) -> BalancerABC:
         """
         Determine the Balancer version for a given token address.

@@ -9,13 +9,11 @@ from y.prices import magic
 
 @pytest.mark.parametrize("token", STABLECOINS)
 def test_stablecoins(token):
-    """Placeholder test for stablecoin prices.
+    """Test stablecoin pricing: USDC is exactly $1, others are near $1 from real price sources.
 
-    This test iterates over a series of blocks for each stablecoin token provided in
-    :data:`y.constants.STABLECOINS` and asserts that the price is exactly equal to 1.
-    This strict equality is enforced for the current implementation of stable tokens.
-    In a future revision when non‐stable stables are implemented, tolerances for
-    rounding and scaling issues may be introduced.
+    USDC is hardcoded to $1 via the 'stable usd' bucket. All other stablecoins (USDT, DAI, etc.)
+    go through real price resolution (Chainlink, DEX, etc.) and should return prices
+    between $0.95 and $1.05 under normal market conditions.
 
     Args:
         token: The stablecoin token address to be tested.
@@ -25,8 +23,13 @@ def test_stablecoins(token):
         :func:`tests.fixtures.blocks_for_contract`: for generating block numbers for testing.
     """
     for block in blocks_for_contract(token, 20):
-        # NOTE Placeholder.
-        assert magic.get_price(token, block, skip_cache=True) == 1, "Stablecoin price not $1"
+        price = magic.get_price(token, block, skip_cache=True)
+        if usdc is not None and token == usdc.address:
+            assert price == 1.0, f"USDC price should be exactly $1, got {price}"
+        else:
+            assert (
+                0.95 <= float(price) <= 1.05
+            ), f"Stablecoin {token} price {price} not in expected range [0.95, 1.05]"
 
 
 def test_routing_tokens_shape():
