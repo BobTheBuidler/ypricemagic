@@ -23,6 +23,7 @@ from y.prices import (
     chainlink,
     convex,
     curve_gauge,
+    erc4626,
     one_to_one,
     pendle,
     popsicle,
@@ -471,6 +472,7 @@ async def _get_price(
                 ignore_pools=ignore_pools,
                 skip_cache=skip_cache,
                 logger=logger,
+                amount=amount,
             )
             if price_or_none is not None:
                 raw_price = price_or_none
@@ -520,6 +522,7 @@ async def _exit_early_for_known_tokens(
     logger: Logger,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: tuple[Pool, ...] = (),
+    amount: Decimal | int | float | None = None,
 ) -> tuple[UsdPrice | float | PriceResult | None, str | None]:  # sourcery skip: low-code-quality
     """
     Attempt to get the price for known token types without having to fully load everything.
@@ -533,6 +536,7 @@ async def _exit_early_for_known_tokens(
         logger: A logger instance for recording debug information.
         skip_cache: If True, bypass the cache and fetch the price directly.
         ignore_pools: A tuple of pool addresses to ignore when fetching the price.
+        amount: The amount of tokens (human-readable units) to use for ERC4626 vault pricing.
 
     Returns:
         A tuple of (price, bucket_name) if the price can be determined early, or (None, None) otherwise.
@@ -588,6 +592,11 @@ async def _exit_early_for_known_tokens(
     elif bucket == "ellipsis lp":
         price = await ellipsis.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+
+    elif bucket == "erc4626 vault":
+        price = await erc4626.get_price(
+            token_address, block=block, skip_cache=skip_cache, amount=amount, sync=False
         )
 
     elif bucket == "froyo":
