@@ -565,32 +565,11 @@ class UniswapRouterV2(ContractBase):
                 log_debug("deepest pool: %s", deepest_pool)
             paired_with = await deepest_pool.get_token_out(token_in, sync=False)
             path = [token_in, paired_with]
-            quote = await self.get_quote(amount_in, path, block=block, sync=False)
-            if debug_logs:
-                log_debug("quote: %s", quote)
-            if quote is not None:
-                out_scale = await ERC20._get_scale_for(path[-1])
-                amount_out = Decimal(quote[-1]) / out_scale
-                fees = Decimal(0.997) ** (len(path) - 1)
-                amount_out /= fees
-                paired_with_price = await magic.get_price(
-                    paired_with,
-                    block,
-                    fail_to_None=True,
-                    skip_cache=skip_cache,
-                    ignore_pools=(*ignore_pools, deepest_pool),
-                    sync=False,
-                )
-
-                if paired_with_price:
-                    from y.datatypes import PriceResult
-
-                    _numeric_price = (
-                        paired_with_price.price
-                        if isinstance(paired_with_price, PriceResult)
-                        else paired_with_price
-                    )
-                    return UsdPrice(amount_out * Decimal(_numeric_price) / _amount)
+            # If paired with a non-USDC stablecoin, extend path to USDC for an atomic
+            # multi-hop. This avoids calling magic.get_price(stablecoin, historical_block)
+            # which can hang for historical blocks.
+            if usdc is not None and paired_with != usdc.address and paired_with in STABLECOINS:
+                path = path + [usdc.address]
 
         # If we still don't have a workable path, try this smol brain method
         if path is None:
