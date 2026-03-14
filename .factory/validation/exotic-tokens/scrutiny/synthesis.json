@@ -1,6 +1,6 @@
 {
   "milestone": "exotic-tokens",
-  "round": 1,
+  "round": 2,
   "status": "fail",
   "validatorsRun": {
     "test": {
@@ -13,7 +13,7 @@
       "passed": true,
       "command": "cd /Users/bryan/code/ypricemagic-pricing && /Users/bryan/code/ypricemagic/.venv/bin/python -m mypy y/",
       "exitCode": 1,
-      "note": "mypy reports 1770 errors across 91 files — identical in scope and nature to the pre-existing errors documented in the stablecoin-pricing scrutiny synthesis. The errors span unrelated modules (cli.py, logging.py, _db/, etc.) and are caused by pre-existing architectural issues (brownie type stubs, dank_mids exports, typed_envs). None trace to files introduced or modified in the exotic-tokens milestone (curve_gauge.py, erc4626.py, exotic_tokens.py, buckets.py, magic.py, aave.py, one_to_one.py). Treated as pre-existing per prior synthesis precedent."
+      "note": "mypy reports 1770 errors across 91 files — identical in scope and nature to the pre-existing errors documented in the stablecoin-pricing scrutiny synthesis. None trace to files introduced or modified in the exotic-tokens milestone. Treated as pre-existing per prior synthesis precedent."
     },
     "lint": {
       "passed": true,
@@ -26,27 +26,22 @@
     "total": 3,
     "passed": 1,
     "failed": 2,
-    "failedFeatures": ["curve-gauge-support", "exotic-token-parity-and-detection"]
+    "failedFeatures": ["curve-gauge-support", "exotic-token-parity-and-detection"],
+    "note": "Round 2 re-run: exotic-tokens-scrutiny-fixes feature is still pending (not completed). No new features introduced since round 1. Prior reviews preserved at .factory/validation/exotic-tokens/scrutiny/reviews/. No new subagents spawned since no fix features were completed."
   },
   "blockingIssues": [
     {
       "featureId": "curve-gauge-support",
       "severity": "blocking",
-      "description": "test_gauge_bucket_detection uses SDAI_USDM_GAUGE (0xcF5136C67fA8A375BaBbDf13c0307EF994b5681D) as test address, but this same address is hardcoded in y/prices/one_to_one.py. check_bucket() evaluates string_matchers (including 'one to one') BEFORE calls_only (including 'curve gauge'), so the test will assert 'curve gauge' but receive 'one to one'. The test itself is self-contradictory — test_hardcoded_gauge_still_works acknowledges this ordering. Fix: replace SDAI_USDM_GAUGE in test_gauge_bucket_detection with a gauge address NOT in one_to_one.py."
+      "description": "test_gauge_bucket_detection uses SDAI_USDM_GAUGE (0xcF5136C67fA8A375BaBbDf13c0307EF994b5681D) as test address, but this same address is hardcoded in y/prices/one_to_one.py line 18. check_bucket() evaluates string_matchers (including 'one to one') BEFORE calls_only (including 'curve gauge'), so the test will assert 'curve gauge' but receive 'one to one'. Fix: replace SDAI_USDM_GAUGE in test_gauge_bucket_detection with a gauge address NOT in one_to_one.py."
     },
     {
       "featureId": "exotic-token-parity-and-detection",
       "severity": "blocking",
-      "description": "PoolTogether V4 ticket detection is broken: is_pool_together_v4_ticket() calls has_methods(token, ('getTwab(address,uint32)(uint224,uint32)', 'controller()(address)'), all). has_methods only works for view methods with NO inputs (contracts.py:839). getTwab requires two inputs (address, uint32), so has_methods always returns False for it, making the entire 'pool together v4 ticket' bucket permanently unreachable (dead code). Fix: remove getTwab from the has_methods call; use only controller()(address) (no-input), then separately verify the name pattern matches 'PoolTogether * Ticket'."
+      "description": "PoolTogether V4 ticket detection is broken: is_pool_together_v4_ticket() in y/prices/exotic_tokens.py line 168-170 calls has_methods(token, ('getTwab(address,uint32)(uint224,uint32)', 'controller()(address)'), all). has_methods only works for view methods with NO inputs (contracts.py:839). getTwab requires two inputs (address, uint32), so has_methods always returns False for it, making the entire 'pool together v4 ticket' bucket permanently unreachable (dead code). Fix: remove getTwab from the has_methods call; use only controller()(address) (no-input), then separately verify the name pattern matches 'PoolTogether * Ticket'."
     }
   ],
-  "appliedUpdates": [
-    {
-      "target": "library/architecture.md",
-      "description": "Added 'Token Detection Patterns' section documenting: (1) has_methods only works for no-input view methods — never use with input-bearing methods like getTwab(address,uint32); (2) Bucket evaluation order (string_matchers before calls_only) — test addresses for calls_only buckets must not overlap with one_to_one.py MAPPING; (3) ZERO_ADDRESS guard pattern for raw_call address returns.",
-      "sourceFeature": "exotic-token-parity-and-detection, curve-gauge-support, erc4626-vault-improvement"
-    }
-  ],
+  "appliedUpdates": [],
   "suggestedGuidanceUpdates": [
     {
       "target": "AGENTS.md",
@@ -57,29 +52,10 @@
     {
       "target": "skills/python-lib-worker",
       "suggestion": "Add note: When writing unit tests for detection functions that use calls_only bucket detection, verify that the chosen test address is NOT also present in string_matchers (especially one_to_one.py MAPPING). Addresses in one_to_one.py will always resolve to 'one to one' bucket before calls_only is evaluated. Test addresses for calls_only buckets must be algorithmically-detectable-only (not hardcoded anywhere).",
-      "evidence": "curve-gauge-support blocking issue: SDAI_USDM_GAUGE in test_gauge_bucket_detection is also in one_to_one.py, so the test will always fail in CI.",
-      "isSystemic": false
-    },
-    {
-      "target": "skills/python-lib-worker",
-      "suggestion": "Add note about complex async mock patching: tests that use bare `except Exception: pass` around core behavioral assertions provide false confidence. When ERC20 property patching fails, the test silently passes without verifying the behavior. Prefer patching at a higher level (e.g., patch _call_preview_redeem directly) or use pytest.raises / mark xfail.",
-      "evidence": "tests/test_erc4626.py:143, 228, 276 — three tests with bare except-pass wrapping key assertions. Worker's own skillFeedback identified this as a pain point.",
+      "evidence": "curve-gauge-support blocking issue: SDAI_USDM_GAUGE in test_gauge_bucket_detection is also in one_to_one.py line 18, so the test will always fail in CI.",
       "isSystemic": false
     }
   ],
-  "rejectedObservations": [
-    {
-      "observation": "Stale TODO comment in one_to_one.py about 'algorithmically get gauges'",
-      "reason": "Non-blocking minor cleanup. Not a correctness issue. Can be addressed in a follow-up commit without blocking validation."
-    },
-    {
-      "observation": "get_lp_token() in curve_gauge.py: no None-guard before passing to magic.get_price()",
-      "reason": "Non-blocking. In practice, get_price() is only called after is_curve_gauge() which confirms lp_token is not None. Defensive guard is a nice-to-have, not blocking."
-    },
-    {
-      "observation": "Tarot vault pricing uses hardcoded scale = 10**18 instead of fetching actual decimals",
-      "reason": "Non-blocking. All known Tarot contracts use 18 decimals. Adding dynamic decimal fetch would require an additional RPC call. Risk is extremely low in practice."
-    }
-  ],
-  "previousRound": null
+  "rejectedObservations": [],
+  "previousRound": ".factory/validation/exotic-tokens/scrutiny/synthesis-round-1.json"
 }
