@@ -1,0 +1,163 @@
+{
+  "groupId": "stablecoin-timing",
+  "testedAt": "2026-03-13T20:46:00Z",
+  "isolation": {
+    "appUrl": "http://localhost:8000",
+    "chain": "ethereum",
+    "prefix": "/ethereum/price",
+    "credentials": "none"
+  },
+  "toolsUsed": ["curl"],
+  "assertionResults": {
+    "VAL-STABLE-006": {
+      "status": "fail",
+      "evidence": "USDC: 0.24s (OK), USDT: 0.04s (cached, OK), DAI: 0.04s (cached, OK), MIC: 120.02s (TIMEOUT x2). Total time exceeded 120s due to MIC hang. USDC/USDT/DAI all completed quickly. MIC timed out on both first attempt and retry.",
+      "details": "USDC responded in 0.24s with price=1.0 (source: stable usd). USDT responded in 0.04s with price=1.0 (source: stable usd). DAI responded in 0.04s with price=1.0 (source: stable usd). MIC at block=12500000 timed out after 120s on both attempts (empty response body). Total sequential time was 120.35s with MIC consuming the full timeout. The silent-hang regression for MIC is still present."
+    },
+    "VAL-STABLE-007": {
+      "status": "fail",
+      "evidence": "MIC at block=12500000 returned empty response after 120s timeout (attempted twice). No price returned, let alone price > 0.",
+      "details": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000 timed out with empty body on both attempts. Cannot confirm that MIC routes through USDT. The USDT routing fix does not appear to be live in the current server build."
+    },
+    "VAL-CROSS-001": {
+      "status": "fail",
+      "evidence": "USDT returned {\"price\": 1.0, \"trade_path\": [{\"source\": \"stable usd\", \"input_token\": \"0xdAC17F958D2ee523a2206206994597C13D831ec7\", \"output_token\": \"USD\", \"pool\": null, \"price\": 1.0}]}. Source is still 'stable usd'.",
+      "details": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7 returns source='stable usd' with price=1.0. The pre-change baseline behavior (USDT hardcoded to $1.00 via 'stable usd' path) is still present. The Docker rebuild does not appear to reflect the new ypricemagic code that should return USDT's real market price via DEX pricing."
+    },
+    "VAL-CROSS-002": {
+      "status": "fail",
+      "evidence": "MIC at block=12500000 timed out (empty response). Cannot verify trade_path.",
+      "details": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000 returned empty body after 120s timeout on two attempts. No trade_path available to inspect. Cannot confirm multi-hop routing through USDT with USDC as terminal token."
+    },
+    "VAL-CROSS-004": {
+      "status": "fail",
+      "evidence": "USDT returned source='stable usd' with price=1.0. This is the pre-change cached/hardcoded result that should have been replaced after Docker rebuild.",
+      "details": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7 returns {\"price\": 1.0, \"trade_path\": [{\"source\": \"stable usd\"}]}. The stale 'stable usd' $1.00 result is still being served. Either the Docker image was not rebuilt with the new ypricemagic code, or the cache invalidation did not occur as expected."
+    }
+  },
+  "assertions": [
+    {
+      "id": "VAL-STABLE-006",
+      "title": "Stablecoin lookups complete without timeout",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 (USDC)",
+          "expected": "Response within 120s",
+          "observed": "Response in 0.24s, price=1.0, source=stable usd"
+        },
+        {
+          "action": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7 (USDT)",
+          "expected": "Response within 120s",
+          "observed": "Response in 0.04s, price=1.0, source=stable usd"
+        },
+        {
+          "action": "GET /ethereum/price?token=0x6B175474E89094C44Da98b954EedeAC495271d0F (DAI)",
+          "expected": "Response within 120s",
+          "observed": "Response in 0.04s, price=1.0, source=stable usd"
+        },
+        {
+          "action": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000 (MIC)",
+          "expected": "Response within 120s",
+          "observed": "Timeout after 120.02s, empty response body. Retried once, same result."
+        }
+      ],
+      "evidence": {
+        "timings": "USDC: 0.24s, USDT: 0.04s, DAI: 0.04s, MIC: 120.02s (TIMEOUT)",
+        "totalTime": "120.35s",
+        "consoleErrors": "n/a (curl API test)",
+        "network": "USDC -> 200 (0.24s), USDT -> 200 (0.04s), DAI -> 200 (0.04s), MIC -> empty/timeout after 120s"
+      },
+      "issues": "MIC at block=12500000 hangs indefinitely and hits the 120s max-time limit. This is exactly the silent-hang regression described in the milestone. The fix is not live in the current server."
+    },
+    {
+      "id": "VAL-STABLE-007",
+      "title": "USDT-routed tokens still resolve correctly",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000",
+          "expected": "price > 0",
+          "observed": "Timeout after 120s, empty response body (both attempts)"
+        }
+      ],
+      "evidence": {
+        "network": "Request timed out after 120s, empty body, both first attempt and retry",
+        "consoleErrors": "n/a"
+      },
+      "issues": "MIC cannot be priced. The USDT routing path is either not implemented or has the silent-hang bug."
+    },
+    {
+      "id": "VAL-CROSS-001",
+      "title": "ypricemagic changes reflected in server after rebuild",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7 (USDT)",
+          "expected": "source != 'stable usd'",
+          "observed": "{\"price\": 1.0, \"trade_path\": [{\"source\": \"stable usd\", \"input_token\": \"0xdAC17F958D2ee523a2206206994597C13D831ec7\", \"output_token\": \"USD\", \"pool\": null, \"price\": 1.0}]}"
+        }
+      ],
+      "evidence": {
+        "network": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7 -> 200, price=1.0, source=stable usd",
+        "consoleErrors": "n/a"
+      },
+      "issues": "USDT still returns source='stable usd' with price=1.0. The code change to give USDT real market prices is not reflected in the running server. Docker rebuild may not have picked up the new ypricemagic code."
+    },
+    {
+      "id": "VAL-CROSS-002",
+      "title": "MIC lookup via server API shows multi-hop trade path",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000",
+          "expected": "trade_path with USDC (0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48) as output_token of last hop",
+          "observed": "Timeout after 120s, empty response"
+        }
+      ],
+      "evidence": {
+        "network": "Timeout after 120s, empty body",
+        "consoleErrors": "n/a"
+      },
+      "issues": "MIC times out; cannot inspect trade_path at all."
+    },
+    {
+      "id": "VAL-CROSS-004",
+      "title": "Cache cleared or invalidated after server rebuild",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7 (USDT)",
+          "expected": "source != 'stable usd' (confirms fresh result, not stale cache)",
+          "observed": "source = 'stable usd', price = 1.0"
+        }
+      ],
+      "evidence": {
+        "network": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7 -> 200, {\"price\": 1.0, \"source\": \"stable usd\"}",
+        "consoleErrors": "n/a"
+      },
+      "issues": "USDT still returns 'stable usd' $1.00. Either the Docker image is running old code (rebuild did not pick up new ypricemagic), or cache was not cleared."
+    }
+  ],
+  "frictions": [
+    {
+      "description": "macOS date command does not support %3N (milliseconds) format; required using Python for timing",
+      "resolved": true,
+      "resolution": "Used Python subprocess + time.time() for precise timing measurements",
+      "affectedAssertions": ["VAL-STABLE-006"]
+    }
+  ],
+  "blockers": [
+    {
+      "description": "MIC (0x368B3a58B5f49392e5C9E4C998cb0bB966752E51) at block=12500000 hangs indefinitely on GET /ethereum/price. Timeout hit on both first attempt and retry. This is the exact silent-hang regression the milestone is supposed to fix. The running server does not appear to have the fix deployed.",
+      "affectedAssertions": ["VAL-STABLE-006", "VAL-STABLE-007", "VAL-CROSS-002"],
+      "quickFixAttempted": "Retried MIC request once after first timeout. Same result: timeout after 120s with empty body."
+    },
+    {
+      "description": "USDT returns source='stable usd' with price=1.0, indicating the server is still running old code that hardcodes stablecoins to $1. The Docker rebuild may not have picked up the new ypricemagic commit or cache was not invalidated.",
+      "affectedAssertions": ["VAL-CROSS-001", "VAL-CROSS-004"],
+      "quickFixAttempted": "Made fresh request (cached=false in response confirms this was not a Redis cache hit on a previously-cached result). The code itself still implements the old behavior."
+    }
+  ],
+  "summary": "Tested 5 assertions: 0 passed, 5 failed. USDC/USDT/DAI all respond quickly but return source='stable usd' (old hardcoded behavior). MIC at block=12500000 hangs and hits the 120s timeout on both attempts — the silent-hang regression is not fixed in the current server. USDT/DAI are still priced at $1.00 via 'stable usd' source, not real market prices. The stablecoin pricing fix (feat/stablecoin-pricing) does not appear to be deployed in the running Docker server."
+}

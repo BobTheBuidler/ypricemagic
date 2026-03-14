@@ -1,0 +1,108 @@
+{
+  "groupId": "stablecoin-core",
+  "testedAt": "2026-03-13T00:00:00Z",
+  "isolation": {
+    "appUrl": "http://localhost:8000",
+    "chain": "ethereum",
+    "prefix": "/ethereum/price",
+    "tool": "curl"
+  },
+  "toolsUsed": ["curl"],
+  "assertions": [
+    {
+      "id": "VAL-STABLE-001",
+      "title": "USDC returns exactly $1 with stable-usd source",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "expected": "price == 1.0 and trade_path source == 'stable usd'",
+          "observed": "price=1.0, trade_path[0].source='stable usd'"
+        }
+      ],
+      "evidence": {
+        "responseFile": "stablecoin-pricing/stablecoin-core/VAL-STABLE-001-response.json",
+        "rawResponse": "{\"token\":\"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48\",\"price\":1.0,\"block\":24653749,\"chain\":\"ethereum\",\"block_timestamp\":1773467531,\"cached\":false,\"trade_path\":[{\"source\":\"stable usd\",\"input_token\":\"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48\",\"output_token\":\"USD\",\"pool\":null,\"price\":1.0}]}"
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-STABLE-002",
+      "title": "USDT returns real market price (not hardcoded)",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          "expected": "0.95 < price < 1.05, trade_path source != 'stable usd'",
+          "observed": "price=1.0, trade_path[0].source='stable usd' — USDT is still being priced via the hardcoded stable-usd shortcut instead of a real pricing mechanism"
+        }
+      ],
+      "evidence": {
+        "responseFile": "stablecoin-pricing/stablecoin-core/VAL-STABLE-002-response.json",
+        "rawResponse": "{\"token\":\"0xdAC17F958D2ee523a2206206994597C13D831ec7\",\"price\":1.0,\"block\":24653749,\"chain\":\"ethereum\",\"block_timestamp\":1773467531,\"cached\":false,\"trade_path\":[{\"source\":\"stable usd\",\"input_token\":\"0xdAC17F958D2ee523a2206206994597C13D831ec7\",\"output_token\":\"USD\",\"pool\":null,\"price\":1.0}]}"
+      },
+      "issues": "USDT is returning source='stable usd' (hardcoded $1) instead of a real pricing mechanism like uniswap v2 or chainlink. The fix to only hardcode USDC to $1 and let other stablecoins use real prices does not appear to be active on the running server."
+    },
+    {
+      "id": "VAL-STABLE-003",
+      "title": "DAI returns real market price (not hardcoded)",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "expected": "0.95 < price < 1.05, trade_path source != 'stable usd'",
+          "observed": "price=1.0, trade_path[0].source='stable usd' — DAI is still being priced via the hardcoded stable-usd shortcut"
+        }
+      ],
+      "evidence": {
+        "responseFile": "stablecoin-pricing/stablecoin-core/VAL-STABLE-003-response.json",
+        "rawResponse": "{\"token\":\"0x6B175474E89094C44Da98b954EedeAC495271d0F\",\"price\":1.0,\"block\":24653749,\"chain\":\"ethereum\",\"block_timestamp\":1773467531,\"cached\":false,\"trade_path\":[{\"source\":\"stable usd\",\"input_token\":\"0x6B175474E89094C44Da98b954EedeAC495271d0F\",\"output_token\":\"USD\",\"pool\":null,\"price\":1.0}]}"
+      },
+      "issues": "DAI is returning source='stable usd' (hardcoded $1) instead of a real pricing mechanism. Same root cause as VAL-STABLE-002: the server is still applying the old STABLECOINS hardcode to all stablecoins, not just USDC."
+    },
+    {
+      "id": "VAL-STABLE-004",
+      "title": "MIC resolves through USDT with USDC as terminal token",
+      "status": "blocked",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000",
+          "expected": "price > 0, trade_path routes through USDT, final output_token == 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "observed": "curl exit code 28 (timeout after 120s). Request timed out on both attempts."
+        }
+      ],
+      "evidence": {
+        "timeoutFile": "stablecoin-pricing/stablecoin-core/VAL-STABLE-004-timeout.txt",
+        "attempt1": "curl exit code 28 after 120s",
+        "attempt2": "curl exit code 28 after 120s"
+      },
+      "issues": "Request timed out twice at 120s. Likely root cause: the MIC token at block 12500000 requires multi-hop routing through USDT->USDC, but given that VAL-STABLE-002/003 show USDT is still being hardcoded to $1 via 'stable usd', the server may be hanging on a code path that tries to price USDT via real mechanisms mid-chain-resolution while the routing code is in an inconsistent state."
+    },
+    {
+      "id": "VAL-STABLE-005",
+      "title": "Amount-specified lookup returns valid price via serial multi-hop",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7&amount=1000000",
+          "expected": "valid price (>0, in range 0.95-1.05), should route via serial multi-hop with real pricing source",
+          "observed": "price=1.0 returned successfully (>0 and in range), but trade_path[0].source='stable usd' — priced via hardcoded shortcut rather than serial multi-hop"
+        }
+      ],
+      "evidence": {
+        "responseFile": "stablecoin-pricing/stablecoin-core/VAL-STABLE-005-response.json",
+        "rawResponse": "{\"token\":\"0xdAC17F958D2ee523a2206206994597C13D831ec7\",\"price\":1.0,\"block\":24653771,\"chain\":\"ethereum\",\"block_timestamp\":1773467795,\"cached\":false,\"trade_path\":[{\"source\":\"stable usd\",\"input_token\":\"0xdAC17F958D2ee523a2206206994597C13D831ec7\",\"output_token\":\"USD\",\"pool\":null,\"price\":1.0}]}"
+      },
+      "issues": "The assertion requires the amount-specified path to use 'serial multi-hop' routing. Instead, the server returned source='stable usd' (the $1 hardcode), meaning the amount parameter did not trigger real routing. The price value (1.0) is in valid range, but the mechanism is wrong — it is the same hardcoded stablecoin path as all other non-USDC stablecoins."
+    }
+  ],
+  "frictions": [],
+  "blockers": [
+    {
+      "description": "VAL-STABLE-004 (MIC at block 12500000) timed out twice at 120s each. The request did not complete within the allowed timeout. This may be a consequence of the same bug causing VAL-STABLE-002/003 to fail — if USDT is still hardcoded, multi-hop routing through USDT may be in an inconsistent state.",
+      "affectedAssertions": ["VAL-STABLE-004"],
+      "quickFixAttempted": "Retried request once after initial timeout. Both attempts hit 120s limit."
+    }
+  ],
+  "summary": "Tested 5 assertions: 1 passed, 3 failed, 1 blocked. VAL-STABLE-001 (USDC=$1 via stable-usd) passes correctly. VAL-STABLE-002 (USDT real price), VAL-STABLE-003 (DAI real price), and VAL-STABLE-005 (amount-specified USDT multi-hop) all fail because the running server is still applying the 'stable usd' hardcoded $1 price to ALL stablecoins in the STABLECOINS dict, not just USDC — the intended fix does not appear to be deployed. VAL-STABLE-004 (MIC V2 second-hop fix) is blocked due to a 120s timeout on both attempts."
+}

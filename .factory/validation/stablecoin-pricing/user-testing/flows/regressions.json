@@ -1,0 +1,87 @@
+{
+  "groupId": "regressions",
+  "testedAt": "2026-03-13T00:00:00Z",
+  "isolation": {
+    "appUrl": "http://localhost:8000",
+    "chain": "ethereum",
+    "prefix": "/ethereum/price",
+    "credentials": "none"
+  },
+  "toolsUsed": ["curl"],
+  "assertionResults": {
+    "VAL-REGRESS-001": {
+      "status": "pass",
+      "evidence": "stablecoin-pricing/regressions/VAL-REGRESS-001-weth.json",
+      "details": "GET /ethereum/price?token=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 returned price=2092.212808 (via chainlink feed). Price is within expected range $1500-$5000. WETH pricing unaffected by stablecoin changes."
+    },
+    "VAL-REGRESS-002": {
+      "status": "pass",
+      "evidence": "stablecoin-pricing/regressions/VAL-REGRESS-002-curve-lp.json",
+      "details": "GET /ethereum/price?token=0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490 returned price=1.0398350564152203 (via curve lp source). Price > 0. Curve 3pool LP pricing still works correctly after stablecoin changes."
+    },
+    "VAL-REGRESS-003": {
+      "status": "pass",
+      "evidence": "stablecoin-pricing/regressions/VAL-REGRESS-003-yearn-vault.json",
+      "details": "GET /ethereum/price?token=0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9 returned price=1.236316 (via yearn or yearn-like source). Price > 0. Yearn yvUSDC vault pricing still works correctly after stablecoin/bucket changes."
+    }
+  },
+  "assertions": [
+    {
+      "id": "VAL-REGRESS-001",
+      "title": "WETH still prices correctly",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "expected": "Price in $1500-$5000 range",
+          "observed": "price=2092.212808 (within range)"
+        }
+      ],
+      "evidence": {
+        "curlResponse": "stablecoin-pricing/regressions/VAL-REGRESS-001-weth.json",
+        "tradeSource": "chainlink feed",
+        "block": 24653749
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-REGRESS-002",
+      "title": "Curve LP tokens still price correctly",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+          "expected": "Price > 0",
+          "observed": "price=1.0398350564152203 (> 0)"
+        }
+      ],
+      "evidence": {
+        "curlResponse": "stablecoin-pricing/regressions/VAL-REGRESS-002-curve-lp.json",
+        "tradeSource": "curve lp",
+        "block": 24653749
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-REGRESS-003",
+      "title": "Yearn vaults still work",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9",
+          "expected": "Price > 0",
+          "observed": "price=1.236316 (> 0)"
+        }
+      ],
+      "evidence": {
+        "curlResponse": "stablecoin-pricing/regressions/VAL-REGRESS-003-yearn-vault.json",
+        "tradeSource": "yearn or yearn-like",
+        "block": 24653750
+      },
+      "issues": null
+    }
+  ],
+  "frictions": [],
+  "blockers": [],
+  "summary": "Tested 3 assertions: all 3 passed. WETH=$2092.21 (chainlink feed, in $1500-$5000 range), Curve 3pool LP=$1.04 (curve lp source, >0), Yearn yvUSDC=$1.24 (yearn-or-yearn-like source, >0). No regressions detected from stablecoin pricing changes."
+}
