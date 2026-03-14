@@ -1,0 +1,118 @@
+{
+  "groupId": "detection-cross",
+  "testedAt": "2026-03-14T21:20:00Z",
+  "isolation": {
+    "appUrl": "http://localhost:8000",
+    "apiEndpoint": "GET /ethereum/price?token={address}&block={block}&amount={amount}",
+    "readOnly": true
+  },
+  "toolsUsed": ["curl", "docker-exec", "code-review"],
+  "assertions": [
+    {
+      "id": "VAL-DETECT-001",
+      "title": "Aave V1 aToken detected and priced",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d (aDAI V1)",
+          "expected": "Price ~$1 (1:1 with DAI)",
+          "observed": "price=0.99941541 via chainlink feed at block 24658194, duration_ms=1373"
+        },
+        {
+          "action": "Code review of AaveMarketV1 detection in aave.py",
+          "expected": "underlyingAssetAddress() used for V1, UNDERLYING_ASSET_ADDRESS() for V2+",
+          "observed": "AaveMarketV1.underlying() uses raw_call(atoken_address, 'underlyingAssetAddress()', ...). AaveMarketV2.underlying() uses raw_call(atoken_address, 'UNDERLYING_ASSET_ADDRESS()', ...). V1 detection is distinct and correct."
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "none",
+        "network": "Server log: price_fetched price=0.99941541 for 0xfC1E690f, duration_ms=1373. Code review confirms V1 uses underlyingAssetAddress() (lowercase) vs V2 UNDERLYING_ASSET_ADDRESS() (uppercase)."
+      },
+      "issues": null
+    },
+    {
+      "id": "VAL-DETECT-002",
+      "title": "Convex gauge token detected correctly",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "Check if dynamic Convex gauge detection exists in codebase",
+          "expected": "Function like is_convex_gauge() with cvx prefix + operator attribute detection",
+          "observed": "No is_convex_gauge() function exists anywhere in the codebase. convex.py only has a static MAPPING dict and is_convex_lp() which checks address membership."
+        },
+        {
+          "action": "Check if any dynamic Convex gauge detection was added in exotic-tokens commits",
+          "expected": "Commit adding Convex gauge detection",
+          "observed": "git show ecad42f6 only shows changes to tests/prices/test_exotic_tokens.py, y/prices/exotic_tokens.py, y/prices/lending/aave.py, y/prices/magic.py, y/prices/one_to_one.py, y/prices/utils/buckets.py. No changes to y/prices/convex.py."
+        },
+        {
+          "action": "Test hardcoded cvx3CRV (not a gauge, but Convex LP)",
+          "expected": "If Convex gauge existed, it would resolve. cvx3CRV is a Convex LP, not a gauge.",
+          "observed": "GET /ethereum/price?token=0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C returns price=1.0396 (Curve LP price via static mapping). This proves the STATIC Convex LP mapping works, but gauge detection was not implemented."
+        },
+        {
+          "action": "Check commit message for Convex gauge status",
+          "expected": "Either implemented or explicitly noted as not implemented",
+          "observed": "Commit ecad42f6 message says: 'Investigated Aave V1 (already handled) and Convex gauge detection (pre-existing static-mapping limitation noted)'. Confirms Convex gauge detection was investigated but NOT implemented - only the pre-existing static mapping was noted as a limitation."
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "codeReview": "convex.py has only MAPPING dict and is_convex_lp() (static). No is_convex_gauge() or operator() detection anywhere in codebase."
+      },
+      "issues": "FAIL: Convex gauge token dynamic detection (cvx prefix + operator attribute) was NOT implemented. The commit investigated this but only documented the pre-existing static-mapping limitation. The assertion requires dynamic detection of Convex gauge tokens via operator() attribute, which does not exist in the codebase."
+    },
+    {
+      "id": "VAL-DETECT-003",
+      "title": "Geist gToken detected correctly",
+      "status": "blocked",
+      "steps": [
+        {
+          "action": "Check Fantom chain availability via curl",
+          "expected": "Fantom service running at /fantom/price endpoint",
+          "observed": "curl to /fantom/price returns HTML frontend page (404 API, not JSON). No Fantom service in Docker stack."
+        },
+        {
+          "action": "Code review of aave.py v2_pools for Geist registration",
+          "expected": "Geist pool registered for Network.Fantom",
+          "observed": "Confirmed: v2_pools dict has 'Network.Fantom: (\"0x9FAD24f572045c7869117160A571B2e50b10d068\",), # geist (aave v2 fork)'. This was added in commit ecad42f6. Geist would be detected via AaveMarketV2.atokens() lookup through the Geist pool, using UNDERLYING_ASSET_ADDRESS() for V2 aToken detection."
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "none",
+        "codeReview": "aave.py line 40: Network.Fantom: ('0x9FAD24f572045c7869117160A571B2e50b10d068',), # geist (aave v2 fork). Code review confirms Geist pool is registered for Fantom."
+      },
+      "issues": "BLOCKED: Fantom chain service not running. Cannot test Geist gToken via API. Code review confirms the Geist pool was added to v2_pools for Network.Fantom (commit ecad42f6). The detection logic would work for Fantom if a Fantom service was running."
+    },
+    {
+      "id": "VAL-CROSS-003",
+      "title": "Exotic token pricing works through server",
+      "status": "pass",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x49d716DFe60b37379010A75329ae09428f17118d (plDAI V3 - PoolTogether V3 exotic token)",
+          "expected": "Nonzero price through server API",
+          "observed": "price=0.99941541 at block 24658194. plDAI V3 is an exotic token (PoolTogether V3) mapped via one_to_one.py to DAI. Price resolves successfully through the server API."
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "none",
+        "network": "Server log: price_fetched price=0.99941541 for 0x49d716DF. PoolTogether V3 is a newly supported exotic token type that resolves correctly through the server."
+      },
+      "issues": null
+    }
+  ],
+  "frictions": [],
+  "blockers": [
+    {
+      "description": "Fantom chain service not running in Docker stack. Geist gToken testing requires Fantom.",
+      "affectedAssertions": ["VAL-DETECT-003"],
+      "quickFixAttempted": "Verified by checking API endpoint. Would require starting a new Fantom service."
+    }
+  ],
+  "summary": "Tested 4 assertions: 2 passed (VAL-DETECT-001 Aave V1 aToken pricing works with underlyingAssetAddress(); VAL-CROSS-003 plDAI V3 exotic token resolves through server), 1 failed (VAL-DETECT-002 Convex gauge dynamic detection not implemented - only static mapping exists), 1 blocked (VAL-DETECT-003 Geist on Fantom - no Fantom service). The Aave V1 detection correctly distinguishes underlyingAssetAddress() (V1) vs UNDERLYING_ASSET_ADDRESS() (V2)."
+}

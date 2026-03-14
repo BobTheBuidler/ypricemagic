@@ -24,6 +24,7 @@ from y.prices import (
     convex,
     curve_gauge,
     erc4626,
+    exotic_tokens,
     one_to_one,
     pendle,
     popsicle,
@@ -707,6 +708,31 @@ async def _exit_early_for_known_tokens(
             skip_cache=skip_cache,
             ignore_pools=ignore_pools,
             sync=False,
+        )
+
+    elif bucket == "pickle pslp":
+        price = await exotic_tokens.get_price_pickle_pslp(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+
+    elif bucket == "pool together v4 ticket":
+        price = await exotic_tokens.get_price_pool_together_v4(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+
+    elif bucket == "xpremia":
+        price = await exotic_tokens.get_price_xpremia(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+
+    elif bucket == "xtarot":
+        price = await exotic_tokens.get_price_tarot_vault(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+
+    elif bucket == "tarot supply vault":
+        price = await exotic_tokens.get_price_tarot_vault(
+            token_address, block=block, skip_cache=skip_cache, sync=False
         )
 
     logger.debug("%s -> %s", bucket, price)

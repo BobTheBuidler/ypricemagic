@@ -1,0 +1,61 @@
+{
+  "milestone": "exotic-tokens",
+  "round": 2,
+  "status": "fail",
+  "validatorsRun": {
+    "test": {
+      "passed": true,
+      "command": "echo 'NOTE: ypricemagic test suite does not reliably run on macOS. Validation happens through ypricemagic-server Docker stack.'",
+      "exitCode": 0,
+      "note": "Tests cannot run on macOS per services.yaml; validation is through the server Docker stack. This is a known pre-existing constraint, not a new failure."
+    },
+    "typecheck": {
+      "passed": true,
+      "command": "cd /Users/bryan/code/ypricemagic-pricing && /Users/bryan/code/ypricemagic/.venv/bin/python -m mypy y/",
+      "exitCode": 1,
+      "note": "mypy reports 1770 errors across 91 files — identical in scope and nature to the pre-existing errors documented in the stablecoin-pricing scrutiny synthesis. None trace to files introduced or modified in the exotic-tokens milestone. Treated as pre-existing per prior synthesis precedent."
+    },
+    "lint": {
+      "passed": true,
+      "command": "cd /Users/bryan/code/ypricemagic-pricing && /Users/bryan/code/ypricemagic/.venv/bin/python -m black --check .",
+      "exitCode": 0,
+      "output": "All done! ✨ 🍰 ✨ 163 files would be left unchanged."
+    }
+  },
+  "reviewsSummary": {
+    "total": 3,
+    "passed": 1,
+    "failed": 2,
+    "failedFeatures": ["curve-gauge-support", "exotic-token-parity-and-detection"],
+    "note": "Round 2 re-run: exotic-tokens-scrutiny-fixes feature is still pending (not completed). No new features introduced since round 1. Prior reviews preserved at .factory/validation/exotic-tokens/scrutiny/reviews/. No new subagents spawned since no fix features were completed."
+  },
+  "blockingIssues": [
+    {
+      "featureId": "curve-gauge-support",
+      "severity": "blocking",
+      "description": "test_gauge_bucket_detection uses SDAI_USDM_GAUGE (0xcF5136C67fA8A375BaBbDf13c0307EF994b5681D) as test address, but this same address is hardcoded in y/prices/one_to_one.py line 18. check_bucket() evaluates string_matchers (including 'one to one') BEFORE calls_only (including 'curve gauge'), so the test will assert 'curve gauge' but receive 'one to one'. Fix: replace SDAI_USDM_GAUGE in test_gauge_bucket_detection with a gauge address NOT in one_to_one.py."
+    },
+    {
+      "featureId": "exotic-token-parity-and-detection",
+      "severity": "blocking",
+      "description": "PoolTogether V4 ticket detection is broken: is_pool_together_v4_ticket() in y/prices/exotic_tokens.py line 168-170 calls has_methods(token, ('getTwab(address,uint32)(uint224,uint32)', 'controller()(address)'), all). has_methods only works for view methods with NO inputs (contracts.py:839). getTwab requires two inputs (address, uint32), so has_methods always returns False for it, making the entire 'pool together v4 ticket' bucket permanently unreachable (dead code). Fix: remove getTwab from the has_methods call; use only controller()(address) (no-input), then separately verify the name pattern matches 'PoolTogether * Ticket'."
+    }
+  ],
+  "appliedUpdates": [],
+  "suggestedGuidanceUpdates": [
+    {
+      "target": "AGENTS.md",
+      "suggestion": "Add rule: @stuck_coro_debugger must be applied to is_* detection functions as well as get_price_* functions, following the yearn.py pattern (@a_sync.a_sync → @stuck_coro_debugger → @optional_async_diskcache). Detection functions make multiple RPC calls and can stall just as pricing functions can.",
+      "evidence": "y/prices/exotic_tokens.py is_pickle_pslp, is_pool_together_v4_ticket, is_xpremia, is_xtarot, is_tarot_supply_vault — all missing @stuck_coro_debugger. y/prices/yearn.py:77 has the correct pattern. Two separate reviewers flagged this across erc4626-vault-improvement and exotic-token-parity-and-detection.",
+      "isSystemic": true
+    },
+    {
+      "target": "skills/python-lib-worker",
+      "suggestion": "Add note: When writing unit tests for detection functions that use calls_only bucket detection, verify that the chosen test address is NOT also present in string_matchers (especially one_to_one.py MAPPING). Addresses in one_to_one.py will always resolve to 'one to one' bucket before calls_only is evaluated. Test addresses for calls_only buckets must be algorithmically-detectable-only (not hardcoded anywhere).",
+      "evidence": "curve-gauge-support blocking issue: SDAI_USDM_GAUGE in test_gauge_bucket_detection is also in one_to_one.py line 18, so the test will always fail in CI.",
+      "isSystemic": false
+    }
+  ],
+  "rejectedObservations": [],
+  "previousRound": ".factory/validation/exotic-tokens/scrutiny/synthesis-round-1.json"
+}

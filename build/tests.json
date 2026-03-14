@@ -1,0 +1,27 @@
+{
+  "contracts": {},
+  "tests": {
+    "tests\/test_cache_bounds.py": {
+      "coverage": false,
+      "isolated": false,
+      "results": "F",
+      "sha1": "92a05150b50569775a2267806e8d67bbec2dd971",
+      "txhash": []
+    },
+    "tests\/test_erc4626.py": {
+      "coverage": false,
+      "isolated": false,
+      "results": "s",
+      "sha1": "f7cccf58192ff5f25e193752fb013badb08fa2a4",
+      "txhash": []
+    },
+    "tests\/test_price_result.py": {
+      "coverage": false,
+      "isolated": false,
+      "results": "ssssssssssssssssssssssssss",
+      "sha1": "f2612089a63bb9123dfd97850a44a07faba10b1a",
+      "txhash": []
+    }
+  },
+  "tx": {}
+}

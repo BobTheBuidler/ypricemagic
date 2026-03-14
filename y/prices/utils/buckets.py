@@ -14,6 +14,7 @@ from y.prices import (
     convex,
     curve_gauge,
     erc4626,
+    exotic_tokens,
     one_to_one,
     pendle,
     popsicle,
@@ -185,13 +186,13 @@ string_matchers = {
     "creth": creth.is_creth,
     "belt lp": belt.is_belt_lp,
     "froyo": froyo.is_froyo,
-    "convex": convex.is_convex_lp,
     "rkp3r": rkp3r.is_rkp3r,
 }
 
 # these just require calls
 calls_only = {
     "atoken": aave.is_atoken,
+    "convex": convex.is_convex_lp,
     "balancer pool": balancer_multiplexer.is_balancer_pool,
     "curve gauge": curve_gauge.is_curve_gauge,
     "erc4626 vault": erc4626.is_erc4626_vault,
@@ -207,6 +208,12 @@ calls_only = {
     "popsicle": popsicle.is_popsicle_lp,
     "reserve": reserve.is_rtoken,
     "stargate lp": stargate.is_stargate_lp,
+    # Exotic token types
+    "pickle pslp": exotic_tokens.is_pickle_pslp,
+    "pool together v4 ticket": exotic_tokens.is_pool_together_v4_ticket,
+    "xpremia": exotic_tokens.is_xpremia,
+    "xtarot": exotic_tokens.is_xtarot,
+    "tarot supply vault": exotic_tokens.is_tarot_supply_vault,
 }
 
 

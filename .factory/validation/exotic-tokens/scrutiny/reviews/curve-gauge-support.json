@@ -1,0 +1,50 @@
+{
+  "featureId": "curve-gauge-support",
+  "reviewedAt": "2026-03-14T19:00:00.000Z",
+  "commitId": "4ca943af54fa1a2d6d79b75dd97ca13d2019e0fb",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The implementation is architecturally sound and follows project conventions correctly. The new `y/prices/curve_gauge.py` module is well-structured, decorator patterns match existing siblings (erc4626.py), `stuck_coro_debugger` is applied correctly to `get_price` and `get_lp_token`, and hardcoded `one_to_one.py` entries are preserved. However, there is a blocking test correctness issue: `test_gauge_bucket_detection` uses `SDAI_USDM_GAUGE = 0xcF5136...` as its test address, but that exact address is also hardcoded in `one_to_one.py`. Since `string_matchers` (which includes `is_one_to_one_token`) runs before `calls_only` (which includes `is_curve_gauge`) in `check_bucket()`, the token will be bucketed as 'one to one' — not 'curve gauge' — causing the test assertion to fail. There is also a minor `None`-propagation issue in `get_price`.",
+    "issues": [
+      {
+        "file": "tests/prices/test_curve_gauge.py",
+        "line": 34,
+        "severity": "blocking",
+        "description": "test_gauge_bucket_detection asserts that SDAI_USDM_GAUGE (0xcF5136C67fA8A375BaBbDf13c0307EF994b5681D) is bucketed as 'curve gauge', but this address is hardcoded in y/prices/one_to_one.py (line 18). The bucket resolution order in check_bucket() (y/prices/utils/buckets.py) evaluates string_matchers (including 'one to one' → is_one_to_one_token) BEFORE calls_only (including 'curve gauge' → is_curve_gauge). Therefore check_bucket() will return 'one to one' for this address, and the assert == 'curve gauge' will fail. The test's own docstring for test_hardcoded_gauge_still_works (line 84-88) acknowledges this ordering: 'they may be caught by the one to one bucket first'. The fix is to use a different gauge address in test_gauge_bucket_detection — one that has a '-gauge' symbol suffix AND is NOT hardcoded in one_to_one.py."
+      },
+      {
+        "file": "y/prices/curve_gauge.py",
+        "line": 148,
+        "severity": "non_blocking",
+        "description": "In get_price(), the result of get_lp_token() is assigned to `lp_token` but there is no guard for the None case before passing it to magic.get_price(). If for any reason get_lp_token() returns None (e.g. RPC failure after is_curve_gauge() already passed), magic.get_price(None, ...) would be called and raise an obscure error. A guard with a clear error message would be more defensive: `if lp_token is None: raise ValueError(f'Could not resolve lp_token for gauge {token_address}')`. This is unlikely in practice since get_price is only called after is_curve_gauge() confirms lp_token is not None, but it is a latent footgun."
+      },
+      {
+        "file": "y/prices/one_to_one.py",
+        "line": 17,
+        "severity": "non_blocking",
+        "description": "The comment `# TODO: algorithmically get gauges` (line 17) is now stale — algorithmic gauge detection has been implemented via the new curve_gauge module. The TODO should be updated or removed to avoid confusion for future maintainers."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "Bucket detection test addresses must not overlap with one_to_one.py MAPPING entries, since string_matchers (which includes 'one to one') runs before calls_only (which includes the new 'curve gauge' bucket). The test here used an address that is in both places. This ordering constraint is implicit in the codebase but not documented anywhere.",
+      "evidence": "y/prices/utils/buckets.py lines 107-131 (string_matchers checked before calls_only). y/prices/one_to_one.py line 18 (SDAI_USDM_GAUGE hardcoded). tests/prices/test_curve_gauge.py line 34-37 (asserts 'curve gauge' but will get 'one to one')."
+    },
+    {
+      "area": "conventions",
+      "observation": "The TODO comment `# TODO: algorithmically get gauges` in one_to_one.py line 17 was not removed after implementing the algorithmic detection. There should be a convention that TODO comments referencing future work are cleaned up when that work is done.",
+      "evidence": "y/prices/one_to_one.py line 17 still contains the stale TODO after commit 4ca943af."
+    },
+    {
+      "area": "knowledge",
+      "observation": "When writing bucket detection tests for tokens added to calls_only, test authors must verify that the chosen test address is NOT also present in the string_matchers MAPPING (especially one_to_one.py). The hardcoded gauge entries in one_to_one.py shadow the calls_only 'curve gauge' detection for those specific addresses. Future tests for 'curve gauge' detection need a gauge address that is only detectable algorithmically — not in one_to_one.py.",
+      "evidence": "check_bucket() in y/prices/utils/buckets.py evaluates string_matchers first (lines 107-115), then calls_only (lines 119-131). Any address in one_to_one.MAPPING is unreachable via calls_only detection."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Implementation quality is good: new y/prices/curve_gauge.py follows all project conventions (a_sync decorators, stuck_coro_debugger on pricing functions, optional_async_diskcache on detection, correct circular import avoidance, hardcoded fallbacks preserved in one_to_one.py). The integration into buckets.py and magic.py is correct. However, test_gauge_bucket_detection has a blocking bug: it asserts that 0xcF5136... is bucketed as 'curve gauge', but that address is hardcoded in one_to_one.py's MAPPING, so check_bucket() returns 'one to one' first. The test will fail in CI. The fix is to replace SDAI_USDM_GAUGE in test_gauge_bucket_detection with a gauge address that is NOT in one_to_one.py."
+}

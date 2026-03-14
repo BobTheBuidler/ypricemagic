@@ -28,6 +28,13 @@ optimism_only = pytest.mark.skipif(
 A pytest marker to skip tests that are only applicable on the Optimism network.
 """
 
+fantom_only = pytest.mark.skipif(
+    chain.id != Network.Fantom, reason="This test is only applicable on Fantom"
+)
+"""
+A pytest marker to skip tests that are only applicable on the Fantom network.
+"""
+
 async_test = pytest.mark.asyncio_cooperative
 """
 A pytest marker for concurrent asynchronous tests using asyncio_cooperative.

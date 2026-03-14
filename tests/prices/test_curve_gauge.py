@@ -14,8 +14,12 @@ from y.prices import magic
 from y.prices.utils.buckets import check_bucket
 
 # Known Curve gauge tokens on mainnet (symbol ends with '-gauge')
-# sdai-usdm-gauge -> sdai-usdm LP
-# This gauge was deployed and has lp_token() method
+# steCRV-gauge -> steCRV LP  (NOT hardcoded in one_to_one.py — pure dynamic detection)
+# Deployed early 2021 as the stETH/ETH Curve gauge.
+STETH_GAUGE = "0x182b723a58739a9c974cfdb385ceadb237453c28"
+STETH_LP = "0x06325440D014e39736583c165C2963BA99fAf14E"
+
+# sdai-usdm-gauge -> sdai-usdm LP  (hardcoded in one_to_one.py)
 SDAI_USDM_GAUGE = "0xcF5136C67fA8A375BaBbDf13c0307EF994b5681D"
 SDAI_USDM_LP = "0x425BfB93370F14fF525aDb6EaEAcfE1f4e3b5802"
 
@@ -25,16 +29,23 @@ YFI_MKUSD_LP = "0x5756bbdDC03DaB01a3900F01Fb15641C3bfcc457"
 
 # Test block where gauges are deployed and active
 TEST_BLOCK = 20_000_000
+# Earlier block for the stETH gauge (deployed 2021)
+TEST_BLOCK_STETH = 15_000_000
 
 
 @mainnet_only
 @pytest.mark.asyncio_cooperative
 async def test_gauge_bucket_detection():
-    """A known -gauge token should be bucketed as 'curve gauge'."""
-    bucket = await check_bucket(SDAI_USDM_GAUGE, sync=False)
+    """A known -gauge token (NOT in one_to_one.py) should be bucketed as 'curve gauge'.
+
+    Uses steCRV-gauge (stETH/ETH Curve gauge) which is not hardcoded in
+    one_to_one.py, so check_bucket() must detect it dynamically via the
+    curve_gauge.is_curve_gauge() function in the calls_only dict.
+    """
+    bucket = await check_bucket(STETH_GAUGE, sync=False)
     assert (
         bucket == "curve gauge"
-    ), f"Expected 'curve gauge' bucket for {SDAI_USDM_GAUGE}, got '{bucket}'"
+    ), f"Expected 'curve gauge' bucket for {STETH_GAUGE}, got '{bucket}'"
 
 
 @mainnet_only

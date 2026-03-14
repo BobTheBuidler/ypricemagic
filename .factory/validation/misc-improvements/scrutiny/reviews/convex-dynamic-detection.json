@@ -1,0 +1,33 @@
+{
+  "featureId": "convex-dynamic-detection",
+  "milestone": "misc-improvements",
+  "status": "pass",
+  "issues": [
+    {
+      "severity": "non_blocking",
+      "description": "get_price() in convex.py is missing the @stuck_coro_debugger decorator. All async price-fetching functions should have this decorator per AGENTS.md rule #8. The curve_gauge.py get_price() and erc4626.py get_price() both have it; convex.py is an omission.",
+      "location": "y/prices/convex.py:208",
+      "suggestedFix": "Add @stuck_coro_debugger decorator above @a_sync.a_sync(default='sync') on the get_price function, matching the pattern in curve_gauge.py and erc4626.py."
+    },
+    {
+      "severity": "non_blocking",
+      "description": "Sequential pool iteration in get_underlying_lp() (range(num_pools) with await per iteration) may be slow for Convex mainnet which has 300+ pools. Results are cached, so this only affects cold calls. The issue is non-blocking because: (a) results are memory-cached after first call, (b) the feature's purpose is just correctness of dynamic detection, and (c) this is listed as a 'low-priority improvement' in the feature description.",
+      "location": "y/prices/convex.py:193-203",
+      "suggestedFix": "Future improvement: use igather() or asyncio.gather() to parallelize poolInfo calls. Currently acceptable since results are cached after first resolution."
+    },
+    {
+      "severity": "non_blocking",
+      "description": "6 new mypy errors introduced in convex.py (same pattern as existing errors in exotic_tokens.py, erc4626.py, curve_gauge.py - pre-existing codebase-wide issue with a_sync/stuck_coro_debugger type stubs). Not a regression introduced by this feature.",
+      "location": "y/prices/convex.py:57,96,109,209,243",
+      "suggestedFix": "Pre-existing pattern across the codebase. Would require upstream type stub improvements to a_sync library. No action needed for this feature."
+    }
+  ],
+  "sharedStateObservations": [
+    {
+      "target": "AGENTS.md",
+      "suggestion": "Reinforce rule #8: the @stuck_coro_debugger decorator is required on ALL async price-fetching and detection functions, including get_price() functions. Recent work (convex.py) missed this on get_price() while having it on detection functions. Suggest adding explicit example: '@stuck_coro_debugger must be on ALL async functions that do RPC calls, including get_price, is_* detection functions, and get_underlying_*'.",
+      "evidence": "convex.py get_price() was added without @stuck_coro_debugger. curve_gauge.py and erc4626.py both have it on get_price(). Workers appear to be inconsistent about applying it to get_price() vs. detection functions."
+    }
+  ],
+  "summary": "The convex-dynamic-detection feature is well-implemented and logically correct. It adds a robust two-tier detection strategy: static MAPPING for fast-path, and dynamic operator()/poolLength()/poolInfo() iteration for unknown cvx-prefixed tokens. The implementation follows the established patterns from the exotic-tokens milestone (same decorator ordering, same ZERO_ADDRESS handling, same error handling style). Tests cover static mapping, dynamic detection, and negative cases. The main non-blocking issue is a missing @stuck_coro_debugger on get_price(). The feature passes review."
+}

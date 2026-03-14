@@ -1,0 +1,42 @@
+{
+  "featureId": "exotic-tokens-scrutiny-fixes",
+  "reviewedAt": "2026-03-14T20:00:00.000Z",
+  "commitId": "f8c1caaf",
+  "transcriptSkeletonReviewed": false,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "All 6 fixes (2 blocking + 4 non-blocking) from the prior scrutiny reviews have been correctly applied. The implementation is clean, follows project conventions, and fully addresses the identified failures.",
+    "issues": [
+      {
+        "file": "y/prices/exotic_tokens.py",
+        "line": 368,
+        "severity": "non_blocking",
+        "description": "is_xtarot() uses has_methods() with 'shareValuedAsUnderlying(uint256)(uint256)', an input-bearing method. This is the same pattern that caused the PoolTogether V4 detection bug (calling an input-bearing method via multicall without arguments). In practice this may not matter because: (1) the symbol check 'xTAROT' gates execution so only xTAROT tokens reach this code, and (2) shareValuedAsUnderlying(0) on the xTAROT contract may return 0 (not revert), making 'result is not None' true. However, the defensive pattern here is inconsistent with the fix applied to PoolTogether V4 (which explicitly removed input-bearing methods from has_methods). Ideally, 'shareValuedAsUnderlying(uint256)(uint256)' should be replaced with 'underlying()(address)' alone in the has_methods call (since underlying() is the no-input method, and the symbol guard already ensures we're only checking xTAROT tokens). This is a latent fragility, not a confirmed bug, since the symbol guard makes false positives near-impossible."
+      },
+      {
+        "file": "y/prices/one_to_one.py",
+        "line": 17,
+        "severity": "non_blocking",
+        "description": "The stale '# TODO: algorithmically get gauges' comment (line 17) was not removed or updated in this fix commit. The algorithmic detection (curve_gauge.is_curve_gauge) was implemented in the prior feature commit and the TODO is now stale. This was noted as non-blocking in the curve-gauge-support review and is still present."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "The fix commit also adds build/deployments/map.json and build/tests.json to the repo. The build/ directory appears to be generated artifacts (Brownie build output). These files should not be tracked in git — build/ is typically in .gitignore. This may indicate the .gitignore is not excluding the build/ directory, or a Brownie artifact was accidentally staged.",
+      "evidence": "commit f8c1caaf diff includes 'build/deployments/map.json' (new file, '{}'} and 'build/tests.json' (new file with test results cache). These look like generated Brownie build artifacts."
+    },
+    {
+      "area": "conventions",
+      "observation": "The is_xtarot() detection uses has_methods() with an input-bearing method signature ('shareValuedAsUnderlying(uint256)(uint256)'). After the PoolTogether fix, AGENTS.md or the library should document the constraint that has_methods() only works for no-input view methods, so future detection functions don't repeat the same mistake.",
+      "evidence": "y/prices/exotic_tokens.py:368 — has_methods called with shareValuedAsUnderlying(uint256)(uint256). y/contracts.py:839: 'has_methods is only supposed to work for public view methods with no inputs'. This knowledge gap was noted in the exotic-token-parity-and-detection review but no AGENTS.md update was made."
+    }
+  ],
+  "addressesFailureFrom": [
+    "/Users/bryan/code/ypricemagic-pricing/.factory/validation/exotic-tokens/scrutiny/reviews/curve-gauge-support.json",
+    "/Users/bryan/code/ypricemagic-pricing/.factory/validation/exotic-tokens/scrutiny/reviews/exotic-token-parity-and-detection.json"
+  ],
+  "summary": "PASS. All 6 required fixes are correctly implemented:\n\n1. FIXED (blocking): test_gauge_bucket_detection now uses STETH_GAUGE (0x182b723a58739a9c974cfdb385ceadb237453c28) which is confirmed NOT in one_to_one.py. SDAI_USDM_GAUGE is preserved in test_hardcoded_gauge_still_works (now using YFI_MKUSD_GAUGE which is equivalent). The test correctly exercises dynamic curve gauge detection.\n\n2. FIXED (blocking): getTwab(address,uint32) removed from has_methods() call in is_pool_together_v4_ticket(). Only controller()(address) (no-input) remains, with name pattern checked separately via raw_call.\n\n3. FIXED (non-blocking): erc4626.py now imports ZERO_ADDRESS from brownie and guards 'if not underlying_address or underlying_address == ZERO_ADDRESS'.\n\n4. FIXED (non-blocking): @stuck_coro_debugger added to all 5 is_* detection functions (is_pickle_pslp, is_pool_together_v4_ticket, is_xpremia, is_xtarot, is_tarot_supply_vault).\n\n5. FIXED (non-blocking): 4 Fantom-only tests added (test_xtarot_bucket, test_xtarot_price, test_tarot_supply_vault_bucket, test_tarot_supply_vault_price) with fantom_only marker. fantom_only marker added to fixtures.py.\n\n6. FIXED (non-blocking): All 3 bare 'except Exception: pass' blocks removed from test_erc4626.py. The tests now assert directly without exception swallowing.\n\nTwo minor non-blocking observations remain: (a) is_xtarot() still uses has_methods() with an input-bearing method signature (minor inconsistency with the PoolTogether fix pattern), and (b) the stale TODO comment in one_to_one.py was not cleaned up."
+}

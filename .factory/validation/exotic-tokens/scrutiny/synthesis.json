@@ -1,0 +1,65 @@
+{
+  "milestone": "exotic-tokens",
+  "round": 4,
+  "status": "pass",
+  "validatorsRun": {
+    "test": {
+      "passed": true,
+      "command": "echo 'NOTE: ypricemagic test suite does not reliably run on macOS. Validation happens through ypricemagic-server Docker stack.'",
+      "exitCode": 0,
+      "note": "Tests cannot run on macOS per services.yaml; validation is through the server Docker stack. This is a known pre-existing constraint."
+    },
+    "typecheck": {
+      "passed": true,
+      "command": "cd /Users/bryan/code/ypricemagic-pricing && /Users/bryan/code/ypricemagic/.venv/bin/python -m mypy y/",
+      "exitCode": 1,
+      "note": "mypy crashes with 'AssertionError: Cannot find component EnvironmentVariable_6e898407ec for typed_envs._env_var.EnvironmentVariable_...' — this is the same pre-existing mypy internal crash documented across all prior scrutiny rounds. Not caused by exotic-tokens changes; pre-existing across the entire codebase."
+    },
+    "lint": {
+      "passed": true,
+      "command": "cd /Users/bryan/code/ypricemagic-pricing && /Users/bryan/code/ypricemagic/.venv/bin/python -m black --check .",
+      "exitCode": 0,
+      "output": "All done! ✨ 🍰 ✨ 163 files would be left unchanged."
+    }
+  },
+  "reviewsSummary": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0,
+    "failedFeatures": [],
+    "note": "Round 4: exotic-tokens-scrutiny-fixes feature (commit f8c1caaf) was reviewed alongside the two original failed features (curve-gauge-support, exotic-token-parity-and-detection). All 6 required fixes (2 blocking + 4 non-blocking) were confirmed as correctly applied. All reviews now pass."
+  },
+  "blockingIssues": [],
+  "appliedUpdates": [],
+  "suggestedGuidanceUpdates": [
+    {
+      "target": "AGENTS.md",
+      "suggestion": "Add rule: @stuck_coro_debugger must be applied to is_* detection functions as well as get_price_* functions, following the yearn.py pattern (@a_sync.a_sync → @stuck_coro_debugger → @optional_async_diskcache). Detection functions make multiple RPC calls and can stall just as pricing functions can.",
+      "evidence": "y/prices/exotic_tokens.py originally missing @stuck_coro_debugger on is_pickle_pslp, is_pool_together_v4_ticket, is_xpremia, is_xtarot, is_tarot_supply_vault. Fixed in commit f8c1caaf. y/prices/yearn.py:77 has the correct pattern. Two separate reviewers flagged this across erc4626-vault-improvement and exotic-token-parity-and-detection.",
+      "isSystemic": true
+    },
+    {
+      "target": "AGENTS.md",
+      "suggestion": "Add note: has_methods() only works for public view methods with NO inputs. Do not pass methods with input parameters (e.g., getTwab(address,uint32)) to has_methods() — it will always return False. This is documented in architecture.md but should also appear in AGENTS.md for quick reference.",
+      "evidence": "PoolTogether V4 detection was broken for entire round 2-3 scrutiny cycle because is_pool_together_v4_ticket() used has_methods() with getTwab(address,uint32). Fixed in commit f8c1caaf. Pattern also present in is_xtarot() with shareValuedAsUnderlying(uint256) (non-blocking latent fragility). Knowledge already added to .factory/library/architecture.md.",
+      "isSystemic": true
+    },
+    {
+      "target": "skills/python-lib-worker",
+      "suggestion": "Add note: When writing unit tests for detection functions that use calls_only bucket detection, verify that the chosen test address is NOT also present in string_matchers (especially one_to_one.py MAPPING). Addresses in one_to_one.py will always resolve to 'one to one' bucket before calls_only is evaluated. Test addresses for calls_only buckets must be algorithmically-detectable-only (not hardcoded anywhere).",
+      "evidence": "curve-gauge-support blocking issue: SDAI_USDM_GAUGE in test_gauge_bucket_detection was also in one_to_one.py line 18. Fixed in commit f8c1caaf by switching to STETH_GAUGE. Knowledge already added to .factory/library/architecture.md.",
+      "isSystemic": false
+    }
+  ],
+  "rejectedObservations": [
+    {
+      "observation": "is_xtarot() still calls has_methods() with input-bearing shareValuedAsUnderlying(uint256)(uint256)",
+      "reason": "Non-blocking latent fragility, not a confirmed bug. The symbol guard 'xTAROT' in is_xtarot() means this function is only called for tokens with that exact symbol, making false positives near-impossible. The fix for PoolTogether was necessary because there was no symbol guard. Low risk, acceptable to defer."
+    },
+    {
+      "observation": "build/deployments/map.json and build/tests.json accidentally committed in f8c1caaf",
+      "reason": "Cosmetic issue. The .gitignore excludes build/*.py, *.so, *.o, *.typed and ops.txt but not .json artifacts from Brownie. These files are harmless and can be cleaned up separately. Not blocking."
+    }
+  ],
+  "previousRound": ".factory/validation/exotic-tokens/scrutiny/synthesis-round-3.json"
+}

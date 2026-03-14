@@ -93,9 +93,39 @@ for stablecoin in ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0x6b175474e890
         del cache[k]
 ```
 
+## Exotic Token Addresses (Confirmed Working)
+
+- **stkAAVE**: `0x4da27a545c0c5B758a6BA100e3a049001de870f5` → maps 1:1 to AAVE ($110)
+- **plDAI V3**: `0x49d716DFe60b37379010A75329ae09428f17118d` → maps 1:1 to DAI (~$1)
+- **plUSDC V3**: `0xBD87447F48ad729C5c4b8bcb503e1395F62e8B98` → maps 1:1 to USDC (~$1)
+- **sDAI (ERC4626)**: `0x83F20F44975D03b1b09e64809B757c47f942BEeA` → priced at ~$1.17
+- **weETH (ERC4626)**: `0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee` → priced at ~$2264
+- **aDAI V1**: `0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d` → priced at ~$1 (V1 underlyingAssetAddress())
+
+## Exotic Token Addresses (Problems Found)
+
+- **pSLP-WBTC-ETH**: `0x55282dA27a3a02eFe599f9bD85E2e0C78f9cD2b2` → NonStandardERC20 (symbol() fails)
+- **ptUSDC V4**: `0xdd4d117723C257CEe402285D3aCF218E9A8236E1` → consistently times out (600+ seconds cold start)
+- **vxPREMIA**: `0xF1bB87563A122211d40d393eBf1c633c330377F9` → symbol='vxPREMIA' (different from xPREMIA)
+- **xPREMIA staking**: `0x16f9D564Df80376C61AC914205D3fDfB8a32f98b` → NonStandardERC20 (symbol() fails)
+- **xTAROT**: `0x74D1D2A851e339B8cB953716445Be7E8aBdf92F4` → Fantom only
+
+## Server Docker Rebuild Note (exotic-tokens milestone)
+
+The server `pyproject.toml` was updated from `feat/stablecoin-pricing` to `feat/exotic-tokens` branch to deploy exotic token code. Run:
+```bash
+cd /Users/bryan/code/ypricemagic-server
+# Edit pyproject.toml: ypricemagic @ git+...@feat/exotic-tokens
+uv lock --upgrade-package ypricemagic
+docker compose up --build -d ypm-ethereum
+```
+
 ## Known Limitations
 
 - ypricemagic pytest suite does not run reliably on macOS
 - All behavioral validation goes through the server Docker stack
 - Exotic token addresses may need discovery at test time (not all known upfront)
-- Fantom chain (for Geist gTokens) requires a Fantom-specific Docker service which may not be running
+- Fantom chain (for Geist gTokens, xTAROT) requires a Fantom-specific Docker service which is not running
+- Many exotic/novel tokens cause 600+ second cold-start timeouts due to Etherscan ABI fetching
+- Tokens with NonStandardERC20 (no symbol() method) cannot be detected by detection functions that rely on symbol
+- The ptUSDC V4 ticket and novel tokens consistently timeout on first request in this environment

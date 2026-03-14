@@ -1,0 +1,101 @@
+{
+  "milestone": "exotic-tokens",
+  "round": 1,
+  "status": "fail",
+  "assertionsSummary": {
+    "total": 21,
+    "passed": 7,
+    "failed": 14,
+    "blocked": 0
+  },
+  "passedAssertions": [
+    "VAL-4626-001",
+    "VAL-4626-002",
+    "VAL-4626-003",
+    "VAL-EXOTIC-001",
+    "VAL-EXOTIC-003",
+    "VAL-DETECT-001",
+    "VAL-CROSS-003"
+  ],
+  "failedAssertions": [
+    {
+      "id": "VAL-GAUGE-001",
+      "reason": "Blocked: Curve gauge LP price lookup times out (600+ seconds cold start). Code logic is correct (detection works per server logs) but cold-start performance prevents completion."
+    },
+    {
+      "id": "VAL-GAUGE-002",
+      "reason": "Blocked: Hardcoded gauge entries route correctly (confirmed in DB) but underlying LP pricing times out. Same cold-start issue as VAL-GAUGE-001."
+    },
+    {
+      "id": "VAL-EXOTIC-002",
+      "reason": "Blocked: pSLP token (0x55282) has NonStandardERC20 — symbol() unavailable. is_pickle_pslp() catches exception and returns False. Detection path never triggered."
+    },
+    {
+      "id": "VAL-EXOTIC-004",
+      "reason": "Blocked: ptUSDC V4 ticket consistently times out (600+ seconds cold start). Code logic is correct per code review (name pattern matches). Infrastructure cold-start issue."
+    },
+    {
+      "id": "VAL-EXOTIC-005",
+      "reason": "Blocked: xPREMIA address (0x16f9) has NonStandardERC20. vxPREMIA address (0xF1bB) is a different contract. is_xpremia() cannot detect either. Code logic correct but test token unavailable."
+    },
+    {
+      "id": "VAL-EXOTIC-006",
+      "reason": "Blocked: xTAROT on Fantom only. No Fantom service running. Code review confirms implementation is correct. Requires Fantom chain Docker service."
+    },
+    {
+      "id": "VAL-DETECT-002",
+      "reason": "FAIL: Convex gauge dynamic detection (cvx prefix + operator attribute) not implemented. Only static MAPPING dict exists. Commit ecad42f6 notes this as pre-existing limitation."
+    },
+    {
+      "id": "VAL-DETECT-003",
+      "reason": "Blocked: Fantom chain service not running. Code review confirms Geist pool added to aave.py v2_pools for Network.Fantom. Would work if Fantom service available."
+    },
+    {
+      "id": "VAL-FRONT-001",
+      "reason": "FAIL: Native token (0xEeee) not added to frontend tokenlist. Not in DEFAULT_PAIR_TOKENS or uniswap-default.json. Feature not implemented."
+    },
+    {
+      "id": "VAL-FRONT-002",
+      "reason": "FAIL: API correctly prices native token but UX fails — token not in dropdown, requires manual address entry + Unknown Token modal. Depends on VAL-FRONT-001."
+    },
+    {
+      "id": "VAL-FRONT-003",
+      "reason": "FAIL: Unit Price / Total display bug confirmed. QuoteForm.svelte shows result.price/resultAmount for Unit (wrong) and result.price for Total (wrong). Fix needs: Unit=result.price, Total=result.price*resultAmount."
+    },
+    {
+      "id": "VAL-CACHE-001",
+      "reason": "FAIL: Error caching with TTL not implemented in cache.py or server.py. Only success prices are cached."
+    },
+    {
+      "id": "VAL-CACHE-002",
+      "reason": "FAIL: retry_failed_prices.py does not exist. Only deploy.sh, test_web_ui.py, update_tokenlist.py, validate_prices.py in scripts/."
+    },
+    {
+      "id": "VAL-CACHE-003",
+      "reason": "FAIL: validate_prices.py has basic docstring but no explicit clarification vs repricing. retry_failed_prices.py missing so naming distinction incomplete."
+    }
+  ],
+  "blockedAssertions": [],
+  "appliedUpdates": [
+    {
+      "target": "user-testing.md",
+      "description": "Added exotic token addresses (working and problematic), server Docker rebuild note for feat/exotic-tokens branch, and expanded known limitations section",
+      "source": "flow-report"
+    },
+    {
+      "target": "services.yaml",
+      "description": "Added server-rebuild-exotic command to update pyproject.toml to feat/exotic-tokens and rebuild Docker",
+      "source": "setup"
+    },
+    {
+      "target": "ypricemagic-server/pyproject.toml + uv.lock",
+      "description": "Updated ypricemagic dependency from feat/stablecoin-pricing to feat/exotic-tokens branch and rebuilt Docker container. Container now has exotic_tokens.py, erc4626.py, curve_gauge.py, and updated one_to_one.py with PoolTogether V3 entries.",
+      "source": "setup"
+    }
+  ],
+  "previousRound": null,
+  "notes": {
+    "blockedVsActualFails": "7 of the 14 'failed' assertions are technically 'blocked' by infrastructure issues (cold-start timeouts, NonStandardERC20 tokens, missing Fantom service). 7 are genuine code/feature gaps: VAL-DETECT-002 (Convex gauge not implemented), VAL-FRONT-001 (native token not in dropdown), VAL-FRONT-002 (depends on FRONT-001), VAL-FRONT-003 (Unit/Total display bug), VAL-CACHE-001 (error caching), VAL-CACHE-002 (retry_failed_prices.py missing), VAL-CACHE-003 (naming incomplete).",
+    "serverRebuild": "The ypricemagic-server had to be rebuilt during this validation session because it was pointing to feat/stablecoin-pricing which didn't have exotic-tokens code. Updated to feat/exotic-tokens and rebuilt Docker."
+  }
+}
