@@ -1,0 +1,56 @@
+{
+  "featureId": "exotic-token-parity-and-detection",
+  "reviewedAt": "2026-03-14T19:10:00.000Z",
+  "commitId": "ecad42f6",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The implementation adds 7 exotic token types and a Geist gToken fix with generally correct structure. However, there is one blocking bug: the PoolTogether V4 ticket detection uses `has_methods` with `getTwab(address,uint32)` — a method that requires inputs. `has_methods` is explicitly documented as only working for 'public view methods with no inputs', and will always return `False` for input-bearing methods (the underlying `multicall.Call` invocation will revert without real arguments). This means `is_pool_together_v4_ticket` always returns `False`, making the entire PoolTogether V4 bucket unreachable. Additionally, xTAROT and Tarot SupplyVault have no price resolution tests (only xTAROT/tTAROT addresses are Fantom-only, so no tests were written, but no `skip_if_not_fantom`-style tests exist either). There is also a potential precision bug in `get_price_tarot_vault` with hardcoded `scale = 10**18` instead of the share token's actual decimals scale.",
+    "issues": [
+      {
+        "file": "y/prices/exotic_tokens.py",
+        "line": 157,
+        "severity": "blocking",
+        "description": "PoolTogether V4 detection: `has_methods(token_address, ('getTwab(address,uint32)(uint224,uint32)', 'controller()(address)'), all, sync=False)` — `getTwab` requires two inputs (address, uint32). `has_methods` only works for view methods with NO inputs (see contracts.py:839: 'If _func == all we return False because has_methods is only supposed to work for public view methods with no inputs'). The multicall library will call `getTwab(0x0, 0)` which reverts or returns None, causing `has_methods` to return `False`. As a result, `is_pool_together_v4_ticket` will always return `False` and the 'pool together v4 ticket' bucket will never be assigned to any token. Fix: remove `getTwab(address,uint32)(uint224,uint32)` from the `has_methods` call and instead use only `controller()(address)` (a no-input method), then confirm the name pattern separately."
+      },
+      {
+        "file": "y/prices/exotic_tokens.py",
+        "line": 453,
+        "severity": "non_blocking",
+        "description": "Tarot vault pricing uses hardcoded `scale = 10**18` as the share amount passed to `shareValuedAsUnderlying(uint256)`. This assumes the share token (xTAROT or SupplyVault) always has 18 decimals. For ERC20-compliant tokens this is typically true for these Tarot contracts, but the pattern is fragile compared to the established pattern in erc4626.py (line 130) which fetches `vault_erc20.__scale__` dynamically. If a Tarot token ever has non-18 decimals, the price will be wrong. The erc4626 implementation is the precedent to follow here."
+      },
+      {
+        "file": "tests/prices/test_exotic_tokens.py",
+        "line": 44,
+        "severity": "non_blocking",
+        "description": "No tests for xTAROT or Tarot SupplyVault — neither bucket detection nor price resolution. The test file acknowledges xTAROT is Fantom-only ('Note: xTAROT is on Fantom; this test only exercises the detection logic') but then provides NO test at all for xTAROT or Tarot SupplyVault (XTAROT and TAROT_SUPPLY_VAULT addresses are defined but never used in any test function). The feature's expectedBehavior requires 'xTAROT/Tarot SupplyVault resolve via shareValuedAsUnderlying'. Fantom-specific test tokens should be tested with a `@fantom_only` or `@pytest.mark.skip` marker (or skipped network-conditionally) rather than omitted entirely. Compare how other multi-chain tests handle chain-specific tokens."
+      },
+      {
+        "file": "y/prices/exotic_tokens.py",
+        "line": 46,
+        "severity": "non_blocking",
+        "description": "The `is_*` detection functions (is_pickle_pslp, is_pool_together_v4_ticket, is_xpremia, is_xtarot, is_tarot_supply_vault) are missing the `@stuck_coro_debugger` decorator between `@a_sync.a_sync(...)` and `@optional_async_diskcache`. Compare to the pattern in yearn.py:72-79, which uses `@a_sync.a_sync(...) → @stuck_coro_debugger → @optional_async_diskcache`. Per AGENTS.md rule #8, `stuck_coro_debugger` should be added to async RPC/price-fetching code. Detection functions make multiple RPC calls and can stall."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "Detection functions that make RPC calls are missing `@stuck_coro_debugger`. The established pattern (yearn.py:72-79) is `@a_sync.a_sync(...)` → `@stuck_coro_debugger` → `@optional_async_diskcache`. The worker followed the pattern for `get_price_*` functions but not for `is_*` detection functions. AGENTS.md rule #8 says 'keep or add stuck_coro_debugger' on async RPC/price-fetching code, and this should include detection functions.",
+      "evidence": "y/prices/exotic_tokens.py:46 — missing @stuck_coro_debugger on is_pickle_pslp; compare y/prices/yearn.py:77 which has it. AGENTS.md rule #8."
+    },
+    {
+      "area": "conventions",
+      "observation": "`has_methods` (in y/contracts.py) only works correctly for view methods with NO inputs. The PoolTogether V4 detection attempted to use it with `getTwab(address,uint32)` which has required inputs. This limitation is documented in contracts.py:839 but not in AGENTS.md or library docs. Workers implementing detection for methods-with-inputs patterns need guidance on the right approach (e.g., check for a no-input method from the same interface, or use ABI-level inspection).",
+      "evidence": "y/contracts.py:839: 'If _func == all we return False because has_methods is only supposed to work for public view methods with no inputs'. y/prices/exotic_tokens.py:157: has_methods called with getTwab(address,uint32)(uint224,uint32)."
+    },
+    {
+      "area": "knowledge",
+      "observation": "The `has_methods` function only works for no-input view methods. Developers trying to detect tokens via methods-with-inputs (like PoolTogether V4's `getTwab(address,uint32)`) need an alternative: either check a companion no-input method from the same interface, use ABI/bytecode inspection, or use `raw_call` with `return_None_on_failure=True` with actual representative inputs. This pattern gap caused a silent bug. Should be documented in `.factory/library/architecture.md` or a new `detection-patterns.md`.",
+      "evidence": "y/prices/exotic_tokens.py:157 — getTwab(address,uint32) passed to has_methods, which always returns False for input-bearing methods. The fix is to use only controller()(address) (no-input) in has_methods."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "FAIL. The feature is largely well-implemented (Pickle pSLP, xPREMIA, Tarot xTAROT/SupplyVault, Geist, stkAAVE, PoolTogether V3 all appear structurally sound). However, PoolTogether V4 ticket detection is broken: `is_pool_together_v4_ticket` always returns `False` because `has_methods` cannot handle methods with inputs (`getTwab(address,uint32)`), making the entire 'pool together v4 ticket' bucket dead code. This is a blocking issue. Additionally, xTAROT and Tarot SupplyVault have no tests, the Tarot pricing hardcodes 18-decimal share scale rather than fetching it dynamically, and `is_*` detection functions are missing `@stuck_coro_debugger`."
+}

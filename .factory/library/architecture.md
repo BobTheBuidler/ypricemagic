@@ -54,11 +54,46 @@ This pattern is used in multiple places in `v2.py` for consistency. Future worke
 
 `PriceResult` from `y.datatypes` is imported inside function bodies (deferred import) rather than at the top of files like `v2.py`. This is an established project pattern to avoid circular imports caused by `y.datatypes` → `y.prices.magic` → `y.prices.dex.uniswap.v2` import chain. Do not move these to the module-level imports.
 
+## Token Detection Patterns
+
+### `has_methods` — no-input methods only
+
+`has_methods` (in `y/contracts.py`) only works correctly for public view methods with **no inputs**. When called with `all` as the aggregator and any input-bearing method, it always returns `False` (see `contracts.py:839`).
+
+```python
+# CORRECT — no-input view methods
+has_methods(token, ('asset()(address)', 'previewRedeem(uint256)(uint256)'), all)
+
+# BROKEN — getTwab requires inputs (address, uint32), has_methods always returns False
+has_methods(token, ('getTwab(address,uint32)(uint224,uint32)', 'controller()(address)'), all)
+```
+
+**Alternative for input-bearing methods:** Use a companion no-input method from the same interface, or use `raw_call` with `return_None_on_failure=True` with representative arguments.
+
+### Bucket evaluation order: string_matchers before calls_only
+
+`check_bucket()` in `y/prices/utils/buckets.py` evaluates `string_matchers` (which includes `'one to one'` → `is_one_to_one_token`) **before** `calls_only`. Any address in `y/prices/one_to_one.py`'s `MAPPING` will always be returned as `'one to one'` — never as a `calls_only` bucket like `'curve gauge'` or `'erc4626 vault'`.
+
+**Implication for tests:** Test addresses for `calls_only` bucket detection must NOT be hardcoded in `one_to_one.py`. Choose algorithmically-detectable-only addresses.
+
+### ZERO_ADDRESS guard for raw_call address returns
+
+When `raw_call` with `output='address'` returns a zero address, the return value is the string `'0x0000000000000000000000000000000000000000'` which is truthy. A simple `if not address` check does NOT catch it. Use:
+
+```python
+from y.constants import ZERO_ADDRESS
+if not lp_token or lp_token == ZERO_ADDRESS:
+    return None
+```
+
+This pattern is established in `curve_gauge.py:109` and should be followed consistently.
+
 ## Async Pattern
 
 - All pricing functions use `a_sync` decorator for dual sync/async support
 - `igather` used for parallel RPC calls
 - `stuck_coro_debugger` decorator for long-running calls (must be preserved)
+- **Both** `get_price_*` and `is_*` detection functions must use `@stuck_coro_debugger`, since detection functions also make multiple RPC calls that can stall. Pattern: `@a_sync.a_sync(...)` → `@stuck_coro_debugger` → `@optional_async_diskcache` (see `yearn.py:72-79`).
 
 ## a_sync: Methods vs Async Generators
 
