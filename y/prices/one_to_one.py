@@ -11,6 +11,9 @@ MAPPING = {
     Network.Mainnet: {
         "0x4da27a545c0c5B758a6BA100e3a049001de870f5": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",  # stkaave -> aave
         "0x27D22A7648e955E510a40bDb058333E9190d12D4": "0x0cec1a9154ff802e7934fc916ed7ca50bde6844e",  # ppool -> pool
+        # PoolTogether V3 — 1:1 with underlying
+        "0x49d716DFe60b37379010A75329ae09428f17118d": "0x6B175474E89094C44Da98b954EedeAC495271d0F",  # plDai -> DAI
+        "0xBD87447F48ad729C5c4b8bcb503e1395F62e8B98": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",  # plUsdc -> USDC
         # TODO: algorithmically get gauges
         "0xcF5136C67fA8A375BaBbDf13c0307EF994b5681D": "0x425BfB93370F14fF525aDb6EaEAcfE1f4e3b5802",  # sdai-usdm-gauge -> sdai-usdm
         "0x590f7e2b211Fa5Ff7840Dd3c425B543363797701": "0x5756bbdDC03DaB01a3900F01Fb15641C3bfcc457",  # YFImkUSD-gauge -> YFImkUSD

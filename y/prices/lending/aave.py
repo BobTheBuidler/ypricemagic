@@ -37,6 +37,7 @@ v2_pools = {
     ),
     Network.Polygon: ("0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf",),  # aave
     Network.Avalanche: ("0x70BbE4A294878a14CB3CDD9315f5EB490e346163",),  # blizz
+    Network.Fantom: ("0x9FAD24f572045c7869117160A571B2e50b10d068",),  # geist (aave v2 fork)
 }.get(chain.id, [])
 
 v3_pools = {
