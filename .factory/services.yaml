@@ -14,9 +14,16 @@ commands:
     curl -sf --max-time 120 "http://localhost:8000/ethereum/price?token=0x6B175474E89094C44Da98b954EedeAC495271d0F"
   server-rebuild: >-
     cd /Users/bryan/code/ypricemagic-server &&
-    docker compose up --build -d &&
-    sleep 10 &&
-    docker compose exec ypm-ethereum curl -sf http://localhost:8001/health
+    docker compose up --build -d ypm-ethereum &&
+    sleep 30 &&
+    curl -sf http://localhost:8000/ethereum/health
+  server-rebuild-exotic: >-
+    cd /Users/bryan/code/ypricemagic-server &&
+    sed -i '' 's|feat/stablecoin-pricing|feat/exotic-tokens|' pyproject.toml &&
+    uv lock --upgrade-package ypricemagic &&
+    docker compose up --build -d ypm-ethereum &&
+    sleep 30 &&
+    curl -sf http://localhost:8000/ethereum/health
 
 services:
   ypricemagic-server:

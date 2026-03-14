@@ -1,0 +1,182 @@
+{
+  "groupId": "frontend-cache",
+  "testedAt": "2026-03-14T19:25:00Z",
+  "isolation": {
+    "appUrl": "http://localhost:8000",
+    "apiEndpoint": "GET /ethereum/price?token={address}",
+    "browserSession": "de4300a706f6",
+    "codeReviewPaths": [
+      "/Users/bryan/code/ypricemagic-server/frontend/src/lib/stores/tokenlist.ts",
+      "/Users/bryan/code/ypricemagic-server/frontend/src/lib/components/QuoteForm.svelte",
+      "/Users/bryan/code/ypricemagic-server/src/cache.py",
+      "/Users/bryan/code/ypricemagic-server/src/server.py",
+      "/Users/bryan/code/ypricemagic-server/scripts/validate_prices.py",
+      "/Users/bryan/code/ypricemagic-server/scripts/"
+    ]
+  },
+  "toolsUsed": ["agent-browser", "curl", "code-review"],
+  "assertions": [
+    {
+      "id": "VAL-FRONT-001",
+      "title": "Native token appears in dropdown with pretty name",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "Code review of tokenlist.ts for 0xEeee entry",
+          "expected": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE entry present in DEFAULT_PAIR_TOKENS or similar",
+          "observed": "No 0xEeee address found anywhere in tokenlist.ts. DEFAULT_PAIR_TOKENS only has USDC and WETH entries per chain. USD_TOKEN is a synthetic sentinel. No native token entry."
+        },
+        {
+          "action": "Check uniswap-default.json tokenlist for 0xEeee",
+          "expected": "Native token entry in tokenlist JSON",
+          "observed": "grep found 0 matches for 0xEeee in uniswap-default.json — no native token entry in the tokenlist"
+        },
+        {
+          "action": "Browser: Navigate to http://localhost:8000/ and search 'Ether'",
+          "expected": "Dropdown shows 'Ether (ETH)' entry with address 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          "observed": "Dropdown shows ENS, Ethernity Chain, ETHFI, USDT, WETH (Wrapped Ether), Tether Gold — no native ETH entry"
+        },
+        {
+          "action": "Browser: Search '0xEeee' in token dropdown",
+          "expected": "Native token entry appears",
+          "observed": "Dropdown is empty — no results"
+        }
+      ],
+      "evidence": {
+        "screenshots": [
+          "exotic-tokens/frontend-cache/VAL-FRONT-001-homepage.png",
+          "exotic-tokens/frontend-cache/VAL-FRONT-001-search-ether.png",
+          "exotic-tokens/frontend-cache/VAL-FRONT-001-search-0xEeee.png"
+        ],
+        "consoleErrors": "none",
+        "codeReview": "tokenlist.ts DEFAULT_PAIR_TOKENS has no 0xEeee entry. No native token constant defined anywhere in frontend source."
+      },
+      "issues": "The native token (0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE) is not registered in the frontend tokenlist. It does not appear in dropdown search results for 'Ether' or '0xEeee'. The feature has not been implemented yet."
+    },
+    {
+      "id": "VAL-FRONT-002",
+      "title": "Selecting native token returns valid ETH price",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "curl GET http://localhost:8000/ethereum/price?token=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          "expected": "Valid ETH price in range ~$1500-5000",
+          "observed": "Returns {price: 2076.96513635, chain: 'ethereum', cached: false, trade_path: [{source: 'chainlink feed', ...}]} — API works correctly"
+        },
+        {
+          "action": "Browser: Navigate to http://localhost:8000/, type full native token address, click Get Price",
+          "expected": "Price displayed without requiring 'Unknown Token' modal interaction, ideally token should be recognized by name",
+          "observed": "Token not in index → 'Unknown Token' modal appeared. After clicking 'Continue', price $2076.9651 was returned successfully. Price is valid. However, the token is not recognized from dropdown (requires manual address entry + modal dismissal)."
+        }
+      ],
+      "evidence": {
+        "screenshots": [
+          "exotic-tokens/frontend-cache/VAL-FRONT-002-unknown-token-modal.png",
+          "exotic-tokens/frontend-cache/VAL-FRONT-002-native-token-price.png"
+        ],
+        "consoleErrors": "none",
+        "network": "GET /ethereum/price?token=0xEeee...EEeE -> 200, price: 2076.96513635 (via chainlink feed)"
+      },
+      "issues": "The API correctly prices the native token. However, the UX fails the assertion: users cannot 'select the native token entry' from the dropdown (it doesn't exist as a named entry). Users must manually type the full 42-char address and then dismiss an 'Unknown Token' modal. The 'selecting native token' part of the assertion is not met. Status FAIL because VAL-FRONT-001 (which this depends on) is not implemented."
+    },
+    {
+      "id": "VAL-FRONT-003",
+      "title": "Unit Price / Total display correct when amount is specified",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "Code review of QuoteForm.svelte around lines 379-393",
+          "expected": "Unit Price = result.price (direct per-unit price); Total = result.price * resultAmount",
+          "observed": "Line 383: formatPrice(result.price / resultAmount) — WRONG (divides per-unit price by amount). Line 389: formatPrice(result.price) — WRONG (shows per-unit price as total, not multiplied by amount)."
+        },
+        {
+          "action": "Browser: Navigate to http://localhost:8000/?token=0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&amount=10",
+          "expected": "Unit Price ~$2076.97 (API per-unit price); Total ~$20769.65 (price * 10)",
+          "observed": "Unit Price (USD): $207.6965 (= $2076.97 / 10 — WRONG). Total (10 tokens): $2076.9651 (= $2076.97 — WRONG, should be $20769.65)"
+        }
+      ],
+      "evidence": {
+        "screenshots": [
+          "exotic-tokens/frontend-cache/VAL-FRONT-003-unit-price-total.png"
+        ],
+        "consoleErrors": "none",
+        "codeReview": "QuoteForm.svelte line 383: result.price / resultAmount (bug). Line 389: result.price (bug). Fix should be: Unit Price = result.price, Total = result.price * resultAmount."
+      },
+      "issues": "Bug confirmed. The Unit Price and Total are both inverted/wrong as described in the assertion. result.price from the API is already the per-unit price. The UI incorrectly divides it by resultAmount for 'Unit Price' and shows the unmodified per-unit price as 'Total'. This is the exact bug from commit 1099852 / PR #121 mentioned in the assertion."
+    },
+    {
+      "id": "VAL-CACHE-001",
+      "title": "Failed price lookups are cached with TTL",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "Code review of /Users/bryan/code/ypricemagic-server/src/cache.py",
+          "expected": "Functions like set_cached_error, cache_error, or error TTL mechanism",
+          "observed": "cache.py only contains get_cached_price() and set_cached_price(). No error caching functions found. No set_cached_error, cache_error, or error TTL defined."
+        },
+        {
+          "action": "Code review of /Users/bryan/code/ypricemagic-server/src/server.py",
+          "expected": "Error responses cached with TTL for retry prevention",
+          "observed": "server.py _handle_price_request() checks cache only on success (get_cached_price), calls set_cached_price only on success. Error paths (404, 500, 504) do not write to cache. No error caching mechanism exists."
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "codeReview": "cache.py exports only get_cached_price() and set_cached_price(). server.py caches only successful prices. Error responses are not cached."
+      },
+      "issues": "Error caching with TTL is not implemented. Failed price lookups (404 Not Found, 500 errors) are not cached. Repeated lookups for tokens that cannot be priced will always trigger full price fetching."
+    },
+    {
+      "id": "VAL-CACHE-002",
+      "title": "retry_failed_prices.py only reprices errors",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "Check if /Users/bryan/code/ypricemagic-server/scripts/retry_failed_prices.py exists",
+          "expected": "File exists and only reprices errored entries",
+          "observed": "File does not exist. Directory listing of /Users/bryan/code/ypricemagic-server/scripts/ shows: deploy.sh, test_web_ui.py, update_tokenlist.py, validate_prices.py. No retry_failed_prices.py."
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "codeReview": "ls /Users/bryan/code/ypricemagic-server/scripts/: deploy.sh, test_web_ui.py, update_tokenlist.py, validate_prices.py. retry_failed_prices.py is absent."
+      },
+      "issues": "The retry_failed_prices.py script does not exist. This assertion fails per the stated criteria ('If it does NOT exist, this assertion FAILS')."
+    },
+    {
+      "id": "VAL-CACHE-003",
+      "title": "Script naming clarified",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "Read /Users/bryan/code/ypricemagic-server/scripts/validate_prices.py docstring",
+          "expected": "Clear documentation explaining purpose, specifically differentiating between validation vs general repricing",
+          "observed": "File has a module-level docstring: '\"\"\"Compare ypricemagic-server prices against DefiLlama historical prices.\"\"\"'. This describes comparison/validation against DefiLlama, not repricing. The name 'validate_prices.py' is technically accurate for its purpose, but..."
+        },
+        {
+          "action": "Check if script has been renamed or has docstring clarifying it's for validation vs repricing",
+          "expected": "Either renamed or has explicit note that it's for validation (not repricing), and that retry_failed_prices.py is the repricing script",
+          "observed": "Script has a simple docstring explaining DefiLlama comparison. No mention of retry_failed_prices.py or explicit distinction vs repricing. Since retry_failed_prices.py doesn't exist (VAL-CACHE-002 failed), the naming clarification context is incomplete."
+        }
+      ],
+      "evidence": {
+        "screenshots": [],
+        "consoleErrors": "n/a",
+        "codeReview": "validate_prices.py line 1-2: '#!/usr/bin/env python3' and '\"\"\"Compare ypricemagic-server prices against DefiLlama historical prices.\"\"\"'. Docstring exists but doesn't explicitly clarify the distinction from a repricing script. The companion retry_failed_prices.py doesn't exist."
+      },
+      "issues": "validate_prices.py has a basic docstring but it does not explicitly clarify that it is NOT a repricing tool, nor does it reference the (non-existent) retry_failed_prices.py. Given that the retry_failed_prices.py script was never created (VAL-CACHE-002), the naming clarification work is incomplete. Marking FAIL as the intent of both assertions is to establish clear naming separation that hasn't been fully implemented."
+    }
+  ],
+  "frictions": [
+    {
+      "description": "Entering the native token address (0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE) triggers an 'Unknown Token' modal before allowing price fetch — adds an extra required interaction step not mentioned in testing guidance",
+      "resolved": true,
+      "resolution": "Clicked 'Continue' in the modal to proceed with price fetch",
+      "affectedAssertions": ["VAL-FRONT-002"]
+    }
+  ],
+  "blockers": [],
+  "summary": "Tested 6 assertions: 0 passed, 6 failed. VAL-FRONT-001: Native token (0xEeee...) not added to frontend tokenlist — does not appear in dropdown. VAL-FRONT-002: API prices native token correctly but UX fails since token isn't in dropdown (no named entry to select). VAL-FRONT-003: Unit Price / Total display bug confirmed — code divides per-unit price by amount (wrong) and shows per-unit price as total (wrong). VAL-CACHE-001: Error caching with TTL not implemented in cache.py or server.py. VAL-CACHE-002: retry_failed_prices.py script does not exist. VAL-CACHE-003: validate_prices.py has a docstring but lacks explicit clarification vs repricing, and the companion script is missing."
+}
