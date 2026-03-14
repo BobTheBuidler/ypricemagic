@@ -13,7 +13,7 @@ from y import convert
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.constants import CONNECTED_TO_MAINNET
-from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
+from y.datatypes import Address, AnyAddressType, Block, Pool, PriceResult, UsdPrice
 from y.exceptions import NonStandardERC20, contract_not_verified
 from y.prices.dex.solidly import SolidlyRouter
 from y.prices.dex.uniswap import v3
@@ -129,7 +129,7 @@ class UniswapMultiplexer(ASyncGenericSingleton):
         ignore_pools: tuple[Pool, ...] = (),
         skip_cache: bool = ENVS.SKIP_CACHE,
         amount: Decimal | int | float | None = None,
-    ) -> UsdPrice | None:
+    ) -> PriceResult | None:
         """
         Calculate a price based on Uniswap Router quote for selling `token_in`.
         Always finds the deepest swap path for `token_in`.
@@ -141,6 +141,9 @@ class UniswapMultiplexer(ASyncGenericSingleton):
             skip_cache: If True, skip using the cache while fetching price data.
             amount: The amount of tokens to quote (in human-readable units).
                 When provided, the quote accounts for price impact.
+
+        Returns a PriceResult from the first router that can price the token, preserving
+        per-hop path information (e.g. USDC as terminal token for multi-hop V2 paths).
 
         Examples:
             >>> multiplexer = UniswapMultiplexer(asynchronous=True)

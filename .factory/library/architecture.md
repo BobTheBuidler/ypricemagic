@@ -39,6 +39,21 @@ y.get_price(token, block)
 - `UsdValue(float)` — USD-denominated value with `$` string formatting
 - New `Price(float)` type needed for non-USD denominated prices
 
+## V2 Fee Correction for Spot Prices
+
+When `get_price()` calls `getAmountsOut`, the router applies the Uniswap V2 fee (0.3%) per hop. The result is the net-of-fee execution price, not the spot price. To recover the spot price, the code divides out the fees:
+
+```python
+fees = Decimal(0.997) ** (len(path) - 1)
+return UsdPrice(amount_out / fees / _amount)
+```
+
+This pattern is used in multiple places in `v2.py` for consistency. Future workers touching `get_price()` should NOT remove this division — the goal is to report spot/market prices, not net-of-fee execution prices.
+
+## Deferred Imports for Circular Import Avoidance
+
+`PriceResult` from `y.datatypes` is imported inside function bodies (deferred import) rather than at the top of files like `v2.py`. This is an established project pattern to avoid circular imports caused by `y.datatypes` → `y.prices.magic` → `y.prices.dex.uniswap.v2` import chain. Do not move these to the module-level imports.
+
 ## Async Pattern
 
 - All pricing functions use `a_sync` decorator for dual sync/async support

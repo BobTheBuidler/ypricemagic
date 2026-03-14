@@ -152,7 +152,7 @@ class PriceStep:
         return f"PriceStep(source='{self.source}', input_token='{inp}', output_token='{out}'{pool_str})"
 
 
-@dataclass
+@dataclass(eq=False)
 class PriceResult:
     """
     Represents the result of a price resolution with derivation path information.
@@ -194,6 +194,77 @@ class PriceResult:
         This is needed for callers that do Decimal(float(result)).
         """
         return float(self.price)
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Compare PriceResult to another PriceResult or a numeric value.
+
+        When comparing to another PriceResult, requires both price and path to match.
+        When comparing to a numeric type (int, float, Decimal), compares the price value only.
+        This enables ``assert price == 1.0`` and ``assert price == UsdPrice(1.0)`` to work.
+        """
+        if isinstance(other, PriceResult):
+            return self.price == other.price and self.path == other.path
+        try:
+            return float(self) == float(other)  # type: ignore[arg-type]
+        except (TypeError, ValueError):
+            return NotImplemented  # type: ignore[return-value]
+
+    def __hash__(self) -> int:
+        """Hash based on price value (path is mutable, so not hashable)."""
+        return hash(float(self))
+
+    def __lt__(self, other: object) -> bool:
+        """Enable numeric comparisons: ``price < 5000``."""
+        return float(self) < float(other)  # type: ignore[arg-type]
+
+    def __le__(self, other: object) -> bool:
+        """Enable numeric comparisons: ``price <= 5000``."""
+        return float(self) <= float(other)  # type: ignore[arg-type]
+
+    def __gt__(self, other: object) -> bool:
+        """Enable numeric comparisons: ``price > 0``."""
+        return float(self) > float(other)  # type: ignore[arg-type]
+
+    def __ge__(self, other: object) -> bool:
+        """Enable numeric comparisons: ``price >= 0``."""
+        return float(self) >= float(other)  # type: ignore[arg-type]
+
+    def __add__(self, other: object) -> float:
+        """Enable arithmetic: ``price + 1.0``."""
+        return float(self) + float(other)  # type: ignore[arg-type]
+
+    def __radd__(self, other: object) -> float:
+        """Enable arithmetic: ``1.0 + price``."""
+        return float(other) + float(self)  # type: ignore[arg-type]
+
+    def __sub__(self, other: object) -> float:
+        """Enable arithmetic: ``price - 1.0``."""
+        return float(self) - float(other)  # type: ignore[arg-type]
+
+    def __rsub__(self, other: object) -> float:
+        """Enable arithmetic: ``1.0 - price``."""
+        return float(other) - float(self)  # type: ignore[arg-type]
+
+    def __mul__(self, other: object) -> float:
+        """Enable arithmetic: ``price * amount``."""
+        return float(self) * float(other)  # type: ignore[arg-type]
+
+    def __rmul__(self, other: object) -> float:
+        """Enable arithmetic: ``amount * price``."""
+        return float(other) * float(self)  # type: ignore[arg-type]
+
+    def __truediv__(self, other: object) -> float:
+        """Enable arithmetic: ``price / 2``."""
+        return float(self) / float(other)  # type: ignore[arg-type]
+
+    def __rtruediv__(self, other: object) -> float:
+        """Enable arithmetic: ``1.0 / price``."""
+        return float(other) / float(self)  # type: ignore[arg-type]
+
+    def __abs__(self) -> float:
+        """Enable abs(price)."""
+        return abs(float(self))
 
     def __repr__(self) -> str:
         """

@@ -2,35 +2,42 @@
 
 Environment variables, external dependencies, and setup notes.
 
-**What belongs here:** Required env vars, external API keys/services, dependency quirks, platform-specific notes.
+**What belongs here:** Required env vars, external API keys/services, dependency quirks.
 **What does NOT belong here:** Service ports/commands (use `.factory/services.yaml`).
 
 ---
 
+## Python Environment
+
+- Python 3.12 in venv at `/Users/bryan/code/ypricemagic/.venv` (shared with main repo)
+- brownie 1.22.0.dev2 (custom fork)
+- web3 6.11.0
+- ypricemagic installed in editable mode
+
 ## Required Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `ETHERSCAN_TOKEN` | Etherscan API key for fetching contract ABIs. Stored in `.env` (gitignored). |
-| `BROWNIE_NETWORK` | Brownie network name to connect to (use `mainnet`). |
+- `ETHERSCAN_TOKEN` — needed for contract ABI fetching (in `.env`)
+- `BROWNIE_NETWORK=mainnet` — needed when running any brownie/ypricemagic code
+- `TYPEDENVS_SHUTUP=1` — suppresses noisy warnings
 
-## Archive Node
+## Worktree Setup
 
-- Ethereum mainnet archive node at `http://10.11.12.43:8545`
-- Configured via: `brownie networks modify mainnet host=http://10.11.12.43:8545`
+- Worktree at `/Users/bryan/code/ypricemagic-pricing` on branch `feat/stablecoin-pricing`
+- Main repo at `/Users/bryan/code/ypricemagic` — do NOT modify (another droid's workspace)
+- `.env` copied from main repo to worktree by init.sh
 
-## macOS Semaphore Workaround
+## macOS Quirks
 
-`dank_mids` patches `concurrent.futures.process.EXTRA_QUEUED_CALLS` to 50,000, which exceeds macOS `SEM_VALUE_MAX` (32,767). All pytest invocations must apply the semaphore clamp workaround before importing dank_mids. See `services.yaml` test commands for the pattern.
+- Full pytest suite fails on macOS (some tests, not all)
+- Individual Python scripts importing brownie + y DO work
+- Validation happens through ypricemagic-server Docker stack, not local tests
 
-## Python Version
+## concurrent.futures.process Workaround
 
-- Required: `>=3.10,<3.14`
-- Venv uses Python 3.12.12
-
-## Package Management
-
-- This repo uses `setup.py` + `requirements.txt` / `requirements-dev.txt`
-- Install via: `.venv/bin/python -m pip install -e . -r requirements-dev.txt`
-- `setuptools<82` required for brownie/web3 `pkg_resources` compatibility
-- `click` may need explicit install (required by `y._db.exceptions`)
+macOS has a low default `RLIMIT_NPROC` that causes `_SafeQueue` to fail with large `max_size`. The workaround patches `__init__` to cap at 32767:
+```python
+import concurrent.futures.process as cfp
+_orig = cfp._SafeQueue.__init__
+cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw)
+```
+This must be applied BEFORE importing brownie or pytest.

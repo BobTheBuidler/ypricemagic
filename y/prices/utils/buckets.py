@@ -4,6 +4,7 @@ from logging import DEBUG, getLogger
 
 import a_sync
 
+from y import constants
 from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
@@ -168,7 +169,7 @@ async def check_bucket(token: AnyAddressType) -> str:
 # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
 string_matchers = {
     "wrapped gas coin": lambda address: address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    "stable usd": lambda address: address in STABLECOINS,
+    "stable usd": lambda address: constants.usdc is not None and address == constants.usdc.address,
     "one to one": one_to_one.is_one_to_one_token,
     "wsteth": wsteth.is_wsteth,
     "creth": creth.is_creth,

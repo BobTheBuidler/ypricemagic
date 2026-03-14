@@ -10,7 +10,7 @@ import a_sync
 import a_sync.exceptions
 import brownie
 import dank_mids
-from a_sync import cgather
+from a_sync import cgather, igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
@@ -28,6 +28,7 @@ from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import (
     CHAINID,
     CONNECTED_TO_MAINNET,
+    ROUTING_TOKENS,
     STABLECOINS,
     WRAPPED_GAS_COIN,
     sushi,
@@ -35,7 +36,7 @@ from y.constants import (
     weth,
 )
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, UsdPrice
+from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, PriceResult, PriceStep, UsdPrice
 from y.exceptions import (
     CantFindSwapPath,
     ContractNotVerified,
@@ -499,13 +500,17 @@ class UniswapRouterV2(ContractBase):
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: tuple[Pool, ...] = (),
         amount: Decimal | int | float | None = None,
-    ) -> UsdPrice | None:
+    ) -> PriceResult | None:
         """
         Calculate a price based on Uniswap Router quote for selling `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
 
         When `amount` is provided (in human-readable token units), the quote accounts
         for price impact. The returned price is still per-unit (USD per token).
+
+        Returns a PriceResult with a PriceStep showing the swap path. The output_token
+        in the PriceStep reflects the actual terminal token in the path (e.g. USDC address
+        for multi-hop paths ending at USDC, rather than the string "USD").
         """
 
         token_in, token_out, path = str(token_in), str(token_out), None
@@ -514,7 +519,7 @@ class UniswapRouterV2(ContractBase):
             busd = await Contract.coroutine("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
 
-        if token_in in STABLECOINS:
+        if usdc is not None and token_in == usdc.address:
             return 1
 
         try:
@@ -542,6 +547,19 @@ class UniswapRouterV2(ContractBase):
                 if debug_logs:
                     log_debug("smrt")
 
+        # When the path ends at a non-USDC stablecoin, we need to convert to real USD.
+        # Extend the path with USDC so getAmountsOut handles all hops atomically.
+        # This avoids calling magic.get_price(stablecoin, historical_block) which can hang
+        # for historical blocks where the stablecoin no longer has a $1 shortcut.
+        if (
+            path is not None
+            and usdc is not None
+            and path[-1] != usdc.address
+            and path[-1] in STABLECOINS
+        ):
+            # Extend path so getAmountsOut handles all hops atomically (serial, price-impact-aware)
+            path = path + [usdc.address]
+
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
         if path is None and (
             deepest_pool := await self.deepest_pool(
@@ -552,32 +570,11 @@ class UniswapRouterV2(ContractBase):
                 log_debug("deepest pool: %s", deepest_pool)
             paired_with = await deepest_pool.get_token_out(token_in, sync=False)
             path = [token_in, paired_with]
-            quote = await self.get_quote(amount_in, path, block=block, sync=False)
-            if debug_logs:
-                log_debug("quote: %s", quote)
-            if quote is not None:
-                out_scale = await ERC20._get_scale_for(path[-1])
-                amount_out = Decimal(quote[-1]) / out_scale
-                fees = Decimal(0.997) ** (len(path) - 1)
-                amount_out /= fees
-                paired_with_price = await magic.get_price(
-                    paired_with,
-                    block,
-                    fail_to_None=True,
-                    skip_cache=skip_cache,
-                    ignore_pools=(*ignore_pools, deepest_pool),
-                    sync=False,
-                )
-
-                if paired_with_price:
-                    from y.datatypes import PriceResult
-
-                    _numeric_price = (
-                        paired_with_price.price
-                        if isinstance(paired_with_price, PriceResult)
-                        else paired_with_price
-                    )
-                    return UsdPrice(amount_out * Decimal(_numeric_price) / _amount)
+            # If paired with a non-USDC stablecoin, extend path to USDC for an atomic
+            # multi-hop. This avoids calling magic.get_price(stablecoin, historical_block)
+            # which can hang for historical blocks.
+            if usdc is not None and paired_with != usdc.address and paired_with in STABLECOINS:
+                path = path + [usdc.address]
 
         # If we still don't have a workable path, try this smol brain method
         if path is None:
@@ -592,7 +589,19 @@ class UniswapRouterV2(ContractBase):
         if quote is not None:
             out_scale = await ERC20._get_scale_for(path[-1])
             amount_out = Decimal(quote[-1]) / out_scale
-            return UsdPrice(amount_out / fees / _amount)
+            price = UsdPrice(amount_out / fees / _amount)
+            # Build a PriceStep that exposes the actual terminal token (e.g. USDC address)
+            # rather than the generic "USD" string. This lets trade_path show the routing
+            # through intermediate stablecoins (e.g. MIC→USDT→USDC).
+            terminal_token = path[-1] if path[-1] != "USD" else "USD"
+            step = PriceStep(
+                source=self.label,
+                input_token=token_in,
+                output_token=terminal_token,
+                pool=None,
+                price=float(price),
+            )
+            return PriceResult(price=price, path=[step])
 
     @continue_on_revert
     @stuck_coro_debugger
@@ -679,10 +688,67 @@ class UniswapRouterV2(ContractBase):
         return pool_to_token_out
 
     @stuck_coro_debugger
+    async def get_pools_via_factory_getpair(
+        self, token_in: Address, block: Block | None = None
+    ) -> dict[UniswapV2Pool, Address]:
+        """Find pools for `token_in` using the factory's O(1) getPair view function.
+
+        Builds a candidate list of well-known tokens (stablecoins, wrapped gas coin,
+        routing tokens) and queries the factory for each pair in parallel. This avoids
+        the costly full scan of all pairs performed by :meth:`all_pools_for`.
+
+        Args:
+            token_in: The token address to find pools for.
+            block: The block number to query. Defaults to latest block.
+
+        Returns:
+            A dict mapping :class:`UniswapV2Pool` → paired token address for every
+            non-zero pair returned by the factory.
+        """
+        # Build deduplicated candidate list: stablecoins + wrapped gas coin + routing tokens
+        candidates: list[str] = []
+        seen: set[str] = set()
+        token_in_str = str(token_in).lower()
+        for addr in (
+            list(STABLECOINS.keys()) + [WRAPPED_GAS_COIN] + list(ROUTING_TOKENS.get(CHAINID, []))
+        ):
+            addr_str = str(addr).lower()
+            if addr_str != token_in_str and addr_str not in seen:
+                seen.add(addr_str)
+                candidates.append(str(addr))
+
+        if not candidates:
+            return {}
+
+        # Query factory.getPair for all candidates in parallel
+        pair_addresses: list[str | None] = await igather(
+            Call(
+                self.factory,
+                ["getPair(address,address)(address)", token_in, candidate],
+                block_id=block,
+            )
+            for candidate in candidates
+        )
+
+        pool_to_token_out: dict[UniswapV2Pool, Address] = {}
+        for candidate, pair_address in zip(candidates, pair_addresses):
+            if pair_address and pair_address != brownie.ZERO_ADDRESS:
+                pool = UniswapV2Pool(pair_address, asynchronous=self.asynchronous)
+                pool_to_token_out[pool] = candidate
+
+        return pool_to_token_out
+
+    @stuck_coro_debugger
     async def get_pools_for(
         self, token_in: Address, block: Block | None = None
     ) -> dict[UniswapV2Pool, Address]:
         if self._supports_factory_helper is False or token_in in self._skip_factory_helper:
+            # Fast O(1) path: query factory.getPair for each well-known candidate token.
+            # This avoids the 10+ minute scan of all 330k+ pairs on Mainnet/Arbitrum/Base.
+            fast_pools = await self.get_pools_via_factory_getpair(token_in, block, sync=False)
+            if fast_pools:
+                return fast_pools
+            # Fall back to full scan only if no pools found via fast path
             return await self.all_pools_for(token_in, sync=False)
         try:
             pools: list[HexAddress] = await FACTORY_HELPER.getPairsFor.coroutine(
@@ -1004,7 +1070,11 @@ class UniswapRouterV2(ContractBase):
             from y.prices.utils.buckets import check_bucket
 
             if await check_bucket(paired_with, sync=False) and _loop_count == 0:
-                # Let's just use the other token to get the price
+                # If the paired token is a non-USDC stablecoin, return the direct path so
+                # get_price() can extend it to USDC for an atomic multi-hop.
+                # Otherwise, let deepest_pool handle it via the fallback path.
+                if usdc is not None and paired_with != usdc.address and paired_with in STABLECOINS:
+                    return [token_address, paired_with]
                 return None
 
             # Try to build a path through this candidate

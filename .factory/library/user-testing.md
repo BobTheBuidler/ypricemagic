@@ -1,100 +1,101 @@
 # User Testing
 
-Testing surface, tools, setup steps, and known quirks for validation.
-
-**What belongs here:** How to test the library, testing tools, setup notes, known issues.
+Testing surface, resource cost classification, and validation notes.
 
 ---
 
-## Testing Surface
+## Validation Surface
 
-This is a Python library (not a web app). All testing is done via:
-- **pytest** integration tests against an Ethereum archive node
-- **Python scripts** that call library functions directly
+**Primary surface:** curl against ypricemagic-server API at `http://localhost:8000`
+- Endpoint: `GET /{chain}/price?token={address}&block={block}&amount={amount}`
+- Response: `{"token": "...", "price": float, "block": int, "trade_path": [...]}`
+- Timeout: 120s per request is conservative; most respond in <30s
 
-## How to Run Tests
+**Secondary surface:** agent-browser for Svelte frontend at `http://localhost:8000/`
+- Token dropdown/autocomplete
+- "Get Price" button
+- Price result display
 
-```bash
-cd /Users/bryan/code/ypricemagic
+**Test tokens (Ethereum mainnet):**
+- USDC: `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`
+- USDT: `0xdAC17F958D2ee523a2206206994597C13D831ec7`
+- DAI: `0x6B175474E89094C44Da98b954EedeAC495271d0F`
+- MIC: `0x368B3a58B5f49392e5C9E4C998cb0bB966752E51` (use block 12500000)
+- Native ETH: `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`
 
-# Full test suite (with macOS semaphore workaround)
-ETHERSCAN_TOKEN=<token> BROWNIE_NETWORK=mainnet TYPEDENVS_SHUTUP=1 \
-  .venv/bin/python -c "
-import concurrent.futures.process as cfp
-_orig = cfp._SafeQueue.__init__
-cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw)
-import sys; sys.exit(__import__('pytest').main([
-  'tests/', '-x', '-p', 'no:pytest_ethereum', '-W', 'ignore', '-s',
-  '--asyncio-task-timeout', '7200'
-]))
-"
+## Validation Concurrency
 
-# Single test file
-ETHERSCAN_TOKEN=<token> BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/prices/dex/test_uniswap.py -x -p no:pytest_ethereum -v
+**curl surface:** Lightweight, no resource concerns. Max concurrent: **5**.
+- Each curl is a single HTTP request, no local compute
+- The server handles concurrency internally
+
+**agent-browser surface:** Each instance ~300MB RAM for browser + page.
+- Machine has adequate resources for 3 concurrent instances
+- Max concurrent: **3**
+
+## Flow Validator Guidance: curl-api
+
+Testing surface: curl against `http://localhost:8000` API.
+
+**Isolation rules:**
+- All requests are read-only GET queries — no shared mutable state
+- Multiple validators can run fully concurrently without conflict
+- Each request is stateless; no session, no cookies needed
+
+**Boundaries:**
+- Only test on `http://localhost:8000/{chain}/price?token={address}&block={block}&amount={amount}`
+- Default chain is `ethereum` (prefix: `/ethereum/price`)
+- Use `--max-time 120` for all curl calls to prevent indefinite hangs
+- Use actual block numbers for historical queries (e.g., block 12500000 for MIC)
+- Do NOT modify server code or cache
+
+**Response format:**
+```json
+{"token": "0x...", "price": 1.0, "block": 12345, "chain": "ethereum", "block_timestamp": 123, "cached": false, "trade_path": [{"source": "stable usd", "input_token": "0x...", "output_token": "USD", "pool": null, "price": 1.0}]}
 ```
 
-## Known Quirks
+**Important:** The server may need time to warm up for first requests on a newly rebuilt container. If a request times out on first try, retry once before marking as fail.
 
-- First run is slow (~5 min) due to Etherscan ABI fetching for contracts
-- Pre-existing test failures exist (ContractLogicError / aggregator assertions) — these are known and acceptable
-- `pytest-ethereum` plugin must be disabled (`-p no:pytest_ethereum`) due to incompatible `eth_typing` imports
-- macOS requires semaphore workaround (see environment.md)
-- Tests require `BROWNIE_NETWORK=mainnet` env var for network connection
+## Cache Invalidation Notes
 
-## Validation Approach
+When the stablecoin pricing fix is deployed (switching from hardcoded $1 to real pricing), two caches hold stale data that must be cleared:
 
-For each assertion, validators should:
-1. Run the specific pytest test that covers the assertion
-2. Verify the test passes and the output matches expected behavior
-3. For price assertions, verify values are within reasonable ranges (not exact matches, as on-chain data varies)
+1. **ypricemagic bucket cache** (`/root/.ypricemagic/ypricemagic.sqlite`, `Address` table, `bucket` column):
+   - USDT, DAI and other non-USDC stablecoins get `bucket = 'stable usd'` from the old code
+   - Must clear: `UPDATE Address SET bucket = NULL WHERE bucket = 'stable usd' AND address != '<USDC_ADDRESS>'`
+   - The Docker named volume `ypricemagic-ethereum` persists this across rebuilds
 
-## Running Specific Test Files
+2. **ypricemagic price cache** (`/root/.ypricemagic/ypricemagic.sqlite`, `Price` table):
+   - Old prices for USDT/DAI cached as 1.0
+   - Must clear: `DELETE FROM Price WHERE token_address = '<USDT_OR_DAI>'`
 
-Use this pattern (macOS semaphore workaround required):
+3. **Server diskcache** (`/data/cache` volume):
+   - Server-level cache also stores stale $1.00 values
+   - Clear with diskcache Python API
 
-```bash
-cd /Users/bryan/code/ypricemagic && \
-  ETHERSCAN_TOKEN=$(grep ETHERSCAN_TOKEN .env 2>/dev/null | cut -d= -f2) \
-  BROWNIE_NETWORK=mainnet \
-  TYPEDENVS_SHUTUP=1 \
-  .venv/bin/python -c "
-import concurrent.futures.process as cfp
-_orig = cfp._SafeQueue.__init__
-cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw)
-import sys; sys.exit(__import__('pytest').main([
-  'tests/YOUR_TEST_FILE.py', '-p', 'no:pytest_ethereum', '-W', 'ignore',
-  '--runslow', '--asyncio-task-timeout', '7200', '-v', '-s'
-]))
-"
+After clearing all three, restart the container to flush in-memory caches.
+
+**Script to clear stale stablecoin caches:**
+```python
+import sqlite3, diskcache
+
+# Clear bucket cache
+conn = sqlite3.connect('/root/.ypricemagic/ypricemagic.sqlite')
+USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+conn.execute("UPDATE Address SET bucket = NULL WHERE bucket = 'stable usd' AND address != ?", (USDC,))
+conn.execute("DELETE FROM Price WHERE token_address IN ('0xdAC17F958D2ee523a2206206994597C13D831ec7', '0x6B175474E89094C44Da98b954EedeAC495271d0F')")
+conn.commit()
+
+# Clear server diskcache
+cache = diskcache.Cache('/data/cache')
+for stablecoin in ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0x6b175474e89094c44da98b954eedeac495271d0f']:
+    for k in [k for k in cache.iterkeys() if stablecoin in str(k).lower()]:
+        del cache[k]
 ```
 
-## Test Files Mapped to Assertions (Current Mission)
+## Known Limitations
 
-| Test File | Assertions Covered |
-|-----------|-------------------|
-| `tests/test_price_result.py` | VAL-TYPE-*, VAL-CORE-*, VAL-PATH-*, VAL-CALLER-*, VAL-API-*, VAL-CROSS-001/002/003 |
-| `tests/test_vttl_cache.py` | VAL-VTTL-* |
-| `tests/test_purge.py` | VAL-PURGE-* |
-| `tests/test_cache_bounds.py` | Baseline (pre-existing) |
-| `tests/test_constants.py` | Baseline (pre-existing) |
-
-### Previous Mission Test Files (still valid)
-| `tests/prices/dex/test_v3_liquidity.py` | VAL-LIQ-001, VAL-LIQ-002, VAL-LIQ-003 |
-| `tests/prices/dex/test_v3_multihop.py` | VAL-V3-003, VAL-V3-004, VAL-V3-005 |
-| `tests/prices/dex/test_v2_multipool.py` | VAL-V2-001 through VAL-V2-006 |
-
-## Flow Validator Guidance: pytest tests
-
-This is a Python library. "User testing" means running pytest integration tests and
-Python scripts against the live archive node at http://10.11.12.43:8545.
-
-**Isolation**: Tests are read-only blockchain queries. No shared mutable state. All
-validators can run in parallel safely.
-
-**Timeouts**: V3/V2 slow tests scan PoolCreated events and may take 5-10 minutes per
-test. Use `--asyncio-task-timeout 7200` and do not set shorter timeouts.
-
-**When a test doesn't exist for an assertion**: Try to write and run an inline Python
-script that directly tests the behavior described in the validation contract.
-
-**Archive node**: Read-only at http://10.11.12.43:8545. Do not send transactions.
+- ypricemagic pytest suite does not run reliably on macOS
+- All behavioral validation goes through the server Docker stack
+- Exotic token addresses may need discovery at test time (not all known upfront)
+- Fantom chain (for Geist gTokens) requires a Fantom-specific Docker service which may not be running

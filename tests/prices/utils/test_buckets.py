@@ -8,8 +8,11 @@ from tests.prices.test_popsicle import POPSICLES
 from tests.prices.test_synthetix import SYNTHS
 from tests.test_constants import STABLECOINS
 from y import convert
-from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN
+from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN, usdc
 from y.prices.utils.buckets import check_bucket
+
+# Non-USDC stablecoins: all stablecoins that are not the chain's USDC
+_NON_USDC_STABLECOINS = [stable for stable in STABLECOINS if usdc is None or stable != usdc.address]
 
 STARGATE_LPS = ("0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56",)
 
@@ -48,10 +51,24 @@ async def test_check_bucket_popsicle(token):
     assert await check_bucket(token, sync=False) == "popsicle"
 
 
-@pytest.mark.parametrize("token", STABLECOINS)
 @pytest.mark.asyncio_cooperative
-async def test_check_bucket_stablecoins(token):
-    assert await check_bucket(token, sync=False) == "stable usd"
+async def test_check_bucket_stablecoins():
+    """Only USDC gets the 'stable usd' bucket; all other stablecoins fall through to real sources."""
+    from y.constants import usdc
+
+    if usdc is None:
+        pytest.skip("USDC not available on this chain")
+    assert await check_bucket(usdc.address, sync=False) == "stable usd"
+
+
+@pytest.mark.parametrize("token", _NON_USDC_STABLECOINS)
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_non_usdc_stablecoins_not_stable_usd(token):
+    """Non-USDC stablecoins should NOT get the 'stable usd' bucket."""
+    bucket = await check_bucket(token, sync=False)
+    assert (
+        bucket != "stable usd"
+    ), f"Stablecoin {token} should not have 'stable usd' bucket, but got '{bucket}'"
 
 
 @pytest.mark.parametrize("token", SYNTHS)
