@@ -36,7 +36,7 @@ from y.constants import (
     weth,
 )
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, UsdPrice
+from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, PriceResult, PriceStep, UsdPrice
 from y.exceptions import (
     CantFindSwapPath,
     ContractNotVerified,
@@ -500,13 +500,17 @@ class UniswapRouterV2(ContractBase):
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: tuple[Pool, ...] = (),
         amount: Decimal | int | float | None = None,
-    ) -> UsdPrice | None:
+    ) -> PriceResult | None:
         """
         Calculate a price based on Uniswap Router quote for selling `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
 
         When `amount` is provided (in human-readable token units), the quote accounts
         for price impact. The returned price is still per-unit (USD per token).
+
+        Returns a PriceResult with a PriceStep showing the swap path. The output_token
+        in the PriceStep reflects the actual terminal token in the path (e.g. USDC address
+        for multi-hop paths ending at USDC, rather than the string "USD").
         """
 
         token_in, token_out, path = str(token_in), str(token_out), None
@@ -585,7 +589,19 @@ class UniswapRouterV2(ContractBase):
         if quote is not None:
             out_scale = await ERC20._get_scale_for(path[-1])
             amount_out = Decimal(quote[-1]) / out_scale
-            return UsdPrice(amount_out / fees / _amount)
+            price = UsdPrice(amount_out / fees / _amount)
+            # Build a PriceStep that exposes the actual terminal token (e.g. USDC address)
+            # rather than the generic "USD" string. This lets trade_path show the routing
+            # through intermediate stablecoins (e.g. MIC→USDT→USDC).
+            terminal_token = path[-1] if path[-1] != "USD" else "USD"
+            step = PriceStep(
+                source=self.label,
+                input_token=token_in,
+                output_token=terminal_token,
+                pool=None,
+                price=float(price),
+            )
+            return PriceResult(price=price, path=[step])
 
     @continue_on_revert
     @stuck_coro_debugger
