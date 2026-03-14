@@ -543,43 +543,17 @@ class UniswapRouterV2(ContractBase):
                     log_debug("smrt")
 
         # When the path ends at a non-USDC stablecoin, we need to convert to real USD.
-        # With amount: extend path with USDC for an atomic multi-hop via getAmountsOut.
-        # Without amount: run parallel lookups (quote + stablecoin USD price) and multiply.
+        # Extend the path with USDC so getAmountsOut handles all hops atomically.
+        # This avoids calling magic.get_price(stablecoin, historical_block) which can hang
+        # for historical blocks where the stablecoin no longer has a $1 shortcut.
         if (
             path is not None
             and usdc is not None
             and path[-1] != usdc.address
             and path[-1] in STABLECOINS
         ):
-            terminal_stablecoin = path[-1]
-            if amount is not None:
-                # Extend path so getAmountsOut handles all hops atomically (serial, price-impact-aware)
-                path = path + [usdc.address]
-            else:
-                # Parallel: quote for TOKEN→STABLECOIN and STABLECOIN real USD price
-                quote, stablecoin_price = await cgather(
-                    self.get_quote(amount_in, path, block=block, sync=False),
-                    magic.get_price(
-                        terminal_stablecoin,
-                        block,
-                        fail_to_None=True,
-                        skip_cache=skip_cache,
-                        sync=False,
-                    ),
-                )
-                if quote is not None and stablecoin_price:
-                    from y.datatypes import PriceResult
-
-                    _stablecoin_usd = (
-                        stablecoin_price.price
-                        if isinstance(stablecoin_price, PriceResult)
-                        else stablecoin_price
-                    )
-                    out_scale = await ERC20._get_scale_for(terminal_stablecoin)
-                    amount_out = Decimal(quote[-1]) / out_scale
-                    fees = Decimal(0.997) ** (len(path) - 1)
-                    return UsdPrice(amount_out * Decimal(str(_stablecoin_usd)) / fees / _amount)
-                return None
+            # Extend path so getAmountsOut handles all hops atomically (serial, price-impact-aware)
+            path = path + [usdc.address]
 
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
         if path is None and (
