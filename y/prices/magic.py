@@ -22,6 +22,7 @@ from y.prices import (
     band,
     chainlink,
     convex,
+    curve_gauge,
     one_to_one,
     pendle,
     popsicle,
@@ -572,6 +573,11 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == "convex":
         price = await convex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
+
+    elif bucket == "curve gauge":
+        price = await curve_gauge.get_price(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
 
     elif bucket == "creth":
         price = await creth.get_price_creth(token_address, block, skip_cache=skip_cache, sync=False)

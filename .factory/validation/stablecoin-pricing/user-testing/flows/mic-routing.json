@@ -1,0 +1,74 @@
+{
+  "groupId": "mic-routing",
+  "testedAt": "2026-03-14T17:57:00Z",
+  "isolation": {
+    "appUrl": "http://localhost:8000",
+    "chain": "ethereum",
+    "auth": "none",
+    "stateless": true
+  },
+  "toolsUsed": ["curl"],
+  "assertions": [
+    {
+      "id": "VAL-STABLE-004",
+      "title": "MIC resolves through USDT with USDC as terminal token",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000 (cold start)",
+          "expected": "price > 0 with trade_path showing USDT hop and USDC as terminal output_token",
+          "observed": "price=0.08382922086218535 (>0 ✓); trade_path has one step: source='<y.prices.dex.uniswap.uniswap.UniswapMultiplexer object at 0x7ffff4d910d0>' (Python object repr, not a string), input_token=0x368B...E51, output_token='USD' (NOT USDC address). No USDT hop visible. Response time ~79 seconds."
+        },
+        {
+          "action": "GET same endpoint (cached)",
+          "expected": "trade_path preserved in cache",
+          "observed": "cached=true, trade_path=null (trade_path is not persisted in cache)"
+        }
+      ],
+      "evidence": {
+        "responseFiles": [
+          "stablecoin-pricing/mic-routing/VAL-STABLE-004-mic-first-response.json",
+          "stablecoin-pricing/mic-routing/VAL-STABLE-004-mic-cached-response.json",
+          "stablecoin-pricing/mic-routing/VAL-STABLE-004-mic-price-response.txt"
+        ],
+        "network": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000 -> 200 OK (79s cold, <1s cached)"
+      },
+      "issues": "Two issues detected:\n1) The trade_path does NOT show the expected multi-hop routing through USDT with USDC as terminal output_token. Instead it shows a single step with output_token='USD' (the string literal, not the USDC address 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48).\n2) The 'source' field in the PriceStep is set to the Python object representation of the UniswapMultiplexer (str(dex)), not a clean string name. This is because getattr(dex, '__name__', str(dex)) falls back to str(dex) since UniswapMultiplexer lacks __name__.\n\nROOT CAUSE: V2.get_price() returns a raw UsdPrice float, not a PriceResult with multi-hop steps. The internal USDT→USDC path extension happens inside get_quote() (getAmountsOut call) but is not exposed as separate PriceStep objects. The magic.py wrapper wraps this as a single step with output_token='USD'.\n\nNOTE: The price value itself (0.08382922) is correct and positive — the V2 fix IS working (MIC resolved without hanging, using USDT→USDC path under the hood). Only the trade_path representation fails the assertion."
+    },
+    {
+      "id": "VAL-CROSS-002",
+      "title": "MIC lookup via server API returns multi-hop trade path",
+      "status": "fail",
+      "steps": [
+        {
+          "action": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000",
+          "expected": "trade_path array showing multi-hop resolution: MIC→USDT→USDC (at minimum two hops with USDC as terminal)",
+          "observed": "trade_path contains exactly one step: {source: '<UniswapMultiplexer object>', input_token: '0x368B...', output_token: 'USD', pool: null, price: 0.084}. No USDT intermediate hop. No USDC terminal token address."
+        }
+      ],
+      "evidence": {
+        "responseFiles": [
+          "stablecoin-pricing/mic-routing/VAL-STABLE-004-mic-first-response.json"
+        ],
+        "network": "GET /ethereum/price?token=0x368B3a58B5f49392e5C9E4C998cb0bB966752E51&block=12500000 -> 200 OK"
+      },
+      "issues": "Same root cause as VAL-STABLE-004: the V2 UniswapV2Pool.get_price() method returns a UsdPrice float, not a PriceResult with individual hop steps. The USDT→USDC atomic multi-hop path IS executed via getAmountsOut internally, but this is not reflected as separate PriceSteps in the returned trade_path. The magic.py layer collapses it to a single step with output_token='USD'. To pass this assertion, the V2 pricing code would need to return a PriceResult with multiple PriceStep objects (one for MIC→USDT, one for USDT→USDC), or the single step would need to use the USDC address as output_token and include the pool address."
+    }
+  ],
+  "frictions": [
+    {
+      "description": "Cold-start MIC request took ~79 seconds (first warm-up request on freshly rebuilt container). Previous test run reportedly hung for 10+ minutes; the O(1) getPair fix resolved the hang but cold start is still slow due to V2 pool discovery and RPC calls.",
+      "resolved": true,
+      "resolution": "Request completed within the 120s max-time window. Used --max-time 120 as instructed.",
+      "affectedAssertions": ["VAL-STABLE-004", "VAL-CROSS-002"]
+    },
+    {
+      "description": "Cached response returns trade_path=null. The server caches only the price value, not the trade_path, so the detailed routing info is only available on the first (uncached) response.",
+      "resolved": true,
+      "resolution": "Used the first uncached response for trade_path evaluation. Evidence file captured the live response.",
+      "affectedAssertions": ["VAL-STABLE-004", "VAL-CROSS-002"]
+    }
+  ],
+  "blockers": [],
+  "summary": "Tested 2 assertions: both FAIL. The MIC price resolves successfully (0.083 USD) without hanging, confirming the O(1) getPair fix works. However, the trade_path in the response does NOT expose the multi-hop USDT→USDC routing as separate PriceStep objects — both assertions require the path to explicitly show USDT as intermediate and USDC address as terminal output_token. The V2 multi-hop path is used internally (in getAmountsOut) but collapsed to a single step at the magic.py level with output_token='USD'. Additionally, the 'source' field shows a Python object repr instead of a clean string. These are trade_path serialization/representation issues — the underlying pricing fix IS working correctly."
+}
