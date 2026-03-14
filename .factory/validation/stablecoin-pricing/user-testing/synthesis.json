@@ -1,70 +1,36 @@
 {
   "milestone": "stablecoin-pricing",
-  "round": 1,
-  "status": "fail",
+  "round": 2,
+  "status": "pass",
   "assertionsSummary": {
-    "total": 13,
-    "passed": 11,
-    "failed": 2,
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
     "blocked": 0
   },
   "passedAssertions": [
-    "VAL-STABLE-001",
-    "VAL-STABLE-002",
-    "VAL-STABLE-003",
-    "VAL-STABLE-005",
-    "VAL-STABLE-006",
-    "VAL-STABLE-007",
-    "VAL-CROSS-001",
-    "VAL-CROSS-004",
-    "VAL-REGRESS-001",
-    "VAL-REGRESS-002",
-    "VAL-REGRESS-003"
+    "VAL-STABLE-004",
+    "VAL-CROSS-002"
   ],
-  "failedAssertions": [
-    {
-      "id": "VAL-STABLE-004",
-      "reason": "MIC at block 12500000 hangs indefinitely (>10 minutes) due to cold-start V2 pool loading. On mainnet, ypricemagic must scan ALL ~330k+ Uniswap V2 pairs when looking up an obscure token. With the stablecoin fix removing the USDT=$1 shortcut, MIC's resolution no longer short-circuits early and instead triggers this full pool scan. The implementation fix (extending path to USDC via getAmountsOut) is correct, but the cold-start latency for obscure tokens at historical blocks exceeds the 120s test timeout."
-    },
-    {
-      "id": "VAL-CROSS-002",
-      "reason": "MIC lookup via server API hangs for the same reason as VAL-STABLE-004 — cold-start V2 pool scan at block 12500000. Cannot inspect trade_path until the lookup completes."
-    }
-  ],
+  "failedAssertions": [],
   "blockedAssertions": [],
   "appliedUpdates": [
     {
-      "target": "user-testing.md",
-      "description": "Added cache invalidation notes documenting the three cache layers (sqlite bucket, sqlite price, diskcache) that hold stale $1 values and must be cleared when deploying the stablecoin fix",
+      "target": "ypricemagic feat/stablecoin-pricing branch (commit 54e10f94)",
+      "description": "perf: use factory.getPair() O(1) lookup before scanning all pairs in get_pools_for(). Resolved MIC cold-start hang (previously >10 min, now ~77s).",
       "source": "setup"
     },
     {
-      "target": "user-testing.md",
-      "description": "Added Flow Validator Guidance section for curl-api surface",
+      "target": "ypricemagic feat/stablecoin-pricing branch (commit 84b593b5)",
+      "description": "fix: expose V2 multi-hop trade path with USDC terminal token. UniswapRouterV2.get_price() now returns PriceResult with PriceStep showing actual terminal token address (e.g. USDC: 0xA0b86991...) instead of generic string 'USD'. Also added numeric comparison operators to PriceResult for backward compatibility.",
       "source": "setup"
     },
     {
-      "target": "ypricemagic feat/stablecoin-pricing branch (commit fe3497d3)",
-      "description": "Bug fix: extend V2 path to USDC for both amount and no-amount cases in get_price(). Previous code called magic.get_price(USDT, historical_block) in the no-amount path, which itself hung after USDT lost stable-usd shortcut.",
-      "source": "setup"
-    },
-    {
-      "target": "ypricemagic feat/stablecoin-pricing branch (commit c45ddd54)",
-      "description": "Bug fix: extend deepest_pool path to USDC for non-USDC stablecoin pairs. Same hang fix for the deepest_pool fallback code path.",
-      "source": "setup"
-    },
-    {
-      "target": "ypricemagic feat/stablecoin-pricing branch (commit d75db1b8)",
-      "description": "Bug fix: return [token_address, paired_with] from get_path_to_stables when paired_with is a non-USDC stablecoin, instead of returning None which triggered full pool scan.",
+      "target": "ypricemagic-server uv.lock",
+      "description": "Updated ypricemagic from d75db1b8 to 84b593b5 (two new commits: getPair fast lookup + trade_path USDC fix). Committed to chore/stablecoin-pricing-validation branch.",
       "source": "setup"
     }
   ],
-  "discoveredIssues": [
-    {
-      "severity": "blocking",
-      "description": "MIC at block 12500000 hangs for 10+ minutes due to cold-start V2 pool loading on mainnet. All ~330k+ Uniswap V2 pairs must be scanned to find MIC/USDT pool when there's no cache. This happens because (1) factory helper is disabled on mainnet ('Too many pools'), (2) USDT bucket is 'chainlink feed' which causes get_path_to_stables to return None early, and (3) deepest_pool fallback triggers all_pools_for() which awaits __pools__. Fix applied in d75db1b8 (return [MIC, USDT] from get_path_to_stables), but pool loading still blocks until all pairs are fetched from the RPC.",
-      "suggestedFix": "Cache the V2 pool list in SQLite (the pools are already in the Log table, but not in a queryable pool-address form). Alternatively, warm the V2 pool cache at container startup. Or implement a timeout/fallback in get_path_to_stables that gives up after N seconds and returns None rather than hanging."
-    }
-  ],
-  "previousRound": null
+  "previousRound": ".factory/validation/stablecoin-pricing/user-testing/synthesis-round1.json",
+  "notes": "Round 2 retested only the 2 failed assertions from round 1 (VAL-STABLE-004, VAL-CROSS-002). All assertions for the stablecoin-pricing milestone now pass. Pending assertions (VAL-GAUGE-*, VAL-4626-*, VAL-EXOTIC-*, VAL-DETECT-*, VAL-FRONT-*, VAL-CACHE-*, VAL-CROSS-003) belong to future milestones (exotic-tokens, server-updates) and are out of scope for this validator run."
 }
