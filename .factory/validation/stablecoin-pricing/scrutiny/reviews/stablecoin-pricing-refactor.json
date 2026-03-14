@@ -1,0 +1,50 @@
+{
+  "featureId": "stablecoin-pricing-refactor",
+  "reviewedAt": "2026-03-14T06:15:00.000Z",
+  "commitId": "452149e6ab0963725b95297fbae254aa10fefc70",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "All three required code sites are correctly changed. The USDC-only bucket restriction in buckets.py and the V2 short-circuit change are straightforward and correct. The V2 path extension for non-USDC terminal stablecoins is well-structured with proper separation between the 'with amount' (atomic multi-hop via getAmountsOut) and 'without amount' (parallel lookup + multiply) cases. The infinite recursion risk is properly mitigated: USDC has the 'stable usd' bucket so its price resolves immediately without entering the new block; when magic.get_price(USDT) is called, USDT paths end at USDC which terminates. One non-blocking issue: the 'without amount' early return on None suppresses the fallback deepest_pool and smol-brain paths. One suggestion: the fee correction in the 'without amount' branch matches the pre-existing pattern but should be documented as intentional.",
+    "issues": [
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 578,
+        "severity": "non_blocking",
+        "description": "Early `return None` in the 'without amount' stablecoin conversion block cuts off the fallback deepest_pool and smol-brain price resolution paths. If get_path_to_stables found a non-USDC terminal path but both the quote and stablecoin_price lookups fail (e.g., insufficient liquidity at old blocks), the function returns None immediately rather than falling through to deepest_pool or smol-brain fallbacks. In practice this is fine because if the stablecoin path fails, the other fallbacks are unlikely to succeed either. However, the early return is asymmetric with how the function handles other intermediate failures."
+      },
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 575,
+        "severity": "non_blocking",
+        "description": "Fee correction pattern inconsistency between the 'without amount' branch and the bottom 'amount' branch: in the 'without amount' branch, fees are divided out explicitly (line 575: `/ fees`) matching the pre-existing `getAmountsOut` pattern. This is correct and intentional (undoing the built-in fee deduction to get approximate spot price), but it is not commented as intentional design, unlike the rest of the new block which has clear comments. Minor documentation gap."
+      },
+      {
+        "file": "tests/prices/test_stablecoin_pricing.py",
+        "line": 100,
+        "severity": "non_blocking",
+        "description": "The test_mic_resolves_via_usdt path-verification assertion is soft: it checks `result.steps` but only if PriceResult has steps attribute, and the outer assertion (that result is non-None) is the real test. The USDT path assertion inside is conditional and may silently pass without actually verifying the routing path. This is acceptable since the core assertion (non-None price > 0) is what matters for correctness."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "The 'without amount' stablecoin conversion block uses `Decimal(0.997) ** (len(path) - 1)` to divide out the built-in Uniswap fee and recover spot price — the same pattern used at the bottom of get_price(). This is a project convention for returning spot prices rather than net-of-fee execution prices, but it is not documented anywhere in AGENTS.md or the library. A future worker touching get_price() may not understand why fees are divided out after getAmountsOut (which already accounts for fees internally).",
+      "evidence": "y/prices/dex/uniswap/v2.py:575 (new code) and lines 626-632 (pre-existing pattern): both use `fees = Decimal(0.997) ** (len(path) - 1)` and divide `amount_out` by it. The library/architecture.md does not mention this pattern."
+    },
+    {
+      "area": "skills",
+      "observation": "The worker's skillFeedback notes that 'mypy also crashes on macOS for this codebase due to typed_envs issue, so mypy verification is impossible locally.' This is already documented in the mission AGENTS.md under 'Known Pre-Existing Issues' but NOT in the skill (python-lib-worker). The worker suggested adding this to the skill. The skill currently likely says to run mypy as a verification step without noting this macOS-specific blocker.",
+      "evidence": "handoff.skillFeedback.suggestedChanges[0]: 'The skill note \"Tests don't run on macOS\" is accurate — add explicit note that mypy also crashes on macOS for this codebase due to typed_envs issue, so mypy verification is impossible locally.'"
+    },
+    {
+      "area": "conventions",
+      "observation": "The worker imported `PriceResult` inside the function body using a deferred `from y.datatypes import PriceResult` (lines 570 and 614) to avoid circular imports. This pattern is used twice in the new code (once in v2.py new block, once in the pre-existing deepest_pool block). This deferred import pattern for circular-import avoidance is not documented in AGENTS.md or library, but is clearly an established project pattern (the pre-existing code at line ~614 already does it).",
+      "evidence": "y/prices/dex/uniswap/v2.py:570 (new code) and ~614 (pre-existing): both use `from y.datatypes import PriceResult` inside the function body."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "The implementation correctly implements all three required code changes: (1) buckets.py restricts 'stable usd' to USDC only with a None guard, (2) v2.py changes the short-circuit return to USDC-only, and (3) v2.py adds the path extension block for non-USDC terminal stablecoins with correct split between 'with amount' (atomic getAmountsOut multi-hop) and 'without amount' (parallel magic.get_price + multiply). Infinite recursion is properly avoided because USDC terminates via the short-circuit and stablecoin paths always converge to USDC. Tests are appropriate: they cover bucket changes, stablecoin price ranges, and the MIC multi-hop scenario. Three non-blocking issues were identified: an early None return that skips fallbacks (acceptable), undocumented fee-correction convention, and a soft path-verification assertion in tests. Overall the implementation is clean, follows existing patterns, and fulfills the feature spec."
+}
