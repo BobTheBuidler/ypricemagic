@@ -36,7 +36,16 @@ from y.constants import (
     weth,
 )
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, Pool, PriceResult, PriceStep, UsdPrice
+from y.datatypes import (
+    Address,
+    AddressOrContract,
+    AnyAddressType,
+    Block,
+    Pool,
+    PriceResult,
+    PriceStep,
+    UsdPrice,
+)
 from y.exceptions import (
     CantFindSwapPath,
     ContractNotVerified,

@@ -10,7 +10,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
-from y.prices import convex, one_to_one, pendle, popsicle, rkp3r, solidex, yearn
+from y.prices import convex, curve_gauge, one_to_one, pendle, popsicle, rkp3r, solidex, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
@@ -183,6 +183,7 @@ string_matchers = {
 calls_only = {
     "atoken": aave.is_atoken,
     "balancer pool": balancer_multiplexer.is_balancer_pool,
+    "curve gauge": curve_gauge.is_curve_gauge,
     "ib token": ib.is_ib_token,
     "gelato": gelato.is_gelato_pool,
     "pendle lp": pendle.is_pendle_lp,
