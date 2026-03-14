@@ -1,6 +1,6 @@
 {
   "milestone": "exotic-tokens",
-  "round": 3,
+  "round": 2,
   "status": "fail",
   "validatorsRun": {
     "test": {
@@ -13,7 +13,7 @@
       "passed": true,
       "command": "cd /Users/bryan/code/ypricemagic-pricing && /Users/bryan/code/ypricemagic/.venv/bin/python -m mypy y/",
       "exitCode": 1,
-      "note": "mypy reports 1770 errors across 91 files — identical in scope and nature to pre-existing errors documented in stablecoin-pricing scrutiny synthesis. None trace to files introduced or modified in the exotic-tokens milestone. Treated as pre-existing per prior synthesis precedent."
+      "note": "mypy reports 1770 errors across 91 files — identical in scope and nature to the pre-existing errors documented in the stablecoin-pricing scrutiny synthesis. None trace to files introduced or modified in the exotic-tokens milestone. Treated as pre-existing per prior synthesis precedent."
     },
     "lint": {
       "passed": true,
@@ -27,7 +27,7 @@
     "passed": 1,
     "failed": 2,
     "failedFeatures": ["curve-gauge-support", "exotic-token-parity-and-detection"],
-    "note": "Round 3 re-run: exotic-tokens-scrutiny-fixes feature is still pending (not yet completed). No new features completed since round 2. Prior reviews preserved at .factory/validation/exotic-tokens/scrutiny/reviews/. No new subagents spawned since no fix features are available to review."
+    "note": "Round 2 re-run: exotic-tokens-scrutiny-fixes feature is still pending (not completed). No new features introduced since round 1. Prior reviews preserved at .factory/validation/exotic-tokens/scrutiny/reviews/. No new subagents spawned since no fix features were completed."
   },
   "blockingIssues": [
     {
@@ -57,5 +57,5 @@
     }
   ],
   "rejectedObservations": [],
-  "previousRound": ".factory/validation/exotic-tokens/scrutiny/synthesis-round-2.json"
+  "previousRound": ".factory/validation/exotic-tokens/scrutiny/synthesis-round-1.json"
 }
