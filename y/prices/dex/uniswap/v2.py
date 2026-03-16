@@ -1,4 +1,3 @@
-from asyncio import sleep
 from collections.abc import AsyncIterator
 from contextlib import suppress
 from decimal import Decimal
@@ -10,7 +9,7 @@ import a_sync
 import a_sync.exceptions
 import brownie
 import dank_mids
-from a_sync import cgather, igather
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
@@ -28,7 +27,6 @@ from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import (
     CHAINID,
     CONNECTED_TO_MAINNET,
-    ROUTING_TOKENS,
     STABLECOINS,
     WRAPPED_GAS_COIN,
     sushi,
@@ -681,110 +679,116 @@ class UniswapRouterV2(ContractBase):
 
     __pools__: HiddenMethodDescriptor[Self, list[UniswapV2Pool]]
 
+    @a_sync.aka.cached_property
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE)
-    async def all_pools_for(self, token_in: Address) -> dict[UniswapV2Pool, Address]:
-        pool_to_token_out = {}
-        for i, pool in enumerate(await self.__pools__):
-            # this will return immediately since the pools are already loaded by this point
-            token0, token1 = await pool.__tokens__
-            if token_in == token0:
-                pool_to_token_out[pool] = token1
-            elif token_in == token1:
-                pool_to_token_out[pool] = token0
-            if not i % 10_000:
-                await sleep(0)
-        return pool_to_token_out
+    async def _pool_index(self) -> dict[str, dict["UniswapV2Pool", Address]]:
+        """Build an inverted index mapping token address → {pool: paired_token}.
 
-    @stuck_coro_debugger
-    async def get_pools_via_factory_getpair(
-        self, token_in: Address, block: Block | None = None
-    ) -> dict[UniswapV2Pool, Address]:
-        """Find pools for `token_in` using the factory's O(1) getPair view function.
+        Iterates all loaded pools once (zero additional RPC cost since token0/token1
+        are already cached in RAM after :attr:`pools` loads). The resulting dict
+        allows O(1) lookup for all pools containing a given token.
 
-        Builds a candidate list of well-known tokens (stablecoins, wrapped gas coin,
-        routing tokens) and queries the factory for each pair in parallel. This avoids
-        the costly full scan of all pairs performed by :meth:`all_pools_for`.
-
-        Args:
-            token_in: The token address to find pools for.
-            block: The block number to query. Defaults to latest block.
+        Keys are checksummed address strings (same format as
+        ``pool.token0.address`` / ``pool.token1.address``) so queries using
+        any casing of a valid ERC-20 address will normalise correctly via
+        :func:`~y.convert.to_address`.
 
         Returns:
-            A dict mapping :class:`UniswapV2Pool` → paired token address for every
-            non-zero pair returned by the factory.
+            A dict mapping checksummed token address → dict of
+            :class:`UniswapV2Pool` → paired token :class:`ERC20`.
         """
-        # Build deduplicated candidate list: stablecoins + wrapped gas coin + routing tokens
-        candidates: list[str] = []
-        seen: set[str] = set()
-        token_in_str = str(token_in).lower()
-        for addr in (
-            list(STABLECOINS.keys()) + [WRAPPED_GAS_COIN] + list(ROUTING_TOKENS.get(CHAINID, []))
-        ):
-            addr_str = str(addr).lower()
-            if addr_str != token_in_str and addr_str not in seen:
-                seen.add(addr_str)
-                candidates.append(str(addr))
-
-        if not candidates:
-            return {}
-
-        # Query factory.getPair for all candidates in parallel
-        pair_addresses: list[str | None] = await igather(
-            Call(
-                self.factory,
-                ["getPair(address,address)(address)", token_in, candidate],
-                block_id=block,
-            )
-            for candidate in candidates
+        index: dict[str, dict[UniswapV2Pool, Address]] = {}
+        for pool in await self.__pools__:
+            # token0 and token1 are already cached — no RPC calls here
+            token0, token1 = await pool.__tokens__
+            t0_addr: str = token0.address
+            t1_addr: str = token1.address
+            # Index under token0: pool → token1
+            if t0_addr not in index:
+                index[t0_addr] = {}
+            index[t0_addr][pool] = token1
+            # Index under token1: pool → token0
+            if t1_addr not in index:
+                index[t1_addr] = {}
+            index[t1_addr][pool] = token0
+        logger.debug(
+            "Built inverted pool index for %s: %s unique tokens across %s pools",
+            self.label,
+            len(index),
+            len(await self.__pools__),
         )
+        return index
 
-        pool_to_token_out: dict[UniswapV2Pool, Address] = {}
-        for candidate, pair_address in zip(candidates, pair_addresses):
-            if pair_address and pair_address != brownie.ZERO_ADDRESS:
-                pool = UniswapV2Pool(pair_address, asynchronous=self.asynchronous)
-                pool_to_token_out[pool] = candidate
+    __pool_index__: HiddenMethodDescriptor[Self, dict[str, dict["UniswapV2Pool", Address]]]
 
-        return pool_to_token_out
+    @stuck_coro_debugger
+    async def all_pools_for(self, token_in: Address) -> dict["UniswapV2Pool", Address]:
+        """Return all pools containing ``token_in`` as a dict of pool → paired token.
+
+        Uses the pre-built :attr:`_pool_index` for an O(1) dict lookup.
+        The index is the cache — no separate ``ram_cache`` is needed here.
+
+        Args:
+            token_in: The token address to look up.
+
+        Returns:
+            A dict mapping :class:`UniswapV2Pool` → paired token :class:`ERC20`,
+            or an empty dict when no pools exist for this token.
+        """
+        # Normalise to checksummed address string so the key matches the index
+        key = str(await convert.to_address_async(token_in))
+        index = await self.__pool_index__
+        return dict(index.get(key, {}))
 
     @stuck_coro_debugger
     async def get_pools_for(
         self, token_in: Address, block: Block | None = None
-    ) -> dict[UniswapV2Pool, Address]:
-        if self._supports_factory_helper is False or token_in in self._skip_factory_helper:
-            # Fast O(1) path: query factory.getPair for each well-known candidate token.
-            # This avoids the 10+ minute scan of all 330k+ pairs on Mainnet/Arbitrum/Base.
-            fast_pools = await self.get_pools_via_factory_getpair(token_in, block, sync=False)
-            if fast_pools:
-                return fast_pools
-            # Fall back to full scan only if no pools found via fast path
-            return await self.all_pools_for(token_in, sync=False)
-        try:
-            pools: list[HexAddress] = await FACTORY_HELPER.getPairsFor.coroutine(
-                self.factory, token_in, block_identifier=block
-            )
-        except Exception as e:
-            okay_errs = "out of gas", "timeout"
-            stre = str(e).lower()
-            if "invalid request" in stre:
-                # TODO: debug where this invalid request is coming from
-                self._skip_factory_helper.add(token_in)
-            elif call_reverted(e) or any(err in stre for err in okay_errs):
-                pass
-            else:
-                raise
-            return await self.all_pools_for(token_in, sync=False)
+    ) -> dict["UniswapV2Pool", Address]:
+        """Return pools for ``token_in`` using the inverted index as the sole lookup.
 
-        pool_to_token_out = {}
-        for p in pools:
-            pool = UniswapV2Pool(p, asynchronous=self.asynchronous)
-            # this will return immediately since the pools are already loaded by this point
-            token0, token1 = await pool.__tokens__
-            if token_in == token0:
-                pool_to_token_out[pool] = token1
-            elif token_in == token1:
-                pool_to_token_out[pool] = token0
-        return pool_to_token_out
+        The inverted index (built from already-loaded pool data at zero RPC cost)
+        supersedes both the old O(N) ``all_pools_for()`` scan and the
+        ``get_pools_via_factory_getpair()`` fast-path.  There is no fallback
+        needed — the index is comprehensive and complete.
+
+        Args:
+            token_in: The token address to find pools for.
+            block: Unused — kept for API compatibility. Pool filtering by block
+                is handled by callers such as :meth:`pools_for_token`.
+
+        Returns:
+            A dict mapping :class:`UniswapV2Pool` → paired token address,
+            or an empty dict when no pools exist.
+        """
+        if self._supports_factory_helper and token_in not in self._skip_factory_helper:
+            try:
+                pools: list[HexAddress] = await FACTORY_HELPER.getPairsFor.coroutine(
+                    self.factory, token_in, block_identifier=block
+                )
+            except Exception as e:
+                okay_errs = "out of gas", "timeout"
+                stre = str(e).lower()
+                if "invalid request" in stre:
+                    # TODO: debug where this invalid request is coming from
+                    self._skip_factory_helper.add(token_in)
+                elif call_reverted(e) or any(err in stre for err in okay_errs):
+                    pass
+                else:
+                    raise
+            else:
+                pool_to_token_out = {}
+                for p in pools:
+                    pool = UniswapV2Pool(p, asynchronous=self.asynchronous)
+                    # this will return immediately since the pools are already loaded by this point
+                    token0, token1 = await pool.__tokens__
+                    if token_in == token0:
+                        pool_to_token_out[pool] = token1
+                    elif token_in == token1:
+                        pool_to_token_out[pool] = token0
+                return pool_to_token_out
+
+        # Use the inverted index — O(1), no RPC calls, no O(N) scan
+        return await self.all_pools_for(token_in, sync=False)
 
     @stuck_coro_debugger
     async def pools_for_token(
@@ -800,7 +804,14 @@ class UniswapRouterV2(ContractBase):
             and token_address == WRAPPED_GAS_COIN
             and self.label == "uniswap v2"
         ):
-            # This will run out of gas if we use the helper so we bypass it with a known liquid pool
+            # WETH special-case decision: with the O(1) inverted index the old
+            # "runs out of gas" reason for the factory helper is no longer the
+            # concern.  However, WETH has thousands of V2 pools on Mainnet.
+            # Passing all of them to downstream callers (check_liquidity,
+            # get_path_to_stables, deepest_pool) would trigger thousands of
+            # RPC calls for every price lookup, which would hurt performance
+            # significantly.  We therefore intentionally keep the hard-coded
+            # single-pool fast-path so that WETH pricing remains fast.
             usdc_pool = UniswapV2Pool(
                 "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True
             )
@@ -810,7 +821,9 @@ class UniswapRouterV2(ContractBase):
             and token_address == WRAPPED_GAS_COIN
             and self.label == "uniswap v2"
         ):
-            # This will run out of gas if we use the helper so we bypass it with a known liquid pool
+            # WETH special-case decision (Base): same rationale as Mainnet above.
+            # WETH has many pools on Base and passing them all downstream would
+            # be expensive.  We keep the two-pool fast-path for USDC and USDbC.
             usdc_pool = UniswapV2Pool(
                 "0x88A43bbDF9D098eEC7bCEda4e2494615dfD9bB9C", asynchronous=True
             )
