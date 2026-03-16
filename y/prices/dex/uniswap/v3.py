@@ -465,9 +465,11 @@ class UniswapV3(a_sync.ASyncGenericBase):
             ...     print(pool)
         """
         pools = await self.__pools__
-        # Ensure all pools up to `block` have been loaded and indexed
-        async for _ in pools.objects(to_block=block):
-            pass
+        # Wait until pools have been loaded through `block` without re-iterating.
+        # The _pool_index is kept current by _extend(), so we just need the
+        # background fetch to have progressed far enough.
+        pools._ensure_task()
+        await pools._lock.wait_for(block)
 
         # O(1) index lookup: token_address -> {pool: other_token}
         token_key = str(token).lower()
