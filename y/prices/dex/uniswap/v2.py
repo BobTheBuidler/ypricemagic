@@ -1,4 +1,5 @@
 from collections.abc import AsyncIterator
+import asyncio
 from contextlib import suppress
 from decimal import Decimal
 from itertools import islice
@@ -405,7 +406,9 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
     def __init__(self, factory: AnyAddressType, label: str, asynchronous: bool = False):
         self.asynchronous = asynchronous
         self.label = label
-        super().__init__(addresses=[factory], topics=[[self.PairCreated]], is_reusable=False)
+        # is_reusable=True keeps pools in memory and prevents pruning after iteration,
+        # enabling the ProcessedEvents._loop() to keep running for continuous discovery.
+        super().__init__(addresses=[factory], topics=[[self.PairCreated]], is_reusable=True)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} label={self.label}>"
@@ -641,7 +644,21 @@ class UniswapRouterV2(ContractBase):
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
-    async def pools(self) -> list[UniswapV2Pool]:
+    async def pools(self) -> "PoolsFromEvents":
+        """Return the :class:`PoolsFromEvents` object for this router's factory.
+
+        This property performs the initial pool load (from SQLite cache + any missing
+        PairCreated events) and then returns the :class:`PoolsFromEvents` instance
+        **without** cancelling its background task.  The task continues to run via
+        :meth:`ProcessedEvents._loop`, polling for new PairCreated events every 60 s
+        so that pools deployed after startup are discovered automatically.
+
+        The :attr:`_pool_index` background task watches the returned object and
+        updates the inverted index incrementally as new pools arrive.
+
+        On warm restart, the SQLite cache is loaded first (fast, no RPC) and polling
+        resumes from ``cached_thru + 1``.
+        """
         logger.info(
             "Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...",
             self.label,
@@ -650,34 +667,35 @@ class UniswapRouterV2(ContractBase):
         factory = self.factory
         events = PoolsFromEvents(factory, self.label, asynchronous=self.asynchronous)
         to_block = await dank_mids.eth.block_number
-        pools = [pool async for pool in events.pools(to_block=to_block)]
-        events._task.cancel()
-        del events
+        # Consume all pools up to `to_block` so the initial index build has all known pools.
+        # We do NOT cancel the task — the loop keeps running for continuous discovery.
+        initial_pools = [pool async for pool in events.pools(to_block=to_block)]
+
         all_pairs_len = await raw_call(factory, "allPairsLength()", output="int", sync=False)
-        if len(pools) > all_pairs_len:
+        if len(initial_pools) > all_pairs_len:
             raise NotImplementedError("this shouldnt happen again")
-        elif to_get := all_pairs_len - len(pools):  # <
+        elif to_get := all_pairs_len - len(initial_pools):
             logger.debug(
                 "Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...",
                 to_get,
             )
-            factory = await Contract.coroutine(self.factory)
-            for i, pool_address in enumerate(await factory.allPairs.map(range(to_get))):
+            factory_contract = await Contract.coroutine(self.factory)
+            for i, pool_address in enumerate(await factory_contract.allPairs.map(range(to_get))):
                 pool = UniswapV2Pool(address=pool_address, asynchronous=self.asynchronous)
-                pools.insert(i, pool)
+                initial_pools.insert(i, pool)
             logger.debug("Done fetching %s missing pools on %s", to_get, self.label)
 
-        tokens = set(concat(await UniswapV2Pool.tokens.map(pools).values(pop=True)))
+        tokens = set(concat(await UniswapV2Pool.tokens.map(initial_pools).values(pop=True)))
 
         logger.info(
             "Loaded %s pools supporting %s tokens on %s",
-            len(pools),
+            len(initial_pools),
             len(tokens),
             self.label,
         )
-        return pools
+        return events
 
-    __pools__: HiddenMethodDescriptor[Self, list[UniswapV2Pool]]
+    __pools__: HiddenMethodDescriptor[Self, "PoolsFromEvents"]
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
@@ -693,30 +711,80 @@ class UniswapRouterV2(ContractBase):
         any casing of a valid ERC-20 address will normalise correctly via
         :func:`~y.convert.to_address`.
 
+        After the initial build, a background task watches :attr:`pools` for
+        new :class:`UniswapV2Pool` objects discovered via continuous polling and
+        adds them to the index under both their token0 and token1 keys.
+
         Returns:
             A dict mapping checksummed token address → dict of
             :class:`UniswapV2Pool` → paired token :class:`ERC20`.
         """
+        pools_obj: PoolsFromEvents = await self.__pools__
+
         index: dict[str, dict[UniswapV2Pool, Address]] = {}
-        for pool in await self.__pools__:
+
+        # Snapshot how many pools are already loaded so we can resume polling from here.
+        initial_count = len(pools_obj._objects)
+
+        # Build initial index from all pools loaded so far.
+        for pool in pools_obj._objects[:initial_count]:
             # token0 and token1 are already cached — no RPC calls here
             token0, token1 = await pool.__tokens__
             t0_addr: str = token0.address
             t1_addr: str = token1.address
-            # Index under token0: pool → token1
             if t0_addr not in index:
                 index[t0_addr] = {}
             index[t0_addr][pool] = token1
-            # Index under token1: pool → token0
             if t1_addr not in index:
                 index[t1_addr] = {}
             index[t1_addr][pool] = token0
+
         logger.debug(
             "Built inverted pool index for %s: %s unique tokens across %s pools",
             self.label,
             len(index),
-            len(await self.__pools__),
+            initial_count,
         )
+
+        # Start a background task to incrementally update the index as new pools
+        # arrive from continuous ProcessedEvents polling.
+        async def _update_index_from_new_pools() -> None:
+            seen = initial_count
+            while True:
+                await asyncio.sleep(30)
+                current = pools_obj._objects
+                if len(current) > seen:
+                    new_pools = current[seen:]
+                    seen = len(current)
+                    for pool in new_pools:
+                        try:
+                            token0, token1 = await pool.__tokens__
+                        except Exception as e:
+                            logger.debug(
+                                "Skipping pool %s in index update due to %s: %s",
+                                pool,
+                                type(e).__name__,
+                                e,
+                            )
+                            continue
+                        t0_addr = token0.address
+                        t1_addr = token1.address
+                        if t0_addr not in index:
+                            index[t0_addr] = {}
+                        index[t0_addr][pool] = token1
+                        if t1_addr not in index:
+                            index[t1_addr] = {}
+                        index[t1_addr][pool] = token0
+                    logger.debug(
+                        "Incrementally added %s new pools to index for %s (total unique tokens: %s)",
+                        len(new_pools),
+                        self.label,
+                        len(index),
+                    )
+
+        task = asyncio.ensure_future(_update_index_from_new_pools())
+        task._log_destroy_pending = False
+
         return index
 
     __pool_index__: HiddenMethodDescriptor[Self, dict[str, dict["UniswapV2Pool", Address]]]
