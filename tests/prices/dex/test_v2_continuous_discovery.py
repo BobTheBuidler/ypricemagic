@@ -14,7 +14,6 @@ References:
     VAL-V2CD-004: All V2 forks on connected chain get indexed
 """
 
-
 import pytest
 
 from tests.fixtures import async_test, mainnet_only
@@ -66,12 +65,8 @@ def test_pools_property_type_annotation() -> None:
     fn = UniswapRouterV2.pools  # noqa: F841
     # a_sync.aka.cached_property stores the wrapped coroutine as .func or similar;
     # check the class-level attribute instead.
-    assert hasattr(UniswapRouterV2, "pools"), (
-        "pools must be a descriptor on UniswapRouterV2"
-    )
-    assert hasattr(UniswapRouterV2, "__pools__"), (
-        "__pools__ HiddenMethodDescriptor must exist"
-    )
+    assert hasattr(UniswapRouterV2, "pools"), "pools must be a descriptor on UniswapRouterV2"
+    assert hasattr(UniswapRouterV2, "__pools__"), "__pools__ HiddenMethodDescriptor must exist"
 
 
 def test_pools_from_events_task_not_cancelled_on_construction() -> None:
@@ -118,9 +113,7 @@ async def test_pools_property_returns_pools_from_events(
         "The pools property must return the PoolsFromEvents object so the "
         "polling task stays alive for continuous discovery."
     )
-    print(
-        f"pools property returned PoolsFromEvents with {len(pools_obj._objects)} pools loaded"
-    )
+    print(f"pools property returned PoolsFromEvents with {len(pools_obj._objects)} pools loaded")
 
 
 @pytest.mark.slow
@@ -144,9 +137,9 @@ async def test_events_task_alive_after_initial_load(
         "PoolsFromEvents._task must still be running after initial load. "
         "It was cancelled, which prevents continuous discovery."
     )
-    assert not pools_obj._task.cancelled(), (
-        "PoolsFromEvents._task must not be cancelled after initial load."
-    )
+    assert (
+        not pools_obj._task.cancelled()
+    ), "PoolsFromEvents._task must not be cancelled after initial load."
     print(f"Events task is alive: {pools_obj._task}")
 
 
@@ -237,14 +230,50 @@ async def test_new_pool_added_to_index_incrementally(
         "The incremental update logic must add new pools under both token0 and token1."
     )
     # Also verify the paired token is correct
-    assert index[WETH][new_pool] is not None, (
-        "Paired token for WETH entry must not be None"
-    )
-    assert index[USDC][new_pool] is not None, (
-        "Paired token for USDC entry must not be None"
-    )
+    assert index[WETH][new_pool] is not None, "Paired token for WETH entry must not be None"
+    assert index[USDC][new_pool] is not None, "Paired token for USDC entry must not be None"
 
     print("New pool successfully added to index under both WETH and USDC")
+
+
+def test_all_v2_forks_have_reusable_events_structural() -> None:
+    """VAL-V2CD-004 (structural): All V2 forks on the chain have PoolsFromEvents.is_reusable=True.
+
+    For each registered V2 fork in UNISWAPS (for the current chain), verify that
+    a PoolsFromEvents object constructed for that factory has is_reusable=True.
+    This structural test runs without RPC and confirms the continuous-discovery
+    configuration is correct for all forks.
+
+    Also verifies that UniswapRouterV2 has the _pool_index descriptor, confirming
+    that each router will build an inverted index from its pools.
+    """
+    from y.prices.dex.uniswap.v2_forks import UNISWAPS
+
+    if not UNISWAPS:
+        pytest.skip("No V2 forks registered for this chain")
+
+    for fork_name, fork_info in UNISWAPS.items():
+        factory = fork_info["factory"]
+        events = PoolsFromEvents(factory, label=fork_name, asynchronous=False)
+        assert events.is_reusable is True, (
+            f"PoolsFromEvents for fork '{fork_name}' (factory={factory}) must have "
+            f"is_reusable=True for continuous discovery. "
+            "With is_reusable=False the task is pruned after each iteration."
+        )
+
+    # UniswapRouterV2 must have _pool_index so each fork gets an inverted index
+    assert hasattr(UniswapRouterV2, "_pool_index"), (
+        "UniswapRouterV2 must have _pool_index cached-property so every "
+        "router/fork instance builds an inverted index."
+    )
+    assert hasattr(
+        UniswapRouterV2, "__pool_index__"
+    ), "UniswapRouterV2 must have __pool_index__ HiddenMethodDescriptor."
+
+    print(
+        f"All {len(UNISWAPS)} V2 fork(s) verified: "
+        "PoolsFromEvents.is_reusable=True, _pool_index descriptor present"
+    )
 
 
 @pytest.mark.slow
@@ -255,40 +284,30 @@ async def test_all_v2_forks_get_continuous_discovery() -> None:
 
     For each registered V2 router on mainnet, verify that the PoolsFromEvents
     object is is_reusable=True and its task stays alive after initial load.
+    Tests only the first fork to avoid a very slow test run.
     """
     from y.prices.dex.uniswap.v2_forks import UNISWAPS
 
-    # Get the first few V2 routers for mainnet
-    from y.networks import Network
-
-    if Network.chainid() != Network.Mainnet:
-        pytest.skip("Mainnet-only test")
-
-    from brownie import chain
-
-    routers_on_chain = [
-        UniswapRouterV2(addr, asynchronous=True) for addr in UNISWAPS.get(chain.id, {})
-    ]
-
-    if not routers_on_chain:
+    if not UNISWAPS:
         pytest.skip("No V2 routers found for this chain")
 
-    # Test the first router to avoid slow test run
-    router = routers_on_chain[0]
+    # UNISWAPS is already filtered for the current chain: {name: {factory, router}}
+    first_fork_name = next(iter(UNISWAPS))
+    router = UniswapRouterV2(UNISWAPS[first_fork_name]["router"], asynchronous=True)
     pools_obj = await router.__pools__
 
-    assert isinstance(pools_obj, PoolsFromEvents), (
-        f"Expected PoolsFromEvents for {router.label}, got {type(pools_obj)}"
-    )
-    assert pools_obj.is_reusable is True, (
-        f"PoolsFromEvents for {router.label} must have is_reusable=True"
-    )
-    assert pools_obj._task is not None, (
-        f"PoolsFromEvents for {router.label} must have a running task"
-    )
-    assert not pools_obj._task.done(), (
-        f"PoolsFromEvents task for {router.label} must not be done/cancelled"
-    )
+    assert isinstance(
+        pools_obj, PoolsFromEvents
+    ), f"Expected PoolsFromEvents for {router.label}, got {type(pools_obj)}"
+    assert (
+        pools_obj.is_reusable is True
+    ), f"PoolsFromEvents for {router.label} must have is_reusable=True"
+    assert (
+        pools_obj._task is not None
+    ), f"PoolsFromEvents for {router.label} must have a running task"
+    assert (
+        not pools_obj._task.done()
+    ), f"PoolsFromEvents task for {router.label} must not be done/cancelled"
     print(f"V2 fork {router.label} has continuous discovery active")
 
 
@@ -306,37 +325,66 @@ def test_warm_restart_pool_loading_uses_sqlite_cache() -> None:
     built from those objects — without re-fetching events from RPC.
 
     This structural test verifies:
-    1. PoolsFromEvents has a ``_cache`` attribute (SQLite integration is wired in).
-    2. ``_objects`` is empty at construction — pools are loaded lazily from the DB,
+    1. PoolsFromEvents._cache is None at construction (lazy-initialized on first access).
+       NOTE: hasattr(events, '_cache') is trivially True because _cache is in __slots__
+       of the _DiskCachedMixin base class. The meaningful check is that it starts as None
+       and is only set when events.cache property is first accessed.
+    2. Accessing events.cache (the property, not _cache directly) triggers lazy init
+       and returns a LogCache instance.
+    3. ``_objects`` is empty at construction — pools are loaded lazily from the DB,
        not pre-populated.
-    3. ``is_reusable=True`` is set, which enables the checkpoint/cache write-back
+    4. ``is_reusable=True`` is set, which enables the checkpoint/cache write-back
        that persists the loading position across restarts.
     """
+    from y._db.utils.logs import LogCache
+
     events = PoolsFromEvents(UNISWAP_V2_FACTORY, label="uniswap v2", asynchronous=False)
 
-    # 1. SQLite cache attribute must exist (wired by ProcessedEvents base class)
-    assert hasattr(events, "_cache"), (
-        "PoolsFromEvents must have a _cache attribute for SQLite-backed event storage. "
-        "On warm restart, events are loaded from this cache without re-fetching from RPC."
+    # 1. At construction time, _cache is None (lazy-initialized).
+    #    hasattr(events, '_cache') is trivially True since it's in __slots__ —
+    #    the meaningful check is that the value starts as None.
+    assert events._cache is None, (
+        "PoolsFromEvents._cache must be None at construction time. "
+        "It is lazily initialized when events.cache property is first accessed. "
+        "This confirms the SQLite cache is not eagerly opened at startup."
     )
 
-    # 2. At construction time, _objects is empty — pools loaded lazily on first iteration
-    assert events._objects == [], (
+    # 2. Accessing events.cache property triggers lazy init and returns a LogCache
+    cache = events.cache
+    assert cache is not None, (
+        "events.cache must not be None after access — LogCache is created on first access. "
+        "This confirms SQLite-backed event storage is wired in for warm-restart support."
+    )
+    assert isinstance(cache, LogCache), (
+        f"events.cache must be a LogCache instance, got {type(cache)}. "
+        "The LogCache integrates with SQLite (via PonyORM) to persist event logs. "
+        "On warm restart, events are loaded from this cache without re-fetching from RPC."
+    )
+    assert events._cache is not None, (
+        "events._cache must be set after accessing events.cache property. "
+        "The lazy-init pattern ensures the LogCache is created exactly once."
+    )
+
+    # 3. At construction time, _objects is empty — pools loaded lazily on first iteration
+    events2 = PoolsFromEvents(UNISWAP_V2_FACTORY, label="uniswap v2 b", asynchronous=False)
+    assert events2._objects == [], (
         "PoolsFromEvents._objects should be empty at construction time. "
         "Pools are loaded from SQLite cache lazily when iteration begins, "
         "not eagerly on construction."
     )
 
-    # 3. is_reusable=True enables checkpoint write-back so the load position is
+    # 4. is_reusable=True enables checkpoint write-back so the load position is
     #    persisted across restarts (warm restart can resume from cached_thru + 1)
-    assert events.is_reusable is True, (
+    assert events2.is_reusable is True, (
         "PoolsFromEvents.is_reusable must be True so the SQLite cache checkpoint "
         "is updated as pools are loaded. On warm restart, polling resumes from "
         "cached_thru + 1 rather than re-fetching all historical events."
     )
 
     print(
-        "Warm restart structural checks passed: _cache exists, _objects empty, is_reusable=True"
+        "Warm restart structural checks passed: "
+        "_cache=None at construction, cache=LogCache after access, "
+        "_objects empty, is_reusable=True"
     )
 
 

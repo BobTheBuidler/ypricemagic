@@ -25,10 +25,21 @@ WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 
-# MIC (Mithril Cash) - has a USDT pool but NOT a direct USDC/WETH pool
-# The old get_pools_via_factory_getpair() would only check well-known pairs,
-# so MIC/USDT would be missed. The inverted index finds ALL pools.
+# MIC (Mithril Cash) - only has a USDT pool on V2. Both the old getPair fast-path
+# (which queries STABLECOINS including USDT) and the index find this pool.
+# Used here as a general index correctness test.
 MIC_ADDRESS = "0x368B3a58B5f49392e5C9E4C998cb0bB966752E51"
+
+# xSUSHI (staked SUSHI) on SushiSwap — 0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272
+# xSUSHI/SUSHI is a classic "obscure pair" — xSUSHI pools directly with SUSHI
+# (0x6B3595068778DD592e39A122f4f5a5cF09C90fE2), which is NOT in STABLECOINS,
+# WRAPPED_GAS_COIN, or ROUTING_TOKENS (mainnet ROUTING_TOKENS = WETH, USDC, USDT, DAI).
+# The old get_pools_via_factory_getpair() would query getPair(xSUSHI, USDC),
+# getPair(xSUSHI, USDT), getPair(xSUSHI, DAI), getPair(xSUSHI, WETH) and get
+# zero pools, missing the xSUSHI/SUSHI pool entirely. The inverted index builds
+# from ALL PairCreated events so it finds xSUSHI/SUSHI directly.
+XSUSHI_ADDRESS = "0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272"
+SUSHI_ADDRESS = "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"
 
 # A non-existent token address that should return empty results
 NO_POOLS_ADDRESS = "0x0000000000000000000000000000000000000001"
@@ -174,11 +185,15 @@ async def test_address_normalization_checksummed_vs_lowercase(
 @async_test
 @mainnet_only
 async def test_index_finds_mic_usdt_pool(uniswap_v2_router: UniswapRouterV2) -> None:
-    """VAL-V2IDX-002: Index finds MIC/USDT pool (obscure token not in routing set).
+    """VAL-V2IDX-002 (general index correctness): Index finds MIC/USDT pool.
 
-    The old get_pools_via_factory_getpair() only checked well-known pairs
-    (USDC, WETH, routing tokens) so it would have missed MIC/USDT.
-    The inverted index is built from ALL pools, so it finds MIC/USDT directly.
+    MIC (Mithril Cash) only has a USDT pool on Uniswap V2.  The inverted index
+    is built from ALL PairCreated events and finds this pool directly.
+
+    Note: USDT IS in STABLECOINS, so the old get_pools_via_factory_getpair()
+    would also find this via getPair(MIC, USDT).  See
+    test_index_finds_obscure_token_with_non_routing_pair() for a test that
+    specifically exercises the "missed by getPair fast-path" scenario.
     """
     pools = await uniswap_v2_router.all_pools_for(MIC_ADDRESS, sync=False)
 
@@ -197,6 +212,51 @@ async def test_index_finds_mic_usdt_pool(uniswap_v2_router: UniswapRouterV2) -> 
     print(
         f"Found {len(pools)} pool(s) for MIC via inverted index — "
         f"paired tokens: {paired_tokens_lower}"
+    )
+
+
+@pytest.mark.slow
+@async_test
+@mainnet_only
+async def test_index_finds_obscure_token_with_non_routing_pair(
+    uniswap_v2_router: UniswapRouterV2,
+) -> None:
+    """VAL-V2IDX-002: Index finds obscure token whose only partner is NOT in STABLECOINS/WETH/ROUTING_TOKENS.
+
+    xSUSHI (0x8798249c...) pools directly with SUSHI (0x6B3595...) on Uniswap V2.
+    SUSHI is NOT in STABLECOINS, WRAPPED_GAS_COIN, or ROUTING_TOKENS on Mainnet
+    (ROUTING_TOKENS = [WETH, USDC, USDT, DAI]).
+
+    The old get_pools_via_factory_getpair() only queried:
+        getPair(xSUSHI, USDC), getPair(xSUSHI, USDT), getPair(xSUSHI, DAI),
+        getPair(xSUSHI, WETH)
+    and would return ZERO pools — completely missing the xSUSHI/SUSHI pool.
+
+    The inverted index is built from ALL PairCreated events, so it finds the
+    xSUSHI/SUSHI pool correctly without needing to know the pair partner in advance.
+    """
+    pools = await uniswap_v2_router.all_pools_for(XSUSHI_ADDRESS, sync=False)
+
+    assert len(pools) > 0, (
+        f"Expected to find pool(s) for xSUSHI ({XSUSHI_ADDRESS}) in the index. "
+        "The xSUSHI/SUSHI pool should be indexed even though SUSHI is not in "
+        "STABLECOINS, WRAPPED_GAS_COIN, or ROUTING_TOKENS."
+    )
+
+    paired_tokens_lower = {str(v).lower() for v in pools.values()}
+    assert SUSHI_ADDRESS.lower() in paired_tokens_lower, (
+        f"Expected xSUSHI to be paired with SUSHI ({SUSHI_ADDRESS}) in the index. "
+        "This is the 'obscure pair not in routing set' that the old getPair fast-path "
+        "would have completely missed. "
+        f"Found paired tokens: {paired_tokens_lower}"
+    )
+
+    print(
+        f"Found {len(pools)} pool(s) for xSUSHI via inverted index — "
+        f"paired tokens: {paired_tokens_lower}"
+    )
+    print(
+        "VAL-V2IDX-002 confirmed: xSUSHI/SUSHI pool found by index (missed by old getPair fast-path)"
     )
 
 
