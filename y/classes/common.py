@@ -249,7 +249,11 @@ class ERC20(ContractBase):
 
         if symbol := await db.get_symbol(self.address):
             return symbol
-        symbol = await self._symbol()
+        try:
+            symbol = await self._symbol()
+        except NonStandardERC20:
+            logger.warning("Unable to fetch symbol for %s, using address as fallback", self.address)
+            return self.address
         db.set_symbol(self.address, symbol)
         return symbol
 
@@ -274,7 +278,11 @@ class ERC20(ContractBase):
         name = await db.get_name(self.address)
         if name:
             return name
-        name = await self._name()
+        try:
+            name = await self._name()
+        except NonStandardERC20:
+            logger.warning("Unable to fetch name for %s, using address as fallback", self.address)
+            return self.address
         db.set_name(self.address, name)
         return name
 
