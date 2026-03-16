@@ -1,6 +1,6 @@
 ---
 name: python-lib-worker
-description: Implements features in the ypricemagic Python library with TDD and code changes
+description: Implements features in the ypricemagic Python library with TDD and smoke test verification
 ---
 
 # Python Library Worker
@@ -9,124 +9,65 @@ NOTE: Startup and cleanup are handled by `worker-base`. This skill defines the W
 
 ## When to Use This Skill
 
-Use for features that modify the ypricemagic library: pricing logic, bucket classification, routing, token type detection, and associated tests.
-
-## Important Context
-
-- **Worktree:** All work happens in `/Users/bryan/code/ypricemagic-pricing` (NOT `/Users/bryan/code/ypricemagic`)
-- **Venv:** Shared at `/Users/bryan/code/ypricemagic/.venv` — use absolute path
-- **Tests don't run on macOS:** Write tests for CI but don't expect them to pass locally. Validation happens through ypricemagic-server Docker stack.
-- **Reference codebase:** `/Users/bryan/code/flashprofits/price_helpers.py` has token classification patterns to match
+Use for features that modify ypricemagic library code (y/ directory) — pool index construction, continuous discovery, pricing changes, and associated test files.
 
 ## Work Procedure
 
-### 1. Understand the Feature
+1. **Read the feature description** carefully. Read the referenced source files to understand the current implementation before making changes.
 
-- Read feature description, preconditions, expectedBehavior, verificationSteps
-- Read specific source files that will be modified
-- Read `.factory/library/architecture.md` for price resolution flow
-- Read `.factory/library/environment.md` for environment notes
+2. **Read .factory/library/architecture.md** for the pool loading pipeline architecture. Read .factory/library/environment.md for environment setup details (especially the macOS SemLock workaround).
 
-### 2. Write Tests First (Red Phase)
+3. **Write tests first** (TDD). Create test files following existing patterns:
+   - Use `@async_test` (or `@pytest.mark.asyncio_cooperative`) decorator
+   - Use `@mainnet_only` for chain-specific tests
+   - Use hardcoded block numbers for determinism
+   - Place in `tests/prices/dex/` alongside existing test files
+   - **Do NOT run tests locally** — they don't work on Mac. Just write them.
 
-- Create or modify test files in `tests/` matching existing patterns
-- Tests use pytest with `pytest-asyncio-cooperative`
-- Follow existing conventions: `@pytest.mark.asyncio_cooperative` decorator
-- Write tests that exercise the expected behavior
-- Tests may not run locally (macOS) — that's expected. Write them correctly for Linux/Docker.
-- If you CAN run a specific test file locally, do so to verify it fails:
-  ```bash
-  cd /Users/bryan/code/ypricemagic-pricing && \
-    ETHERSCAN_TOKEN=$(grep ETHERSCAN_TOKEN .env 2>/dev/null | cut -d= -f2) \
-    BROWNIE_NETWORK=mainnet \
-    TYPEDENVS_SHUTUP=1 \
-    /Users/bryan/code/ypricemagic/.venv/bin/python -c "
-  import concurrent.futures.process as cfp
-  _orig = cfp._SafeQueue.__init__
-  cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw)
-  import sys; sys.exit(__import__('pytest').main([
-    'tests/path/to/test_file.py', '-x', '-p', 'no:pytest_ethereum', '-v',
-    '--asyncio-task-timeout', '300'
-  ]))
-  "
-  ```
+4. **Implement the feature.** Follow existing code patterns in v2.py / v3.py:
+   - Use `@stuck_coro_debugger` on all new async methods
+   - Use `a_sync` decorators consistently
+   - Use brownie's Address types for address normalization
+   - Add `await sleep(0)` every 10k iterations in loops over large collections (yield to event loop)
 
-### 3. Implement the Feature (Green Phase)
+5. **Write smoke test scripts** when the feature description mentions them. Scripts go in `scripts/` and must:
+   - Start with the macOS SemLock monkey-patch (BEFORE any other imports)
+   - Use `BROWNIE_NETWORK=mainnet` and `/Users/bryan/code/ypricemagic-server/.venv/bin/python`
+   - Call `get_price()` for the tokens specified in the feature description
+   - Print prices and wall-clock timing
+   - Handle exceptions gracefully (print traceback, don't crash)
 
-- Make minimal changes to make tests pass
-- Follow existing code patterns:
-  - `a_sync` decorators for async functions
-  - `igather` for parallel RPC calls
-  - `ChecksumAddress` / `Address` types from `y.datatypes`
-  - Preserve `stuck_coro_debugger` on long-running functions
-  - `from y.constants import ...` for chain-specific constants
-- Keep changes focused — don't refactor unrelated code
+6. **Verify your work:**
+   - Read through your changes to confirm correctness
+   - Grep for removed methods to confirm they're gone
+   - Check that no stale imports or references remain
+   - Verify the smoke test script has correct structure (if applicable)
 
-### 4. Type Check and Format
-
-- Run mypy: `/Users/bryan/code/ypricemagic/.venv/bin/python -m mypy y/`
-- Run black: `/Users/bryan/code/ypricemagic/.venv/bin/python -m black .`
-
-### 5. Manual Verification (if possible)
-
-For pricing changes, try a quick Python script to verify (may work on macOS even if full test suite doesn't):
-```bash
-cd /Users/bryan/code/ypricemagic-pricing && \
-  ETHERSCAN_TOKEN=$(grep ETHERSCAN_TOKEN .env 2>/dev/null | cut -d= -f2) \
-  BROWNIE_NETWORK=mainnet \
-  TYPEDENVS_SHUTUP=1 \
-  /Users/bryan/code/ypricemagic/.venv/bin/python -c "
-import concurrent.futures.process as cfp
-_orig = cfp._SafeQueue.__init__
-cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw)
-import brownie; brownie.network.connect('mainnet')
-from y import get_price
-result = get_price('0x...token_address...', block=18000000)
-print(f'Price: {result}, Type: {type(result).__name__}')
-"
-```
-If this works, great — record the output. If it fails with macOS-specific errors, note it and move on.
-
-### 6. Create PR (if feature description says to)
-
-- Push changes to the appropriate branch
-- Create PR: `gh pr create --base master --title "..." --body "..."`
-- Include Summary, Rationale, and Details sections in PR body
-- Follow Conventional Commits prefix for PR title
-
-### 7. Finding Test Tokens
-
-When needing tokens that demonstrate specific behaviors:
-- Search `/Users/bryan/code/flashprofits/price_helpers.py` for hardcoded addresses of that token type
-- Use specific historical blocks where conditions are known
-- Document token addresses and rationale in test comments
+7. **Commit** with a descriptive conventional commit message.
 
 ## Example Handoff
 
 ```json
 {
-  "salientSummary": "Restricted 'stable usd' bucket to USDC only, removed V2 short-circuit for non-USDC stablecoins, and extended V2 paths ending at non-USDC stablecoins with a USDC hop (serial with amount via getAmountsOut, parallel without amount via asyncio.gather). Updated test_stablecoins and test_check_bucket_stablecoins. Added test_mic_resolves_via_usdt. mypy clean, black formatted. Created PR #1.",
-  "whatWasImplemented": "Modified buckets.py to restrict 'stable usd' to USDC only. Modified v2.py to restrict return-1 shortcircuit to USDC and extend paths ending at non-USDC stablecoins with USDC hop. Updated tests in test_constants.py and test_buckets.py. Added MIC test.",
+  "salientSummary": "Built inverted index on UniswapRouterV2 as _pool_index cached property. Replaced all_pools_for() O(N) scan with dict lookup. Removed get_pools_via_factory_getpair() and ram_cache decorator. Wrote 8 test cases in test_pool_index.py covering correctness, address normalization, and edge cases.",
+  "whatWasImplemented": "Added _pool_index cached property that builds token->pools dict from __pools__ data. Replaced all_pools_for body with index lookup. Removed get_pools_via_factory_getpair method and the two-path logic in get_pools_for. Removed ram_cache_maxsize decorator from all_pools_for since the index provides O(1) lookups that don't need caching. WETH special case kept for now (returns only USDC pool on mainnet) with TODO comment.",
   "whatWasLeftUndone": "",
   "verification": {
     "commandsRun": [
-      {"command": "mypy y/", "exitCode": 0, "observation": "No type errors"},
-      {"command": "black --check .", "exitCode": 0, "observation": "All formatted"},
-      {"command": "gh pr create ...", "exitCode": 0, "observation": "PR #1 created"}
+      {"command": "rg 'get_pools_via_factory_getpair' y/", "exitCode": 1, "observation": "Method fully removed, no references remain"},
+      {"command": "rg '_pool_index' y/prices/dex/uniswap/v2.py", "exitCode": 0, "observation": "Found in cached_property definition and all_pools_for usage"}
     ],
-    "interactiveChecks": [
-      {"action": "Ran Python script to get USDC price", "observed": "UsdPrice(1.0) with source 'stable usd'"},
-      {"action": "Ran Python script to get USDT price", "observed": "UsdPrice(0.9998) with source 'uniswap v2'"}
-    ]
+    "interactiveChecks": []
   },
   "tests": {
     "added": [
       {
-        "file": "tests/test_stablecoin_pricing.py",
+        "file": "tests/prices/dex/test_pool_index.py",
         "cases": [
-          {"name": "test_usdc_is_one", "verifies": "USDC returns exactly $1"},
-          {"name": "test_usdt_real_price", "verifies": "USDT returns real market price"},
-          {"name": "test_mic_resolves_via_usdt", "verifies": "MIC resolves through USDT path"}
+          {"name": "test_index_matches_scan_for_weth", "verifies": "Index returns same pools as O(N) scan for WETH"},
+          {"name": "test_index_empty_for_unknown_token", "verifies": "Empty dict for token with no pools"},
+          {"name": "test_address_normalization", "verifies": "Checksummed and lowercased addresses return same result"},
+          {"name": "test_index_both_sides", "verifies": "Index has entries for both token0 and token1 of each pool"}
         ]
       }
     ]
@@ -137,9 +78,7 @@ When needing tokens that demonstrate specific behaviors:
 
 ## When to Return to Orchestrator
 
-- Cannot find suitable test tokens for the required pattern
-- Existing test failures appear caused by new changes (not pre-existing)
-- The change requires modifying core async infrastructure (a_sync, igather)
-- mypy errors requiring type system changes beyond feature scope
-- Archive node / brownie network unreachable
-- Feature requires changes to ypricemagic-server (wrong worker type)
+- The feature depends on a V2/V3 code change that hasn't been implemented yet
+- The pool loading mechanism behaves unexpectedly (e.g., PoolsFromEvents.is_reusable change breaks the loading pipeline)
+- Address normalization issues that require changes across multiple modules
+- The WETH special-case decision needs user input (keep vs remove hardcoded pools)
