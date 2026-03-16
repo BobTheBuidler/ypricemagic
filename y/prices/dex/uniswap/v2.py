@@ -57,6 +57,7 @@ from y.exceptions import (
 )
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
+from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (
     ROUTER_TO_FACTORY,
     ROUTER_TO_PROTOCOL,
@@ -124,9 +125,9 @@ class UniswapV2Pool(ERC20):
         if deploy_block:
             self._deploy_block = deploy_block
         if token0:
-            self.token0 = token0
+            self.token0 = ERC20(token0, asynchronous=asynchronous)
         if token1:
-            self.token1 = token1
+            self.token1 = ERC20(token1, asynchronous=asynchronous)
 
     @a_sync.aka.cached_property
     async def factory(self) -> Address:
@@ -635,11 +636,27 @@ class UniswapRouterV2(ContractBase):
         if quote is not None:
             out_scale = await ERC20._get_scale_for(path[-1])
             amount_out = Decimal(quote[-1]) / out_scale
-            price = UsdPrice(amount_out / fees / _amount)
-            # Build a PriceStep that exposes the actual terminal token (e.g. USDC address)
-            # rather than the generic "USD" string. This lets trade_path show the routing
-            # through intermediate stablecoins (e.g. MIC→USDT→USDC).
-            terminal_token = path[-1] if path[-1] != "USD" else "USD"
+            amount_out /= fees
+            amount_out /= _amount
+
+            terminal = path[-1]
+            # When the path ends at a non-stablecoin (e.g. WETH from deepest_pool
+            # fallback), amount_out is in that token's units, not USD.  Convert by
+            # multiplying by the terminal token's USD price.
+            if terminal not in STABLECOINS and (usdc is None or terminal != usdc.address):
+                terminal_price = await magic.get_price(
+                    terminal,
+                    block,
+                    fail_to_None=True,
+                    skip_cache=skip_cache,
+                    sync=False,
+                )
+                if not terminal_price:
+                    return None
+                amount_out *= Decimal(terminal_price)
+
+            price = UsdPrice(amount_out)
+            terminal_token = terminal if terminal != "USD" else "USD"
             step = PriceStep(
                 source=self.label,
                 input_token=token_in,
@@ -776,8 +793,16 @@ class UniswapRouterV2(ContractBase):
 
         # Build initial index from all pools loaded so far.
         for pool in pools_obj._objects[:initial_count]:
-            # token0 and token1 are already cached — no RPC calls here
-            token0, token1 = await pool.__tokens__
+            try:
+                token0, token1 = await pool.__tokens__
+            except Exception as e:
+                logger.debug(
+                    "Skipping pool %s in initial index build due to %s: %s",
+                    pool,
+                    type(e).__name__,
+                    e,
+                )
+                continue
             t0_addr: str = token0.address
             t1_addr: str = token1.address
             if t0_addr not in index:
