@@ -188,13 +188,10 @@ def test_get_pools_via_factory_getpair_removed() -> None:
 
 
 def test_v2_pool_index_descriptor_exists() -> None:
-    """VAL-V2IDX-001 (structural): _pool_index and __pool_index__ descriptors present."""
+    """VAL-V2IDX-001 (structural): _pool_index descriptor present."""
     assert hasattr(
         UniswapRouterV2, "_pool_index"
     ), "_pool_index cached-property must exist on UniswapRouterV2"
-    assert hasattr(
-        UniswapRouterV2, "__pool_index__"
-    ), "__pool_index__ HiddenMethodDescriptor must exist on UniswapRouterV2"
 
 
 def test_v2_weth_special_case_decision_documented() -> None:

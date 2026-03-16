@@ -103,8 +103,8 @@ async def test_mic_resolves_via_usdt():
     assert price > 0, f"MIC price should be positive, got {price}"
 
     # Check that the trade path goes through USDT (if PriceResult is available)
-    if isinstance(result, PriceResult) and result.steps:
-        path_addresses = [step.address for step in result.steps if hasattr(step, "address")]
+    if isinstance(result, PriceResult) and result.path:
+        path_addresses = [step.address for step in result.path if hasattr(step, "address")]
         assert any(addr == USDT_ADDRESS for addr in path_addresses) or any(
-            USDT_ADDRESS in str(step) for step in result.steps
+            USDT_ADDRESS in str(step) for step in result.path
         ), f"MIC price resolution should pass through USDT at block {MIC_TEST_BLOCK}"

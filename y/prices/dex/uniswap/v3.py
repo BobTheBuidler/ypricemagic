@@ -524,7 +524,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
         paths: list[Path] = [(token, fee, usdc.address) for fee in self.fee_tiers]
 
         # Multi-hop paths through all routing tokens as intermediaries
-        routing_tokens = ROUTING_TOKENS.get(CHAINID, [])
+        routing_tokens = ROUTING_TOKENS.get(CHAINID, [weth.address] if weth else [])
         token_str = str(token).lower()
         for routing_token in routing_tokens:
             # Skip self-loop paths where token == routing_token

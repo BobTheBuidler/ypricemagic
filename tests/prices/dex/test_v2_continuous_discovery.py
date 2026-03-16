@@ -179,7 +179,7 @@ async def test_new_pool_added_to_index_incrementally(
 
     # 1. Load the pools and build the initial index.
     pools_obj = await uniswap_v2_router.__pools__
-    index = await uniswap_v2_router.__pool_index__
+    index = await uniswap_v2_router._pool_index
 
     initial_pool_count = len(pools_obj._objects)
 
@@ -266,9 +266,6 @@ def test_all_v2_forks_have_reusable_events_structural() -> None:
         "UniswapRouterV2 must have _pool_index cached-property so every "
         "router/fork instance builds an inverted index."
     )
-    assert hasattr(
-        UniswapRouterV2, "__pool_index__"
-    ), "UniswapRouterV2 must have __pool_index__ HiddenMethodDescriptor."
 
     print(
         f"All {len(UNISWAPS)} V2 fork(s) verified: "

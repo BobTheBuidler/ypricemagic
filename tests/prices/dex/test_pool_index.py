@@ -71,14 +71,12 @@ def test_pool_index_property_exists() -> None:
     Verifies that the inverted index property is present on the class
     (even if not yet awaited).
     """
-    # _pool_index is an a_sync.aka.cached_property; __pool_index__ is the
-    # HiddenMethodDescriptor for it
+    # _pool_index is an a_sync.aka.cached_property (ASyncCachedPropertyDescriptor).
+    # The ASyncMeta metaclass does not create __dunder__ descriptors for private
+    # (underscore-prefixed) properties, so access via `await self._pool_index`.
     assert hasattr(
         UniswapRouterV2, "_pool_index"
     ), "_pool_index property must exist on UniswapRouterV2"
-    assert hasattr(
-        UniswapRouterV2, "__pool_index__"
-    ), "__pool_index__ HiddenMethodDescriptor must exist on UniswapRouterV2"
 
 
 def test_all_pools_for_no_ram_cache() -> None:
@@ -109,7 +107,7 @@ async def test_pool_index_returns_dict(uniswap_v2_router: UniswapRouterV2) -> No
     After pools are loaded (which may take a while on first run), the index
     should be a non-empty dict with checksummed address string keys.
     """
-    index = await uniswap_v2_router.__pool_index__
+    index = await uniswap_v2_router._pool_index
     assert isinstance(index, dict), f"Expected dict, got {type(index)}"
     assert len(index) > 0, "Index should be non-empty after pools load"
 

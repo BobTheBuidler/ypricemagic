@@ -201,12 +201,12 @@ async def test_index_lookup_is_fast_after_warmup(v2_router: UniswapRouterV2) -> 
     and must complete in under 10 ms (once the index is built).
 
     This test:
-      1. Warms up the index by awaiting __pool_index__.
+      1. Warms up the index by awaiting _pool_index.
       2. Times individual all_pools_for() calls for several tokens.
       3. Asserts each lookup completes in < 10 ms.
     """
     # Step 1: Build (or fetch) the index.  This may take seconds on first run.
-    _index = await v2_router.__pool_index__
+    _index = await v2_router._pool_index
     assert _index, "Index must be non-empty after warm-up"
 
     # Step 2: Time individual lookups.

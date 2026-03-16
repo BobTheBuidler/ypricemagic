@@ -835,10 +835,6 @@ class UniswapRouterV2(ContractBase):
 
         return index
 
-    __pool_index__: HiddenMethodDescriptor[
-        Self, dict[str, dict["UniswapV2Pool", Address]]
-    ]
-
     @stuck_coro_debugger
     async def all_pools_for(self, token_in: Address) -> dict["UniswapV2Pool", Address]:
         """Return all pools containing ``token_in`` as a dict of pool → paired token.
@@ -855,7 +851,7 @@ class UniswapRouterV2(ContractBase):
         """
         # Normalise to checksummed address string so the key matches the index
         key = str(await convert.to_address_async(token_in))
-        index = await self.__pool_index__
+        index = await self._pool_index
         return dict(index.get(key, {}))
 
     @stuck_coro_debugger
