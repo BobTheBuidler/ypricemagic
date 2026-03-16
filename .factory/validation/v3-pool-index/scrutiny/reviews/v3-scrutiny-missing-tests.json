@@ -1,0 +1,39 @@
+{
+  "featureId": "v3-scrutiny-missing-tests",
+  "reviewedAt": "2026-03-16T10:00:00.000Z",
+  "commitId": "cc770451",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "All 4 blocking issues from the prior cross-area-regression-tests review are addressed. Each of the 4 new/fixed tests (VAL-V2IDX-002, VAL-V2IDX-009, VAL-V2CD-003, VAL-V2CD-004) is meaningful, non-trivially-passing, and well-documented. The VAL-V2CD-002 issue is correctly handled by confirming the pre-existing test already covers it (no new test needed). The worker correctly identified and fixed a real bug in test_all_v2_forks_get_continuous_discovery (UNISWAPS.get(chain.id, {}) was always empty). One minor concern: the VAL-V2IDX-009 structural test primarily validates pool address formatting and method existence rather than inspecting the actual conditional logic in pools_for_token() — but the companion integration test (test_v2_weth_special_case_returns_only_hardcoded_pools) fills that gap adequately.",
+    "issues": [
+      {
+        "file": "tests/prices/dex/test_cross_area_pricing.py",
+        "line": 197,
+        "severity": "non_blocking",
+        "description": "test_v2_weth_special_case_decision_documented() (VAL-V2IDX-009 structural) asserts that the three hardcoded pool addresses are valid 42-char hex strings and that UniswapRouterV2.pools_for_token exists — but does NOT inspect the source code or class attributes to confirm the WETH branch is actually present in pools_for_token(). The decision comment and integration test (test_v2_weth_special_case_returns_only_hardcoded_pools) are more meaningful. The structural test is essentially documentation-as-code, which is fine, but if the WETH branch were ever removed, this structural test would still pass. The integration test would catch the regression, however, so this is non-blocking."
+      },
+      {
+        "file": "tests/prices/dex/test_v2_continuous_discovery.py",
+        "line": 296,
+        "severity": "non_blocking",
+        "description": "test_all_v2_forks_get_continuous_discovery() (VAL-V2CD-004 integration) was fixed by switching from UNISWAPS.get(chain.id, {}) to next(iter(UNISWAPS)). This is correct since UNISWAPS is already chain-filtered. However, the test is now limited to checking only the FIRST fork — the docstring says 'Tests only the first fork to avoid a very slow test run' which is acceptable for an integration test, but the structural companion (test_all_v2_forks_have_reusable_events_structural) does cover ALL forks for the is_reusable and _pool_index checks. Together they provide adequate coverage."
+      }
+    ]
+  },
+  "addressesFailureFrom": "/Users/bryan/code/ypricemagic-pool-index/.factory/validation/v3-pool-index/scrutiny/reviews/cross-area-regression-tests.json",
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The python-lib-worker skill note that 'Tests don't run on macOS' is repeated, but the worker also noted that py_compile and source inspection can verify structural test logic locally. This suggestion from the handoff skillFeedback has not been incorporated into the skill yet.",
+      "evidence": "Handoff skillFeedback.suggestedChanges: 'The skill note Tests don't run on macOS is helpful, but could also mention that py_compile and source code inspection (using Python without brownie connection) can be used to verify structural test logic locally.'"
+    },
+    {
+      "area": "conventions",
+      "observation": "The feature description listed VAL-V2CD-002 as requiring a new test, but the worker correctly determined the pre-existing test already covered it and left it unchanged. This is the correct decision, but the feature description was slightly misleading. Future feature descriptions for scrutiny-fix features should distinguish between 'confirm coverage exists' vs 'write new test'.",
+      "evidence": "Handoff whatWasImplemented: 'VAL-V2CD-002: The test_new_pool_added_to_index_incrementally() already existed and was correct; no changes needed.'"
+    }
+  ],
+  "summary": "PASS. All 4 blocking issues from the prior cross-area-regression-tests review are adequately addressed. VAL-V2IDX-002 now has test_index_finds_obscure_token_with_non_routing_pair() in test_pool_index.py using xSUSHI/SUSHI as a concrete real-world example. VAL-V2IDX-009 has both a structural test (documents the deliberate KEEP decision with pool addresses) and an integration test (verifies only 1 pool returned for WETH on mainnet). VAL-V2CD-003 is fixed: the trivially-passing hasattr check is replaced with a meaningful _cache=None at construction → LogCache after access assertion in both test files. VAL-V2CD-004 is fixed: the broken UNISWAPS.get(chain.id, {}) bug is corrected, and a new structural test verifies all forks have is_reusable=True and the _pool_index descriptor. VAL-V2CD-002 was correctly determined to already have coverage and required no changes. Two minor non-blocking observations: the VAL-V2IDX-009 structural test is mostly documentation-as-code and would not catch removal of the WETH branch (the integration test would), and the VAL-V2CD-004 integration test only checks the first fork (the structural test covers all)."
+}
