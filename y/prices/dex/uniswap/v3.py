@@ -18,6 +18,8 @@ from eth_typing import BlockNumber, HexAddress
 from faster_eth_abi.packed import encode_packed
 from typing_extensions import Self
 
+from evmspec import Log
+
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import stuck_coro_debugger
@@ -445,14 +447,17 @@ class UniswapV3(a_sync.ASyncGenericBase):
 
     async def pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
         """
-        Get the pools for a specific token.
+        Get the pools for a specific token using the inverted index.
+
+        Uses an O(1) index lookup instead of iterating over all pools. The index
+        is built incrementally as pools are discovered via continuous polling.
 
         Args:
             token: The address of the token.
             block: The block number to get pools at.
 
         Yields:
-            Uniswap V3 pools for the token.
+            Uniswap V3 pools for the token that were deployed on or before ``block``.
 
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
@@ -460,49 +465,19 @@ class UniswapV3(a_sync.ASyncGenericBase):
             ...     print(pool)
         """
         pools = await self.__pools__
+        # Ensure all pools up to `block` have been loaded and indexed
+        async for _ in pools.objects(to_block=block):
+            pass
 
-        # we use a cache here to prevent unnecessary calls to __contains__
-        # stringify token in case type is Contract or EthAddress
-        if cache := pools._pools_by_token_cache[str(token)]:
-            for deploy_block, cached_pools in cache.items():
-                if deploy_block > block:
-                    return
-                for pool in cached_pools:
-                    yield pool
-
-            if deploy_block == block:
-                # we got all for `block` and dont need to bother checking
-                return
-            async for pool in pools.objects(to_block=block, from_block=deploy_block + 1):
-                if token in pool:
-                    cache[pool._deploy_block].append(pool)
-                    yield pool
-        else:
-            async for pool in pools.objects(to_block=block):
-                if token in pool:
-                    cache[pool._deploy_block].append(pool)
-                    yield pool
-
-        try:
-            most_recent_deploy_block = pool._deploy_block
-        except NameError:
+        # O(1) index lookup: token_address -> {pool: other_token}
+        token_key = str(token).lower()
+        pool_dict = pools._pool_index.get(token_key)
+        if not pool_dict:
             return
 
-        if cache:
-            cached_thru_block, pools = cache.popitem()
-            if most_recent_deploy_block > cached_thru_block:
-                # Signal to the cache that has loaded all pools for `token`
-                # thru the deploy block of the most recent pool deployed
-                cache[most_recent_deploy_block]
-                # If the item wasn't a placeholder, put it back
-                if pools:
-                    cache[cached_thru_block] = pools
-            else:
-                cache[cached_thru_block] = pools
-        else:
-            # Signal to the cache that has loaded all pools for `token`
-            # thru the deploy block of the most recent pool deployed
-            cache[most_recent_deploy_block]
+        for pool in pool_dict:
+            if pool._deploy_block <= block:
+                yield pool
 
     @stuck_coro_debugger
     @a_sync.a_sync(
@@ -817,49 +792,18 @@ def _undo_fees(path: Path) -> Decimal:
     return math.prod(fees)
 
 
-class _BoundedPoolsByTokenCache:
-    """A bounded cache for token -> pools mappings with LRU eviction.
+class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
+    """Represents a collection of Uniswap V3 Pools.
 
-    This wraps a cachebox.LRUCache to provide defaultdict-like behavior while
-    maintaining a bounded size. When the cache is full, LRU entries are evicted.
+    Maintains an inverted index mapping each token address to the set of pools
+    that contain that token. This enables O(1) pool lookups by token instead of
+    the previous O(N) iteration over all pools.
 
-    The structure maps: token_address -> {block_number: [pool1, pool2, ...]}
+    The index is built incrementally: every time new pools are discovered via
+    continuous event polling (``_extend``), they are immediately added to the index.
     """
 
-    __slots__ = ("_cache",)
-
-    def __init__(self, maxsize: int) -> None:
-        self._cache: cachebox.LRUCache[Address, DefaultDict[Block, list[UniswapV3Pool]]] = (
-            cachebox.LRUCache(maxsize)
-        )
-
-    def __getitem__(self, token: Address) -> DefaultDict[Block, list[UniswapV3Pool]]:
-        """Get the pools dict for a token, creating an empty defaultdict if missing."""
-        try:
-            return self._cache[token]  # type: ignore [no-any-return]
-        except KeyError:
-            # Create new inner defaultdict and cache it
-            inner: DefaultDict[Block, list[UniswapV3Pool]] = defaultdict(list)
-            self._cache[token] = inner
-            return inner
-
-    def __contains__(self, token: Address) -> bool:
-        return token in self._cache
-
-    def __len__(self) -> int:
-        return len(self._cache)
-
-    def get(self, token: Address) -> DefaultDict[Block, list[UniswapV3Pool]] | None:
-        """Get the pools dict for a token without creating if missing."""
-        return self._cache.get(token)  # type: ignore [no-any-return]
-
-
-class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
-    """Represents a collection of Uniswap V3 Pools."""
-
-    _pools_by_token_cache: _BoundedPoolsByTokenCache
-
-    __slots__ = "asynchronous", "_pools_by_token_cache"
+    __slots__ = "asynchronous", "_pool_index"
 
     def __init__(self, factory: Contract, asynchronous: bool = False):
         """
@@ -878,8 +822,39 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         """
         self.asynchronous = asynchronous
         super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]])
-        # Use bounded cache with DEFAULT_CACHE_MAXSIZE to prevent unbounded memory growth
-        self._pools_by_token_cache = _BoundedPoolsByTokenCache(int(ENVS.DEFAULT_CACHE_MAXSIZE))
+        # Inverted index: token_address (lowercase) -> {pool: other_token_address (lowercase)}
+        # This replaces the old _BoundedPoolsByTokenCache with an unbounded O(1) structure.
+        self._pool_index: dict[str, dict[UniswapV3Pool, str]] = defaultdict(dict)
+
+    def _add_pool_to_index(self, pool: UniswapV3Pool) -> None:
+        """Add a single pool to the inverted index under both its tokens.
+
+        Called both during initial bulk load and when new pools arrive via polling.
+
+        Args:
+            pool: The pool to add to the index.
+        """
+        t0 = str(pool.token0.address).lower()
+        t1 = str(pool.token1.address).lower()
+        self._pool_index[t0][pool] = t1
+        self._pool_index[t1][pool] = t0
+
+    async def _extend(self, logs: list[Log]) -> None:
+        """Process new logs and extend the pool list, then update the inverted index.
+
+        Overrides :meth:`ProcessedEvents._extend` to add newly discovered pools
+        to ``_pool_index`` incrementally, so continuous polling wires new pools
+        into the index without any full re-scan.
+
+        Args:
+            logs: A list of raw event logs.
+        """
+        # Record how many pools we had before processing this batch
+        before = len(self._objects)
+        await super()._extend(logs)
+        # Index any pools that were just added
+        for pool in self._objects[before:]:
+            self._add_pool_to_index(pool)
 
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         """
