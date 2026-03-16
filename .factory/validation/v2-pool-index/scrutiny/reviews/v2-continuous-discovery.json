@@ -1,0 +1,57 @@
+{
+  "featureId": "v2-continuous-discovery",
+  "reviewedAt": "2026-03-16T08:00:00.000Z",
+  "commitId": "0b6439c27e943c64972bdd3a8717b4a0ec1b06bb",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The three core structural changes are correct: is_reusable=True is set, the events task is not cancelled, and a background loop incrementally adds new pools to the index. However, there are two substantive bugs: (1) the incremental index update integration test will always time out because the background task sleeps 30s before its first check but the test only waits 5s, and (2) fallback pools fetched via allPairs.map() when the node can't look back far enough are inserted into local 'initial_pools' but never added to pools_obj._objects, meaning they are silently absent from the initial index build.",
+    "issues": [
+      {
+        "file": "tests/prices/dex/test_v2_continuous_discovery.py",
+        "line": 213,
+        "severity": "blocking",
+        "description": "test_new_pool_added_to_index_incrementally will always fail. The test comment says 'but we patch the sleep to speed up the test' but no patching ever happens. The background task in _update_index_from_new_pools() sleeps for 30 seconds (asyncio.sleep(30)) before processing new pools. The test polls for 5 seconds (50 iterations × asyncio.sleep(0.1)). Since the background task won't fire within 5 seconds, the assertion on lines 229-233 will always fail. The fix is either to mock asyncio.sleep in the background task, reduce the sleep to something small for tests, or restructure the test to signal the background task directly."
+      },
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 685,
+        "severity": "blocking",
+        "description": "Fallback pools from the 'node can't look back far enough' branch are inserted into the local 'initial_pools' list but never added to pools_obj._objects. The initial index build on line 730 iterates pools_obj._objects[:initial_count], not initial_pools. Consequently, pools fetched via factory_contract.allPairs.map() are: (1) included in the 'Loaded N pools' log message (because len(initial_pools) is used), but (2) completely absent from the inverted index built in _pool_index. On any chain where this fallback triggers (the node can't fetch logs back to genesis), a portion of V2 pools will be invisible to the index. The fix is to also append fallback pools to pools_obj._objects (or build the index from initial_pools instead)."
+      },
+      {
+        "file": "tests/prices/dex/test_v2_continuous_discovery.py",
+        "line": 1,
+        "severity": "non_blocking",
+        "description": "VAL-V2CD-003 (warm restart loads pools from SQLite cache) has no direct test. The feature description and expectedBehavior both list this as a required behavior. The test file has a docstring mentioning 'Warm restart behavior: pools load from SQLite cache, then polling resumes' but no test case exercises it. This is noted in the handoff's 'discoveredIssues' only as a performance note, not as a coverage gap."
+      },
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 701,
+        "severity": "non_blocking",
+        "description": "_pool_index return type annotation says dict[str, dict['UniswapV2Pool', Address]] but the stored values are ERC20 objects (token0/token1 instances), not raw Address strings. The same mismatch exists in all_pools_for's return annotation. This is a pre-existing type annotation issue from the inverted-index feature, not newly introduced here, but worth flagging since this feature touches those same lines."
+      },
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 784,
+        "severity": "non_blocking",
+        "description": "The background _update_index_from_new_pools task is started via asyncio.ensure_future() and its reference is not stored. task._log_destroy_pending = False suppresses the 'Task was destroyed but it is pending!' warning, but if the _pool_index cached property is garbage-collected (which it won't be given it's a cached_property on a long-lived object), the task would be silently cancelled. More importantly, there is no way to cancel or await this task on shutdown, which could cause noisy asyncio task cancellation errors. This mirrors the pattern used in v3.py though, so it may be acceptable."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The skill instructs workers to 'Do NOT run tests locally — they don't work on Mac.' However, the handoff shows the worker ran pytest locally and got 3 structural tests passing. The 4th test (test_uniswap_router_v2_has_pools_attr) reportedly failed due to __pool_index__ annotation not being a runtime attribute, and the worker fixed it with a re-run. This suggests local structural tests do work on Mac (they don't need RPC), and the skill's blanket prohibition causes confusion. The skill could distinguish: 'Structural (no-RPC) tests can be run locally; integration tests cannot.'",
+      "evidence": "Handoff verification section: 'pytest tests/prices/dex/test_v2_continuous_discovery.py -k not slow -p no:pytest_ethereum — exitCode 0, 3 structural tests PASSED'. Worker also noted in skillFeedback: 'conftest.py network connection issue which causes test collection to hang after the first collection attempt.'"
+    },
+    {
+      "area": "conventions",
+      "observation": "The incremental index polling loop uses asyncio.sleep(30) to check for new pools. This 30-second polling interval is not documented anywhere in AGENTS.md, library/architecture.md, or the skill. The discovered issue in the handoff mentions a 60s polling interval inconsistency ('current approach is sufficient for the 60s polling interval') but the code uses 30s. This convention is undocumented and inconsistent with the handoff's own note.",
+      "evidence": "y/prices/dex/uniswap/v2.py line 754: `await asyncio.sleep(30)`. Handoff discoveredIssues: 'Current approach is sufficient for the 60s polling interval' — mismatch."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "The implementation correctly converts V2 pool loading to continuous discovery — is_reusable=True is set, the events task survives the initial load, and a background coroutine incrementally updates the index. Two blocking issues prevent this from being production-ready: (1) the integration test for incremental index updates will always time out because the 30-second background sleep is never mocked, and (2) fallback pools fetched via allPairs.map() on short-history nodes are placed in a local list that is never merged into pools_obj._objects, making them invisible to the index."
+}

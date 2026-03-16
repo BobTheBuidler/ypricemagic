@@ -1,0 +1,50 @@
+{
+  "featureId": "v2-inverted-index",
+  "reviewedAt": "2026-03-16T08:15:00.000Z",
+  "commitId": "b3fcee30",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "The implementation correctly builds an inverted index as an @a_sync.aka.cached_property (_pool_index) on UniswapRouterV2, replaces the O(N) scan in all_pools_for() with a single dict.get() lookup, removes get_pools_via_factory_getpair() entirely, removes the ram_cache from all_pools_for(), handles address normalization via convert.to_address_async(), documents the WETH special-case decision, and launches a background asyncio task to incrementally update the index as new pools arrive. The implementation is architecturally sound and covers all required behaviors. Two minor non-blocking observations are noted below.",
+    "issues": [
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 700,
+        "severity": "non_blocking",
+        "description": "Decorator order for _pool_index is @a_sync.aka.cached_property then @stuck_coro_debugger (outer-to-inner). The pools() property uses the same order and is known to work correctly. However, this means stuck_coro_debugger wraps the raw async function while a_sync.aka.cached_property wraps the outer result. Whether stuck_coro_debugger fires during the initial coroutine execution (before caching) depends on how the a_sync.aka framework calls the inner function. The existing pools() property uses the same pattern with no known issues, so this is not a regression but worth confirming that stuck_coro_debugger is actually active during the index build."
+      },
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 785,
+        "severity": "non_blocking",
+        "description": "The background task _update_index_from_new_pools is created via asyncio.ensure_future() and its reference is never stored on the instance (only in a local variable). The task._log_destroy_pending = False prevents the 'destroy pending' warning, but if the event loop or a_sync internals garbage-collect the cached_property result, the task reference may be lost. In practice, the index dict (which the closure closes over) lives as long as the cached result, and Python keeps the task alive until it completes or is GC'd. This is consistent with the pattern used by other keep-alive tasks in the codebase (e.g., pools() leaves the PoolsFromEvents background loop running). Non-blocking, but noteworthy."
+      },
+      {
+        "file": "y/prices/dex/uniswap/v2.py",
+        "line": 831,
+        "severity": "non_blocking",
+        "description": "In get_pools_for(), when _supports_factory_helper is True and the factory helper call succeeds, the function returns early without consulting the index. This means on chains where the factory helper is supported, new pools discovered via continuous polling but not yet seen by factory.getPairs() won't appear in get_pools_for() results until they surface via the helper. This is intentional (the factory helper is authoritative on those chains) but slightly inconsistent — all_pools_for() always goes to the comprehensive index. The docstring should clarify this chain-specific split, but it is not a bug for mainnet/arbitrum/base (which always use the index path)."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "The _pool_index property accesses pools_obj._objects directly, a private list attribute of the _DiskCachedMixin base class (y/_db/common.py:278). This same pattern is used by tests in test_v2_continuous_discovery.py (lines 188, 211-212), so it is an established pattern. However, AGENTS.md does not document that _objects is the canonical way to access all loaded pool objects. Adding a note about this private API surface could prevent confusion for future workers.",
+      "evidence": "y/prices/dex/uniswap/v2.py:727-730 accesses pools_obj._objects; tests/prices/dex/test_v2_continuous_discovery.py:188 does the same; y/_db/common.py:278 defines self._objects: list[T] = []"
+    },
+    {
+      "area": "conventions",
+      "observation": "The feature's tests in test_pool_index.py do NOT test VAL-V2IDX-005 (O(1) timing assertion). That validation point was covered instead by test_v2_index_prices.py, which was added in a later commit (c63aff3a) by a different feature. This split of coverage across features works out but is worth noting: features claiming to fulfill a validation criterion should include or reference the corresponding tests in their own verificationSteps.",
+      "evidence": "features.json lists VAL-V2IDX-005 in v2-inverted-index fulfills; test_v2_index_prices.py was committed in c63aff3a (feat: add smoke test and CI tests for V2 index price regression); no VAL-V2IDX-005 reference exists in test_pool_index.py"
+    },
+    {
+      "area": "skills",
+      "observation": "The worker correctly followed the python-lib-worker skill procedure. skillFeedback.followedProcedure is true with no deviations. The skill is accurately reflected by the transcript.",
+      "evidence": "handoff.skillFeedback.followedProcedure=true, deviations=[]"
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "The v2-inverted-index feature is well-implemented. The _pool_index cached property correctly builds a comprehensive inverted index from already-loaded pool data at zero RPC cost, replaces all_pools_for() O(N) scan with O(1) dict lookup, removes the stale ram_cache, removes get_pools_via_factory_getpair(), handles address normalization via convert.to_address_async(), documents the WETH special-case retention decision, and incrementally updates the index as new pools arrive via a background asyncio task. The 8 tests in test_pool_index.py adequately cover the required behaviors (index existence, no-ram-cache, empty results, address normalization, obscure token discovery, and method removal). Three non-blocking issues are noted: decorator order for stuck_coro_debugger (matches existing pools() pattern), background task reference not stored on instance (consistent with how PoolsFromEvents loop runs), and the factory-helper fast path on non-mainnet chains bypasses the index (intentional but underdocumented). Overall the implementation is solid and meets all expected behaviors. Status: PASS."
+}

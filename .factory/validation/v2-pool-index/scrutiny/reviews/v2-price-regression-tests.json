@@ -1,0 +1,56 @@
+{
+  "featureId": "v2-price-regression-tests",
+  "reviewedAt": "2026-03-16T07:30:00.000Z",
+  "commitId": "c63aff3a",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "Both files are well-structured, correctly mirror existing test patterns, and cover all required validation criteria. The smoke test applies the mandatory macOS SemLock monkey-patch before any imports, connects brownie, tests price correctness and timing, and includes structural checks for the index migration (getPair removal, _pool_index presence). The CI test file covers VAL-V2IDX-003 (WETH/WBTC/UNI/LINK price correctness), VAL-V2IDX-004 (MIC multi-hop), and VAL-V2IDX-005 (O(1) timing assertion). Minor observations noted below but none are blocking.",
+    "issues": [
+      {
+        "file": "tests/prices/dex/test_v2_index_prices.py",
+        "line": 197,
+        "severity": "non_blocking",
+        "description": "test_index_lookup_is_fast_after_warmup times all_pools_for() which internally calls convert.to_address_async() before the dict lookup. While to_address_async is cached and near-instant for already-seen addresses, on a cold or loaded CI host there is theoretical (low) risk of the 10ms assertion flaking. The existing test_pool_index.py tests use the same 10ms threshold so this is consistent with project norms."
+      },
+      {
+        "file": "scripts/smoke_test_v2_index.py",
+        "line": 167,
+        "severity": "non_blocking",
+        "description": "The timing section constructs a second UniswapRouterV2 instance (sync_router) after get_price() has already triggered pool loading via the first implicit router instance. The sync_router's __pool_index__ will need to be re-built for this new instance, so the 'warm-up' timing shown during Phase 4 may reflect index construction time, not a cold vs warm comparison. This does not affect correctness of the price tests or the CI timing test, but the smoke test output could be misread as showing warm-up time twice."
+      },
+      {
+        "file": "scripts/smoke_test_v2_index.py",
+        "line": 11,
+        "severity": "non_blocking",
+        "description": "Usage example in the docstring hardcodes the path /Users/bryan/code/ypricemagic-server/.venv/bin/python, which is a user-specific path. This is consistent with how other scripts in the project work and the AGENTS.md guidance, but it makes the script less portable for other developers. Low severity given this is a maintenance/smoke script."
+      },
+      {
+        "file": "tests/prices/dex/test_v2_index_prices.py",
+        "line": 12,
+        "severity": "non_blocking",
+        "description": "The module docstring says 'They will not run locally on macOS' but the conftest's pytest_collection_modifyitems only skips @pytest.mark.slow tests when --runslow is absent; the @mainnet_only marker additionally gates on chain.id. The comment is slightly misleading (they would be collected/skipped, not excluded from collection), but this is cosmetic."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "Worker noted the python-lib-worker skill references the venv path /Users/bryan/code/ypricemagic/.venv/bin/python for mypy, but the correct venv for this mission is /Users/bryan/code/ypricemagic-server/.venv. The library/environment.md has the right path but the skill doesn't. Future workers on this mission may waste time tracking down the correct mypy invocation.",
+      "evidence": "handoff.skillFeedback.suggestedChanges[0]: 'The skill says Run mypy: /Users/bryan/code/ypricemagic/.venv/bin/python -m mypy y/ but the correct venv for this mission is /Users/bryan/code/ypricemagic-server/.venv.'"
+    },
+    {
+      "area": "services",
+      "observation": "The smoke test script path was added to .factory/services.yaml as the smoke_test command (scripts/smoke_test_v2_index.py). This is correctly documented and the services.yaml now reflects the new script.",
+      "evidence": ".factory/services.yaml smoke_test: cd /Users/bryan/code/ypricemagic-pool-index && BROWNIE_NETWORK=mainnet /Users/bryan/code/ypricemagic-server/.venv/bin/python scripts/smoke_test_v2_index.py"
+    },
+    {
+      "area": "conventions",
+      "observation": "The CI test file (test_v2_index_prices.py) also covers VAL-V2IDX-005 (timing assertion) even though the feature's 'fulfills' field only lists VAL-V2IDX-003 and VAL-V2IDX-004. VAL-V2IDX-005 is covered in the tests but not declared in the feature's fulfills list. This is a minor bookkeeping gap — the coverage is there, but the feature metadata doesn't claim it.",
+      "evidence": "features.json fulfills: [VAL-V2IDX-003, VAL-V2IDX-004]; handoff.tests.cases includes test_index_lookup_is_fast_after_warmup verifying VAL-V2IDX-005"
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "The implementation passes review. Both files are complete, lint-clean, and correctly match existing test patterns. The smoke test applies the macOS SemLock patch, checks structural invariants (getPair removal, _pool_index presence), exercises price correctness for all required tokens at the specified blocks, and measures O(1) timing. The CI test file covers all required validation criteria (VAL-V2IDX-003, VAL-V2IDX-004) plus the bonus VAL-V2IDX-005 timing assertion. Four minor non-blocking issues noted (timing flake risk, smoke test second-router warmup semantics, hardcoded venv path in docstring, slightly misleading docstring about macOS execution), none of which affect correctness or CI reliability. Status: pass."
+}
