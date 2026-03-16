@@ -3,5 +3,7 @@ commands:
   test: echo "Tests cannot run on Mac - write tests for CI only"
   lint: echo "No local lint configured"
   smoke_test: cd /Users/bryan/code/ypricemagic-pool-index && BROWNIE_NETWORK=mainnet /Users/bryan/code/ypricemagic-server/.venv/bin/python scripts/smoke_test_v2_index.py
+  smoke_test_v3: cd /Users/bryan/code/ypricemagic-pool-index && BROWNIE_NETWORK=mainnet /Users/bryan/code/ypricemagic-server/.venv/bin/python scripts/smoke_test_v3_index.py
+  smoke_test_cross: cd /Users/bryan/code/ypricemagic-pool-index && BROWNIE_NETWORK=mainnet /Users/bryan/code/ypricemagic-server/.venv/bin/python scripts/smoke_test_cross.py
 
 services: {}
