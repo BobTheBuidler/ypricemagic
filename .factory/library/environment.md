@@ -1,43 +1,28 @@
 # Environment
 
-Environment variables, external dependencies, and setup notes.
+## Python
+- Python 3.12 via /Users/bryan/code/ypricemagic-server/.venv
+- Install editable: `uv pip install -e /Users/bryan/code/ypricemagic-pool-index --python /Users/bryan/code/ypricemagic-server/.venv/bin/python`
+- uv available at /Users/bryan/.local/bin/uv (v0.10.5)
 
-**What belongs here:** Required env vars, external API keys/services, dependency quirks.
-**What does NOT belong here:** Service ports/commands (use `.factory/services.yaml`).
-
----
-
-## Python Environment
-
-- Python 3.12 in venv at `/Users/bryan/code/ypricemagic/.venv` (shared with main repo)
-- brownie 1.22.0.dev2 (custom fork)
-- web3 6.11.0
-- ypricemagic installed in editable mode
-
-## Required Environment Variables
-
-- `ETHERSCAN_TOKEN` — needed for contract ABI fetching (in `.env`)
-- `BROWNIE_NETWORK=mainnet` — needed when running any brownie/ypricemagic code
-- `TYPEDENVS_SHUTUP=1` — suppresses noisy warnings
-
-## Worktree Setup
-
-- Worktree at `/Users/bryan/code/ypricemagic-pricing` on branch `feat/stablecoin-pricing`
-- Main repo at `/Users/bryan/code/ypricemagic` — do NOT modify (another droid's workspace)
-- `.env` copied from main repo to worktree by init.sh
-
-## macOS Quirks
-
-- Full pytest suite fails on macOS (some tests, not all)
-- Individual Python scripts importing brownie + y DO work
-- Validation happens through ypricemagic-server Docker stack, not local tests
-
-## concurrent.futures.process Workaround
-
-macOS has a low default `RLIMIT_NPROC` that causes `_SafeQueue` to fail with large `max_size`. The workaround patches `__init__` to cap at 32767:
+## macOS SemLock Workaround
+Required for ANY Python script that imports ypricemagic on macOS:
 ```python
 import concurrent.futures.process as cfp
 _orig = cfp._SafeQueue.__init__
 cfp._SafeQueue.__init__ = lambda self, max_size=0, **kw: _orig(self, min(max_size, 32767), **kw)
 ```
-This must be applied BEFORE importing brownie or pytest.
+This must be at the TOP of any script, before importing brownie/ypricemagic.
+
+## RPC
+- Brownie network "mainnet" configured, points to local node at 10.11.12.43:8545
+- Connect with: `BROWNIE_NETWORK=mainnet` env var + `brownie.network.connect('mainnet')`
+
+## Database
+- SQLite at ~/.ypricemagic/ypricemagic.sqlite (pool event cache)
+- Do not delete — contains cached PairCreated/PoolCreated events
+
+## Tests
+- Tests do NOT run on Mac (known issue)
+- Write tests for CI (Linux), don't attempt to run locally
+- Follow existing patterns: @async_test, @mainnet_only, hardcoded blocks

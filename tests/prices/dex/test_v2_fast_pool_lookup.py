@@ -1,10 +1,10 @@
-"""Tests for V2 fast pool lookup via factory.getPair().
+"""Tests for V2 pool lookup.
 
-These tests verify that UniswapRouterV2.get_pools_via_factory_getpair() correctly
-finds pools using the O(1) factory.getPair() view function instead of scanning
-all 330k+ pairs.
+Previously these tested get_pools_via_factory_getpair(), which has been removed
+in favour of the inverted pool index (_pool_index). The remaining test verifies
+that get_pools_for() still finds MIC/USDT quickly via the index.
 
-Key test: MIC at block 12500000 should find its USDT pool quickly via getPair.
+Key test: MIC at block 12500000 should find its USDT pool quickly via the index.
 """
 
 import pytest
@@ -16,7 +16,6 @@ from y.prices.dex.uniswap.v2 import UniswapRouterV2
 USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 
 # MIC (Mithril Cash) - only has a USDT pool at early blocks
-# factory.getPair(MIC, USDT) returns a non-zero address at block 12500000
 MIC_ADDRESS = "0x368B3a58B5f49392e5C9E4C998cb0bB966752E51"
 MIC_TEST_BLOCK = 12_500_000
 
@@ -32,46 +31,12 @@ def uniswap_v2_router() -> UniswapRouterV2:
 
 @async_test
 @mainnet_only
-async def test_fast_pool_lookup(uniswap_v2_router: UniswapRouterV2) -> None:
-    """Verify fast pool lookup finds MIC/USDT pool via getPair() at block 12500000.
+async def test_get_pools_for_uses_index_on_mainnet(uniswap_v2_router: UniswapRouterV2) -> None:
+    """Verify that get_pools_for() uses the inverted index on mainnet.
 
-    At block 12500000, MIC (Mithril Cash) only has a USDT pool on Uniswap V2.
-    The factory.getPair(MIC, USDT) returns a non-zero address. This test verifies
-    that get_pools_via_factory_getpair() finds this pool without scanning all pairs.
-    """
-    pools = await uniswap_v2_router.get_pools_via_factory_getpair(
-        MIC_ADDRESS, block=MIC_TEST_BLOCK, sync=False
-    )
-
-    assert pools, (
-        f"get_pools_via_factory_getpair should find MIC pools at block {MIC_TEST_BLOCK}, "
-        f"but returned empty dict. Expected to find MIC/USDT pool."
-    )
-
-    # There should be at least one pool
-    assert len(pools) >= 1, f"Expected at least 1 pool for MIC, got {len(pools)}"
-
-    # The paired tokens should include USDT (case-insensitive check)
-    paired_tokens_lower = {str(addr).lower() for addr in pools.values()}
-    assert USDT.lower() in paired_tokens_lower, (
-        f"Expected MIC/USDT pool to be found via getPair(). "
-        f"Found pools with paired tokens: {paired_tokens_lower}"
-    )
-
-    print(f"Found {len(pools)} pool(s) for MIC at block {MIC_TEST_BLOCK} via getPair:")
-    for pool, token_out in pools.items():
-        print(f"  Pool: {pool.address}, Token out: {token_out}")
-
-
-@async_test
-@mainnet_only
-async def test_get_pools_for_uses_fast_path_on_mainnet(uniswap_v2_router: UniswapRouterV2) -> None:
-    """Verify that get_pools_for() uses the fast getPair path on mainnet.
-
-    On mainnet, _supports_factory_helper is False, so get_pools_for() should
-    call get_pools_via_factory_getpair() first rather than all_pools_for().
-    Since MIC only has a USDT pool, if the fast path works, we'll find it;
-    if it falls back to all_pools_for() it will take 10+ minutes.
+    On mainnet, _supports_factory_helper is False so get_pools_for() falls
+    through to the index-based all_pools_for(). The inverted index knows about
+    every pool including MIC/USDT, so the result should be non-empty and fast.
     """
     # Verify that mainnet has _supports_factory_helper = False (as expected)
     assert uniswap_v2_router._supports_factory_helper is False, (
@@ -79,13 +44,12 @@ async def test_get_pools_for_uses_fast_path_on_mainnet(uniswap_v2_router: Uniswa
         "(mainnet bypasses the factory helper due to too many pools)"
     )
 
-    # get_pools_for() should return results quickly via the fast path
+    # get_pools_for() should return results via the inverted index
     pools = await uniswap_v2_router.get_pools_for(MIC_ADDRESS, block=MIC_TEST_BLOCK, sync=False)
 
-    assert pools, (
-        f"get_pools_for should find MIC pools at block {MIC_TEST_BLOCK} via fast getPair path. "
-        f"If this hangs, the fallback to all_pools_for() is being incorrectly triggered."
-    )
+    assert (
+        pools
+    ), f"get_pools_for should find MIC pools at block {MIC_TEST_BLOCK} via the inverted index. "
 
     paired_tokens_lower = {str(addr).lower() for addr in pools.values()}
     assert USDT.lower() in paired_tokens_lower, (

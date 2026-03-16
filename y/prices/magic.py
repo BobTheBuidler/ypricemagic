@@ -216,7 +216,7 @@ async def get_prices(
                     amount=a,
                     sync=False,
                 )
-                for t, a in zip(token_addresses, amounts)
+                for t, a in zip(token_addresses, amounts, strict=True)
             )
         )
     return await map_prices(

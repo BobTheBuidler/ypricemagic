@@ -392,10 +392,10 @@ _STABLECOINS: Final[dict[Network, dict[ChecksumAddress, str]]] = {
     },
 }
 
-ROUTING_TOKENS: Final[dict[Network, list[ChecksumAddress]]] = {
+_ROUTING_TOKENS: Final[dict[Network, list[ChecksumAddress | None]]] = {
     Network.Mainnet: [
-        weth.address,
-        usdc.address,
+        weth.address if weth else None,
+        usdc.address if usdc else None,
         "0xdAC17F958D2ee523a2206206994597C13D831ec7",
         "0x6B175474E89094C44Da98b954EedeAC495271d0F",
     ],
@@ -414,6 +414,11 @@ ROUTING_TOKENS: Final[dict[Network, list[ChecksumAddress]]] = {
         "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
     ],
+}
+
+ROUTING_TOKENS: Final[dict[Network, list[ChecksumAddress]]] = {
+    net: [addr for addr in addrs if addr is not None]
+    for net, addrs in _ROUTING_TOKENS.items()
 }
 
 STABLECOINS: Final[dict[ChecksumAddress, str]] = _STABLECOINS.get(CHAINID, {})

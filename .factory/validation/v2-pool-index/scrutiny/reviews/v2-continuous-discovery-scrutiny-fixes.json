@@ -1,0 +1,44 @@
+{
+  "featureId": "v2-continuous-discovery-scrutiny-fixes",
+  "reviewedAt": "2026-03-16T08:45:00.000Z",
+  "commitId": "fbc2e9c0f9ecbb08896dc530fe4323d9b8a6adc1",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "Both blocking bugs from the prior review are correctly fixed. Bug 1 (fallback pools invisible to index): the fix adds `events._objects.insert(i, pool)` alongside the existing `initial_pools.insert(i, pool)` in the allPairs.map() fallback branch. Since _pool_index iterates `pools_obj._objects[:initial_count]`, the fallback pools are now present and included in the initial index build. Bug 2 (test timeout): the test is restructured to directly apply the same index-update logic as the background task rather than waiting 5s for a 30s sleep, completely eliminating the timing dependency. Two new tests (test_warm_restart_pool_loading_uses_sqlite_cache and test_warm_restart_pools_loaded_from_sqlite_on_second_call) cover the previously-untested VAL-V2CD-003. The diff is otherwise dominated by ruff-style reformatting (line-length wrapping) with no semantic changes.",
+    "issues": [
+      {
+        "file": "tests/prices/dex/test_v2_continuous_discovery.py",
+        "line": 191,
+        "severity": "non_blocking",
+        "description": "test_new_pool_added_to_index_incrementally directly replicates the internal index-update logic from the production _update_index_from_new_pools coroutine rather than calling it via a testable boundary. This means a future refactor of the background task logic won't automatically be reflected in the test — the test could silently diverge. Extracting the per-pool index-insertion logic into a helper function (e.g., `_add_pool_to_index(pool, index)`) that both the background task and the test call would keep them in sync. Non-blocking since the test does verify the correct behavior; it's a maintainability concern."
+      },
+      {
+        "file": "tests/prices/dex/test_v2_continuous_discovery.py",
+        "line": 291,
+        "severity": "non_blocking",
+        "description": "test_warm_restart_pools_loaded_from_sqlite_on_second_call verifies identity (`pools_obj is pools_obj_second`) on two consecutive awaits within the same test run. This confirms the cached_property semantics but does NOT test the actual warm-restart scenario (a second process start loading from SQLite rather than RPC). The docstring acknowledges this limitation and delegates wall-clock timing to a smoke test script. This is acceptable given the constraints (no local test runner), but the VAL-V2CD-003 criterion 'startup completes in a reasonable time' remains unverified by automated test — only by manual smoke test."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "The skill says 'Do NOT run tests locally' (blanket prohibition). The prior review already noted this is incorrect for structural/no-RPC tests. The worker's skillFeedback confirms the same finding again. The skill should be updated to distinguish: 'Structural (no-RPC) tests CAN be run locally; integration/mainnet tests cannot.' This fix feature's worker also noted: 'The skill references /Users/bryan/code/ypricemagic/.venv as the venv path, but this project uses /Users/bryan/code/ypricemagic-server/.venv.' Both corrections are still relevant.",
+      "evidence": "Handoff skillFeedback.suggestedChanges lists both points. Prior review's sharedStateObservations also flagged the blanket test prohibition."
+    },
+    {
+      "area": "conventions",
+      "observation": "The background index-update loop uses asyncio.sleep(30). The prior review noted the handoff referenced 60s inconsistently; that mismatch persists (code uses 30s, prior handoff notes said 60s). This polling interval is undocumented — not in AGENTS.md or library/. Future workers adding monitoring or tuning this parameter won't find a canonical reference.",
+      "evidence": "y/prices/dex/uniswap/v2.py line 800: `await asyncio.sleep(30)`. No mention of this value in /Users/bryan/.factory/missions/c963fb83-f809-4a55-ab48-f26474fc9e3b/AGENTS.md or .factory/library/."
+    },
+    {
+      "area": "conventions",
+      "observation": "The fix uses `events._objects.insert(i, pool)` to access a private attribute of ProcessedEvents from outside the class. The type: ignore[arg-type] comment signals the types don't fully align. While functional, this pattern bypasses any future invariants the ProcessedEvents class might add around _objects (e.g., deduplication, thread-safety). A public API (e.g., a method on PoolsFromEvents or ProcessedEvents) would be safer, but this is a minor concern given the existing codebase style of internal attribute access.",
+      "evidence": "y/prices/dex/uniswap/v2.py line 731: `events._objects.insert(i, pool)  # type: ignore[arg-type]`"
+    }
+  ],
+  "addressesFailureFrom": "/Users/bryan/code/ypricemagic-pool-index/.factory/validation/v2-pool-index/scrutiny/reviews/v2-continuous-discovery.json",
+  "summary": "Both blocking bugs from the prior review are correctly resolved. Bug 1: fallback pools from allPairs.map() are now inserted into events._objects (not just initial_pools), so _pool_index.pools_obj._objects[:initial_count] captures them. Bug 2: the incremental index test no longer relies on 30s poll timing — it directly applies the update logic, eliminating the timeout. Two new tests cover VAL-V2CD-003 (warm restart) at structural and integration levels. Two minor non-blocking issues remain: the test duplicates production logic rather than sharing a helper, and VAL-V2CD-003's 'reasonable startup time' criterion is only verifiable via smoke test. Status: PASS."
+}

@@ -1,34 +1,9 @@
 commands:
-  install: >-
-    cd /Users/bryan/code/ypricemagic-pricing &&
-    .venv/bin/python -m pip install -e . -r requirements-dev.txt -q &&
-    .venv/bin/python -m pip install "setuptools<82" click -q
-  typecheck: cd /Users/bryan/code/ypricemagic-pricing && .venv/bin/python -m mypy y/
-  format-check: cd /Users/bryan/code/ypricemagic-pricing && .venv/bin/python -m black --check .
-  format: cd /Users/bryan/code/ypricemagic-pricing && .venv/bin/python -m black .
-  test: >-
-    echo "NOTE: ypricemagic test suite does not reliably run on macOS. Validation happens through ypricemagic-server Docker stack."
-  test-server-api: >-
-    curl -sf --max-time 120 "http://localhost:8000/ethereum/price?token=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" &&
-    curl -sf --max-time 120 "http://localhost:8000/ethereum/price?token=0xdAC17F958D2ee523a2206206994597C13D831ec7" &&
-    curl -sf --max-time 120 "http://localhost:8000/ethereum/price?token=0x6B175474E89094C44Da98b954EedeAC495271d0F"
-  server-rebuild: >-
-    cd /Users/bryan/code/ypricemagic-server &&
-    docker compose up --build -d ypm-ethereum &&
-    sleep 30 &&
-    curl -sf http://localhost:8000/ethereum/health
-  server-rebuild-exotic: >-
-    cd /Users/bryan/code/ypricemagic-server &&
-    sed -i '' 's|feat/stablecoin-pricing|feat/exotic-tokens|' pyproject.toml &&
-    uv lock --upgrade-package ypricemagic &&
-    docker compose up --build -d ypm-ethereum &&
-    sleep 30 &&
-    curl -sf http://localhost:8000/ethereum/health
+  install: uv pip install -e /Users/bryan/code/ypricemagic-pool-index --python /Users/bryan/code/ypricemagic-server/.venv/bin/python
+  test: echo "Tests cannot run on Mac - write tests for CI only"
+  lint: echo "No local lint configured"
+  smoke_test: cd /Users/bryan/code/ypricemagic-pool-index && BROWNIE_NETWORK=mainnet /Users/bryan/code/ypricemagic-server/.venv/bin/python scripts/smoke_test_v2_index.py
+  smoke_test_v3: cd /Users/bryan/code/ypricemagic-pool-index && BROWNIE_NETWORK=mainnet /Users/bryan/code/ypricemagic-server/.venv/bin/python scripts/smoke_test_v3_index.py
+  smoke_test_cross: cd /Users/bryan/code/ypricemagic-pool-index && BROWNIE_NETWORK=mainnet /Users/bryan/code/ypricemagic-server/.venv/bin/python scripts/smoke_test_cross.py
 
-services:
-  ypricemagic-server:
-    start: cd /Users/bryan/code/ypricemagic-server && docker compose up -d
-    stop: cd /Users/bryan/code/ypricemagic-server && docker compose stop
-    healthcheck: curl -sf http://localhost:8000/health
-    port: 8000
-    depends_on: []
+services: {}

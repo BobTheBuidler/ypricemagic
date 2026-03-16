@@ -1,0 +1,75 @@
+{
+  "featureId": "cross-area-regression-tests",
+  "reviewedAt": "2026-03-16T09:10:00.000Z",
+  "commitId": "97e78cb0",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "fail",
+  "codeReview": {
+    "summary": "The feature delivers solid CI tests and a comprehensive smoke script covering the four VAL-CROSS-* assertions and several deferred V2 assertions. However, the feature's `fulfills` list in features.json claims to fulfill 18 validation contract assertions (VAL-V2IDX-001–010, VAL-V2CD-001–004, VAL-CROSS-001–004), but four of those assertions have zero test coverage in either file: VAL-V2IDX-002, VAL-V2IDX-009, VAL-V2CD-002, and VAL-V2CD-004. These four are not mentioned anywhere in the test files or smoke script. Additionally, the VAL-V2CD-003 warm-restart test is trivially passing (it checks `hasattr(events, '_cache')`, which is always True because `_cache` is defined in `__slots__` and initialized to `None` at construction — this does not verify that SQLite integration is actually wired). Minor issues: an unused import (`UniswapV3`) in the test file, and the VAL-CROSS-004 MIC-routing check in the smoke script only issues a WARN rather than FAIL when the wrong router is selected.",
+    "issues": [
+      {
+        "file": "tests/prices/dex/test_cross_area_pricing.py",
+        "line": null,
+        "severity": "blocking",
+        "description": "VAL-V2IDX-002 ('Index finds obscure tokens missed by getPair fast path') is listed in features.json `fulfills` but has NO test in either tests/prices/dex/test_cross_area_pricing.py or scripts/smoke_test_cross.py. The validation contract requires a token that only pairs with a non-routing token to be found by the index where old getPair would have missed it. No such test exists."
+      },
+      {
+        "file": "tests/prices/dex/test_cross_area_pricing.py",
+        "line": null,
+        "severity": "blocking",
+        "description": "VAL-V2IDX-009 ('WETH special-case pools decision') is listed in features.json `fulfills` but has NO test anywhere. The validation contract requires that the behavior of hardcoded WETH special-case pools (Mainnet / Base) is either explicitly preserved or intentionally removed, and that WETH pricing does not regress. No assertion or smoke test checks this behavior."
+      },
+      {
+        "file": "tests/prices/dex/test_cross_area_pricing.py",
+        "line": null,
+        "severity": "blocking",
+        "description": "VAL-V2CD-002 ('New pools from polling are added to the index') is listed in features.json `fulfills` but has NO test anywhere. The validation contract requires a test assertion showing the index grows after new pool ingestion during continuous polling. Neither the CI test file nor the smoke script tests this."
+      },
+      {
+        "file": "tests/prices/dex/test_cross_area_pricing.py",
+        "line": null,
+        "severity": "blocking",
+        "description": "VAL-V2CD-004 ('All V2 forks on connected chain get indexed') is listed in features.json `fulfills` but has NO test anywhere. The validation contract requires a smoke test querying pools from each V2 fork (uniswap v2, sushiswap, shibaswap, etc. on mainnet). Neither file covers this assertion."
+      },
+      {
+        "file": "tests/prices/dex/test_cross_area_pricing.py",
+        "line": 121,
+        "severity": "non_blocking",
+        "description": "test_v2_pools_from_events_warm_restart_structural asserts `hasattr(events, '_cache')` to verify SQLite warm-restart support (VAL-V2CD-003). However, `_cache` is always present (it is in `__slots__` on `_DiskCachedMixin` at y/_db/common.py:261) and initialized to `None` at construction (y/_db/common.py:276). The `hasattr` check will always pass regardless of whether SQLite is actually wired in. To be meaningful, this test should assert that `events._cache` is not None after construction (i.e., that the `cache` property returns a valid DB-backed cache object), or it should actually trigger a warm-load path and observe the result."
+      },
+      {
+        "file": "tests/prices/dex/test_cross_area_pricing.py",
+        "line": 37,
+        "severity": "non_blocking",
+        "description": "Unused import: `UniswapV3` is imported at module level (`from y.prices.dex.uniswap.v3 import UniswapV3, uniswap_v3`) but `UniswapV3` is never referenced anywhere in the file. Only `uniswap_v3` (the singleton) is used. This will trigger a ruff/flake8 F401 lint warning."
+      },
+      {
+        "file": "scripts/smoke_test_cross.py",
+        "line": 370,
+        "severity": "non_blocking",
+        "description": "In Phase 8 (multiplexer router selection for MIC, VAL-CROSS-004), when the top router is not a V2 router, the smoke script prints WARN but does NOT increment `failures`. This means VAL-CROSS-004 can silently pass in smoke-test output even if V2 routing is broken. Similarly, the Phase 6 address normalization check and Phase 8 exception handler print SKIP/SKIP without incrementing failures, which could mask real breakage."
+      },
+      {
+        "file": "tests/prices/dex/test_cross_area_pricing.py",
+        "line": null,
+        "severity": "non_blocking",
+        "description": "VAL-V2IDX-005 (O(1) index lookup timing) is exercised only in the smoke script's 'Bonus' section with a 10ms threshold, not in any CI test. While timing tests are difficult to assert reliably in CI, having no CI coverage means the O(1) property is unverified in automated test runs. This is the same situation as the pre-existing smoke-test-only approach, so it is non-blocking but worth noting."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "Worker's skillFeedback.suggestedChanges mentions that the skill does not note mypy crashing on macOS when run across scripts/tests together with the y/ package (typed_envs plugin conflict). This is a real blocker for local mypy validation on macOS.",
+      "evidence": "Handoff discoveredIssues[0]: 'mypy crashes with AssertionError: Cannot find component EnvironmentVariable_6e898407ec when running on scripts/ or tests/ files together with y/ (typed_envs plugin conflict)'"
+    },
+    {
+      "area": "conventions",
+      "observation": "The worker's smoke script uses multiple UniswapRouterV2 instantiations (phases 6, 7, and 'Bonus') for the same router address. Since ContractBase uses ChecksumASyncSingletonMeta (y/classes/singleton.py), these all return the same singleton. But creating separate instances in separate phases for 'fresh' state is misleading and could confuse future readers. AGENTS.md could note the singleton behaviour.",
+      "evidence": "scripts/smoke_test_cross.py lines 289, 321, 392 — three separate UniswapRouterV2(UNISWAP_V2_ROUTER, ...) calls returning the same singleton"
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "FAIL. The implementation is thorough for the assertions it covers, but the feature's `fulfills` list claims 18 validation contract assertions while 4 are entirely absent from both test files: VAL-V2IDX-002 (obscure token discovery), VAL-V2IDX-009 (WETH special-case pools decision), VAL-V2CD-002 (new pools from polling added to index), and VAL-V2CD-004 (all V2 forks indexed). These were listed in features.json `fulfills` without corresponding tests being written. Additionally, the VAL-V2CD-003 warm-restart test uses a trivially-passing `hasattr` check that doesn't verify actual SQLite integration. These 4 missing assertion coverages are blocking issues that require either (a) tests to be written for these assertions, or (b) these assertion IDs to be removed from the feature's `fulfills` list and moved to a separate feature."
+}
