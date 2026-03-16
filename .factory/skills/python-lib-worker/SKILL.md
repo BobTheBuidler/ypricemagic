@@ -22,7 +22,8 @@ Use for features that modify ypricemagic library code (y/ directory) — pool in
    - Use `@mainnet_only` for chain-specific tests
    - Use hardcoded block numbers for determinism
    - Place in `tests/prices/dex/` alongside existing test files
-   - **Do NOT run tests locally** — they don't work on Mac. Just write them.
+   - **Structural tests** (no RPC calls, just checking attributes/types/imports) CAN be run locally on Mac
+   - **Integration tests** (marked `@mainnet_only` or `@pytest.mark.slow`) are CI-only — do NOT run these locally Just write them.
 
 4. **Implement the feature.** Follow existing code patterns in v2.py / v3.py:
    - Use `@stuck_coro_debugger` on all new async methods
