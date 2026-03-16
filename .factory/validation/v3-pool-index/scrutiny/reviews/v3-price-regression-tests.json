@@ -1,0 +1,34 @@
+{
+  "featureId": "v3-price-regression-tests",
+  "reviewedAt": "2026-03-16T09:00:00.000Z",
+  "commitId": "36059a9e",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "Two files created: scripts/smoke_test_v3_index.py and tests/prices/dex/test_v3_index_prices.py. Both closely mirror V2 counterparts. Code is well-structured, properly formatted with black, and covers the required validation points. One non-blocking concern about timing test reliability is noted below.",
+    "issues": [
+      {
+        "file": "tests/prices/dex/test_v3_index_prices.py",
+        "line": 258,
+        "severity": "non_blocking",
+        "description": "test_pools_for_token_is_fast_after_warmup measures the elapsed time for the full pools_for_token() call, which internally re-drains all pools through `async for _ in pools.objects(to_block=block): pass` even after the explicit warmup in step 1. With 170k+ V3 pools at block 18M, iterating the in-memory list a second time could exceed 10ms on slower CI machines, causing a flaky assertion. The O(1) claim refers to the dict lookup only, not the drain. The test may need a tighter isolation — e.g., warm via pools_for_token once, then time only the second call — or a more generous threshold."
+      },
+      {
+        "file": "tests/prices/dex/test_v3_index_prices.py",
+        "line": 1,
+        "severity": "non_blocking",
+        "description": "Internal validation IDs used in test docstrings (VAL-V3IDX-010, VAL-V3IDX-011, VAL-V3IDX-012) do not appear in the mission's validation-contract.md. The feature fulfills VAL-V3IDX-003 (price correctness), which is in the contract. The custom IDs are useful for documentation but could cause confusion if reviewers try to cross-reference them against the contract. Non-blocking since the contract's VAL-V3IDX-003 evidence requirement is met."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "skills",
+      "observation": "Worker noted in skillFeedback.suggestedChanges: the skill instructs workers to run the baseline test via services.yaml `test` command, but that command on macOS simply prints a note that tests don't run. The skill should document this expected no-op so workers don't spend time debugging it.",
+      "evidence": "Handoff skillFeedback.suggestedChanges: 'The skill says to run baseline test via services.yaml `test` command, but that command just prints a note that tests don't run on macOS. Consider adding a note that this is expected and workers should skip to formatting/type checks instead.'"
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "Feature passes review. Both required files (smoke test script and CI test file) are present, well-structured, and correctly mirror V2 patterns. Price ranges for WETH/UNI/AAVE/MATIC at block 18M are reasonable. Structural checks (_BoundedPoolsByTokenCache removed, _pool_index present) and functional tests (pools_for_token yields UniswapV3Pool instances) are all correct. Two non-blocking issues noted: (1) the O(1) timing test measures more than just the dict lookup — it includes a second full in-memory drain of 170k+ pools which may be slow on CI; (2) internal VAL IDs in docstrings don't map to the validation contract. Neither is blocking."
+}

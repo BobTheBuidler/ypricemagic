@@ -1,0 +1,45 @@
+{
+  "featureId": "v3-inverted-index",
+  "reviewedAt": "2026-03-16T09:15:00.000Z",
+  "commitId": "c3d1230d",
+  "transcriptSkeletonReviewed": true,
+  "diffReviewed": true,
+  "status": "pass",
+  "codeReview": {
+    "summary": "The implementation correctly builds an inverted index on UniV3Pools/SlipstreamPools, wires it into continuous polling via _extend() override, and replaces the O(N) pools_for_token() scan with an O(1) index lookup. _BoundedPoolsByTokenCache is fully removed. All fee tiers, fork independence, and SlipstreamPools (fee=0) are handled correctly. One non-blocking style deviation was found: the index uses lowercase addresses while the mission AGENTS.md convention and V2 implementation use checksummed addresses. The implementation is functionally correct regardless (lowercase is used consistently for both storage and lookup). A pre-existing fee/tick_spacing swap in _process_event was not introduced by this commit and is not this feature's responsibility.",
+    "issues": [
+      {
+        "file": "y/prices/dex/uniswap/v3.py",
+        "line": 826,
+        "severity": "non_blocking",
+        "description": "Address normalization deviates from mission convention and V2 pattern. Mission AGENTS.md states 'The inverted index should use the same address format as pool.token0 / pool.token1 (checksummed)'. The V2 _pool_index (v2.py:781-782) uses token0.address / token1.address directly (checksummed). UniV3Pools uses str(pool.token0.address).lower() for both storage and lookup — functionally correct since lowercase is applied consistently, but inconsistent with the stated convention and the V2 implementation."
+      },
+      {
+        "file": "tests/prices/dex/test_v3_pool_index.py",
+        "line": 283,
+        "severity": "non_blocking",
+        "description": "test_new_pool_added_to_index_incrementally tests _add_pool_to_index() directly (unit test), but does not exercise _extend() as an integration test to verify the continuous polling wiring end-to-end. The _extend override is the actual code path that fires during polling. A test that calls _extend() with a synthetic Log list would more directly verify VAL-V3IDX-004 (new pools from V3 polling are added to index). This is a coverage gap, not a correctness issue."
+      },
+      {
+        "file": "y/prices/dex/uniswap/v3.py",
+        "line": 880,
+        "severity": "non_blocking",
+        "description": "Pre-existing (not introduced by this commit): UniswapV3Pool constructor signature is (address, token0, token1, tick_spacing, fee, deploy_block) but _process_event calls UniswapV3Pool(pool, token0, token1, fee, tick_spacing, ...) — fee and tick_spacing are swapped. This was present before this commit (confirmed via git show d62a7c72) and is outside this feature's scope, but worth noting for a future fix. The docstring correctly documents event order as 'token0, token1, fee, tick_spacing, pool_address'."
+      }
+    ]
+  },
+  "sharedStateObservations": [
+    {
+      "area": "conventions",
+      "observation": "Address format convention conflict: mission AGENTS.md says inverted index should use checksummed address format (same as pool.token0/pool.token1), and V2 _pool_index follows this. V3 _pool_index uses lowercase addresses. Both are functionally correct if applied consistently, but the divergence between V2 and V3 may confuse future workers.",
+      "evidence": "AGENTS.md: 'The inverted index should use the same address format as pool.token0 / pool.token1 (checksummed)'. v2.py:781-782: t0_addr = token0.address (checksummed). v3.py:833-834: t0 = str(pool.token0.address).lower() (lowercase)."
+    },
+    {
+      "area": "knowledge",
+      "observation": "The pre-existing fee/tick_spacing argument swap in UniV3Pools._process_event (pool constructor called with fee where tick_spacing is expected and vice-versa) has not been caught or documented anywhere. This means pool.fee and pool.tick_spacing are silently swapped for all UniV3Pools instances. The library appears to work despite this (tick_spacing is not used in pricing paths; fee is used only for index validation tests like test_pool_index_multiple_fee_tiers). A library knowledge note would prevent future agents from being confused by the discrepancy.",
+      "evidence": "v3.py:880: token0, token1, fee, tick_spacing, pool = event.values(); UniswapV3Pool(pool, token0, token1, fee, tick_spacing, ...) — but constructor signature is (address, token0, token1, tick_spacing, fee, deploy_block) at v3.py:114-122."
+    }
+  ],
+  "addressesFailureFrom": null,
+  "summary": "PASS. The feature correctly implements the V3 inverted index, replacing _BoundedPoolsByTokenCache with _pool_index (token_address -> {pool: other_token}), overriding _extend() to wire continuous polling into the index, and replacing O(N) pools_for_token() iteration with O(1) index lookup. Fork independence and SlipstreamPools (fee=0) are correctly handled. All expected behaviors from the feature spec are satisfied. Two non-blocking issues: (1) lowercase vs checksummed address convention diverges from mission AGENTS.md and V2 pattern, though functionally correct; (2) incremental index test exercises _add_pool_to_index directly rather than _extend integration. A pre-existing fee/tick_spacing constructor swap was not introduced by this commit."
+}

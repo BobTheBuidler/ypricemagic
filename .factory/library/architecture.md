@@ -14,10 +14,15 @@
 - WETH special case retained: `pools_for_token()` returns only the WETH/USDC pool on Mainnet (not all thousands of WETH pools) for performance. Documented in code comments.
 
 ### V3 (y/prices/dex/uniswap/v3.py)
-- `UniswapV3.pools` — cached_property returning UniV3Pools instance
-- `UniV3Pools` extends `ProcessedEvents` — continuously polls PoolCreated events via _loop()
-- `pools_for_token(token, block)` — iterates all pools checking `token in pool`, uses `_BoundedPoolsByTokenCache` (LRU) for caching
-- `_BoundedPoolsByTokenCache` — cachebox.LRUCache wrapping token → {deploy_block: [pools]}
+- `UniswapV3.pools` — cached_property returning UniV3Pools (or SlipstreamPools) instance per fork
+- `UniV3Pools` / `SlipstreamPools` — extend `ProcessedEvents`, continuously poll PoolCreated events via _loop()
+- `_pool_index` — `defaultdict(dict)` on `UniV3Pools`/`SlipstreamPools`: `token_address (lowercase str) → {pool: other_token (lowercase str)}`. Built incrementally via `_add_pool_to_index()` which is called from `_extend()` override.
+- `_extend(new_pools)` — overrides `ProcessedEvents._extend()` to wire continuous polling into the index. Called automatically when new PoolCreated events arrive during polling.
+- `pools_for_token(token, block)` — O(1) index lookup (`_pool_index[token.lower()]`) filtered by deploy_block. WETH special-case retained: on Mainnet only returns WETH/USDC pool (not all thousands of WETH pools) for performance.
+- `_BoundedPoolsByTokenCache` — **REMOVED** (replaced by _pool_index)
+- Each V3 fork instance (UniswapV3, SushiSwapV3, Kodiak, Slipstream, etc.) has its own independent UniV3Pools/SlipstreamPools with its own `_pool_index`.
+- **QUIRK (pre-existing, not this milestone):** In `UniV3Pools._process_event`, the `fee` and `tick_spacing` arguments are swapped when constructing `UniswapV3Pool`. The constructor expects `(address, token0, token1, tick_spacing, fee, deploy_block)` but is called with `(pool, token0, token1, fee, tick_spacing, deploy_block)`. Functionally harmless because `tick_spacing` is not used in pricing paths and `fee` is only used in index validation tests. Do not change without tracing all callers.
+- **Address format:** V3 _pool_index uses lowercase string addresses (str.lower()). V2 _pool_index uses checksummed addresses. Both are functionally correct because lookup format matches storage format.
 
 ### Persistence
 - Raw event logs stored in SQLite (PonyORM `Log` table) as msgpack bytes
