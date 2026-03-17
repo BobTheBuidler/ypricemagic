@@ -8,7 +8,6 @@ from y import constants
 from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
-from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
 from y.prices import (
     convex,
