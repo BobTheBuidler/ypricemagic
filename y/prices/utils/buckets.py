@@ -8,7 +8,6 @@ from y import constants
 from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
-from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
 from y.prices import (
     convex,
@@ -93,13 +92,6 @@ async def check_bucket(token: AnyAddressType) -> str:
     """
     token_address = await convert.to_address_async(token)
     logger = get_price_logger(token_address, block=None, extra="buckets")
-
-    # Fast path: known stablecoins always return "stable usd" regardless of
-    # any previously-cached bucket in the DB.  This avoids expensive recursive
-    # price lookups (e.g. Curve registry loading) for intermediate stablecoin
-    # hops in DEX pricing paths.
-    if token_address in STABLECOINS:
-        return "stable usd"
 
     import y._db.utils.token as db
 
@@ -187,7 +179,7 @@ async def check_bucket(token: AnyAddressType) -> str:
 # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
 string_matchers = {
     "wrapped gas coin": lambda address: address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    "stable usd": lambda address: address in STABLECOINS,
+    "stable usd": lambda address: address == constants.usdc.address,
     "one to one": one_to_one.is_one_to_one_token,
     "wsteth": wsteth.is_wsteth,
     "creth": creth.is_creth,
