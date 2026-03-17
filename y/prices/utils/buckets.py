@@ -94,6 +94,13 @@ async def check_bucket(token: AnyAddressType) -> str:
     token_address = await convert.to_address_async(token)
     logger = get_price_logger(token_address, block=None, extra="buckets")
 
+    # Fast path: known stablecoins always return "stable usd" regardless of
+    # any previously-cached bucket in the DB.  This avoids expensive recursive
+    # price lookups (e.g. Curve registry loading) for intermediate stablecoin
+    # hops in DEX pricing paths.
+    if token_address in STABLECOINS:
+        return "stable usd"
+
     import y._db.utils.token as db
 
     bucket = await db.get_bucket(token_address)
