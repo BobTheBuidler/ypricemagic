@@ -3,7 +3,7 @@ from collections import defaultdict
 from decimal import Decimal
 from enum import IntEnum
 from functools import cached_property
-from itertools import filterfalse
+
 from logging import DEBUG, getLogger
 from typing import Any, TypeVar
 
@@ -679,15 +679,14 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         amount: Decimal | int | float | None = None,
     ) -> UsdPrice | None:
         try:
-            pools = (await self.__coin_to_pools__)[token_in]
+            pool_addrs = (await self.__coin_to_pools__)[token_in]
         except KeyError:
             return None
 
-        for pool in ignore_pools:
-            try:
-                pools.remove(pool)
-            except ValueError:
-                continue
+        ignored = {str(p) for p in ignore_pools}
+        pool_addrs = [a for a in pool_addrs if a not in ignored]
+
+        pools = [CurvePool(a, asynchronous=True) for a in pool_addrs]
 
         if pools and block is not None:
             pools = [
@@ -757,21 +756,75 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             )
 
     @a_sync.aka.cached_property
-    async def coin_to_pools(self) -> dict[str, list[CurvePool]]:
-        mapping = defaultdict(set)
+    async def coin_to_pools(self) -> dict[str, list[str]]:
+        """Lightweight coin-to-pool-address mapping.
+
+        Returns ``dict[coin_address, list[pool_address]]``.  Only addresses
+        are stored -- no :class:`CurvePool` or brownie ``Contract`` objects
+        are kept alive, so memory stays flat after the build phase.
+
+        Callers create :class:`CurvePool` on demand; brownie reloads the ABI
+        from its sqlite cache so the first call per pool is still fast.
+        """
+        mapping: dict[str, set[str]] = defaultdict(set)
         await self.load_all()
-        for pool in {CurvePool(pool) for pools in self.factories.values() for pool in pools}:
-            for coin in await pool.__coins__:
-                mapping[coin].add(pool)
+        all_pool_addrs = {pool for pools in self.factories.values() for pool in pools}
+        for pool_addr in all_pool_addrs:
+            try:
+                coins = await self._get_coins_for_pool(pool_addr)
+            except Exception as e:
+                logger.debug("failed to get coins for pool %s: %s", pool_addr, e)
+                continue
+            for coin in coins:
+                mapping[coin].add(pool_addr)
         return {coin: list(pools) for coin, pools in mapping.items()}
 
-    __coin_to_pools__: HiddenMethodDescriptor[Self, dict[str, list[CurvePool]]]
+    __coin_to_pools__: HiddenMethodDescriptor[Self, dict[str, list[str]]]
+
+    async def _get_coins_for_pool(self, pool_addr: str) -> list[str]:
+        """Get coin addresses for a pool using raw calls, avoiding CurvePool instantiation."""
+        # Try factory contract first, then registry
+        factory_addr = next(
+            (f for f, pools in self.factories.items() if pool_addr in pools), None
+        )
+        if factory_addr:
+            try:
+                contract = await Contract.coroutine(factory_addr)
+                coins = await contract.get_coins.coroutine(pool_addr)
+                result = [str(c) for c in coins if c != ZERO_ADDRESS]
+                if result:
+                    return result
+            except Exception:
+                pass
+
+        # Fall back to registry
+        try:
+            registry = await self.__registry__
+            coins = await registry.get_coins.coroutine(pool_addr)
+            result = [str(c) for c in coins if c != ZERO_ADDRESS]
+            if result:
+                return result
+        except Exception:
+            pass
+
+        # Last resort: call coins(i) directly on the pool
+        coins = await multicall_same_func_same_contract_different_inputs(
+            pool_addr,
+            "coins(uint256)(address)",
+            inputs=list(range(8)),
+            return_None_on_failure=True,
+            sync=False,
+        )
+        return [str(c) for c in coins if c not in {None, ZERO_ADDRESS}]
 
     async def check_liquidity(
         self, token: Address, block: Block, ignore_pools: tuple[Pool, ...]
     ) -> int:
-        if pools_for_token := (await self.__coin_to_pools__).get(token):
-            if pools := list(filterfalse(ignore_pools.__contains__, pools_for_token)):
+        if pool_addrs := (await self.__coin_to_pools__).get(token):
+            ignored = {str(p) for p in ignore_pools}
+            pool_addrs = [a for a in pool_addrs if a not in ignored]
+            if pool_addrs:
+                pools = [CurvePool(a, asynchronous=True) for a in pool_addrs]
                 return await CurvePool.check_liquidity.max(
                     pools, token=token, block=block, sync=False
                 )
