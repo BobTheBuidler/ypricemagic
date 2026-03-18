@@ -1,6 +1,6 @@
 commands:
   install: .venv/bin/pip install -e .
   install-dev: .venv/bin/pip install -r requirements-dev.txt
-  test: echo "Tests require RPC connection. Run manually per feature description."
+  test: echo "Tests require RPC and brownie. Workers must use fireAndForget pattern. See AGENTS.md."
 
 services: {}

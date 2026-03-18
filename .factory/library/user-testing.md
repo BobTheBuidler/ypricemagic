@@ -17,9 +17,14 @@ This is a Python library with no web UI or CLI beyond the test suite. The test s
 - **Max concurrent validators:** 1
 - **Rationale:** Tests make real RPC calls to a shared Ethereum node. Brownie manages a global network connection. Running multiple test processes concurrently would cause connection conflicts.
 
+## Test Execution Warning
+
+brownie.network.connect() is called at conftest.py import time and blocks for several minutes with no output. Any pytest invocation MUST use fireAndForget + polling to avoid daemon timeout. See AGENTS.md for the pattern.
+
 ## Test Patterns
 
-- `@async_test` decorator for async tests (from tests/fixtures.py)
+- `@async_test` decorator for async tests (from tests/fixtures.py) -- verify this exists before using
 - `@mainnet_only` for Ethereum mainnet-specific tests
 - Hardcoded block numbers for deterministic results
 - Fantom-only tests: `@pytest.mark.skip(reason="Fantom-only")`
+- Per-test timeout: 600s (pyproject.toml)

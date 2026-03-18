@@ -11,6 +11,31 @@ NOTE: Startup and cleanup are handled by `worker-base`. This skill defines the W
 
 Use for features that modify ypricemagic library code (y/ directory), tests, or project configuration (deps, branch management).
 
+## CRITICAL: Daemon Timeout Prevention
+
+**Any command involving pytest or brownie WILL block for several minutes** during `brownie.network.connect()` (called at conftest.py import time). This triggers daemon inactivity timeout and kills your session.
+
+**You MUST use `fireAndForget=true` for ALL pytest/brownie commands.** Then poll the log file to stay alive:
+
+```
+# 1. Launch in background (use a unique log file per run)
+Execute(command="PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_foo.py -W ignore -s --tb=short > /tmp/test_run_001.log 2>&1", fireAndForget=true)
+# Note the PID from output
+
+# 2. Poll every 30s to stay alive AND see progress
+Execute(command="sleep 30 && tail -50 /tmp/test_run_001.log")
+
+# 3. Check if process finished
+Execute(command="ps -p <PID> > /dev/null 2>&1 && echo RUNNING || echo DONE")
+
+# 4. When DONE, read full results
+Read(file_path="/tmp/test_run_001.log")
+```
+
+**NEVER run pytest or brownie commands synchronously.** They WILL time out your session.
+
+Also use fireAndForget for `.venv/bin/pip install -e .` (triggers mypyc compilation, can take minutes).
+
 ## Work Procedure
 
 1. **Read the feature description** carefully. Understand exactly what needs to change and what the acceptance criteria are.
@@ -19,15 +44,15 @@ Use for features that modify ypricemagic library code (y/ directory), tests, or 
    - `.factory/library/architecture.md` for pricing pipeline architecture
    - `.factory/library/environment.md` for environment setup
    - Reference old fork code via `git show abandoned-master:<path>` when the feature description mentions porting from the old fork
+   - Reference stale feature branches for implementation guidance via `git show feat/xxx:<path>`. Available: `feat/cachebox-memory-optimization`, `feat/curve-gauges`, `feat/erc4626`, `feat/exotic-tokens`, `feat/priceresult-trade-path-cache-ops`
 
-3. **Check current branch state.** Ensure you're on `clean-rebuild` or a feature branch off it. If you need to create a feature branch: `git checkout -b <milestone-name> clean-rebuild`.
+3. **Check current branch state.** Ensure you're on `clean-rebuild` or a feature branch off it. Create a feature branch: `git checkout -b <feature-name> clean-rebuild`.
 
 4. **Write tests first** (TDD). Create test files following existing patterns:
-   - Use `@async_test` decorator (from `tests/fixtures.py`) for async tests
-   - Use `@mainnet_only` for chain-specific tests  
+   - Check `tests/fixtures.py` for available test decorators (`@async_test`, `@mainnet_only`, etc.)
    - Use hardcoded block numbers for determinism
    - Fantom-only tests: `@pytest.mark.skip(reason="Fantom-only")`
-   - Tests that don't need RPC can run quickly; RPC tests have 7200s timeout
+   - Tests that don't need RPC can use simple unit test patterns
 
 5. **Implement the feature.** Follow existing code patterns:
    - Use `@stuck_coro_debugger` on all new async pricing/RPC methods
@@ -36,9 +61,10 @@ Use for features that modify ypricemagic library code (y/ directory), tests, or 
    - Wrap prices in PriceResult with human-readable source descriptions
    - All caches must be bounded (set `ram_cache_maxsize`)
 
-6. **Verify your work:**
-   - Run the specific test file first: `PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest <test_file> -W ignore -s --tb=short`
-   - Then run the full suite: `PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --tb=short`
+6. **Verify your work** (using fireAndForget for ALL test commands):
+   - Run the specific test file first (fireAndForget + poll pattern)
+   - Then run the full suite (fireAndForget + poll pattern, may take 10+ minutes)
+   - Use unique log file names per run (e.g., `/tmp/test_targeted.log`, `/tmp/test_full.log`)
    - Grep for removed methods to confirm they're gone
    - Check that no stale imports or references remain
 
@@ -53,13 +79,13 @@ Use for features that modify ypricemagic library code (y/ directory), tests, or 
 
 ```json
 {
-  "salientSummary": "Ported PriceResult/PriceStep dataclasses from abandoned-master to clean-rebuild. Added float backward-compatibility (__float__, __gt__, __mul__, etc.). Wrote 12 unit tests covering construction, arithmetic, comparison, Decimal compatibility, and boolean truthiness. All upstream tests pass.",
+  "salientSummary": "Ported PriceResult/PriceStep dataclasses from abandoned-master to clean-rebuild. Added float backward-compatibility (__float__, __gt__, __mul__, etc.). Wrote 12 unit tests covering construction, arithmetic, comparison, Decimal compatibility, and boolean truthiness. All upstream tests pass (verified via fireAndForget pytest run, exit code 0).",
   "whatWasImplemented": "PriceResult dataclass in y/datatypes.py with .price and .path attributes. PriceStep dataclass with .token, .price, .source fields. PriceResult supports float(result), result > 0, result * 2 via operator overloads. Decimal(result.price) works, Decimal(result) intentionally raises.",
   "whatWasLeftUndone": "",
   "verification": {
     "commandsRun": [
-      {"command": "PYTEST_ADDOPTS=\"-p no:pytest_ethereum\" BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_price_result.py -W ignore -s --tb=short", "exitCode": 0, "observation": "12 tests passed"},
-      {"command": "PYTEST_ADDOPTS=\"-p no:pytest_ethereum\" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --tb=short", "exitCode": 0, "observation": "All 47 upstream tests + 12 new tests passed"}
+      {"command": "PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_price_result.py -W ignore -s --tb=short (fireAndForget)", "exitCode": 0, "observation": "12 tests passed"},
+      {"command": "PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --tb=short (fireAndForget)", "exitCode": 0, "observation": "All 47 upstream tests + 12 new tests passed"}
     ],
     "interactiveChecks": []
   },
@@ -89,3 +115,4 @@ Use for features that modify ypricemagic library code (y/ directory), tests, or 
 - Test failures in upstream code that are unrelated to the current feature
 - Branch merge conflicts that need resolution
 - Requirements are ambiguous about what to port vs what to implement fresh
+- Daemon timeout keeps killing your session despite using fireAndForget
