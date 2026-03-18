@@ -7,7 +7,7 @@ import a_sync
 import brownie
 import dank_mids
 from a_sync import cgather
-from brownie import ZERO_ADDRESS, convert
+from brownie import ZERO_ADDRESS, chain, convert
 from brownie.convert.datatypes import EthAddress
 from dank_mids._eth_utils import encode_hex
 from dank_mids.helpers import lru_cache_lite_nonull
@@ -33,6 +33,13 @@ We use raw calls for commonly used functions because its much faster than using 
 
 
 fourbyte: Final = lru_cache_lite_nonull(function_signature_to_4byte_selector)
+
+_KNOWN_DECIMALS: Final[dict[Network, dict[str, int]]] = {
+    Network.Mainnet: {
+        # old Synthetix sUSD proxy – non-standard decimals method
+        "0x57Ab1E02fEE23774580C119740129eAC7081e9D3": 18,
+    },
+}
 
 
 # yLazyLogger(logger)
@@ -172,6 +179,11 @@ async def _decimals(
 
     if decimals is not None:
         return decimals
+
+    # check known decimals before giving up
+    known = _KNOWN_DECIMALS.get(Network(chain.id), {})
+    if str(contract_address) in known:
+        return known[str(contract_address)]
 
     # we've failed to fetch
     if return_None_on_failure:

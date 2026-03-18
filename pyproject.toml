@@ -29,5 +29,9 @@ show_error_context = true
 install_types = true
 non_interactive = true
 
+[tool.pytest.ini_options]
+timeout = 600
+asyncio_task_timeout = 600
+
 [tool.black]
 line-length = 100

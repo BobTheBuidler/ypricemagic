@@ -38,7 +38,7 @@ Use for features that modify ypricemagic library code (y/ directory), tests, or 
 
 6. **Verify your work:**
    - Run the specific test file first: `PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest <test_file> -W ignore -s --tb=short`
-   - Then run the full suite: `PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --asyncio-task-timeout 7200 --tb=short`
+   - Then run the full suite: `PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --tb=short`
    - Grep for removed methods to confirm they're gone
    - Check that no stale imports or references remain
 
@@ -59,7 +59,7 @@ Use for features that modify ypricemagic library code (y/ directory), tests, or 
   "verification": {
     "commandsRun": [
       {"command": "PYTEST_ADDOPTS=\"-p no:pytest_ethereum\" BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_price_result.py -W ignore -s --tb=short", "exitCode": 0, "observation": "12 tests passed"},
-      {"command": "PYTEST_ADDOPTS=\"-p no:pytest_ethereum\" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --asyncio-task-timeout 7200 --tb=short", "exitCode": 0, "observation": "All 47 upstream tests + 12 new tests passed"}
+      {"command": "PYTEST_ADDOPTS=\"-p no:pytest_ethereum\" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --tb=short", "exitCode": 0, "observation": "All 47 upstream tests + 12 new tests passed"}
     ],
     "interactiveChecks": []
   },
