@@ -1,0 +1,7 @@
+commands:
+  install: .venv/bin/pip install -e .
+  install-dev: .venv/bin/pip install -r requirements-dev.txt
+  test: PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --asyncio-task-timeout 7200 --tb=short
+  test-file: PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --tb=short
+
+services: {}
