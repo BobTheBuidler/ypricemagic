@@ -1,7 +1,8 @@
 
 .PHONY: docs
 
-test: 
+test:
+	@rm -rf build/temp.* build/bdist.* build/lib.*
 	pytest -W ignore -s
 
 test-lf:

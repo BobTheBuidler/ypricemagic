@@ -4,6 +4,12 @@
 /build/**/*.typed
 /build/ops.txt
 /build/__native_ypricemagic.c
+/build/temp.*/
+/build/bdist.*/
+/build/lib.*/
+/build/tests.json
+/build/pricing_sources_map.md
+/build/deployments/
 /dist
 /env
 .hypothesis
