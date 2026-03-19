@@ -21,6 +21,7 @@ from y.prices import (
     band,
     chainlink,
     convex,
+    erc4626,
     exotic_tokens,
     one_to_one,
     pendle,
@@ -39,6 +40,7 @@ from y.prices.stable_swap import *
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import *
 from y.utils.logging import get_price_logger
+from y.utils.raw_calls import raw_call
 
 _P = ParamSpec("_P")
 _T = TypeVar("_T")
@@ -519,6 +521,25 @@ async def _exit_early_for_known_tokens(
             except NonStandardERC20:
                 sym = addr_short
             source = f"Curve {sym} LP"
+
+    elif bucket == "erc4626 vault":
+        price = await erc4626.get_price(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+        if price is not None:
+            try:
+                sym = await ERC20(token_address, asynchronous=True).symbol
+            except NonStandardERC20:
+                sym = addr_short
+            try:
+                asset_addr = await raw_call(
+                    token_address, "asset()", output="address",
+                    block=block, return_None_on_failure=True, sync=False
+                )
+                asset_sym = await ERC20(asset_addr, asynchronous=True).symbol if asset_addr else "unknown"
+            except Exception:
+                asset_sym = "unknown"
+            source = f"ERC4626 vault {sym} underlying {asset_sym} via previewRedeem"
 
     elif bucket == "ellipsis lp":
         price = await ellipsis.get_price(

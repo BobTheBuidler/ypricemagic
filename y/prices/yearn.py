@@ -355,17 +355,17 @@ class YearnInspiredVault(ERC20):
             return None
         logger.debug("%s share price at block %s: %s", self, block, share_price)
         try:
-            price = UsdPrice(
-                share_price
-                * Decimal(
-                    await underlying.price(
-                        block=block,
-                        ignore_pools=ignore_pools,
-                        skip_cache=skip_cache,
-                        sync=False,
-                    )
-                )
+            underlying_price = await underlying.price(
+                block=block,
+                ignore_pools=ignore_pools,
+                skip_cache=skip_cache,
+                sync=False,
             )
+            # Extract numeric price from PriceResult if needed
+            from y.datatypes import PriceResult as _PriceResult
+            if isinstance(underlying_price, _PriceResult):
+                underlying_price = underlying_price.price
+            price = UsdPrice(share_price * Decimal(underlying_price))
         except yPriceMagicError as e:
             if not isinstance(e.exception, PriceError):
                 raise
