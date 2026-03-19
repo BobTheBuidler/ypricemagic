@@ -30,4 +30,4 @@
 - `@a_sync.a_sync(default="sync")` for dual sync/async support
 - `@optional_async_diskcache` for detection functions
 - Address normalization via `convert.to_address_async()`
-- `has_methods()` for detecting contract interfaces without ABI
+- `has_methods()` for detecting contract interfaces without ABI — NOTE: calls each method via multicall with NO arguments; methods that require inputs (e.g., `previewRedeem(uint256)`) may silently fail. Use only no-input view methods for detection (e.g., `asset()`, `totalAssets()`).

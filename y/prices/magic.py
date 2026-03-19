@@ -21,6 +21,7 @@ from y.prices import (
     band,
     chainlink,
     convex,
+    curve_gauge,
     erc4626,
     exotic_tokens,
     one_to_one,
@@ -507,6 +508,19 @@ async def _exit_early_for_known_tokens(
             underlying = convex.MAPPING.get(str(token_address), "")
             underlying_short = _shorten_address(underlying) if underlying else addr_short
             source = f"Convex wrapping Curve LP {underlying_short}"
+
+    elif bucket == "curve gauge":
+        raw = await curve_gauge.get_price(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+        if raw is not None:
+            # Unwrap PriceResult from recursive magic.get_price() call
+            price = raw.price if isinstance(raw, PriceResult) else raw
+            lp_addr = await curve_gauge._get_lp_token(
+                await convert.to_address_async(token_address)
+            )
+            lp_short = _shorten_address(lp_addr) if lp_addr else addr_short
+            source = f"Curve gauge for LP {lp_short}"
 
     elif bucket == "creth":
         price = await creth.get_price_creth(token_address, block, skip_cache=skip_cache, sync=False)

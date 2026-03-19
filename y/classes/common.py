@@ -894,14 +894,17 @@ class WeiBalance(a_sync.ASyncGenericBase):
             >>> await balance.price
             Decimal('1.23')
         """
-        price = Decimal(
-            await self.token.price(
-                block=self.block,
-                skip_cache=self._skip_cache,
-                ignore_pools=self._ignore_pools,
-                sync=False,
-            )
+        raw_price = await self.token.price(
+            block=self.block,
+            skip_cache=self._skip_cache,
+            ignore_pools=self._ignore_pools,
+            sync=False,
         )
+        # magic.get_price returns PriceResult; extract .price for Decimal()
+        from y.datatypes import PriceResult as _PriceResult
+        if isinstance(raw_price, _PriceResult):
+            raw_price = raw_price.price
+        price = Decimal(raw_price)
         self._logger.debug("balance: %s  price: %s", self, price)
         return price
 

@@ -1,0 +1,24 @@
+{
+  "featureId": "erc4626-vaults",
+  "status": "pass",
+  "summary": "ERC4626 vault detection and pricing implemented correctly. y/prices/erc4626.py provides is_erc4626_vault() via has_methods(asset(), totalAssets()) and get_price() with previewRedeem/convertToAssets fallback. Bucket registered in buckets.py calls_only dict. Dispatch in magic.py builds descriptive source string 'ERC4626 vault {sym} underlying {asset_sym} via previewRedeem'. @stuck_coro_debugger on get_price(). 9 tests cover detection (true positive, true negative x2), bucket classification, pricing (positive, > underlying), PriceResult source string, direct pricing, and non-vault returns None. One bug was found and fixed by scrutiny validator: cache_type='memory' was split across multiple decorator lines, causing test_no_unbounded_memory_caches to fail. Fixed in commit f246ab0d by consolidating to a single line.",
+  "blockingIssues": [],
+  "nonBlockingIssues": [
+    "Detection uses asset() + totalAssets() instead of previewRedeem(uint256) (as specified in VAL-4626-001) because has_methods() cannot check methods with input parameters. This is a has_methods() limitation, not a bug in the ERC4626 implementation. The detection still correctly identifies ERC4626 vaults.",
+    "The cache decorator for is_erc4626_vault() was originally split across multiple lines, causing test_no_unbounded_memory_caches to fail. Fixed by scrutiny validator in commit f246ab0d.",
+    "Pre-existing: SQLite database caches bucket classifications persistently. Tokens classified before erc4626 bucket was added may need DB cache invalidation to be reclassified."
+  ],
+  "sharedStateObservations": [
+    {
+      "target": "library",
+      "observation": "has_methods() cannot check methods that require input parameters (e.g., previewRedeem(uint256)). When has_methods is called without arguments, input-parameter methods may silently fail. ERC4626 detection was changed to use asset() + totalAssets() (no-input methods) as a workaround.",
+      "sourceFeature": "erc4626-vaults"
+    },
+    {
+      "target": "AGENTS.md",
+      "observation": "Cache decorators with cache_type='memory' must have ram_cache_maxsize on the SAME line, not a following line. test_no_unbounded_memory_caches checks per-line, not per-decorator. Workers should be reminded to write @a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=..., ram_cache_maxsize=...) on a single line like all other files in the codebase.",
+      "sourceFeature": "erc4626-vaults",
+      "isSystemic": true
+    }
+  ]
+}

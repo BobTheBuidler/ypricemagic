@@ -1,0 +1,35 @@
+{
+  "milestone": "erc4626",
+  "round": 1,
+  "status": "pass",
+  "assertionsSummary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "blocked": 0
+  },
+  "passedAssertions": [
+    "VAL-4626-001",
+    "VAL-4626-002",
+    "VAL-4626-003",
+    "VAL-4626-004",
+    "VAL-CROSS-003"
+  ],
+  "failedAssertions": [],
+  "blockedAssertions": [],
+  "appliedUpdates": [],
+  "previousRound": null,
+  "testDetails": {
+    "targetedRun": {
+      "command": "cd /Users/bryan/code/ypricemagic && set -a && source .env && set +a && PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_erc4626.py -W ignore -s --tb=short",
+      "result": "9 passed, 0 failed, 0 skipped",
+      "exitCode": 0
+    },
+    "fullSuiteRun": {
+      "command": "cd /Users/bryan/code/ypricemagic && set -a && source .env && set +a && PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --tb=short",
+      "result": "352 failed, 1005 passed, 256 skipped, 3 errors in 1401.74s",
+      "exitCode": 1,
+      "note": "All ERC4626 test failures in full suite are asyncio.exceptions.CancelledError (pre-existing concurrent execution timeout, documented in baseline-green.md). Total failures (352) lower than baseline (~641). No new non-concurrency failures introduced."
+    }
+  }
+}
