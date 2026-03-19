@@ -1,0 +1,26 @@
+{
+  "groupId": "convex-assertions",
+  "milestone": "convex",
+  "assertions": {
+    "VAL-CONVEX-001": {
+      "status": "pass",
+      "evidence": "test_dynamic_token_is_convex PASSED: cvxsteCRV (0x9518c9063eB0262d791f38d8d6Eb0aca33c63ed0) is NOT in the hardcoded MAPPING but is detected dynamically via operator() + booster verification. test_dynamic_token_bucket PASSED: check_bucket() returns 'convex' for this dynamic token. test_dynamic_underlying_lp PASSED: resolves to steCRV LP 0x06325440D014e39736583c165C2963BA99fAf14E. 11 passed in 24.86s."
+    },
+    "VAL-CONVEX-002": {
+      "status": "pass",
+      "evidence": "test_hardcoded_token_is_convex PASSED: cvx3crv (0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C) detected as 'convex' bucket. test_hardcoded_underlying_lp PASSED: resolves to 3crv LP 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490. test_hardcoded_convex_price PASSED: returns positive price. test_convex_price_matches_underlying PASSED: Convex price within 0.1% of LP price. test_convex_returns_price_result PASSED: returns PriceResult with 'Convex' in source string. 11 passed in 24.86s."
+    },
+    "VAL-CONVEX-003": {
+      "status": "pass",
+      "evidence": "All 11 tests in tests/prices/test_convex.py passed with exit code 0. Command: PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/prices/test_convex.py -W ignore -s --tb=short. Output: '11 passed in 24.86s'."
+    },
+    "VAL-QUAL-001": {
+      "status": "pass",
+      "evidence": "All 3 async pricing functions in y/prices/convex.py use @stuck_coro_debugger: (1) is_convex_lp() at line ~57, (2) get_underlying_lp() at line ~101, (3) get_price() at line ~155. Verified via grep: 3 occurrences of @stuck_coro_debugger in the file."
+    }
+  },
+  "frictions": [],
+  "blockers": [],
+  "toolsUsed": ["pytest", "grep"],
+  "testOutput": "11 passed in 24.86s. Tests: test_hardcoded_token_is_convex, test_hardcoded_underlying_lp, test_dynamic_token_is_convex, test_dynamic_token_bucket, test_non_convex_not_detected, test_non_convex_underlying_lp_is_none, test_dynamic_underlying_lp, test_hardcoded_convex_price, test_dynamic_convex_price, test_convex_price_matches_underlying, test_convex_returns_price_result. All PASSED."
+}

@@ -49,9 +49,8 @@ MAPPING = {
 
 @a_sync.a_sync(
     default="sync",
-    cache_type="memory",
+    cache_type="memory", ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
     ram_cache_ttl=5 * 60,
-    ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
 )
 @stuck_coro_debugger
 @optional_async_diskcache
@@ -94,9 +93,8 @@ async def is_convex_lp(token_address: AnyAddressType) -> bool:
 @stuck_coro_debugger
 @a_sync.a_sync(
     default="sync",
-    cache_type="memory",
+    cache_type="memory", ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
     ram_cache_ttl=5 * 60,
-    ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE,
 )
 async def get_underlying_lp(token_address: AnyAddressType) -> ChecksumAddress | None:
     """Return the underlying Curve LP token for a Convex LP token.

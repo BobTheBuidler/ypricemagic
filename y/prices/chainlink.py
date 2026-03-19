@@ -384,6 +384,10 @@ class Chainlink(a_sync.ASyncGenericBase):
     async def get_feed(self, asset: Address) -> Feed | None:
         """Get the feed for a specific asset.
 
+        Iterates FeedConfirmed events starting from the highest block and working
+        backwards, returning the first (latest) match.  This is more efficient than
+        scanning all events forward for tokens that have had feed replacements.
+
         The method converts the supplied asset address to an instance of :class:`~y.classes.common.ERC20`
         before performing the equality comparison. This allows a consistent lookup despite different input types.
         Please pass the token's address (e.g., "0xAssetAddress").
@@ -405,9 +409,23 @@ class Chainlink(a_sync.ASyncGenericBase):
             - :meth:`~y.prices.chainlink.Chainlink.has_feed`
         """
         asset = await convert.to_address_async(asset)
-        async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):
+
+        # Check event-based feeds in reverse (highest block first) so we find the
+        # latest aggregator immediately and can exit early.
+        if self._feeds_from_events:
+            event_feeds: list[Feed] = []
+            async for feed in self._feeds_from_events.objects(to_block=await dank_mids.eth.block_number):
+                event_feeds.append(feed)
+            for feed in reversed(event_feeds):
+                if asset == feed.asset:
+                    return feed
+
+        # Fall back to statically-configured feeds
+        for feed in self._feeds:
             if asset == feed.asset:
                 return feed
+
+        return None
 
     async def has_feed(self, asset: AnyAddressType) -> bool:
         """Check if a feed exists for a specific asset.

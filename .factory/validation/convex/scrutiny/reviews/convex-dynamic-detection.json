@@ -1,0 +1,60 @@
+{
+  "featureId": "convex-dynamic-detection",
+  "milestone": "convex",
+  "workerSession": "caf59082-9dad-4337-a3be-a092af3a2202",
+  "status": "fail",
+  "blockingIssues": [
+    {
+      "severity": "blocking",
+      "description": "cache_type='memory' and ram_cache_maxsize on separate lines in convex.py. The test_no_unbounded_memory_caches test scans source files line-by-line and requires both to appear on the same line. Lines 52 and 97 in y/prices/convex.py had them split across lines, causing the cachebox bounds test to fail.",
+      "suggestedFix": "Put cache_type='memory' and ram_cache_maxsize on the same line in both @a_sync.a_sync decorators in y/prices/convex.py. Fixed in commit 86cf701c."
+    }
+  ],
+  "assertionChecks": [
+    {
+      "assertionId": "VAL-CONVEX-001",
+      "description": "Dynamic Convex detection via operator() + booster verification",
+      "passed": true,
+      "evidence": "is_convex_lp() calls get_underlying_lp() which calls operator() on the token, verifies the returned booster has poolLength(), then iterates poolInfo(i) to find the matching token. Test test_dynamic_token_is_convex passes for cvxsteCRV (not in hardcoded list)."
+    },
+    {
+      "assertionId": "VAL-CONVEX-002",
+      "description": "Previously working hardcoded Convex tokens still work",
+      "passed": true,
+      "evidence": "Static MAPPING lookup is the fast path. test_hardcoded_convex_price and test_hardcoded_token_is_convex both pass for cvx3crv."
+    },
+    {
+      "assertionId": "VAL-CONVEX-003",
+      "description": "Full test suite passes after Convex",
+      "passed": false,
+      "evidence": "test_no_unbounded_memory_caches FAILED due to cache_type/ram_cache_maxsize split across lines. All 11 convex-specific tests pass. Fix applied in commit 86cf701c."
+    },
+    {
+      "assertionId": "VAL-QUAL-001",
+      "description": "stuck_coro_debugger on new async pricing functions",
+      "passed": true,
+      "evidence": "@stuck_coro_debugger applied to is_convex_lp (line 56), get_underlying_lp (line 94), and get_price (line 195). All three new/modified async functions are properly decorated."
+    }
+  ],
+  "codeQualityObservations": [
+    {
+      "type": "positive",
+      "description": "Two-stage detection (static fast path + dynamic fallback) is well-structured and clearly documented."
+    },
+    {
+      "type": "positive",
+      "description": "Comprehensive test coverage: 11 tests covering static path, dynamic detection, underlying LP resolution, pricing, PriceResult format, and non-convex tokens."
+    },
+    {
+      "type": "positive",
+      "description": "Error handling via return_None_on_failure and call_reverted pattern is consistent with codebase conventions."
+    },
+    {
+      "type": "issue",
+      "description": "cache_type='memory' and ram_cache_maxsize split across decorator lines violated the cachebox bounds test. Style: put them on the same line (or use single-line form) to satisfy the linter test.",
+      "severity": "blocking"
+    }
+  ],
+  "sharedStateObservations": [],
+  "summary": "The convex-dynamic-detection feature is functionally correct and well-tested. The dynamic detection via operator() + booster verification works correctly. One blocking issue was found: cache_type='memory' and ram_cache_maxsize were on separate decorator lines, causing the cachebox bounds test to fail. This was fixed in commit 86cf701c immediately after discovery."
+}
