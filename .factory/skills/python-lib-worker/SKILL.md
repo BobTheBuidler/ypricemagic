@@ -19,7 +19,8 @@ Use for features that modify ypricemagic library code (y/ directory), tests, or 
 
 ```
 # 1. Launch in background (use a unique log file per run)
-Execute(command="PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_foo.py -W ignore -s --tb=short > /tmp/test_run_001.log 2>&1", fireAndForget=true)
+# ALWAYS source .env first for ETHERSCAN_TOKEN
+Execute(command="set -a && source .env && set +a && PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_foo.py -W ignore -s --tb=short > /tmp/test_run_001.log 2>&1", fireAndForget=true)
 # Note the PID from output
 
 # 2. Poll every 30s to stay alive AND see progress

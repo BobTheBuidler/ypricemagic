@@ -1,0 +1,60 @@
+{
+  "milestone": "exotic-tokens",
+  "round": 1,
+  "status": "fail",
+  "assertionsSummary": {
+    "total": 8,
+    "passed": 3,
+    "failed": 5,
+    "blocked": 0
+  },
+  "passedAssertions": ["VAL-EXOTIC-004", "VAL-EXOTIC-005", "VAL-EXOTIC-006"],
+  "failedAssertions": [
+    {
+      "id": "VAL-EXOTIC-001",
+      "reason": "Wrong test address 0x55282dA27a3a02eFe599f9bD85E2e0C78f9cD2b2 is an ERC-1155 NFT, not a Pickle pSLP. Also is_pickle_pslp uses ERC20.symbol which raises NonStandardERC20."
+    },
+    {
+      "id": "VAL-EXOTIC-002",
+      "reason": "is_pool_together_v4_ticket uses raw_call with output='str' for name() which doesn't properly ABI-decode string return values, causing detection to fail for valid PT ticket 0xdd4d117723C257CEe402285D3aCF218E9A8236E1."
+    },
+    {
+      "id": "VAL-EXOTIC-003",
+      "reason": "Wrong test address 0x16f9D564Df80376c61AC914205d3fdfb8A32f98B. Real xPREMIA is at 0x16f9d564df80376c61ac914205d3fdff7057d610."
+    },
+    {
+      "id": "VAL-EXOTIC-007",
+      "reason": "9 test failures: wrong addresses for pSLP/xPREMIA, ABI decoding bug in PT detection, resulting price returns None."
+    },
+    {
+      "id": "VAL-CROSS-002",
+      "reason": "PriceResult source string tests all fail because detection/pricing itself returns None."
+    }
+  ],
+  "blockedAssertions": [],
+  "appliedUpdates": [
+    {
+      "target": "user-testing.md",
+      "description": "Added note about brownie connect blocking and fireAndForget requirement for tests",
+      "source": "prior-runs"
+    }
+  ],
+  "previousRound": null,
+  "issues": [
+    {
+      "severity": "high",
+      "description": "Wrong test address for xPREMIA in tests/prices/test_exotic_tokens.py. XPREMIA = '0x16f9D564Df80376c61AC914205d3fdfb8A32f98B' should be '0x16f9d564df80376c61ac914205d3fdff7057d610'",
+      "suggestedFix": "Update XPREMIA constant in test file to 0x16f9d564df80376c61ac914205d3fdff7057d610"
+    },
+    {
+      "severity": "high",
+      "description": "Wrong test address for Pickle pSLP in tests/prices/test_exotic_tokens.py. PSLP_ETH_USDC = '0x55282dA27a3a02eFe599f9bD85E2e0C78f9cD2b2' is an ERC-1155 NFT, not a Pickle pSLP token",
+      "suggestedFix": "Find a valid mainnet Pickle pSLP-ETH/USDC address and update the test constant"
+    },
+    {
+      "severity": "high",
+      "description": "is_pool_together_v4_ticket uses raw_call with output='str' for name() but raw_call doesn't properly ABI-decode dynamic string return values (ABI encoding has offset + length prefix before actual string bytes)",
+      "suggestedFix": "Replace raw_call(name(), output='str') with probe(address, ('name()(string)',)) or use ERC20.name property"
+    }
+  ]
+}

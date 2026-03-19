@@ -57,7 +57,7 @@ async def is_pickle_pslp(token_address: AnyAddressType) -> bool:
     """Determine whether a token is a Pickle pSLP token.
 
     Detection requires:
-    1. Symbol starts with ``'pSLP-'``.
+    1. Symbol is ``'pSLP'`` or starts with ``'pSLP-'``.
     2. The contract exposes ``getRatio()`` and ``token()``.
 
     Args:
@@ -73,7 +73,7 @@ async def is_pickle_pslp(token_address: AnyAddressType) -> bool:
     except Exception:
         return False
 
-    if not symbol or not symbol.startswith("pSLP-"):
+    if not symbol or not (symbol == "pSLP" or symbol.startswith("pSLP-")):
         return False
 
     return await has_methods(
@@ -169,13 +169,7 @@ async def is_pool_together_v4_ticket(token_address: AnyAddressType) -> bool:
         return False
 
     try:
-        name = await raw_call(
-            token_address,
-            "name()",
-            output="str",
-            return_None_on_failure=True,
-            sync=False,
-        )
+        name = await ERC20(token_address, asynchronous=True).name
     except Exception:
         return False
 
@@ -247,7 +241,7 @@ async def is_xpremia(token_address: AnyAddressType) -> bool:
     """Determine whether a token is xPREMIA.
 
     Detection: symbol == ``'xPREMIA'`` and contract exposes
-    ``getXPremiaToPremiaRatio()``.
+    ``premia()`` (returning the underlying PREMIA token address).
 
     Args:
         token_address: The address of the token to check.
@@ -266,7 +260,7 @@ async def is_xpremia(token_address: AnyAddressType) -> bool:
         return False
 
     return await has_methods(
-        token_address, ("getXPremiaToPremiaRatio()(uint256)",), all, sync=False
+        token_address, ("premia()(address)",), all, sync=False
     )
 
 
@@ -279,9 +273,13 @@ async def get_price_xpremia(
 ) -> UsdPrice | None:
     """Get the USD price of xPREMIA.
 
-    Price = PREMIA_price × getXPremiaToPremiaRatio() / 1e18.
+    The PremiaStaking contract works like xSUSHI: the ratio of
+    ``premia.balanceOf(xPREMIA) / xPREMIA.totalSupply()`` gives the
+    PREMIA per xPREMIA share.
 
-    If ``getXPremiaToPremiaRatio()`` reverts, falls back to 1:1 with PREMIA.
+    Price = PREMIA_price × (premia_balance / total_shares).
+
+    Falls back to 1:1 with PREMIA if the ratio cannot be computed.
 
     Args:
         token_address: The address of the xPREMIA token.
@@ -293,27 +291,51 @@ async def get_price_xpremia(
     """
     from y.prices import magic
 
-    ratio_raw = await raw_call(
+    token_address = await convert.to_address_async(token_address)
+
+    # Get the underlying PREMIA token address from the contract
+    premia_address = await raw_call(
         token_address,
-        "getXPremiaToPremiaRatio()",
+        "premia()",
+        output="address",
+        block=block,
+        return_None_on_failure=True,
+        sync=False,
+    )
+    if not premia_address or premia_address == ZERO_ADDRESS:
+        premia_address = _PREMIA_ADDRESS
+
+    premia_price = await magic.get_price(
+        premia_address, block=block, skip_cache=skip_cache, sync=False
+    )
+    if not premia_price:
+        return None
+
+    # Compute ratio: premia.balanceOf(xPREMIA) / xPREMIA.totalSupply()
+    premia_balance = await raw_call(
+        premia_address,
+        "balanceOf(address)",
+        inputs=token_address,
+        output="int",
+        block=block,
+        return_None_on_failure=True,
+        sync=False,
+    )
+    total_supply = await raw_call(
+        token_address,
+        "totalSupply()",
         output="int",
         block=block,
         return_None_on_failure=True,
         sync=False,
     )
 
-    premia_price = await magic.get_price(
-        _PREMIA_ADDRESS, block=block, skip_cache=skip_cache, sync=False
-    )
-    if not premia_price:
-        return None
-
-    if ratio_raw is None or ratio_raw == 0:
-        # Fall back to 1:1 with PREMIA (older version without ratio function)
+    if not premia_balance or not total_supply:
+        # Fall back to 1:1 with PREMIA
         logger.debug("xPREMIA ratio unavailable; treating as 1:1 with PREMIA")
         return UsdPrice(float(premia_price))
 
-    ratio = Decimal(ratio_raw) / Decimal(10**18)
+    ratio = Decimal(premia_balance) / Decimal(total_supply)
     return UsdPrice(Decimal(str(float(premia_price))) * ratio)
 
 
@@ -387,13 +409,7 @@ async def is_tarot_supply_vault(token_address: AnyAddressType) -> bool:
         return False
 
     try:
-        name = await raw_call(
-            token_address,
-            "name()",
-            output="str",
-            return_None_on_failure=True,
-            sync=False,
-        )
+        name = await ERC20(token_address, asynchronous=True).name
     except Exception:
         return False
 

@@ -1,0 +1,47 @@
+{
+  "groupId": "exotic-tokens-group",
+  "assertions": {
+    "VAL-EXOTIC-001": {
+      "status": "fail",
+      "evidence": "test_pickle_pslp_bucket FAILED: bucket returned None instead of 'pickle pslp'. test_pickle_pslp_price FAILED: price is None. Root cause: Test uses wrong address 0x55282dA27a3a02eFe599f9bD85E2e0C78f9cD2b2 which is an ERC-1155 NFT with 0 holders/transfers, not a Pickle pSLP token. Additionally, even if the address were correct, is_pickle_pslp uses ERC20.symbol which raises NonStandardERC20 for this address since it cannot decode the symbol as UTF-8 string. Two bugs: (1) wrong test address, (2) ERC20.symbol fails for the detection logic."
+    },
+    "VAL-EXOTIC-002": {
+      "status": "fail",
+      "evidence": "test_pool_together_v4_bucket FAILED: bucket returned None instead of 'pool together v4 ticket'. test_pool_together_v4_price FAILED: price is None (log shows 'failed to get price for PTaUSDC'). Address 0xdd4d117723C257CEe402285D3aCF218E9A8236E1 is correct PoolTogether aUSDC Ticket, name='PoolTogether aUSDC Ticket' which matches the detection pattern. Root cause: is_pool_together_v4_ticket uses raw_call with output='str' for name() but this function does not properly ABI-decode string return values from ERC20 name() calls. The raw ABI-encoded bytes don't produce the expected pattern after the string conversion."
+    },
+    "VAL-EXOTIC-003": {
+      "status": "fail",
+      "evidence": "test_xpremia_bucket FAILED: bucket returned None instead of 'xpremia'. test_xpremia_price FAILED: price is None. Root cause: Test uses wrong address 0x16f9D564Df80376c61AC914205d3fdfb8A32f98B. Real xPREMIA is at 0x16f9d564df80376c61ac914205d3fdff7057d610 (confirmed via Etherscan search). The test address is wrong and cannot have its symbol read (NonStandardERC20 error)."
+    },
+    "VAL-EXOTIC-004": {
+      "status": "pass",
+      "evidence": "test_xtarot_bucket and test_xtarot_price are both SKIPPED with @pytest.mark.skip(reason='Fantom-only'). The 4 skipped tests include 2 xTAROT and 2 Tarot SupplyVault tests, all correctly marked as Fantom-only. pytest output: 9 failed, 4 skipped in 164.90s. The skips confirm the requirement is met."
+    },
+    "VAL-EXOTIC-005": {
+      "status": "pass",
+      "evidence": "test_tarot_supply_vault_bucket and test_tarot_supply_vault_price are both SKIPPED with @pytest.mark.skip(reason='Fantom-only'). Tests in tests/prices/test_exotic_tokens.py at lines 196 and 206 confirm the skip decorators are in place."
+    },
+    "VAL-EXOTIC-006": {
+      "status": "pass",
+      "evidence": "All 5 exotic token bucket names are registered. grep buckets.py confirms: 'pickle pslp': exotic_tokens.is_pickle_pslp (line 197), 'pool together v4 ticket': exotic_tokens.is_pool_together_v4_ticket (line 198), 'xpremia': exotic_tokens.is_xpremia (line 199), 'xtarot': exotic_tokens.is_xtarot (line 200), 'tarot supply vault': exotic_tokens.is_tarot_supply_vault (line 201). grep magic.py confirms dispatch at lines 702-731 for all 5 bucket types."
+    },
+    "VAL-EXOTIC-007": {
+      "status": "fail",
+      "evidence": "Full test results: 9 failed, 4 skipped in 164.90s. Failures: test_xpremia_bucket, test_pool_together_v4_bucket, test_pickle_pslp_bucket, test_pool_together_v4_price, test_pool_together_v4_returns_price_result, test_xpremia_returns_price_result, test_xpremia_price, test_pickle_pslp_returns_price_result, test_pickle_pslp_price. Root causes: wrong test addresses for xPREMIA and pSLP; name() ABI decoding bug for PT detection."
+    },
+    "VAL-CROSS-002": {
+      "status": "fail",
+      "evidence": "test_pickle_pslp_returns_price_result, test_pool_together_v4_returns_price_result, and test_xpremia_returns_price_result all FAILED because the underlying price lookup returns None (not a PriceResult). Cannot verify PriceResult source strings when detection itself fails."
+    }
+  },
+  "frictions": [
+    "Wrong test addresses in tests/prices/test_exotic_tokens.py: XPREMIA should be 0x16f9d564df80376c61ac914205d3fdff7057d610, PSLP_ETH_USDC needs a valid mainnet Pickle pSLP address",
+    "raw_call with output='str' does not properly ABI-decode string return values from name() method calls"
+  ],
+  "blockers": [
+    "Wrong xPREMIA address in test: 0x16f9D564Df80376c61AC914205d3fdfb8A32f98B is not xPREMIA (real address: 0x16f9d564df80376c61ac914205d3fdff7057d610)",
+    "Wrong Pickle pSLP address: 0x55282dA27a3a02eFe599f9bD85E2e0C78f9cD2b2 is an ERC-1155 NFT, not a Pickle pSLP token",
+    "PoolTogether V4 detection fails: raw_call with output='str' for name() doesn't properly decode ABI-encoded string values"
+  ],
+  "toolsUsed": ["pytest", "sqlite3", "etherscan", "web search"]
+}

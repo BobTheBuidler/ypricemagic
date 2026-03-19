@@ -19,14 +19,14 @@ from y.prices.utils.buckets import check_bucket
 # Token addresses
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Pickle pSLP-ETH/USDC on mainnet
-PSLP_ETH_USDC = "0x55282dA27a3a02eFe599f9bD85E2e0C78f9cD2b2"
+# Pickle pSushi USDC/ETH (pSLP) on mainnet
+PSLP_ETH_USDC = "0x8c2D16B7F6D3F989eb4878EcF13D695A7d504E43"
 
 # PoolTogether V4 USDC Ticket on mainnet
 PT_USDC_TICKET = "0xdd4d117723C257CEe402285D3aCF218E9A8236E1"
 
-# xPREMIA on mainnet
-XPREMIA = "0x16f9D564Df80376C61AC914205D3fDfB8a32f98b"
+# xPREMIA (PremiaStaking) on mainnet
+XPREMIA = "0x16f9D564Df80376C61AC914205D3fDff7057d610"
 PREMIA = "0x6399C842dD2bE3dE30BF99Bc7D1bBF6Fa3650E70"
 
 # xTAROT on Fantom
