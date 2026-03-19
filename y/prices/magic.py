@@ -21,6 +21,7 @@ from y.prices import (
     band,
     chainlink,
     convex,
+    exotic_tokens,
     one_to_one,
     pendle,
     popsicle,
@@ -697,6 +698,41 @@ async def _exit_early_for_known_tokens(
             except NonStandardERC20:
                 sym = addr_short
             source = f"Yearn {sym} vault share price"
+
+    elif bucket == "pickle pslp":
+        price = await exotic_tokens.get_price_pickle_pslp(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+        if price is not None:
+            source = f"Pickle pSLP {addr_short} via getRatio"
+
+    elif bucket == "pool together v4 ticket":
+        price = await exotic_tokens.get_price_pool_together_v4(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+        if price is not None:
+            source = f"PoolTogether V4 Ticket {addr_short} 1:1 with underlying"
+
+    elif bucket == "xpremia":
+        price = await exotic_tokens.get_price_xpremia(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+        if price is not None:
+            source = f"xPREMIA {addr_short} via getXPremiaToPremiaRatio"
+
+    elif bucket == "xtarot":
+        price = await exotic_tokens.get_price_tarot_vault(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+        if price is not None:
+            source = f"xTAROT {addr_short} via shareValuedAsUnderlying"
+
+    elif bucket == "tarot supply vault":
+        price = await exotic_tokens.get_price_tarot_vault(
+            token_address, block=block, skip_cache=skip_cache, sync=False
+        )
+        if price is not None:
+            source = f"Tarot SupplyVault {addr_short} via shareValuedAsUnderlying"
 
     logger.debug("%s -> %s", bucket, price)
 

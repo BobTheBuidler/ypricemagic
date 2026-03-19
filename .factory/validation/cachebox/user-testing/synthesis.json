@@ -1,0 +1,22 @@
+{
+  "milestone": "cachebox",
+  "round": 1,
+  "status": "pass",
+  "assertionsSummary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "blocked": 0
+  },
+  "passedAssertions": [
+    "VAL-CACHE-001",
+    "VAL-CACHE-002",
+    "VAL-CACHE-003",
+    "VAL-CACHE-004",
+    "VAL-CROSS-001"
+  ],
+  "failedAssertions": [],
+  "blockedAssertions": [],
+  "appliedUpdates": [],
+  "previousRound": null
+}

@@ -9,7 +9,7 @@ from y import convert
 from y.classes.common import ERC20
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
-from y.prices import convex, one_to_one, pendle, popsicle, rkp3r, solidex, yearn
+from y.prices import convex, exotic_tokens, one_to_one, pendle, popsicle, rkp3r, solidex, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
@@ -194,6 +194,11 @@ calls_only = {
     "popsicle": popsicle.is_popsicle_lp,
     "reserve": reserve.is_rtoken,
     "stargate lp": stargate.is_stargate_lp,
+    "pickle pslp": exotic_tokens.is_pickle_pslp,
+    "pool together v4 ticket": exotic_tokens.is_pool_together_v4_ticket,
+    "xpremia": exotic_tokens.is_xpremia,
+    "xtarot": exotic_tokens.is_xtarot,
+    "tarot supply vault": exotic_tokens.is_tarot_supply_vault,
 }
 
 

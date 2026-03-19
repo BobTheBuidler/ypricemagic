@@ -1,0 +1,34 @@
+{
+  "milestone": "cachebox",
+  "groupId": "cachebox-cache-assertions",
+  "assertions": {
+    "VAL-CACHE-001": {
+      "status": "pass",
+      "evidence": "grep found 'cachebox>=5.2,<6' in both requirements.txt and pyproject.toml. TestCacheboxInDependencies tests (test_cachebox_in_requirements_txt, test_cachebox_in_pyproject_toml) pass.",
+      "details": "requirements.txt: 'cachebox>=5.2,<6'. pyproject.toml: 'cachebox>=5.2,<6' in [project] dependencies."
+    },
+    "VAL-CACHE-002": {
+      "status": "pass",
+      "evidence": "grep -r 'alru_cache\\|async_lru' y/ returns no matches. TestNoAlruCacheImports::test_no_alru_cache_in_source passes. All 15 test_cachebox.py tests pass.",
+      "details": "The y/ source tree has no remaining alru_cache or async_lru imports."
+    },
+    "VAL-CACHE-003": {
+      "status": "pass",
+      "evidence": "All 25 occurrences of cache_type='memory' in y/ include ram_cache_maxsize parameter. TestAllMemoryCachesBounded::test_no_unbounded_memory_caches and test_no_unbounded_ram_cache_maxsize both pass.",
+      "details": "Checked y/prices/magic.py, y/prices/yearn.py, y/prices/utils/buckets.py, y/prices/stable_swap/*, y/prices/lending/aave.py, y/prices/dex/*, y/prices/tokenized_fund/*, y/utils/raw_calls.py, y/contracts.py. All have ram_cache_maxsize set."
+    },
+    "VAL-CACHE-004": {
+      "status": "pass",
+      "evidence": "86 targeted tests pass (tests/test_cachebox.py [15 passed], tests/test_price_result.py [40 passed], tests/test_trade_path_sources.py [31 passed]) in 0.14s with exit code 0. No behavioral regressions detected from cache migration.",
+      "details": "pytest tests/test_cachebox.py tests/test_price_result.py tests/test_trade_path_sources.py returned 86 passed, 0 failed."
+    },
+    "VAL-CROSS-001": {
+      "status": "pass",
+      "evidence": "test_cache_hit_reconstruction verifies PriceResult is preserved through cache layer. The a_sync in-memory cache (backed by cachebox) stores Python objects by reference, preserving PriceResult type and path. Code review of magic.py shows _get_price is decorated with @a_sync.a_sync(cache_type='memory', ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE) which uses cachebox as backend.",
+      "details": "TestPriceResultBackwardCompat::test_cache_hit_reconstruction passes. The __cache decorator in magic.py reconstructs PriceResult from DB cache on hits. The in-memory cachebox layer (via a_sync) returns cached PriceResult objects unchanged."
+    }
+  },
+  "frictions": [],
+  "blockers": [],
+  "toolsUsed": ["grep", "pytest", "code-review"]
+}
