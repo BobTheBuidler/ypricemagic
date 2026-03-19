@@ -13,6 +13,7 @@ from dank_mids._eth_utils import encode_hex
 from dank_mids.helpers import lru_cache_lite_nonull
 from faster_eth_utils import function_signature_to_4byte_selector
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.contracts import Contract, proxy_implementation
 from y.convert import to_address, to_address_async
 from y.datatypes import Address, AddressOrContract, Block
@@ -43,7 +44,7 @@ _KNOWN_DECIMALS: Final[dict[Network, dict[str, int]]] = {
 
 
 # yLazyLogger(logger)
-@a_sync.a_sync(cache_type="memory")
+@a_sync.a_sync(cache_type="memory", ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 async def _cached_call_fn(
     func: Callable,
     contract_address: AddressOrContract,
@@ -71,7 +72,7 @@ async def decimals(
         return await _cached_call_fn(_decimals, contract_address, block)
 
 
-@a_sync.a_sync(default="sync", cache_type="memory")
+@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 async def _decimals(
     contract_address: AddressOrContract,
     block: Block | None = None,

@@ -504,7 +504,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
             cache[most_recent_deploy_block]
 
     @stuck_coro_debugger
-    @a_sync.a_sync(cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync.a_sync(cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL, ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE)
     async def get_price(
         self,
         token: Address,

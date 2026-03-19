@@ -318,7 +318,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
             )
         return any(__o in pool for pool in self.pools)
 
-    @a_sync.a_sync(cache_type="memory")
+    @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
     async def is_atoken(self, atoken_address: AnyAddressType) -> bool:
         logger = get_price_logger(atoken_address, block=None, extra="aave")
         is_atoken = any(
@@ -339,7 +339,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         contract = await Contract.coroutine(atoken_address, require_success=False)
         return contract.verified and hasall(contract, _WRAPPED_V3_METHODS)
 
-    @a_sync.a_sync(cache_type="memory")
+    @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
     async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
         pool: AaveMarketV1 | AaveMarketV2 | AaveMarketV3 = await self.pool_for_atoken(
             atoken_address, sync=False

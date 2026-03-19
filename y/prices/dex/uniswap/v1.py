@@ -44,7 +44,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
         self.asynchronous = asynchronous
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=None)
+    @a_sync.a_sync(ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
     async def get_exchange(self, token_address: Address) -> Contract | None:
         """
         Get the exchange contract for a given token address.

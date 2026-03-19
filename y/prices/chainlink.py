@@ -2,8 +2,8 @@ import logging
 from collections.abc import AsyncIterator
 
 import a_sync
+import cachebox
 import dank_mids
-from async_lru import alru_cache
 from brownie import ZERO_ADDRESS
 from brownie.network.event import _EventItem
 from multicall import Call
@@ -236,7 +236,7 @@ class Feed:
         return await Call(self.address, "decimals()(uint)")
 
     # @a_sync.future(cache_type='memory')
-    @alru_cache(maxsize=None)
+    @cachebox.cached(cachebox.LRUCache(ENVS.DEFAULT_CACHE_MAXSIZE))
     async def scale(self) -> int | None:
         return await (10 ** a_sync.ASyncFuture(self.decimals()))
 
@@ -462,7 +462,7 @@ class Chainlink(a_sync.ASyncGenericBase):
         logger.debug("getting price for %s at %s", asset, block)
         return await self._get_price(str(asset), block)  # force to string for cache key
 
-    @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
+    @cachebox.cached(cachebox.TTLCache(1000, ttl=ENVS.CACHE_TTL))
     async def _get_price(self, asset: Address, block: Block) -> UsdPrice | None:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:

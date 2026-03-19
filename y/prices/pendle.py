@@ -1,7 +1,7 @@
 from decimal import Decimal
 
+import cachebox
 from a_sync import a_sync, cgather
-from async_lru import alru_cache
 from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -43,7 +43,7 @@ async def is_pendle_lp(token: Address) -> bool:
     )
 
 
-@alru_cache(maxsize=None)
+@cachebox.cached(cachebox.LRUCache(ENVS.DEFAULT_CACHE_MAXSIZE))
 async def get_tokens(lp_token: Address) -> tuple[str, str, str]:
     """
     Retrieves the addresses of the tokens in a Pendle LP token.

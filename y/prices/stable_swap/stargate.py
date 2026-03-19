@@ -91,7 +91,7 @@ async def _prime_factory_cache() -> None:
             await _load_factory_pools(factory)
 
 
-@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
+@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 async def is_stargate_lp(token_address: AnyAddressType) -> bool:
     token_address = await convert.to_address_async(token_address)
     await _prime_factory_cache()

@@ -313,7 +313,7 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
 
 
 @stuck_coro_debugger
-@a_sync.a_sync(default="async", cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync.a_sync(default="async", cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL, ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE)
 @__cache
 async def _get_price(
     token: ChecksumAddress,

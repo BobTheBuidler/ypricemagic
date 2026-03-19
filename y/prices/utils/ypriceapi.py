@@ -8,9 +8,9 @@ from time import time
 from typing import Any, Final, final
 
 import dank_mids
+import cachebox
 from aiohttp import ClientResponse, ClientSession, ClientTimeout, TCPConnector
 from aiohttp.client_exceptions import ClientConnectorSSLError, ClientError, ContentTypeError
-from async_lru import alru_cache
 from dank_mids.helpers._session import HTTPStatusExtended
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -101,7 +101,7 @@ def announce_beta() -> None:
     should_use = False
 
 
-@alru_cache(maxsize=1)
+@cachebox.cached(cachebox.LRUCache(1))
 async def get_session() -> ClientSession:
     """Get an aiohttp ClientSession for ypriceAPI.
 
@@ -121,7 +121,7 @@ async def get_session() -> ClientSession:
     )
 
 
-@alru_cache(ttl=TEN_MINUTES)
+@cachebox.cached(cachebox.TTLCache(128, ttl=TEN_MINUTES))
 async def get_chains() -> dict[int, str]:
     """Get the supported chains from ypriceAPI.
 
@@ -139,7 +139,7 @@ async def get_chains() -> dict[int, str]:
     return {int(k): v for k, v in chains.items()}
 
 
-@alru_cache(ttl=TEN_MINUTES)
+@cachebox.cached(cachebox.TTLCache(128, ttl=TEN_MINUTES))
 async def chain_supported(chainid: int) -> bool:
     """Check if a chain is supported by ypriceAPI.
 

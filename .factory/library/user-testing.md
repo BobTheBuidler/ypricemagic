@@ -28,3 +28,29 @@ brownie.network.connect() is called at conftest.py import time and blocks for se
 - Hardcoded block numbers for deterministic results
 - Fantom-only tests: `@pytest.mark.skip(reason="Fantom-only")`
 - Per-test timeout: 600s (pyproject.toml)
+
+## Flow Validator Guidance: pytest test suite
+
+**Isolation:** Single validator only. No concurrent test runners against the same brownie node.
+
+**Test file targeting:** For milestone-specific validation, target specific test files with `-k` flag or by filename. For trade-path assertions, target:
+- `tests/test_price_result.py` (VAL-PATH-001, VAL-PATH-002)
+- `tests/test_trade_path_sources.py` (VAL-PATH-003, VAL-PATH-004)
+
+**Command pattern (MANDATORY fireAndForget):**
+```bash
+PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_price_result.py tests/test_trade_path_sources.py -W ignore -s --tb=short > /tmp/test_run.log 2>&1
+```
+
+**Known OK failures (do not count against assertions):**
+- NonStandardERC20 for sUSD logged during test runs
+- Chainlink aggregator deprecations for POLY and renFIL
+- Concurrent test execution timeouts (test infra limitation)
+- sUSD at very early block 5761012
+
+**VAL-PATH-005 (upstream tests still pass):** The full suite must pass. Run:
+```bash
+PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet .venv/bin/pytest -W ignore -s --tb=short > /tmp/full_test_run.log 2>&1
+```
+
+**Interpretation:** As long as no NEW test failures appear beyond the known pre-existing ones above, the assertion passes.

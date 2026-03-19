@@ -4,11 +4,10 @@ import logging
 import time
 from typing import Final, NewType, Union, final
 
+import cachebox
 import dank_mids
 import eth_retry
-from async_lru import alru_cache
 from brownie import chain, web3
-from cachetools.func import ttl_cache
 from eth_typing import BlockNumber
 
 try:
@@ -343,7 +342,7 @@ def _closest_block_after_timestamp_cached(timestamp: int) -> BlockNumber:
     return hi
 
 
-@ttl_cache(ttl=300)
+@cachebox.cached(cachebox.TTLCache(1, ttl=300))
 @eth_retry.auto_retry
 def check_node() -> None:
     """
@@ -365,7 +364,7 @@ def check_node() -> None:
         )
 
 
-@alru_cache(ttl=300)
+@cachebox.cached(cachebox.TTLCache(1, ttl=300))
 @eth_retry.auto_retry
 async def check_node_async() -> None:
     """

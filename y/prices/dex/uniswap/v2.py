@@ -163,7 +163,7 @@ class UniswapV2Pool(ERC20):
 
     __token1__: HiddenMethodDescriptor[Self, ERC20]
 
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL, ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE)
     @stuck_coro_debugger
     async def get_price(
         self, block: Block | None = None, skip_cache: bool = ENVS.SKIP_CACHE
@@ -193,7 +193,7 @@ class UniswapV2Pool(ERC20):
                 tvl / Decimal(await self.total_supply_readable(block=block, sync=False))
             )
 
-    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync.a_sync(ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE, ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_token_out(self, token_in: Address) -> ERC20:
         token0, token1 = await self.__tokens__
         if token_in == token0:
@@ -642,7 +642,7 @@ class UniswapRouterV2(ContractBase):
     __pools__: HiddenMethodDescriptor[Self, list[UniswapV2Pool]]
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=None)
+    @a_sync.a_sync(ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
     async def all_pools_for(self, token_in: Address) -> dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
         for i, pool in enumerate(await self.__pools__):

@@ -16,7 +16,7 @@ from y.utils.raw_calls import raw_call
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default="sync", cache_type="memory")
+@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_maxsize=ENVS.CONTRACT_CACHE_MAXSIZE)
 async def is_pie(token: AnyAddressType) -> bool:
     """
     Check if a given token is a PieDAO token.

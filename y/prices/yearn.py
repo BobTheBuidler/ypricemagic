@@ -69,7 +69,7 @@ force_false = {
 }
 
 
-@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=30 * 60)
+@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=30 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 @stuck_coro_debugger
 @optional_async_diskcache
 async def is_yearn_vault(token: AnyAddressType) -> bool:

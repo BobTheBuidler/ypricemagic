@@ -24,6 +24,26 @@ CHECKSUM_CACHE_MAXSIZE: Final = _envs.create_env(
 )
 """The maximum number of lru-cached keys kept in the checksum cache."""
 
+DEFAULT_CACHE_MAXSIZE: Final = _envs.create_env(
+    "DEFAULT_CACHE_MAXSIZE", int, default=50_000, verbose=False
+)
+"""Default maxsize for in-memory caches throughout the library."""
+
+BLOCK_CACHE_MAXSIZE: Final = _envs.create_env(
+    "BLOCK_CACHE_MAXSIZE", int, default=500_000, verbose=False
+)
+"""Maxsize for block-related caches (block timestamps, block data, etc.)."""
+
+CONTRACT_CACHE_MAXSIZE: Final = _envs.create_env(
+    "CONTRACT_CACHE_MAXSIZE", int, default=50_000, verbose=False
+)
+"""Maxsize for contract-related caches (creation blocks, method checks, etc.)."""
+
+PRICE_CACHE_MAXSIZE: Final = _envs.create_env(
+    "PRICE_CACHE_MAXSIZE", int, default=100_000, verbose=False
+)
+"""Maxsize for price-related caches (token prices, liquidity data, etc.)."""
+
 DB_PROVIDER: Final = _envs.create_env("DB_PROVIDER", str, default="sqlite", verbose=False)
 """Database provider (e.g., 'sqlite', 'postgresql')"""
 

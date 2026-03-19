@@ -644,7 +644,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         except ZeroDivisionError:
             return None
 
-    @a_sync.a_sync(cache_type="memory")
+    @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
     async def get_pool(self, token: AnyAddressType) -> CurvePool:
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
@@ -666,7 +666,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         if token in self.token_to_pool and token != ZERO_ADDRESS:
             return CurvePool(self.token_to_pool[token], asynchronous=self.asynchronous)
 
-    @a_sync.a_sync(cache_type="memory")
+    @a_sync.a_sync(cache_type="memory", ram_cache_maxsize=ENVS.PRICE_CACHE_MAXSIZE)
     async def get_price_for_underlying(
         self,
         token_in: Address,

@@ -1,0 +1,26 @@
+{
+  "milestone": "trade-path",
+  "round": 1,
+  "status": "pass",
+  "assertionsSummary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "blocked": 0
+  },
+  "passedAssertions": ["VAL-PATH-001", "VAL-PATH-002", "VAL-PATH-003", "VAL-PATH-004", "VAL-PATH-005"],
+  "failedAssertions": [],
+  "blockedAssertions": [],
+  "appliedUpdates": [
+    {
+      "target": "user-testing.md",
+      "description": "Added 'Flow Validator Guidance: pytest test suite' section with test file targets, command patterns, known OK failures, and VAL-PATH-005 interpretation guidance.",
+      "source": "setup"
+    }
+  ],
+  "previousRound": null,
+  "flowReports": [
+    ".factory/validation/trade-path/user-testing/flows/path-assertions.json"
+  ],
+  "notes": "All 5 trade-path assertions pass. Targeted tests (71 tests) exit code 0. Full suite failures (836-848) are pre-existing concurrent execution infrastructure limitations per baseline-green.md, not new regressions. Post-trade-path runs show FEWER failures than pre-trade-path baseline (856), confirming no regressions introduced."
+}

@@ -15,7 +15,7 @@ from y.utils import gather_methods
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default="sync", ram_cache_ttl=5 * 60)
+@a_sync.a_sync(default="sync", ram_cache_ttl=5 * 60, ram_cache_maxsize=ENVS.DEFAULT_CACHE_MAXSIZE)
 async def is_ib_token(token: AnyAddressType) -> bool:
     """
     Determines if the given token address is an Iron Bank token.

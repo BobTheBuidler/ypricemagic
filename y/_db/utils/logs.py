@@ -1,9 +1,9 @@
 import itertools
 import logging
 
+import cachebox
 from a_sync import a_sync, cgather, igather
 from a_sync.executor import AsyncExecutor
-from async_lru import alru_cache
 from brownie.network.event import _EventItem
 from eth_typing import HexStr
 from eth_utils.toolz import concat
@@ -192,7 +192,7 @@ def get_topic_dbid(topic: Topic) -> int:
     return entity.dbid
 
 
-@alru_cache(maxsize=10000, ttl=600)
+@cachebox.cached(cachebox.TTLCache(10000, ttl=600))
 async def get_hash_dbid(txhash: HexStr) -> int:
     return await _get_hash_dbid(txhash)
 
