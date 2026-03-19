@@ -74,7 +74,7 @@ async def get_price(
         magic.get_price(KP3R, block=block, skip_cache=skip_cache, sync=False),
         get_discount(block),
     )
-    return Decimal(price) * (100 - discount) / 100
+    return Decimal(float(price)) * (100 - discount) / 100
 
 
 async def get_discount(block: Block | None = None) -> Decimal:

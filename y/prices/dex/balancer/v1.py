@@ -139,7 +139,7 @@ class BalancerV1Pool(BalancerPool):
 
         # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
         good_value = sum(
-            balance * Decimal(price) for balance, price in zip(good_balances.values(), prices)
+            balance * Decimal(float(price)) for balance, price in zip(good_balances.values(), prices)
         )
 
         return good_value / len(good_balances) * len(token_balances)

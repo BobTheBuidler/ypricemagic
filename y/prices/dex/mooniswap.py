@@ -123,5 +123,5 @@ async def get_pool_price(
     elif token1 == ZERO_ADDRESS:
         bal1 = Decimal(bal1) / 10**18
 
-    totalVal = bal0 * Decimal(price0) + bal1 * Decimal(price1)
+    totalVal = bal0 * Decimal(float(price0)) + bal1 * Decimal(float(price1))
     return totalVal / Decimal(total_supply)

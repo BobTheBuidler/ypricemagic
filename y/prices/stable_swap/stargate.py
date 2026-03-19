@@ -212,7 +212,7 @@ class StargatePool(ERC20):
             return None
 
         ratio = Decimal(amount_ld) / Decimal(underlying_scale)
-        return UsdPrice(ratio * Decimal(underlying_price))
+        return UsdPrice(ratio * Decimal(float(underlying_price)))
 
 
 @a_sync.a_sync(default="sync")

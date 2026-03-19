@@ -284,7 +284,7 @@ class UniswapV2Pool(ERC20):
 
         prices = await price_tasks.values(pop=True)
         if vals := [
-            Decimal(await reserve.__readable__) * Decimal(price)
+            Decimal(await reserve.__readable__) * Decimal(float(price))
             for reserve, price in zip(reserves, prices)
             if price is not None
         ]:
@@ -555,7 +555,7 @@ class UniswapRouterV2(ContractBase):
                 )
 
                 if paired_with_price:
-                    return amount_out * Decimal(paired_with_price)
+                    return amount_out * Decimal(float(paired_with_price))
 
         # If we still don't have a workable path, try this smol brain method
         if path is None:
