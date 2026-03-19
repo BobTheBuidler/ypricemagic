@@ -1,0 +1,44 @@
+{
+  "featureId": "baseline-green",
+  "milestone": "baseline-green",
+  "status": "pass",
+  "issues": [
+    {
+      "severity": "suggestion",
+      "description": "The conftest.py monkeypatch comment says 'brownie.convert.datatypes.cpython-312-darwin.so' as the cause, but the actual trigger was build/temp.* .o files from mypyc compilation (not .venv/.so files). The comment is slightly misleading but the implementation handles both cases correctly.",
+      "location": "tests/conftest.py:8-14"
+    },
+    {
+      "severity": "suggestion",
+      "description": "The hashlib sha1 import inside the function body is imported twice (once for known extensions, once for UnicodeDecodeError). Could be refactored to import once at top of function, but this is a minor style issue with no behavioral impact.",
+      "location": "tests/conftest.py:_safe_get_ast_hash"
+    }
+  ],
+  "fulfillsAssertions": {
+    "VAL-BASE-001": {
+      "status": "pass",
+      "evidence": "Quick test suite (11 tests: test_constants, test_time, test_dank_import_guard) passes. Pre-existing failures (deprecated Chainlink aggregators, old sUSD proxy) are documented in .factory/library/baseline-green.md. The monkeypatch fix resolves the UnicodeDecodeError INTERNALERROR that was blocking test runs entirely. No new failures introduced."
+    }
+  },
+  "sharedStateObservations": [
+    {
+      "target": "library",
+      "action": "apply",
+      "content": "baseline-green.md already committed to .factory/library/. Documents: (1) brownie AST hash fix for mypyc build artifacts, (2) concurrent test execution failures are pre-existing infrastructure limitations, (3) specific pre-existing failures: 5 chainlink deprecated aggregators, 1 sUSD early block issue.",
+      "rationale": "Already applied by worker. Factual knowledge about the codebase."
+    },
+    {
+      "target": "AGENTS.md",
+      "action": "recommend",
+      "content": "Add a note that pre-existing test failures (documented in .factory/library/baseline-green.md) should not be treated as regressions: specifically the 5 deprecated Chainlink aggregator failures and the sUSD early-block failure. Workers should be aware that these are on-chain state changes, not code bugs.",
+      "rationale": "Future workers may be confused by these failures and waste time trying to fix them. Having this guidance in AGENTS.md prevents wasted effort."
+    },
+    {
+      "target": "services.yaml",
+      "action": "recommend",
+      "content": "The test command in services.yaml currently says 'echo Tests require RPC and brownie. Workers must use fireAndForget pattern.' Consider updating to include the actual test command for quick subsets: PYTEST_ADDOPTS=\"-p no:pytest_ethereum\" BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_constants.py tests/test_time.py tests/test_dank_import_guard.py -W ignore -s --tb=short",
+      "rationale": "Having the working quick-test command readily available would help workers verify their changes quickly without searching through docs."
+    }
+  ],
+  "summary": "Feature baseline-green is well-implemented. The brownie AST hash monkeypatch correctly fixes the UnicodeDecodeError INTERNALERROR that occurs when mypyc build artifacts (.o files) exist in build/. The fix is applied in 3 appropriate locations (Makefile, init.sh for prevention + conftest.py for runtime safety). Pre-existing test failures are properly documented. VAL-BASE-001 is satisfied: no new failures introduced, and the infrastructure now allows tests to run. Minor: comment in conftest.py is slightly misleading about root cause (mentions .venv .so files but actual cause was build/ .o files) — both are handled correctly by the implementation."
+}
