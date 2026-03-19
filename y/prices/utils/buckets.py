@@ -174,12 +174,12 @@ string_matchers = {
     "creth": creth.is_creth,
     "belt lp": belt.is_belt_lp,
     "froyo": froyo.is_froyo,
-    "convex": convex.is_convex_lp,
     "rkp3r": rkp3r.is_rkp3r,
 }
 
 # these just require calls
 calls_only = {
+    "convex": convex.is_convex_lp,
     "atoken": aave.is_atoken,
     "balancer pool": balancer_multiplexer.is_balancer_pool,
     "ib token": ib.is_ib_token,

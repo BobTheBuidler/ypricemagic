@@ -503,10 +503,12 @@ async def _exit_early_for_known_tokens(
             source = f"Compound {sym} underlying"
 
     elif bucket == "convex":
-        price = await convex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
-        if price is not None:
-            underlying = convex.MAPPING.get(str(token_address), "")
-            underlying_short = _shorten_address(underlying) if underlying else addr_short
+        raw = await convex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
+        if raw is not None:
+            # Unwrap PriceResult from recursive magic.get_price() call
+            price = raw.price if isinstance(raw, PriceResult) else raw
+            underlying = await convex.get_underlying_lp(token_address, sync=False)
+            underlying_short = _shorten_address(str(underlying)) if underlying else addr_short
             source = f"Convex wrapping Curve LP {underlying_short}"
 
     elif bucket == "curve gauge":
