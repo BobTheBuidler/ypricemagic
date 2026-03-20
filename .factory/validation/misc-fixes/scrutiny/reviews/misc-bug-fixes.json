@@ -1,0 +1,87 @@
+{
+  "featureId": "misc-bug-fixes",
+  "milestone": "misc-fixes",
+  "reviewerSessionId": "8c7497db-3d5d-425b-ae8e-9f0de204b848",
+  "status": "fail",
+  "summary": "The misc-bug-fixes feature correctly implements all 5 bug fixes, but introduces a test failure: test_constants.py fails for FRAX and crvUSD because the ypricemagic DB cache has these tokens cached as 'chainlink feed' bucket from before they were added to STABLECOINS. check_bucket() in y/prices/utils/buckets.py reads the DB cache first and returns immediately, bypassing the STABLECOINS string_matchers check. There is no mechanism to invalidate stale DB bucket entries when STABLECOINS is updated.",
+
+  "codeReview": {
+    "overallQuality": "good",
+    "observations": [
+      {
+        "file": "y/time.py",
+        "finding": "Erigon timestamp coercion: The implementation at line ~70 checks isinstance(header.timestamp, str) before calling int(ts, 16) or int(ts). This correctly handles int, hex string, and decimal string timestamps. The commit notes that 'Erigon timestamp coercion already present from prior work' - confirmed by commit 9a8afcb9 which added this fix earlier. No new change needed here.",
+        "severity": "info"
+      },
+      {
+        "file": "y/classes/common.py",
+        "finding": "NonStandardERC20 catch: The symbol() and name() methods now wrap await self._symbol() and await self._name() in try/except NonStandardERC20 blocks. On exception, logs a warning and returns self.address as fallback. This is the correct pattern. Implementation is clean and follows existing code style.",
+        "severity": "info"
+      },
+      {
+        "file": "y/constants.py",
+        "finding": "crvUSD address fix: The correct crvUSD address 0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E (Curve.Fi USD Stablecoin) is added. The wrong address 0xf939E0A03FB57F7cc3E4655C5262C496284665DC (ERC-1155 NFT) is NOT present. FRAX (0x853d955aCEf822Db058eb8505911ED77F175b99e), PYUSD (0x6c3ea9036406852006290770BEdFcAbA0e23A0e8), and GHO (0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f) are also correctly added.",
+        "severity": "info"
+      },
+      {
+        "file": "y/prices/chainlink.py",
+        "finding": "Chainlink feed resolution improvement: get_feed() now collects all event feeds into a list and uses reversed() to iterate from highest block first. The first match is the latest aggregator. Falls back to static feeds if no match found. Implementation is correct and matches the requirement of 'iterating from highest block first'.",
+        "severity": "info"
+      },
+      {
+        "file": "y/prices/utils/buckets.py",
+        "finding": "CRITICAL BUG: check_bucket() reads the DB cache first (line ~87: `bucket = await db.get_bucket(token_address)`) and returns immediately if found. When FRAX and crvUSD are added to STABLECOINS, tokens already in the DB as 'chainlink feed' are never re-evaluated against string_matchers. The DB (~/.ypricemagic/ypricemagic.sqlite) has both tokens cached as 'chainlink feed'. This causes test_constants.py to fail for these tokens.",
+        "severity": "blocking"
+      },
+      {
+        "file": "tests/test_misc_fixes.py",
+        "finding": "Test coverage is comprehensive: 6 tests covering crvUSD address correctness, all 4 new stablecoins present in STABLECOINS dict, Chainlink returns latest aggregator, and Chainlink falls back to static feeds. The tests use mocks correctly for Chainlink tests. However, there are no tests for NonStandardERC20 catch or for the interaction between STABLECOINS and DB bucket cache.",
+        "severity": "non_blocking"
+      }
+    ]
+  },
+
+  "testResults": {
+    "commandsRun": [
+      {
+        "command": "PYTEST_ADDOPTS='-p no:pytest_ethereum' BROWNIE_NETWORK=mainnet .venv/bin/pytest tests/test_misc_fixes.py tests/test_constants.py tests/test_time.py -W ignore -s --tb=short -v",
+        "exitCode": 1,
+        "observations": [
+          "test_misc_fixes.py - all 6 tests PASSED (chainlink ordering tests, crvUSD address, new stablecoins)",
+          "test_time.py - all 4 tests PASSED (erigon timestamp handling)",
+          "test_constants.py - 2 FAILED: crvUSD and FRAX return non-$1 prices via chainlink feed",
+          "test_constants.py - 7 other stablecoins PASSED",
+          "Total: 15 passed, 2 failed"
+        ]
+      }
+    ],
+    "blockingFailures": [
+      {
+        "test": "test_stablecoins[0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E]",
+        "error": "AssertionError: Stablecoin price not $1 - PriceResult(price=$0.99960009, path=[1 steps]) == 1",
+        "rootCause": "DB cache has crvUSD cached as 'chainlink feed' bucket. check_bucket() returns DB value without checking STABLECOINS string_matchers."
+      },
+      {
+        "test": "test_stablecoins[0x853d955aCEf822Db058eb8505911ED77F175b99e]",
+        "error": "AssertionError: Stablecoin price not $1 - PriceResult(price=$0.99866684, path=[1 steps]) == 1",
+        "rootCause": "DB cache has FRAX cached as 'chainlink feed' bucket. check_bucket() returns DB value without checking STABLECOINS string_matchers."
+      }
+    ]
+  },
+
+  "blockingIssues": [
+    {
+      "severity": "blocking",
+      "description": "test_constants.py fails for FRAX and crvUSD because check_bucket() in y/prices/utils/buckets.py reads the DB cache first and returns immediately if a bucket is already stored. Since both tokens were previously classified as 'chainlink feed' (before being added to STABLECOINS), the DB cache entry takes precedence. The fix should either: (1) clear the DB bucket cache for tokens in STABLECOINS on startup, or (2) modify check_bucket() to check string_matchers BEFORE the DB cache (but this changes semantics), or (3) add a migration that invalidates cached buckets for tokens in STABLECOINS.",
+      "suggestedFix": "In check_bucket(), before returning the cached bucket from DB, verify it against string_matchers. If the token matches a string_matcher but the DB has a different bucket, update the DB. Alternatively, at module load time, clear DB bucket entries for all STABLECOINS tokens so they get re-classified on next access."
+    }
+  ],
+
+  "sharedStateObservations": [
+    {
+      "observation": "The ypricemagic DB bucket cache at ~/.ypricemagic/ypricemagic.sqlite persists between test runs. When new tokens are added to STABLECOINS, their existing DB bucket entries (from prior test runs) take precedence over the STABLECOINS check. This creates test failures that depend on test execution order and DB state.",
+      "suggestedTarget": "library",
+      "suggestedContent": "library/db-bucket-cache.md: Document that the ypricemagic DB bucket cache at ~/.ypricemagic/ypricemagic.sqlite persists between test runs. When adding tokens to STABLECOINS or other string_matchers, existing DB bucket entries may prevent the new classification from taking effect. Workaround: run `sqlite3 ~/.ypricemagic/ypricemagic.sqlite \"DELETE FROM Address WHERE ...\"` or truncate the Address table before tests."
+    }
+  ]
+}

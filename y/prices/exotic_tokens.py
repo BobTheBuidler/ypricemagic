@@ -35,6 +35,8 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────────────────────────────────────
 # PREMIA token address (used by xPREMIA pricing)
 _PREMIA_ADDRESS = "0x6399C842dD2bE3dE30BF99Bc7D1bBF6Fa3650E70"
+# xPREMIA staking contract — symbol() reverts (NonStandardERC20), so we match by address.
+_XPREMIA_ADDRESS = "0x16f9D564Df80376C61AC914205D3fDfB8a32f98b"
 
 
 def _shorten_address(address: str) -> str:
@@ -240,8 +242,8 @@ async def get_price_pool_together_v4(
 async def is_xpremia(token_address: AnyAddressType) -> bool:
     """Determine whether a token is xPREMIA.
 
-    Detection: symbol == ``'xPREMIA'`` and contract exposes
-    ``premia()`` (returning the underlying PREMIA token address).
+    Detection by address (symbol() reverts on this contract) plus
+    ``premia()`` method as a sanity check.
 
     Args:
         token_address: The address of the token to check.
@@ -251,12 +253,7 @@ async def is_xpremia(token_address: AnyAddressType) -> bool:
     """
     token_address = await convert.to_address_async(token_address)
 
-    try:
-        symbol = await ERC20(token_address, asynchronous=True).symbol
-    except Exception:
-        return False
-
-    if symbol != "xPREMIA":
+    if str(token_address) != _XPREMIA_ADDRESS:
         return False
 
     return await has_methods(
