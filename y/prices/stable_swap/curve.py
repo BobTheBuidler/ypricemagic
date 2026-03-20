@@ -184,35 +184,30 @@ class AddressProvider(_CurveEventsLoader):
                 "0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf"
             ]
 
-        if metapool_factories := [
-            Factory(factory, asynchronous=self.asynchronous)
-            for factories in map(self.identifiers.get, _METAPOOL_FACTORY_IDS)
-            for factory in factories or ()
-        ]:
-            async for factory, pool_list in a_sync.map(Factory.read_pools, metapool_factories):
-                for pool in pool_list:
-                    # for metpool factories pool is the same as lp token
-                    curve.token_to_pool[pool] = pool
-                    curve.factories[factory].add(pool)
+        async def _load_metapool_factories() -> None:
+            if metapool_factories := [
+                Factory(factory, asynchronous=self.asynchronous)
+                for factories in map(self.identifiers.get, _METAPOOL_FACTORY_IDS)
+                for factory in factories or ()
+            ]:
+                async for factory, pool_list in a_sync.map(Factory.read_pools, metapool_factories):
+                    for pool in pool_list:
+                        # for metpool factories pool is the same as lp token
+                        curve.token_to_pool[pool] = pool
+                        curve.factories[factory].add(pool)
 
-        # if there are factories that haven't yet been added to the on-chain address provider,
-        # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
-        if (
-            identifiers := self.identifiers[Ids.CryptoPool_Factory]
-            + self.identifiers[Ids.Cryptopool_Factory]
-        ):
-            if debug_logs:
-                _startup_logger_log_debug("loading pools from cryptopool factories")
-            await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
+        async def _load_cryptopool_factories() -> None:
+            # if there are factories that haven't yet been added to the on-chain address provider,
+            # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
+            if (
+                identifiers := self.identifiers[Ids.CryptoPool_Factory]
+                + self.identifiers[Ids.Cryptopool_Factory]
+            ):
+                if debug_logs:
+                    _startup_logger_log_debug("loading pools from cryptopool factories")
+                await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
-        if not curve._done.is_set():
-            startup_logger.info(
-                "loaded %s pools from %s registries and %s factories",
-                len(curve.token_to_pool),
-                len(curve.registries),
-                len(curve.factories),
-            )
-            curve._done.set()
+        await igather([_load_metapool_factories(), _load_cryptopool_factories()])
 
 
 class Registry(_CurveEventsLoader):
@@ -821,15 +816,29 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         ):
             self.identifiers[Ids.Main_Registry] = [registry]
         while True:
-            # Check if any registries were updated, then ensure all old and new are loaded
-            if registries := [
-                self.identifiers[i][-1]
-                for i in [Ids.Main_Registry, Ids.CryptoSwap_Registry]
-                if self.identifiers[i]
-            ]:
-                await a_sync.map(Registry, registries, curve=self, asynchronous=self.asynchronous)
-            # load metapool and curve v5 factories
-            await self.address_provider._load_factories()
+
+            async def _load_registries() -> None:
+                if registries := [
+                    self.identifiers[i][-1]
+                    for i in [Ids.Main_Registry, Ids.CryptoSwap_Registry]
+                    if self.identifiers[i]
+                ]:
+                    await a_sync.map(
+                        Registry, registries, curve=self, asynchronous=self.asynchronous
+                    )
+
+            # load registries and factories concurrently
+            await igather([_load_registries(), self.address_provider._load_factories()])
+
+            if not self._done.is_set():
+                startup_logger.info(
+                    "loaded %s pools from %s registries and %s factories",
+                    len(self.token_to_pool),
+                    len(self.registries),
+                    len(self.factories),
+                )
+                self._done.set()
+
             await sleep(600)
 
 
