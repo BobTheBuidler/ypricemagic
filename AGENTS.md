@@ -22,4 +22,5 @@ All agents must follow these rules:
 16) For testing: use Python 3.12 and run `PYTEST_ADDOPTS="-p no:pytest_ethereum" BROWNIE_NETWORK=mainnet make test`.
     Note: in a clean env this currently fails (ContractLogicError / aggregator assertions) even with `setuptools<81` and `click` installed. As long as the tests run, and no new failures pop up, we're good. If working on a section of the codebase with existing test failures, try to fix those particular tests.
 17) Local pip install . generates build/; clean up before closing a worktree to avoid dirty state.
+18) Always use `--repo SatoshiAndKin/ypricemagic` with `gh pr create` to target the fork, not upstream.
 Reference: https://www.conventionalcommits.org/en/v1.0.0/
