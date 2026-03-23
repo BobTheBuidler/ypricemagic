@@ -36,6 +36,14 @@ chain_specific_max_batch_sizes = {
 
 fallback_batch_size = 10_000
 
+poa_middleware_cleanup_chainids = frozenset(
+    (
+        Network.BinanceSmartChain,
+        Network.Polygon,
+        Network.Avalanche,
+    )
+)
+
 
 def _get_batch_size() -> int:
     """
@@ -178,3 +186,22 @@ def setup_geth_poa_middleware() -> None:
     except ValueError as e:
         if str(e) != "You can't add the same un-named instance twice":
             raise
+
+
+def remove_legacy_poa_middleware() -> None:
+    """
+    Remove the first middleware that looks like POA middleware on affected networks.
+
+    This is a startup compatibility cleanup for networks where downstream consumers
+    previously removed this middleware manually.
+    """
+    if chain.id not in poa_middleware_cleanup_chainids:
+        return
+
+    for middleware in tuple(web3.middleware_onion):
+        if "poa" in str(middleware).lower():
+            try:
+                web3.middleware_onion.remove(middleware)
+            except ValueError:
+                pass
+            break

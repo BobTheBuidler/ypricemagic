@@ -1,3 +1,6 @@
+import json
+import os
+import tempfile
 from asyncio import sleep
 from collections.abc import AsyncIterator
 from contextlib import suppress
@@ -50,10 +53,49 @@ from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL, special_paths
+from y.utils.cache import memory
 from y.utils.events import ProcessedEvents
 from y.utils.raw_calls import raw_call
 
 logger = getLogger(__name__)
+
+_PoolTuple = list  # [address, token0, token1, deploy_block | None]
+
+_pool_cache_dir = os.path.join(memory.location, "v2_pools")
+os.makedirs(_pool_cache_dir, exist_ok=True)
+
+
+def _pool_cache_path(factory: str) -> str:
+    return os.path.join(_pool_cache_dir, f"{factory}.json")
+
+
+def _load_cached_pool_tuples(factory: str) -> list[_PoolTuple]:
+    """Load pool tuples from JSON on disk, or return empty list on miss."""
+    path = _pool_cache_path(factory)
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        if isinstance(data, list):
+            return data
+    except Exception:
+        logger.warning("corrupt pool cache for %s, will rebuild", factory)
+    return []
+
+
+def _save_pool_tuples(factory: str, tuples: list[_PoolTuple]) -> None:
+    """Atomically write pool tuples to JSON on disk."""
+    path = _pool_cache_path(factory)
+    fd, tmp = tempfile.mkstemp(dir=_pool_cache_dir, suffix=".json.tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(tuples, f, separators=(",", ":"))
+        os.replace(tmp, path)
+    except BaseException:
+        os.unlink(tmp)
+        raise
+
 
 Path = list[AddressOrContract]
 Reserves = tuple[int, int, int]
@@ -605,38 +647,90 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     async def pools(self) -> list[UniswapV2Pool]:
         logger.info(
-            "Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...",
+            "Fetching pools for %s on %s. If this is your first time using ypricemagic, "
+            "this can take a while. Please wait patiently...",
             self.label,
             Network.printable(),
         )
         factory = self.factory
-        events = PoolsFromEvents(factory, self.label, asynchronous=self.asynchronous)
-        to_block = await dank_mids.eth.block_number
-        pools = [pool async for pool in events.pools(to_block=to_block)]
-        events._task.cancel()
-        del events
         all_pairs_len = await raw_call(factory, "allPairsLength()", output="int", sync=False)
-        if len(pools) > all_pairs_len:
-            raise NotImplementedError("this shouldnt happen again")
-        elif to_get := all_pairs_len - len(pools):  # <
-            logger.debug(
-                "Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...",
-                to_get,
-            )
-            factory = await Contract.coroutine(self.factory)
-            for i, pool_address in enumerate(await factory.allPairs.map(range(to_get))):
-                pool = UniswapV2Pool(address=pool_address, asynchronous=self.asynchronous)
-                pools.insert(i, pool)
-            logger.debug("Done fetching %s missing pools on %s", to_get, self.label)
 
+        # Try to restore from disk cache
+        cached_tuples = _load_cached_pool_tuples(factory)
+        cached_len = len(cached_tuples)
+
+        # Reconstruct previously-cached pools (no RPC needed, token0/token1 set from cache)
+        pools: list[UniswapV2Pool] = [
+            UniswapV2Pool(
+                address=addr,
+                token0=t0,
+                token1=t1,
+                deploy_block=db,
+                asynchronous=self.asynchronous,
+            )
+            for addr, t0, t1, db in cached_tuples[:all_pairs_len]
+        ]
+
+        if cached_len >= all_pairs_len:
+            logger.info("Restored %s pools for %s from disk cache", len(pools), self.label)
+            return pools
+
+        new_count = all_pairs_len - cached_len
+        if cached_len == 0:
+            # Cold start: fetch everything from events (faster than allPairs for large sets)
+            events = PoolsFromEvents(factory, self.label, asynchronous=self.asynchronous)
+            to_block = await dank_mids.eth.block_number
+            pools = [pool async for pool in events.pools(to_block=to_block)]
+            events._task.cancel()
+            del events
+            if len(pools) > all_pairs_len:
+                raise NotImplementedError("this shouldnt happen again")
+            elif to_get := all_pairs_len - len(pools):
+                logger.debug(
+                    "Node can't look back far enough. Fetching %s missing pools...",
+                    to_get,
+                )
+                factory_contract = await Contract.coroutine(self.factory)
+                for i, pool_address in enumerate(
+                    await factory_contract.allPairs.map(range(to_get))
+                ):
+                    pools.insert(
+                        i, UniswapV2Pool(address=pool_address, asynchronous=self.asynchronous)
+                    )
+        else:
+            # Incremental: only fetch the new pools by contract index
+            logger.info(
+                "Fetching %s new pools for %s (had %s cached)",
+                new_count,
+                self.label,
+                cached_len,
+            )
+            factory_contract = await Contract.coroutine(self.factory)
+            for pool_address in await factory_contract.allPairs.map(
+                range(cached_len, all_pairs_len)
+            ):
+                pools.append(UniswapV2Pool(address=pool_address, asynchronous=self.asynchronous))
+
+        # Resolve token0/token1 for all pools (already-cached ones return instantly)
         tokens = set(concat(await UniswapV2Pool.tokens.map(pools).values(pop=True)))
 
         logger.info(
-            "Loaded %s pools supporting %s tokens on %s",
+            "Loaded %s pools (%s new) supporting %s tokens on %s",
             len(pools),
+            new_count,
             len(tokens),
             self.label,
         )
+
+        # Persist full list to disk for next restart
+        tuples: list[_PoolTuple] = [
+            [str(pool.address), str(t0), str(t1), getattr(pool, "_deploy_block", None)]
+            for pool in pools
+            if (t0 := getattr(pool, "token0", None)) is not None
+            and (t1 := getattr(pool, "token1", None)) is not None
+        ]
+        _save_pool_tuples(factory, tuples)
+
         return pools
 
     __pools__: HiddenMethodDescriptor[Self, list[UniswapV2Pool]]

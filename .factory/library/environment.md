@@ -35,5 +35,5 @@
 
 ## macOS Notes
 
-- dank_mids fork (`SatoshiAndKin/dank_mids`) is used to work around macOS SEM_VALUE_MAX semaphore limits
+- Uses upstream dank_mids (PyPI release) since v4.20.206+ resolved macOS SEM_VALUE_MAX semaphore limits
 - Platform guard in pyproject.toml ensures correct dependency resolution
