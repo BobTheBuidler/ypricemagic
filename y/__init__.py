@@ -64,11 +64,16 @@ from y.prices.utils import check_bucket
 from y.time import get_block_at_timestamp, get_block_timestamp, get_block_timestamp_async
 from y.utils.events import Events, LogFilter, ProcessedEvents
 from y.utils.logging import enable_debug_logging
-from y.utils.middleware import setup_getcode_cache_middleware, setup_geth_poa_middleware
+from y.utils.middleware import (
+    remove_legacy_poa_middleware,
+    setup_getcode_cache_middleware,
+    setup_geth_poa_middleware,
+)
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import balanceOf, raw_call
 
 setup_getcode_cache_middleware()
+remove_legacy_poa_middleware()
 
 monkey_patches.monkey_patch_checksum_cache()
 
