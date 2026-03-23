@@ -301,7 +301,7 @@ async def read_response(
                 exc_info=True,
             )
             msg = ""
-                
+
         if msg:
             logger.warning(msg)
         _set_resume_at(_get_retry_header(response))

@@ -41,9 +41,8 @@ else:
         # Some deps dont install properly at build time except on 64-bit Python on Linux
         # That's okay for us, we only use the [unused-ignore] code for housekeeping
         mypyc_args.append("--disable-error-code=unused-ignore")
-        
+
     ext_modules = mypycify(mypyc_args, group_name="ypricemagic")
-    
 
 
 setup(
