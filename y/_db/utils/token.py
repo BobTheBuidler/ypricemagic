@@ -499,3 +499,8 @@ def known_names() -> dict[Address, str]:
         >>> print(names)
     """
     return dict(select((t.address, t.name) for t in Token if t.chain.id == CHAINID and t.name))
+
+
+if CHAINID == 1:
+    # This is hardcoded because the unstETH contract doesn't have decimals() method
+    set_decimals("0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1", 18, sync=True)
