@@ -128,36 +128,55 @@ async def check_bucket(token: AnyAddressType) -> str:
                 await __log_not_bucket(token_address, bucket)
             bucket = None
 
-    # TODO: Refactor the below like the above
-    # these require both calls and contract initializations; they are checked sequentially.
-    if await solidex.is_solidex_deposit(token_address, sync=False):
-        bucket = "solidex"
-    if await uniswap_multiplexer.is_uniswap_pool(token_address, sync=False):
-        bucket = "uni or uni-like lp"
-    elif gearbox and await gearbox.is_diesel_token(token_address, sync=False):
-        bucket = "gearbox"
+    # These require both calls and contract initializations.
+    # All checks run concurrently; the first match by priority wins.
+    # Priority order preserves original semantics: "uni or uni-like lp"
+    # beats "solidex" when both match.
+    heavy_checks: list[tuple[str, Awaitable[bool]]] = [
+        ("solidex", solidex.is_solidex_deposit(token_address, sync=False)),
+        ("uni or uni-like lp", uniswap_multiplexer.is_uniswap_pool(token_address, sync=False)),
+    ]
+    if gearbox:
+        heavy_checks.append(("gearbox", gearbox.is_diesel_token(token_address, sync=False)))
+    heavy_checks.extend([
+        ("wrapped atoken v2", aave.is_wrapped_atoken_v2(token_address, sync=False)),
+        ("wrapped atoken v3", aave.is_wrapped_atoken_v3(token_address, sync=False)),
+        ("generic amm", is_generic_amm(token_address)),
+        ("mooniswap lp", mooniswap.is_mooniswap_pool(token_address, sync=False)),
+        ("compound", compound.is_compound_market(token_address, sync=False)),
+        ("chainlink and band", _chainlink_and_band(token_address)),
+    ])
+    if chainlink:
+        heavy_checks.append(("chainlink feed", chainlink.has_feed(token_address, sync=False)))
+    if synthetix:
+        heavy_checks.append(("synthetix", synthetix.is_synth(token_address, sync=False)))
+    heavy_checks.append(("yearn or yearn-like", yearn.is_yearn_vault(token_address, sync=False)))
+    if curve:
+        heavy_checks.append(("curve lp", curve.get_pool(token_address, sync=False)))
 
-    # this just requires contract initialization but should go behind uniswap
-    elif await aave.is_wrapped_atoken_v2(token_address, sync=False):
-        bucket = "wrapped atoken v2"
-    elif await aave.is_wrapped_atoken_v3(token_address, sync=False):
-        bucket = "wrapped atoken v3"
-    elif await is_generic_amm(token_address):
-        bucket = "generic amm"
-    elif await mooniswap.is_mooniswap_pool(token_address, sync=False):
-        bucket = "mooniswap lp"
-    elif await compound.is_compound_market(token_address, sync=False):
-        bucket = "compound"
-    elif await _chainlink_and_band(token_address):
-        bucket = "chainlink and band"
-    elif chainlink and await chainlink.has_feed(token_address, sync=False):
-        bucket = "chainlink feed"
-    elif synthetix and await synthetix.is_synth(token_address, sync=False):
-        bucket = "synthetix"
-    elif await yearn.is_yearn_vault(token_address, sync=False):
-        bucket = "yearn or yearn-like"
-    elif curve and await curve.get_pool(token_address, sync=False):
-        bucket = "curve lp"
+    parallel_futs = [
+        ensure_future(_safe_check_bucket(name, coro))
+        for name, coro in heavy_checks
+    ]
+
+    results: dict[str, bool] = {}
+    for fut in as_completed(parallel_futs):
+        name, is_member = await fut
+        results[name] = is_member
+
+    # Pick the highest-priority match.
+    # Special case: "uni or uni-like lp" overwrites "solidex" (original behavior).
+    bucket = None
+    if results.get("solidex"):
+        bucket = "solidex"
+    if results.get("uni or uni-like lp"):
+        bucket = "uni or uni-like lp"
+    if bucket is None:
+        for name, _coro in heavy_checks[2:]:
+            if results.get(name):
+                bucket = name
+                break
+
     if debug_logs_enabled:
         await __log_bucket(token_address, bucket)
     if bucket:
@@ -202,6 +221,19 @@ calls_only = {
     "xtarot": exotic_tokens.is_xtarot,
     "tarot supply vault": exotic_tokens.is_tarot_supply_vault,
 }
+
+
+async def _safe_check_bucket(name: str, coro: Awaitable[bool]) -> tuple[str, bool]:
+    """Run a bucket check, catching exceptions so one failure doesn't block the rest."""
+    try:
+        result = await coro
+        return name, bool(result)
+    except TypeError:
+        raise
+    except Exception as e:
+        logger.warning("%s when checking %s. This will probably not impact your run.", e, name)
+        logger.warning(e, exc_info=True)
+        return name, False
 
 
 async def _chainlink_and_band(token_address) -> bool:
