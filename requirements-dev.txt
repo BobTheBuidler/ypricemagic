@@ -3,6 +3,7 @@
 wheel
 pytest
 numpy
+types-pony==0.7.0.20250822
 # ypricemagic uses a global event loop which is not compatable with pytest-asyncio-cooperative
 # so we use this patched version for testing instead
 git+https://github.com/BobTheBuidler/pytest-asyncio-cooperative@patch-1
