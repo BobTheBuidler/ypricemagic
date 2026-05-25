@@ -1,437 +1,1408 @@
 #ifndef DIFFCHECK_PLACEHOLDER
 #define DIFFCHECK_PLACEHOLDER 0
 #endif
-#include "init.c"
-#include "getargs.c"
-#include "getargsfast.c"
-#include "int_ops.c"
-#include "float_ops.c"
-#include "str_ops.c"
-#include "bytes_ops.c"
-#include "list_ops.c"
-#include "dict_ops.c"
-#include "set_ops.c"
-#include "tuple_ops.c"
-#include "exc_ops.c"
-#include "misc_ops.c"
-#include "generic_ops.c"
-#include "pythonsupport.c"
-#include "function_wrapper.c"
+#include <init.c>
+#include <getargs.c>
+#include <getargsfast.c>
+#include <int_ops.c>
+#include <float_ops.c>
+#include <str_ops.c>
+#include <bytes_ops.c>
+#include <list_ops.c>
+#include <dict_ops.c>
+#include <set_ops.c>
+#include <tuple_ops.c>
+#include <exc_ops.c>
+#include <misc_ops.c>
+#include <generic_ops.c>
+#include <pythonsupport.c>
+#include <function_wrapper.c>
 #include "__native_ypricemagic.h"
 #include "__native_internal_ypricemagic.h"
+static PyMethodDef ENVIRONMENT_VARIABLESmodule_methods[] = {
+    {NULL, NULL, 0, NULL}
+};
 
-static int
-brownie___AsyncCursor_init(PyObject *self, PyObject *args, PyObject *kwds)
+int CPyExec_y___ENVIRONMENT_VARIABLES(PyObject *module)
 {
+    intern_strings();
+    PyObject* modname = NULL;
+    modname = PyObject_GetAttrString((PyObject *)CPyModule_y___ENVIRONMENT_VARIABLES__internal, "__name__");
+    CPyStatic_ENVIRONMENT_VARIABLES___globals = PyModule_GetDict(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
+    if (unlikely(CPyStatic_ENVIRONMENT_VARIABLES___globals == NULL))
+        goto fail;
+    if (CPyGlobalsInit() < 0)
+        goto fail;
+    char result = CPyDef_ENVIRONMENT_VARIABLES_____top_level__();
+    if (result == 2)
+        goto fail;
+    Py_DECREF(modname);
     return 0;
+    fail:
+    Py_CLEAR(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
+    Py_CLEAR(modname);
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES____envs);
+    CPyStatic_ENVIRONMENT_VARIABLES____envs = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL);
+    CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL);
+    CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE);
+    CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP);
+    CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE);
+    CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER);
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH);
+    CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST);
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT);
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_USER);
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_USER = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD);
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE);
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE);
+    CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI);
+    CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = NULL;
+    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE);
+    CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = NULL;
+    return -1;
 }
-static int
-brownie___AsyncCursor_traverse(y____db___brownie___AsyncCursorObject *self, visitproc visit, void *arg)
+static struct PyModuleDef ENVIRONMENT_VARIABLESmodule = {
+    PyModuleDef_HEAD_INIT,
+    "y.ENVIRONMENT_VARIABLES",
+    NULL, /* docstring */
+    0,       /* size of per-interpreter state of the module */
+    ENVIRONMENT_VARIABLESmodule_methods,
+    NULL,
+};
+
+PyObject *CPyInitOnly_y___ENVIRONMENT_VARIABLES(void)
 {
-    Py_VISIT(self->__filename);
-    Py_VISIT(self->__db);
-    Py_VISIT(self->__execute);
+    if (CPyModule_y___ENVIRONMENT_VARIABLES__internal) {
+        Py_INCREF(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
+        return CPyModule_y___ENVIRONMENT_VARIABLES__internal;
+    }
+    CPyModule_y___ENVIRONMENT_VARIABLES__internal = PyModule_Create(&ENVIRONMENT_VARIABLESmodule);
+    return CPyModule_y___ENVIRONMENT_VARIABLES__internal;
+}
+
+PyObject *CPyInit_y___ENVIRONMENT_VARIABLES(void)
+{
+    PyObject* modname = NULL;
+    if (CPyModule_y___ENVIRONMENT_VARIABLES__internal) {
+        Py_INCREF(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
+        return CPyModule_y___ENVIRONMENT_VARIABLES__internal;
+    }
+    CPyModule_y___ENVIRONMENT_VARIABLES__internal = PyModule_Create(&ENVIRONMENT_VARIABLESmodule);
+    if (unlikely(CPyModule_y___ENVIRONMENT_VARIABLES__internal == NULL))
+        goto fail;
+    modname = PyUnicode_FromString("y.ENVIRONMENT_VARIABLES");
+    if (modname == NULL) CPyError_OutOfMemory();
     int rv = 0;
-    return rv;
-}
-
-static int
-brownie___AsyncCursor_clear(y____db___brownie___AsyncCursorObject *self)
-{
-    Py_CLEAR(self->__filename);
-    Py_CLEAR(self->__db);
-    Py_CLEAR(self->__execute);
-    return 0;
-}
-
-static void
-brownie___AsyncCursor_dealloc(y____db___brownie___AsyncCursorObject *self)
-{
-    PyObject_GC_UnTrack(self);
-    CPy_TRASHCAN_BEGIN(self, brownie___AsyncCursor_dealloc)
-    brownie___AsyncCursor_clear(self);
-    Py_TYPE(self)->tp_free((PyObject *)self);
-    CPy_TRASHCAN_END(self)
-    done: ;
-}
-
-PyObject *CPyDef_brownie_____mypyc__AsyncCursor_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie___AsyncCursor(PyObject *cpy_r_filename);
-
-static PyObject *
-brownie___AsyncCursor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie___AsyncCursor) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+    PyObject *mod_dict = PyImport_GetModuleDict();
+    PyObject *shared_lib = NULL;
+    rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
+    if (rv < 0) goto fail;
+    PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
+    if (shared_lib_file == NULL) goto fail;
+    PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
+    if (ext_suffix == NULL) CPyError_OutOfMemory();
+    Py_ssize_t is_pkg = 0;
+    rv = CPyImport_SetDunderAttrs(CPyModule_y___ENVIRONMENT_VARIABLES__internal, modname, shared_lib_file, ext_suffix, is_pkg);
+    Py_DECREF(ext_suffix);
+    Py_DECREF(shared_lib_file);
+    if (rv < 0) goto fail;
+    if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y___ENVIRONMENT_VARIABLES__internal) < 0)
+        goto fail;
+    Py_CLEAR(modname);
+    if (CPyExec_y___ENVIRONMENT_VARIABLES(CPyModule_y___ENVIRONMENT_VARIABLES__internal) != 0)
+        goto fail;
+    return CPyModule_y___ENVIRONMENT_VARIABLES__internal;
+    fail:
+    {
+            PyObject *exc_type, *exc_val, *exc_tb;
+            PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
+            if (modname == NULL) {
+                    modname = PyUnicode_FromString("y.ENVIRONMENT_VARIABLES");
+                    if (modname == NULL) CPyError_OutOfMemory();
+                }
+                PyObject_DelItem(PyImport_GetModuleDict(), modname);
+                PyErr_Clear();
+                Py_DECREF(modname);
+                Py_CLEAR(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
+                PyErr_Restore(exc_type, exc_val, exc_tb);
+        }
         return NULL;
     }
-    PyObject *self = CPyDef_brownie_____mypyc__AsyncCursor_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    PyObject *ret = CPyPy_brownie___AsyncCursor_____init__(self, args, kwds);
-    if (ret == NULL) {
+    
+char CPyDef_ENVIRONMENT_VARIABLES_____top_level__(void) {
+    PyObject *cpy_r_r0;
+    PyObject *cpy_r_r1;
+    char cpy_r_r2;
+    PyObject *cpy_r_r3;
+    PyObject *cpy_r_r4;
+    PyObject *cpy_r_r5;
+    PyObject *cpy_r_r6;
+    PyObject *cpy_r_r7;
+    PyObject *cpy_r_r8;
+    PyObject *cpy_r_r9;
+    PyObject *cpy_r_r10;
+    PyObject *cpy_r_r11;
+    PyObject *cpy_r_r12;
+    PyObject *cpy_r_r13;
+    PyObject *cpy_r_r14;
+    PyObject *cpy_r_r15;
+    PyObject *cpy_r_r16;
+    PyObject *cpy_r_r17;
+    PyObject *cpy_r_r18;
+    PyObject *cpy_r_r19;
+    PyObject *cpy_r_r20;
+    PyObject **cpy_r_r22;
+    PyObject *cpy_r_r23;
+    PyObject *cpy_r_r24;
+    PyObject *cpy_r_r25;
+    int32_t cpy_r_r26;
+    char cpy_r_r27;
+    PyObject *cpy_r_r28;
+    char cpy_r_r29;
+    PyObject *cpy_r_r30;
+    PyObject *cpy_r_r31;
+    PyObject *cpy_r_r32;
+    PyObject *cpy_r_r33;
+    PyObject *cpy_r_r34;
+    PyObject **cpy_r_r36;
+    PyObject *cpy_r_r37;
+    PyObject *cpy_r_r38;
+    PyObject *cpy_r_r39;
+    PyObject *cpy_r_r40;
+    int32_t cpy_r_r41;
+    char cpy_r_r42;
+    PyObject *cpy_r_r43;
+    char cpy_r_r44;
+    PyObject *cpy_r_r45;
+    PyObject *cpy_r_r46;
+    PyObject *cpy_r_r47;
+    char cpy_r_r48;
+    PyObject *cpy_r_r49;
+    PyObject *cpy_r_r50;
+    PyObject **cpy_r_r52;
+    PyObject *cpy_r_r53;
+    PyObject *cpy_r_r54;
+    PyObject *cpy_r_r55;
+    PyObject *cpy_r_r56;
+    int32_t cpy_r_r57;
+    char cpy_r_r58;
+    PyObject *cpy_r_r59;
+    char cpy_r_r60;
+    PyObject *cpy_r_r61;
+    PyObject *cpy_r_r62;
+    PyObject *cpy_r_r63;
+    PyObject *cpy_r_r64;
+    PyObject **cpy_r_r66;
+    PyObject *cpy_r_r67;
+    PyObject *cpy_r_r68;
+    PyObject *cpy_r_r69;
+    PyObject *cpy_r_r70;
+    int32_t cpy_r_r71;
+    char cpy_r_r72;
+    PyObject *cpy_r_r73;
+    char cpy_r_r74;
+    PyObject *cpy_r_r75;
+    PyObject *cpy_r_r76;
+    PyObject *cpy_r_r77;
+    PyObject *cpy_r_r78;
+    PyObject *cpy_r_r79;
+    PyObject **cpy_r_r81;
+    PyObject *cpy_r_r82;
+    PyObject *cpy_r_r83;
+    PyObject *cpy_r_r84;
+    PyObject *cpy_r_r85;
+    int32_t cpy_r_r86;
+    char cpy_r_r87;
+    PyObject *cpy_r_r88;
+    char cpy_r_r89;
+    PyObject *cpy_r_r90;
+    PyObject *cpy_r_r91;
+    PyObject *cpy_r_r92;
+    PyObject *cpy_r_r93;
+    PyObject *cpy_r_r94;
+    PyObject **cpy_r_r96;
+    PyObject *cpy_r_r97;
+    PyObject *cpy_r_r98;
+    PyObject *cpy_r_r99;
+    PyObject *cpy_r_r100;
+    int32_t cpy_r_r101;
+    char cpy_r_r102;
+    PyObject *cpy_r_r103;
+    char cpy_r_r104;
+    PyObject *cpy_r_r105;
+    PyObject *cpy_r_r106;
+    PyObject *cpy_r_r107;
+    PyObject *cpy_r_r108;
+    PyObject *cpy_r_r109;
+    PyObject **cpy_r_r111;
+    PyObject *cpy_r_r112;
+    PyObject *cpy_r_r113;
+    PyObject *cpy_r_r114;
+    PyObject *cpy_r_r115;
+    int32_t cpy_r_r116;
+    char cpy_r_r117;
+    PyObject *cpy_r_r118;
+    char cpy_r_r119;
+    PyObject *cpy_r_r120;
+    PyObject *cpy_r_r121;
+    PyObject *cpy_r_r122;
+    PyObject *cpy_r_r123;
+    PyObject *cpy_r_r124;
+    PyObject *cpy_r_r125;
+    PyObject *cpy_r_r126;
+    PyObject *cpy_r_r127;
+    PyObject **cpy_r_r129;
+    PyObject *cpy_r_r130;
+    PyObject *cpy_r_r131;
+    PyObject *cpy_r_r132;
+    PyObject *cpy_r_r133;
+    PyObject *cpy_r_r134;
+    PyObject *cpy_r_r135;
+    PyObject **cpy_r_r137;
+    PyObject *cpy_r_r138;
+    PyObject *cpy_r_r139;
+    PyObject *cpy_r_r140;
+    PyObject *cpy_r_r141;
+    int32_t cpy_r_r142;
+    char cpy_r_r143;
+    PyObject *cpy_r_r144;
+    char cpy_r_r145;
+    PyObject *cpy_r_r146;
+    PyObject *cpy_r_r147;
+    PyObject *cpy_r_r148;
+    PyObject *cpy_r_r149;
+    PyObject *cpy_r_r150;
+    PyObject **cpy_r_r152;
+    PyObject *cpy_r_r153;
+    PyObject *cpy_r_r154;
+    PyObject *cpy_r_r155;
+    PyObject *cpy_r_r156;
+    int32_t cpy_r_r157;
+    char cpy_r_r158;
+    PyObject *cpy_r_r159;
+    char cpy_r_r160;
+    PyObject *cpy_r_r161;
+    PyObject *cpy_r_r162;
+    PyObject *cpy_r_r163;
+    PyObject *cpy_r_r164;
+    PyObject *cpy_r_r165;
+    PyObject **cpy_r_r167;
+    PyObject *cpy_r_r168;
+    PyObject *cpy_r_r169;
+    PyObject *cpy_r_r170;
+    PyObject *cpy_r_r171;
+    int32_t cpy_r_r172;
+    char cpy_r_r173;
+    PyObject *cpy_r_r174;
+    char cpy_r_r175;
+    PyObject *cpy_r_r176;
+    PyObject *cpy_r_r177;
+    PyObject *cpy_r_r178;
+    PyObject *cpy_r_r179;
+    PyObject *cpy_r_r180;
+    PyObject **cpy_r_r182;
+    PyObject *cpy_r_r183;
+    PyObject *cpy_r_r184;
+    PyObject *cpy_r_r185;
+    PyObject *cpy_r_r186;
+    int32_t cpy_r_r187;
+    char cpy_r_r188;
+    PyObject *cpy_r_r189;
+    char cpy_r_r190;
+    PyObject *cpy_r_r191;
+    PyObject *cpy_r_r192;
+    PyObject *cpy_r_r193;
+    PyObject *cpy_r_r194;
+    PyObject *cpy_r_r195;
+    PyObject **cpy_r_r197;
+    PyObject *cpy_r_r198;
+    PyObject *cpy_r_r199;
+    PyObject *cpy_r_r200;
+    PyObject *cpy_r_r201;
+    int32_t cpy_r_r202;
+    char cpy_r_r203;
+    PyObject *cpy_r_r204;
+    char cpy_r_r205;
+    PyObject *cpy_r_r206;
+    PyObject *cpy_r_r207;
+    PyObject *cpy_r_r208;
+    PyObject *cpy_r_r209;
+    PyObject *cpy_r_r210;
+    PyObject **cpy_r_r212;
+    PyObject *cpy_r_r213;
+    PyObject *cpy_r_r214;
+    PyObject *cpy_r_r215;
+    PyObject *cpy_r_r216;
+    int32_t cpy_r_r217;
+    char cpy_r_r218;
+    PyObject *cpy_r_r219;
+    char cpy_r_r220;
+    PyObject *cpy_r_r221;
+    PyObject *cpy_r_r222;
+    PyObject *cpy_r_r223;
+    PyObject *cpy_r_r224;
+    PyObject *cpy_r_r225;
+    PyObject **cpy_r_r227;
+    PyObject *cpy_r_r228;
+    PyObject *cpy_r_r229;
+    PyObject *cpy_r_r230;
+    PyObject *cpy_r_r231;
+    int32_t cpy_r_r232;
+    char cpy_r_r233;
+    PyObject *cpy_r_r234;
+    PyObject *cpy_r_r235;
+    PyObject *cpy_r_r236;
+    PyObject *cpy_r_r237;
+    PyObject *cpy_r_r238;
+    PyObject *cpy_r_r239;
+    PyObject *cpy_r_r240;
+    PyObject **cpy_r_r242;
+    PyObject *cpy_r_r243;
+    PyObject *cpy_r_r244;
+    PyObject *cpy_r_r245;
+    PyObject *cpy_r_r246;
+    int32_t cpy_r_r247;
+    char cpy_r_r248;
+    PyObject *cpy_r_r249;
+    char cpy_r_r250;
+    PyObject *cpy_r_r251;
+    PyObject *cpy_r_r252;
+    PyObject *cpy_r_r253;
+    PyObject *cpy_r_r254;
+    PyObject *cpy_r_r255;
+    PyObject **cpy_r_r257;
+    PyObject *cpy_r_r258;
+    PyObject *cpy_r_r259;
+    PyObject *cpy_r_r260;
+    PyObject *cpy_r_r261;
+    int32_t cpy_r_r262;
+    char cpy_r_r263;
+    char cpy_r_r264;
+    cpy_r_r0 = CPyModule_builtins;
+    cpy_r_r1 = (PyObject *)&_Py_NoneStruct;
+    cpy_r_r2 = cpy_r_r0 != cpy_r_r1;
+    if (cpy_r_r2) goto CPyL3;
+    cpy_r_r3 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'builtins' */
+    cpy_r_r4 = PyImport_Import(cpy_r_r3);
+    if (unlikely(cpy_r_r4 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyModule_builtins = cpy_r_r4;
+    CPy_INCREF(CPyModule_builtins);
+    CPy_DECREF(cpy_r_r4);
+CPyL3: ;
+    cpy_r_r5 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('path',) */
+    cpy_r_r6 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'os' */
+    cpy_r_r7 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r8 = CPyImport_ImportFromMany(cpy_r_r6, cpy_r_r5, cpy_r_r5, cpy_r_r7);
+    if (unlikely(cpy_r_r8 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyModule_os = cpy_r_r8;
+    CPy_INCREF(CPyModule_os);
+    CPy_DECREF(cpy_r_r8);
+    cpy_r_r9 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Final',) */
+    cpy_r_r10 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
+    cpy_r_r11 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r12 = CPyImport_ImportFromMany(cpy_r_r10, cpy_r_r9, cpy_r_r9, cpy_r_r11);
+    if (unlikely(cpy_r_r12 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyModule_typing = cpy_r_r12;
+    CPy_INCREF(CPyModule_typing);
+    CPy_DECREF(cpy_r_r12);
+    cpy_r_r13 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('EnvVarFactory', 'create_env') */
+    cpy_r_r14 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typed_envs' */
+    cpy_r_r15 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r16 = CPyImport_ImportFromMany(cpy_r_r14, cpy_r_r13, cpy_r_r13, cpy_r_r15);
+    if (unlikely(cpy_r_r16 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyModule_typed_envs = cpy_r_r16;
+    CPy_INCREF(CPyModule_typed_envs);
+    CPy_DECREF(cpy_r_r16);
+    cpy_r_r17 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'YPRICEMAGIC' */
+    cpy_r_r18 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r19 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'EnvVarFactory' */
+    cpy_r_r20 = CPyDict_GetItem(cpy_r_r18, cpy_r_r19);
+    if (unlikely(cpy_r_r20 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    PyObject *cpy_r_r21[1] = {cpy_r_r17};
+    cpy_r_r22 = (PyObject **)&cpy_r_r21;
+    cpy_r_r23 = PyObject_Vectorcall(cpy_r_r20, cpy_r_r22, 1, 0);
+    CPy_DECREF(cpy_r_r20);
+    if (unlikely(cpy_r_r23 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES____envs = cpy_r_r23;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES____envs);
+    cpy_r_r24 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r25 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_envs' */
+    cpy_r_r26 = CPyDict_SetItem(cpy_r_r24, cpy_r_r25, cpy_r_r23);
+    CPy_DECREF(cpy_r_r23);
+    cpy_r_r27 = cpy_r_r26 >= 0;
+    if (unlikely(!cpy_r_r27)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r28 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r28 != NULL)) goto CPyL12;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r29 = 0;
+    if (unlikely(!cpy_r_r29)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL12: ;
+    cpy_r_r30 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CACHE_TTL' */
+    cpy_r_r31 = (PyObject *)&PyLong_Type;
+    cpy_r_r32 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r33 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 3600 */
+    cpy_r_r34 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r35[5] = {cpy_r_r28, cpy_r_r30, cpy_r_r31, cpy_r_r33, cpy_r_r34};
+    cpy_r_r36 = (PyObject **)&cpy_r_r35;
+    cpy_r_r37 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r38 = PyObject_VectorcallMethod(cpy_r_r32, cpy_r_r36, 9223372036854775811ULL, cpy_r_r37);
+    if (unlikely(cpy_r_r38 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL = cpy_r_r38;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL);
+    cpy_r_r39 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r40 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CACHE_TTL' */
+    cpy_r_r41 = CPyDict_SetItem(cpy_r_r39, cpy_r_r40, cpy_r_r38);
+    CPy_DECREF(cpy_r_r38);
+    cpy_r_r42 = cpy_r_r41 >= 0;
+    if (unlikely(!cpy_r_r42)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r43 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r43 != NULL)) goto CPyL17;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r44 = 0;
+    if (unlikely(!cpy_r_r44)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL17: ;
+    cpy_r_r45 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CONTRACT_CACHE_TTL' */
+    cpy_r_r46 = (PyObject *)&PyLong_Type;
+    cpy_r_r47 = CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL;
+    if (likely(cpy_r_r47 != NULL)) goto CPyL20;
+    PyErr_SetString(PyExc_NameError, "value for final name \"CACHE_TTL\" was not set");
+    cpy_r_r48 = 0;
+    if (unlikely(!cpy_r_r48)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL20: ;
+    cpy_r_r49 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r50 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r51[5] = {cpy_r_r43, cpy_r_r45, cpy_r_r46, cpy_r_r47, cpy_r_r50};
+    cpy_r_r52 = (PyObject **)&cpy_r_r51;
+    cpy_r_r53 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r54 = PyObject_VectorcallMethod(cpy_r_r49, cpy_r_r52, 9223372036854775811ULL, cpy_r_r53);
+    if (unlikely(cpy_r_r54 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL = cpy_r_r54;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL);
+    cpy_r_r55 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r56 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CONTRACT_CACHE_TTL' */
+    cpy_r_r57 = CPyDict_SetItem(cpy_r_r55, cpy_r_r56, cpy_r_r54);
+    CPy_DECREF(cpy_r_r54);
+    cpy_r_r58 = cpy_r_r57 >= 0;
+    if (unlikely(!cpy_r_r58)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r59 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r59 != NULL)) goto CPyL25;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r60 = 0;
+    if (unlikely(!cpy_r_r60)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL25: ;
+    cpy_r_r61 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'GETLOGS_BATCH_SIZE' */
+    cpy_r_r62 = (PyObject *)&PyLong_Type;
+    cpy_r_r63 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r64 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 0 */
+    PyObject *cpy_r_r65[4] = {cpy_r_r59, cpy_r_r61, cpy_r_r62, cpy_r_r64};
+    cpy_r_r66 = (PyObject **)&cpy_r_r65;
+    cpy_r_r67 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default',) */
+    cpy_r_r68 = PyObject_VectorcallMethod(cpy_r_r63, cpy_r_r66, 9223372036854775811ULL, cpy_r_r67);
+    if (unlikely(cpy_r_r68 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE = cpy_r_r68;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE);
+    cpy_r_r69 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r70 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'GETLOGS_BATCH_SIZE' */
+    cpy_r_r71 = CPyDict_SetItem(cpy_r_r69, cpy_r_r70, cpy_r_r68);
+    CPy_DECREF(cpy_r_r68);
+    cpy_r_r72 = cpy_r_r71 >= 0;
+    if (unlikely(!cpy_r_r72)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r73 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r73 != NULL)) goto CPyL30;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r74 = 0;
+    if (unlikely(!cpy_r_r74)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL30: ;
+    cpy_r_r75 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'GETLOGS_DOP' */
+    cpy_r_r76 = (PyObject *)&PyLong_Type;
+    cpy_r_r77 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r78 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 32 */
+    cpy_r_r79 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r80[5] = {cpy_r_r73, cpy_r_r75, cpy_r_r76, cpy_r_r78, cpy_r_r79};
+    cpy_r_r81 = (PyObject **)&cpy_r_r80;
+    cpy_r_r82 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r83 = PyObject_VectorcallMethod(cpy_r_r77, cpy_r_r81, 9223372036854775811ULL, cpy_r_r82);
+    if (unlikely(cpy_r_r83 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP = cpy_r_r83;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP);
+    cpy_r_r84 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r85 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'GETLOGS_DOP' */
+    cpy_r_r86 = CPyDict_SetItem(cpy_r_r84, cpy_r_r85, cpy_r_r83);
+    CPy_DECREF(cpy_r_r83);
+    cpy_r_r87 = cpy_r_r86 >= 0;
+    if (unlikely(!cpy_r_r87)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r88 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r88 != NULL)) goto CPyL35;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r89 = 0;
+    if (unlikely(!cpy_r_r89)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL35: ;
+    cpy_r_r90 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CHECKSUM_CACHE_MAXSIZE' */
+    cpy_r_r91 = (PyObject *)&PyLong_Type;
+    cpy_r_r92 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r93 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 100000 */
+    cpy_r_r94 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r95[5] = {cpy_r_r88, cpy_r_r90, cpy_r_r91, cpy_r_r93, cpy_r_r94};
+    cpy_r_r96 = (PyObject **)&cpy_r_r95;
+    cpy_r_r97 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r98 = PyObject_VectorcallMethod(cpy_r_r92, cpy_r_r96, 9223372036854775811ULL, cpy_r_r97);
+    if (unlikely(cpy_r_r98 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE = cpy_r_r98;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE);
+    cpy_r_r99 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r100 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CHECKSUM_CACHE_MAXSIZE' */
+    cpy_r_r101 = CPyDict_SetItem(cpy_r_r99, cpy_r_r100, cpy_r_r98);
+    CPy_DECREF(cpy_r_r98);
+    cpy_r_r102 = cpy_r_r101 >= 0;
+    if (unlikely(!cpy_r_r102)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r103 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r103 != NULL)) goto CPyL40;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r104 = 0;
+    if (unlikely(!cpy_r_r104)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL40: ;
+    cpy_r_r105 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PROVIDER' */
+    cpy_r_r106 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r107 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'sqlite' */
+    cpy_r_r108 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r109 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r110[5] = {cpy_r_r103, cpy_r_r105, cpy_r_r106, cpy_r_r107, cpy_r_r109};
+    cpy_r_r111 = (PyObject **)&cpy_r_r110;
+    cpy_r_r112 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r113 = PyObject_VectorcallMethod(cpy_r_r108, cpy_r_r111, 9223372036854775811ULL, cpy_r_r112);
+    if (unlikely(cpy_r_r113 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER = cpy_r_r113;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER);
+    cpy_r_r114 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r115 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PROVIDER' */
+    cpy_r_r116 = CPyDict_SetItem(cpy_r_r114, cpy_r_r115, cpy_r_r113);
+    CPy_DECREF(cpy_r_r113);
+    cpy_r_r117 = cpy_r_r116 >= 0;
+    if (unlikely(!cpy_r_r117)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r118 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r118 != NULL)) goto CPyL45;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r119 = 0;
+    if (unlikely(!cpy_r_r119)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL45: ;
+    cpy_r_r120 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SQLITE_PATH' */
+    cpy_r_r121 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r122 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '~' */
+    cpy_r_r123 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r124 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'path' */
+    cpy_r_r125 = CPyDict_GetItem(cpy_r_r123, cpy_r_r124);
+    if (unlikely(cpy_r_r125 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r126 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'expanduser' */
+    cpy_r_r127 = CPyObject_GetAttr(cpy_r_r125, cpy_r_r126);
+    CPy_DECREF(cpy_r_r125);
+    if (unlikely(cpy_r_r127 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    PyObject *cpy_r_r128[1] = {cpy_r_r122};
+    cpy_r_r129 = (PyObject **)&cpy_r_r128;
+    cpy_r_r130 = PyObject_Vectorcall(cpy_r_r127, cpy_r_r129, 1, 0);
+    CPy_DECREF(cpy_r_r127);
+    if (unlikely(cpy_r_r130 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    if (likely(PyUnicode_Check(cpy_r_r130)))
+        cpy_r_r131 = cpy_r_r130;
+    else {
+        CPy_TypeErrorTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", 33, CPyStatic_ENVIRONMENT_VARIABLES___globals, "str", cpy_r_r130);
+        goto CPyL91;
+    }
+    cpy_r_r132 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '/.ypricemagic/ypricemagic.sqlite' */
+    cpy_r_r133 = CPyStr_Build(2, cpy_r_r131, cpy_r_r132);
+    CPy_DECREF(cpy_r_r131);
+    if (unlikely(cpy_r_r133 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r134 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r135 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r136[5] = {cpy_r_r118, cpy_r_r120, cpy_r_r121, cpy_r_r133, cpy_r_r135};
+    cpy_r_r137 = (PyObject **)&cpy_r_r136;
+    cpy_r_r138 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r139 = PyObject_VectorcallMethod(cpy_r_r134, cpy_r_r137, 9223372036854775811ULL, cpy_r_r138);
+    if (unlikely(cpy_r_r139 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL92;
+    }
+    CPy_DECREF(cpy_r_r133);
+    CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH = cpy_r_r139;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH);
+    cpy_r_r140 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r141 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SQLITE_PATH' */
+    cpy_r_r142 = CPyDict_SetItem(cpy_r_r140, cpy_r_r141, cpy_r_r139);
+    CPy_DECREF(cpy_r_r139);
+    cpy_r_r143 = cpy_r_r142 >= 0;
+    if (unlikely(!cpy_r_r143)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r144 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r144 != NULL)) goto CPyL55;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r145 = 0;
+    if (unlikely(!cpy_r_r145)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL55: ;
+    cpy_r_r146 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_HOST' */
+    cpy_r_r147 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r148 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
+    cpy_r_r149 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r150 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r151[5] = {cpy_r_r144, cpy_r_r146, cpy_r_r147, cpy_r_r148, cpy_r_r150};
+    cpy_r_r152 = (PyObject **)&cpy_r_r151;
+    cpy_r_r153 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r154 = PyObject_VectorcallMethod(cpy_r_r149, cpy_r_r152, 9223372036854775811ULL, cpy_r_r153);
+    if (unlikely(cpy_r_r154 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST = cpy_r_r154;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST);
+    cpy_r_r155 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r156 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_HOST' */
+    cpy_r_r157 = CPyDict_SetItem(cpy_r_r155, cpy_r_r156, cpy_r_r154);
+    CPy_DECREF(cpy_r_r154);
+    cpy_r_r158 = cpy_r_r157 >= 0;
+    if (unlikely(!cpy_r_r158)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r159 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r159 != NULL)) goto CPyL60;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r160 = 0;
+    if (unlikely(!cpy_r_r160)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL60: ;
+    cpy_r_r161 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PORT' */
+    cpy_r_r162 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r163 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
+    cpy_r_r164 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r165 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r166[5] = {cpy_r_r159, cpy_r_r161, cpy_r_r162, cpy_r_r163, cpy_r_r165};
+    cpy_r_r167 = (PyObject **)&cpy_r_r166;
+    cpy_r_r168 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r169 = PyObject_VectorcallMethod(cpy_r_r164, cpy_r_r167, 9223372036854775811ULL, cpy_r_r168);
+    if (unlikely(cpy_r_r169 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT = cpy_r_r169;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT);
+    cpy_r_r170 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r171 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PORT' */
+    cpy_r_r172 = CPyDict_SetItem(cpy_r_r170, cpy_r_r171, cpy_r_r169);
+    CPy_DECREF(cpy_r_r169);
+    cpy_r_r173 = cpy_r_r172 >= 0;
+    if (unlikely(!cpy_r_r173)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r174 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r174 != NULL)) goto CPyL65;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r175 = 0;
+    if (unlikely(!cpy_r_r175)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL65: ;
+    cpy_r_r176 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_USER' */
+    cpy_r_r177 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r178 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
+    cpy_r_r179 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r180 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r181[5] = {cpy_r_r174, cpy_r_r176, cpy_r_r177, cpy_r_r178, cpy_r_r180};
+    cpy_r_r182 = (PyObject **)&cpy_r_r181;
+    cpy_r_r183 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r184 = PyObject_VectorcallMethod(cpy_r_r179, cpy_r_r182, 9223372036854775811ULL, cpy_r_r183);
+    if (unlikely(cpy_r_r184 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_USER = cpy_r_r184;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_USER);
+    cpy_r_r185 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r186 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_USER' */
+    cpy_r_r187 = CPyDict_SetItem(cpy_r_r185, cpy_r_r186, cpy_r_r184);
+    CPy_DECREF(cpy_r_r184);
+    cpy_r_r188 = cpy_r_r187 >= 0;
+    if (unlikely(!cpy_r_r188)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r189 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r189 != NULL)) goto CPyL70;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r190 = 0;
+    if (unlikely(!cpy_r_r190)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL70: ;
+    cpy_r_r191 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PASSWORD' */
+    cpy_r_r192 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r193 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
+    cpy_r_r194 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r195 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r196[5] = {cpy_r_r189, cpy_r_r191, cpy_r_r192, cpy_r_r193, cpy_r_r195};
+    cpy_r_r197 = (PyObject **)&cpy_r_r196;
+    cpy_r_r198 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r199 = PyObject_VectorcallMethod(cpy_r_r194, cpy_r_r197, 9223372036854775811ULL, cpy_r_r198);
+    if (unlikely(cpy_r_r199 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD = cpy_r_r199;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD);
+    cpy_r_r200 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r201 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PASSWORD' */
+    cpy_r_r202 = CPyDict_SetItem(cpy_r_r200, cpy_r_r201, cpy_r_r199);
+    CPy_DECREF(cpy_r_r199);
+    cpy_r_r203 = cpy_r_r202 >= 0;
+    if (unlikely(!cpy_r_r203)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r204 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r204 != NULL)) goto CPyL75;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r205 = 0;
+    if (unlikely(!cpy_r_r205)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL75: ;
+    cpy_r_r206 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_DATABASE' */
+    cpy_r_r207 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r208 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'ypricemagic' */
+    cpy_r_r209 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r210 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r211[5] = {cpy_r_r204, cpy_r_r206, cpy_r_r207, cpy_r_r208, cpy_r_r210};
+    cpy_r_r212 = (PyObject **)&cpy_r_r211;
+    cpy_r_r213 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r214 = PyObject_VectorcallMethod(cpy_r_r209, cpy_r_r212, 9223372036854775811ULL, cpy_r_r213);
+    if (unlikely(cpy_r_r214 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE = cpy_r_r214;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE);
+    cpy_r_r215 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r216 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_DATABASE' */
+    cpy_r_r217 = CPyDict_SetItem(cpy_r_r215, cpy_r_r216, cpy_r_r214);
+    CPy_DECREF(cpy_r_r214);
+    cpy_r_r218 = cpy_r_r217 >= 0;
+    if (unlikely(!cpy_r_r218)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r219 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r219 != NULL)) goto CPyL80;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r220 = 0;
+    if (unlikely(!cpy_r_r220)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL80: ;
+    cpy_r_r221 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_CACHE' */
+    cpy_r_r222 = (PyObject *)&PyBool_Type;
+    cpy_r_r223 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r224 = 0 ? Py_True : Py_False;
+    cpy_r_r225 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r226[5] = {cpy_r_r219, cpy_r_r221, cpy_r_r222, cpy_r_r224, cpy_r_r225};
+    cpy_r_r227 = (PyObject **)&cpy_r_r226;
+    cpy_r_r228 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r229 = PyObject_VectorcallMethod(cpy_r_r223, cpy_r_r227, 9223372036854775811ULL, cpy_r_r228);
+    if (unlikely(cpy_r_r229 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = cpy_r_r229;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE);
+    cpy_r_r230 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r231 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_CACHE' */
+    cpy_r_r232 = CPyDict_SetItem(cpy_r_r230, cpy_r_r231, cpy_r_r229);
+    CPy_DECREF(cpy_r_r229);
+    cpy_r_r233 = cpy_r_r232 >= 0;
+    if (unlikely(!cpy_r_r233)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r234 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_YPRICEAPI' */
+    cpy_r_r235 = (PyObject *)&PyBool_Type;
+    cpy_r_r236 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r237 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r238 = CPyDict_GetItem(cpy_r_r236, cpy_r_r237);
+    if (unlikely(cpy_r_r238 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r239 = 0 ? Py_True : Py_False;
+    cpy_r_r240 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r241[4] = {cpy_r_r234, cpy_r_r235, cpy_r_r239, cpy_r_r240};
+    cpy_r_r242 = (PyObject **)&cpy_r_r241;
+    cpy_r_r243 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r244 = PyObject_Vectorcall(cpy_r_r238, cpy_r_r242, 2, cpy_r_r243);
+    CPy_DECREF(cpy_r_r238);
+    if (unlikely(cpy_r_r244 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = cpy_r_r244;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI);
+    cpy_r_r245 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r246 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_YPRICEAPI' */
+    cpy_r_r247 = CPyDict_SetItem(cpy_r_r245, cpy_r_r246, cpy_r_r244);
+    CPy_DECREF(cpy_r_r244);
+    cpy_r_r248 = cpy_r_r247 >= 0;
+    if (unlikely(!cpy_r_r248)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    cpy_r_r249 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
+    if (likely(cpy_r_r249 != NULL)) goto CPyL88;
+    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
+    cpy_r_r250 = 0;
+    if (unlikely(!cpy_r_r250)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPy_Unreachable();
+CPyL88: ;
+    cpy_r_r251 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SENSE_CHECK_FILE' */
+    cpy_r_r252 = (PyObject *)&PyUnicode_Type;
+    cpy_r_r253 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
+    cpy_r_r254 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
+    cpy_r_r255 = 0 ? Py_True : Py_False;
+    PyObject *cpy_r_r256[5] = {cpy_r_r249, cpy_r_r251, cpy_r_r252, cpy_r_r253, cpy_r_r255};
+    cpy_r_r257 = (PyObject **)&cpy_r_r256;
+    cpy_r_r258 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
+    cpy_r_r259 = PyObject_VectorcallMethod(cpy_r_r254, cpy_r_r257, 9223372036854775811ULL, cpy_r_r258);
+    if (unlikely(cpy_r_r259 == NULL)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = cpy_r_r259;
+    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE);
+    cpy_r_r260 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
+    cpy_r_r261 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SENSE_CHECK_FILE' */
+    cpy_r_r262 = CPyDict_SetItem(cpy_r_r260, cpy_r_r261, cpy_r_r259);
+    CPy_DECREF(cpy_r_r259);
+    cpy_r_r263 = cpy_r_r262 >= 0;
+    if (unlikely(!cpy_r_r263)) {
+        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
+        goto CPyL91;
+    }
+    return 1;
+CPyL91: ;
+    cpy_r_r264 = 2;
+    return cpy_r_r264;
+CPyL92: ;
+    CPy_DecRef(cpy_r_r133);
+    goto CPyL91;
+}
+    
+    static int
+    brownie___AsyncCursor_init(PyObject *self, PyObject *args, PyObject *kwds)
+    {
+        return 0;
+    }
+    static int
+    brownie___AsyncCursor_traverse(y____db___brownie___AsyncCursorObject *self, visitproc visit, void *arg)
+    {
+        Py_VISIT(self->__filename);
+        Py_VISIT(self->__db);
+        Py_VISIT(self->__execute);
+        int rv = 0;
+        return rv;
+    }
+    
+    static int
+    brownie___AsyncCursor_clear(y____db___brownie___AsyncCursorObject *self)
+    {
+        Py_CLEAR(self->__filename);
+        Py_CLEAR(self->__db);
+        Py_CLEAR(self->__execute);
+        return 0;
+    }
+    
+    static void
+    brownie___AsyncCursor_dealloc(y____db___brownie___AsyncCursorObject *self)
+    {
+        PyObject_GC_UnTrack(self);
+        CPy_TRASHCAN_BEGIN(self, brownie___AsyncCursor_dealloc)
+        brownie___AsyncCursor_clear(self);
+        Py_TYPE(self)->tp_free((PyObject *)self);
+        CPy_TRASHCAN_END(self)
+        done: ;
+    }
+    
+    PyObject *CPyDef_brownie_____mypyc__AsyncCursor_setup(PyObject *cpy_r_type);
+    PyObject *CPyDef_brownie___AsyncCursor(PyObject *cpy_r_filename);
+    
+    static PyObject *
+    brownie___AsyncCursor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+    {
+        if (type != CPyType_brownie___AsyncCursor) {
+            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+            return NULL;
+        }
+        PyObject *self = CPyDef_brownie_____mypyc__AsyncCursor_setup((PyObject*)type);
+        if (self == NULL)
+            return NULL;
+        PyObject *ret = CPyPy_brownie___AsyncCursor_____init__(self, args, kwds);
+        if (ret == NULL) {
+                Py_DECREF(self);
+                return NULL;
+        }
+        Py_DECREF(ret);
+        return self;
+    }
+    
+    static CPyVTableItem brownie___AsyncCursor_vtable[4];
+    static bool
+    CPyDef_brownie___AsyncCursor_trait_vtable_setup(void)
+    {
+        CPyVTableItem brownie___AsyncCursor_vtable_scratch[] = {
+            (CPyVTableItem)CPyDef_brownie___AsyncCursor_____init__,
+            (CPyVTableItem)CPyDef_brownie___AsyncCursor___connect,
+            (CPyVTableItem)CPyDef_brownie___AsyncCursor___insert,
+            (CPyVTableItem)CPyDef_brownie___AsyncCursor___fetchone,
+        };
+        memcpy(brownie___AsyncCursor_vtable, brownie___AsyncCursor_vtable_scratch, sizeof(brownie___AsyncCursor_vtable));
+        return 1;
+    }
+    
+    static bool
+    CPyDef_brownie___AsyncCursor_coroutine_setup(PyObject *type)
+    {
+        PyTypeObject *tp = (PyTypeObject *)type;
+        PyObject* CPyPy_brownie___AsyncCursor___connect_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "", "AsyncCursor.connect", (PyCFunction)CPyPy_brownie___AsyncCursor___connect, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("connect($self)\n--\n\n"), 95, CO_COROUTINE, true);
+        if (unlikely(!CPyPy_brownie___AsyncCursor___connect_wrapper))
+            return 2;
+        PyObject *CPyPy_brownie___AsyncCursor___connect_wrapper_name = PyUnicode_FromString("connect");
+        if (unlikely(!CPyPy_brownie___AsyncCursor___connect_wrapper_name))
+            return 2;
+        if (PyDict_SetItem(tp->tp_dict, CPyPy_brownie___AsyncCursor___connect_wrapper_name, CPyPy_brownie___AsyncCursor___connect_wrapper) < 0)
+            return 2;
+        PyObject* CPyPy_brownie___AsyncCursor___insert_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "", "AsyncCursor.insert", (PyCFunction)CPyPy_brownie___AsyncCursor___insert, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("insert($self, table, *values)\n--\n\n"), 106, CO_COROUTINE, true);
+        if (unlikely(!CPyPy_brownie___AsyncCursor___insert_wrapper))
+            return 2;
+        PyObject *CPyPy_brownie___AsyncCursor___insert_wrapper_name = PyUnicode_FromString("insert");
+        if (unlikely(!CPyPy_brownie___AsyncCursor___insert_wrapper_name))
+            return 2;
+        if (PyDict_SetItem(tp->tp_dict, CPyPy_brownie___AsyncCursor___insert_wrapper_name, CPyPy_brownie___AsyncCursor___insert_wrapper) < 0)
+            return 2;
+        PyObject* CPyPy_brownie___AsyncCursor___fetchone_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "", "AsyncCursor.fetchone", (PyCFunction)CPyPy_brownie___AsyncCursor___fetchone, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("fetchone($self, cmd, *args)\n--\n\n"), 122, CO_COROUTINE, true);
+        if (unlikely(!CPyPy_brownie___AsyncCursor___fetchone_wrapper))
+            return 2;
+        PyObject *CPyPy_brownie___AsyncCursor___fetchone_wrapper_name = PyUnicode_FromString("fetchone");
+        if (unlikely(!CPyPy_brownie___AsyncCursor___fetchone_wrapper_name))
+            return 2;
+        if (PyDict_SetItem(tp->tp_dict, CPyPy_brownie___AsyncCursor___fetchone_wrapper_name, CPyPy_brownie___AsyncCursor___fetchone_wrapper) < 0)
+            return 2;
+        return 1;
+    }
+    
+    static PyObject *
+    brownie___AsyncCursor_get__filename(y____db___brownie___AsyncCursorObject *self, void *closure);
+    static int
+    brownie___AsyncCursor_set__filename(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure);
+    static PyObject *
+    brownie___AsyncCursor_get__db(y____db___brownie___AsyncCursorObject *self, void *closure);
+    static int
+    brownie___AsyncCursor_set__db(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure);
+    static PyObject *
+    brownie___AsyncCursor_get__connected(y____db___brownie___AsyncCursorObject *self, void *closure);
+    static int
+    brownie___AsyncCursor_set__connected(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure);
+    static PyObject *
+    brownie___AsyncCursor_get__execute(y____db___brownie___AsyncCursorObject *self, void *closure);
+    static int
+    brownie___AsyncCursor_set__execute(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure);
+    
+    static PyGetSetDef brownie___AsyncCursor_getseters[] = {
+        {"_filename",
+         (getter)brownie___AsyncCursor_get__filename, (setter)brownie___AsyncCursor_set__filename,
+         NULL, NULL},
+        {"_db",
+         (getter)brownie___AsyncCursor_get__db, (setter)brownie___AsyncCursor_set__db,
+         NULL, NULL},
+        {"_connected",
+         (getter)brownie___AsyncCursor_get__connected, (setter)brownie___AsyncCursor_set__connected,
+         NULL, NULL},
+        {"_execute",
+         (getter)brownie___AsyncCursor_get__execute, (setter)brownie___AsyncCursor_set__execute,
+         NULL, NULL},
+        {NULL}  /* Sentinel */
+    };
+    
+    static PyMethodDef brownie___AsyncCursor_methods[] = {
+        {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc__AsyncCursor_setup, METH_O, NULL},
+        {"__init__",
+         (PyCFunction)CPyPy_brownie___AsyncCursor_____init__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__init__($self, filename)\n--\n\n")},
+        {"connect",
+         (PyCFunction)CPyPy_brownie___AsyncCursor___connect,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("connect($self)\n--\n\n")},
+        {"insert",
+         (PyCFunction)CPyPy_brownie___AsyncCursor___insert,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("insert($self, table, *values)\n--\n\n")},
+        {"fetchone",
+         (PyCFunction)CPyPy_brownie___AsyncCursor___fetchone,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("fetchone($self, cmd, *args)\n--\n\n")},
+        {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+        {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+        {NULL}  /* Sentinel */
+    };
+    
+    static PyTypeObject CPyType_brownie___AsyncCursor_template_ = {
+        PyVarObject_HEAD_INIT(NULL, 0)
+        .tp_name = "AsyncCursor",
+        .tp_new = brownie___AsyncCursor_new,
+        .tp_dealloc = (destructor)brownie___AsyncCursor_dealloc,
+        .tp_traverse = (traverseproc)brownie___AsyncCursor_traverse,
+        .tp_clear = (inquiry)brownie___AsyncCursor_clear,
+        .tp_getset = brownie___AsyncCursor_getseters,
+        .tp_methods = brownie___AsyncCursor_methods,
+        .tp_init = brownie___AsyncCursor_init,
+        .tp_basicsize = sizeof(y____db___brownie___AsyncCursorObject),
+        .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+        .tp_doc = PyDoc_STR("AsyncCursor(filename)\n--\n\n"),
+    };
+    static PyTypeObject *CPyType_brownie___AsyncCursor_template = &CPyType_brownie___AsyncCursor_template_;
+    
+    PyObject *CPyDef_brownie_____mypyc__AsyncCursor_setup(PyObject *cpy_r_type)
+    {
+        PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+        y____db___brownie___AsyncCursorObject *self;
+        self = (y____db___brownie___AsyncCursorObject *)type->tp_alloc(type, 0);
+        if (self == NULL)
+            return NULL;
+        self->vtable = brownie___AsyncCursor_vtable;
+        self->__connected = 2;
+        return (PyObject *)self;
+    }
+    
+    PyObject *CPyDef_brownie___AsyncCursor(PyObject *cpy_r_filename)
+    {
+        PyObject *self = CPyDef_brownie_____mypyc__AsyncCursor_setup((PyObject *)CPyType_brownie___AsyncCursor);
+        if (self == NULL)
+            return NULL;
+        char res = CPyDef_brownie___AsyncCursor_____init__(self, cpy_r_filename);
+        if (res == 2) {
             Py_DECREF(self);
             return NULL;
+        }
+        return self;
     }
-    Py_DECREF(ret);
-    return self;
-}
-
-static CPyVTableItem brownie___AsyncCursor_vtable[4];
-static bool
-CPyDef_brownie___AsyncCursor_trait_vtable_setup(void)
-{
-    CPyVTableItem brownie___AsyncCursor_vtable_scratch[] = {
-        (CPyVTableItem)CPyDef_brownie___AsyncCursor_____init__,
-        (CPyVTableItem)CPyDef_brownie___AsyncCursor___connect,
-        (CPyVTableItem)CPyDef_brownie___AsyncCursor___insert,
-        (CPyVTableItem)CPyDef_brownie___AsyncCursor___fetchone,
-    };
-    memcpy(brownie___AsyncCursor_vtable, brownie___AsyncCursor_vtable_scratch, sizeof(brownie___AsyncCursor_vtable));
-    return 1;
-}
-
-static bool
-CPyDef_brownie___AsyncCursor_coroutine_setup(PyObject *type)
-{
-    PyTypeObject *tp = (PyTypeObject *)type;
-    PyObject* CPyPy_brownie___AsyncCursor___connect_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "", "AsyncCursor.connect", (PyCFunction)CPyPy_brownie___AsyncCursor___connect, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("connect($self)\n--\n\n"), 95, CO_COROUTINE, true);
-    if (unlikely(!CPyPy_brownie___AsyncCursor___connect_wrapper))
-        return 2;
-    PyObject *CPyPy_brownie___AsyncCursor___connect_wrapper_name = PyUnicode_FromString("connect");
-    if (unlikely(!CPyPy_brownie___AsyncCursor___connect_wrapper_name))
-        return 2;
-    if (PyDict_SetItem(tp->tp_dict, CPyPy_brownie___AsyncCursor___connect_wrapper_name, CPyPy_brownie___AsyncCursor___connect_wrapper) < 0)
-        return 2;
-    PyObject* CPyPy_brownie___AsyncCursor___insert_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "", "AsyncCursor.insert", (PyCFunction)CPyPy_brownie___AsyncCursor___insert, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("insert($self, table, *values)\n--\n\n"), 106, CO_COROUTINE, true);
-    if (unlikely(!CPyPy_brownie___AsyncCursor___insert_wrapper))
-        return 2;
-    PyObject *CPyPy_brownie___AsyncCursor___insert_wrapper_name = PyUnicode_FromString("insert");
-    if (unlikely(!CPyPy_brownie___AsyncCursor___insert_wrapper_name))
-        return 2;
-    if (PyDict_SetItem(tp->tp_dict, CPyPy_brownie___AsyncCursor___insert_wrapper_name, CPyPy_brownie___AsyncCursor___insert_wrapper) < 0)
-        return 2;
-    PyObject* CPyPy_brownie___AsyncCursor___fetchone_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "", "AsyncCursor.fetchone", (PyCFunction)CPyPy_brownie___AsyncCursor___fetchone, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("fetchone($self, cmd, *args)\n--\n\n"), 122, CO_COROUTINE, true);
-    if (unlikely(!CPyPy_brownie___AsyncCursor___fetchone_wrapper))
-        return 2;
-    PyObject *CPyPy_brownie___AsyncCursor___fetchone_wrapper_name = PyUnicode_FromString("fetchone");
-    if (unlikely(!CPyPy_brownie___AsyncCursor___fetchone_wrapper_name))
-        return 2;
-    if (PyDict_SetItem(tp->tp_dict, CPyPy_brownie___AsyncCursor___fetchone_wrapper_name, CPyPy_brownie___AsyncCursor___fetchone_wrapper) < 0)
-        return 2;
-    return 1;
-}
-
-static PyObject *
-brownie___AsyncCursor_get__filename(y____db___brownie___AsyncCursorObject *self, void *closure);
-static int
-brownie___AsyncCursor_set__filename(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure);
-static PyObject *
-brownie___AsyncCursor_get__db(y____db___brownie___AsyncCursorObject *self, void *closure);
-static int
-brownie___AsyncCursor_set__db(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure);
-static PyObject *
-brownie___AsyncCursor_get__connected(y____db___brownie___AsyncCursorObject *self, void *closure);
-static int
-brownie___AsyncCursor_set__connected(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure);
-static PyObject *
-brownie___AsyncCursor_get__execute(y____db___brownie___AsyncCursorObject *self, void *closure);
-static int
-brownie___AsyncCursor_set__execute(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure);
-
-static PyGetSetDef brownie___AsyncCursor_getseters[] = {
-    {"_filename",
-     (getter)brownie___AsyncCursor_get__filename, (setter)brownie___AsyncCursor_set__filename,
-     NULL, NULL},
-    {"_db",
-     (getter)brownie___AsyncCursor_get__db, (setter)brownie___AsyncCursor_set__db,
-     NULL, NULL},
-    {"_connected",
-     (getter)brownie___AsyncCursor_get__connected, (setter)brownie___AsyncCursor_set__connected,
-     NULL, NULL},
-    {"_execute",
-     (getter)brownie___AsyncCursor_get__execute, (setter)brownie___AsyncCursor_set__execute,
-     NULL, NULL},
-    {NULL}  /* Sentinel */
-};
-
-static PyMethodDef brownie___AsyncCursor_methods[] = {
-    {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc__AsyncCursor_setup, METH_O, NULL},
-    {"__init__",
-     (PyCFunction)CPyPy_brownie___AsyncCursor_____init__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__init__($self, filename)\n--\n\n")},
-    {"connect",
-     (PyCFunction)CPyPy_brownie___AsyncCursor___connect,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("connect($self)\n--\n\n")},
-    {"insert",
-     (PyCFunction)CPyPy_brownie___AsyncCursor___insert,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("insert($self, table, *values)\n--\n\n")},
-    {"fetchone",
-     (PyCFunction)CPyPy_brownie___AsyncCursor___fetchone,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("fetchone($self, cmd, *args)\n--\n\n")},
-    {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-    {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-    {NULL}  /* Sentinel */
-};
-
-static PyTypeObject CPyType_brownie___AsyncCursor_template_ = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "AsyncCursor",
-    .tp_new = brownie___AsyncCursor_new,
-    .tp_dealloc = (destructor)brownie___AsyncCursor_dealloc,
-    .tp_traverse = (traverseproc)brownie___AsyncCursor_traverse,
-    .tp_clear = (inquiry)brownie___AsyncCursor_clear,
-    .tp_getset = brownie___AsyncCursor_getseters,
-    .tp_methods = brownie___AsyncCursor_methods,
-    .tp_init = brownie___AsyncCursor_init,
-    .tp_basicsize = sizeof(y____db___brownie___AsyncCursorObject),
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = PyDoc_STR("AsyncCursor(filename)\n--\n\n"),
-};
-static PyTypeObject *CPyType_brownie___AsyncCursor_template = &CPyType_brownie___AsyncCursor_template_;
-
-PyObject *CPyDef_brownie_____mypyc__AsyncCursor_setup(PyObject *cpy_r_type)
-{
-    PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-    y____db___brownie___AsyncCursorObject *self;
-    self = (y____db___brownie___AsyncCursorObject *)type->tp_alloc(type, 0);
-    if (self == NULL)
-        return NULL;
-    self->vtable = brownie___AsyncCursor_vtable;
-    self->__connected = 2;
-    return (PyObject *)self;
-}
-
-PyObject *CPyDef_brownie___AsyncCursor(PyObject *cpy_r_filename)
-{
-    PyObject *self = CPyDef_brownie_____mypyc__AsyncCursor_setup((PyObject *)CPyType_brownie___AsyncCursor);
-    if (self == NULL)
-        return NULL;
-    char res = CPyDef_brownie___AsyncCursor_____init__(self, cpy_r_filename);
-    if (res == 2) {
-        Py_DECREF(self);
-        return NULL;
+    
+    static PyObject *
+    brownie___AsyncCursor_get__filename(y____db___brownie___AsyncCursorObject *self, void *closure)
+    {
+        if (unlikely(self->__filename == NULL)) {
+            PyErr_SetString(PyExc_AttributeError,
+                "attribute '_filename' of 'AsyncCursor' undefined");
+            return NULL;
+        }
+        CPy_INCREF(self->__filename);
+        PyObject *retval = self->__filename;
+        return retval;
     }
-    return self;
-}
-
-static PyObject *
-brownie___AsyncCursor_get__filename(y____db___brownie___AsyncCursorObject *self, void *closure)
-{
-    if (unlikely(self->__filename == NULL)) {
-        PyErr_SetString(PyExc_AttributeError,
-            "attribute '_filename' of 'AsyncCursor' undefined");
-        return NULL;
+    
+    static int
+    brownie___AsyncCursor_set__filename(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure)
+    {
+        if (value == NULL) {
+            PyErr_SetString(PyExc_AttributeError,
+                "'AsyncCursor' object attribute '_filename' cannot be deleted");
+            return -1;
+        }
+        if (self->__filename != NULL) {
+            CPy_DECREF(self->__filename);
+        }
+        PyObject *tmp = value;
+        CPy_INCREF(tmp);
+        self->__filename = tmp;
+        return 0;
     }
-    CPy_INCREF(self->__filename);
-    PyObject *retval = self->__filename;
-    return retval;
-}
-
-static int
-brownie___AsyncCursor_set__filename(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL) {
-        PyErr_SetString(PyExc_AttributeError,
-            "'AsyncCursor' object attribute '_filename' cannot be deleted");
-        return -1;
+    
+    static PyObject *
+    brownie___AsyncCursor_get__db(y____db___brownie___AsyncCursorObject *self, void *closure)
+    {
+        if (unlikely(self->__db == NULL)) {
+            PyErr_SetString(PyExc_AttributeError,
+                "attribute '_db' of 'AsyncCursor' undefined");
+            return NULL;
+        }
+        CPy_INCREF(self->__db);
+        PyObject *retval = self->__db;
+        return retval;
     }
-    if (self->__filename != NULL) {
-        CPy_DECREF(self->__filename);
-    }
-    PyObject *tmp = value;
-    CPy_INCREF(tmp);
-    self->__filename = tmp;
-    return 0;
-}
-
-static PyObject *
-brownie___AsyncCursor_get__db(y____db___brownie___AsyncCursorObject *self, void *closure)
-{
-    if (unlikely(self->__db == NULL)) {
-        PyErr_SetString(PyExc_AttributeError,
-            "attribute '_db' of 'AsyncCursor' undefined");
-        return NULL;
-    }
-    CPy_INCREF(self->__db);
-    PyObject *retval = self->__db;
-    return retval;
-}
-
-static int
-brownie___AsyncCursor_set__db(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL) {
-        PyErr_SetString(PyExc_AttributeError,
-            "'AsyncCursor' object attribute '_db' cannot be deleted");
-        return -1;
-    }
-    if (self->__db != NULL) {
-        CPy_DECREF(self->__db);
-    }
-    PyObject *tmp;
-    tmp = value;
-    if (tmp != NULL) goto __LL1;
-    if (value == Py_None)
+    
+    static int
+    brownie___AsyncCursor_set__db(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure)
+    {
+        if (value == NULL) {
+            PyErr_SetString(PyExc_AttributeError,
+                "'AsyncCursor' object attribute '_db' cannot be deleted");
+            return -1;
+        }
+        if (self->__db != NULL) {
+            CPy_DECREF(self->__db);
+        }
+        PyObject *tmp;
         tmp = value;
-    else {
+        if (tmp != NULL) goto __LL1;
+        if (value == Py_None)
+            tmp = value;
+        else {
+            tmp = NULL;
+        }
+        if (tmp != NULL) goto __LL1;
+        CPy_TypeError("object or None", value); 
         tmp = NULL;
-    }
-    if (tmp != NULL) goto __LL1;
-    CPy_TypeError("object or None", value); 
-    tmp = NULL;
 __LL1: ;
-    if (!tmp)
-        return -1;
-    CPy_INCREF(tmp);
-    self->__db = tmp;
-    return 0;
-}
-
-static PyObject *
-brownie___AsyncCursor_get__connected(y____db___brownie___AsyncCursorObject *self, void *closure)
-{
-    PyObject *retval = self->__connected ? Py_True : Py_False;
-    CPy_INCREF(retval);
-    return retval;
-}
-
-static int
-brownie___AsyncCursor_set__connected(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL) {
-        PyErr_SetString(PyExc_AttributeError,
-            "'AsyncCursor' object attribute '_connected' cannot be deleted");
-        return -1;
+        if (!tmp)
+            return -1;
+        CPy_INCREF(tmp);
+        self->__db = tmp;
+        return 0;
     }
-    char tmp;
-    if (unlikely(!PyBool_Check(value))) {
-        CPy_TypeError("bool", value); return -1;
-    } else
-        tmp = value == Py_True;
-    self->__connected = tmp;
-    return 0;
-}
-
-static PyObject *
-brownie___AsyncCursor_get__execute(y____db___brownie___AsyncCursorObject *self, void *closure)
-{
-    if (unlikely(self->__execute == NULL)) {
-        PyErr_SetString(PyExc_AttributeError,
-            "attribute '_execute' of 'AsyncCursor' undefined");
-        return NULL;
+    
+    static PyObject *
+    brownie___AsyncCursor_get__connected(y____db___brownie___AsyncCursorObject *self, void *closure)
+    {
+        PyObject *retval = self->__connected ? Py_True : Py_False;
+        CPy_INCREF(retval);
+        return retval;
     }
-    CPy_INCREF(self->__execute);
-    PyObject *retval = self->__execute;
-    return retval;
-}
-
-static int
-brownie___AsyncCursor_set__execute(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL) {
-        PyErr_SetString(PyExc_AttributeError,
-            "'AsyncCursor' object attribute '_execute' cannot be deleted");
-        return -1;
+    
+    static int
+    brownie___AsyncCursor_set__connected(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure)
+    {
+        if (value == NULL) {
+            PyErr_SetString(PyExc_AttributeError,
+                "'AsyncCursor' object attribute '_connected' cannot be deleted");
+            return -1;
+        }
+        char tmp;
+        if (unlikely(!PyBool_Check(value))) {
+            CPy_TypeError("bool", value); return -1;
+        } else
+            tmp = value == Py_True;
+        self->__connected = tmp;
+        return 0;
     }
-    if (self->__execute != NULL) {
-        CPy_DECREF(self->__execute);
+    
+    static PyObject *
+    brownie___AsyncCursor_get__execute(y____db___brownie___AsyncCursorObject *self, void *closure)
+    {
+        if (unlikely(self->__execute == NULL)) {
+            PyErr_SetString(PyExc_AttributeError,
+                "attribute '_execute' of 'AsyncCursor' undefined");
+            return NULL;
+        }
+        CPy_INCREF(self->__execute);
+        PyObject *retval = self->__execute;
+        return retval;
     }
-    PyObject *tmp;
-    tmp = value;
-    if (tmp != NULL) goto __LL2;
-    if (value == Py_None)
+    
+    static int
+    brownie___AsyncCursor_set__execute(y____db___brownie___AsyncCursorObject *self, PyObject *value, void *closure)
+    {
+        if (value == NULL) {
+            PyErr_SetString(PyExc_AttributeError,
+                "'AsyncCursor' object attribute '_execute' cannot be deleted");
+            return -1;
+        }
+        if (self->__execute != NULL) {
+            CPy_DECREF(self->__execute);
+        }
+        PyObject *tmp;
         tmp = value;
-    else {
+        if (tmp != NULL) goto __LL2;
+        if (value == Py_None)
+            tmp = value;
+        else {
+            tmp = NULL;
+        }
+        if (tmp != NULL) goto __LL2;
+        CPy_TypeError("object or None", value); 
         tmp = NULL;
-    }
-    if (tmp != NULL) goto __LL2;
-    CPy_TypeError("object or None", value); 
-    tmp = NULL;
 __LL2: ;
-    if (!tmp)
-        return -1;
-    CPy_INCREF(tmp);
-    self->__execute = tmp;
-    return 0;
-}
-
-static PyAsyncMethods brownie___connect_AsyncCursor_gen_as_async = {
-    .am_await = CPyDef_brownie___connect_AsyncCursor_gen_____await__,
-};
-static int
-brownie___connect_AsyncCursor_gen_traverse(y____db___brownie___connect_AsyncCursor_genObject *self, visitproc visit, void *arg)
-{
-    Py_VISIT(self->___mypyc_generator_attribute__self);
-    Py_VISIT(self->___mypyc_generator_attribute__db);
-    Py_VISIT(self->___mypyc_temp__0);
-    Py_VISIT(self->___mypyc_temp__1);
-    Py_VISIT(self->___mypyc_temp__3);
-    Py_VISIT(self->___mypyc_temp__4.f0);
-    Py_VISIT(self->___mypyc_temp__4.f1);
-    Py_VISIT(self->___mypyc_temp__4.f2);
-    Py_VISIT(self->___mypyc_temp__5);
-    Py_VISIT(self->___mypyc_temp__6);
-    Py_VISIT(self->___mypyc_temp__7.f0);
-    Py_VISIT(self->___mypyc_temp__7.f1);
-    Py_VISIT(self->___mypyc_temp__7.f2);
-    Py_VISIT(self->___mypyc_temp__8.f0);
-    Py_VISIT(self->___mypyc_temp__8.f1);
-    Py_VISIT(self->___mypyc_temp__8.f2);
-    Py_VISIT(self->___mypyc_temp__9);
-    Py_VISIT(self->___mypyc_temp__10.f0);
-    Py_VISIT(self->___mypyc_temp__10.f1);
-    Py_VISIT(self->___mypyc_temp__10.f2);
-    Py_VISIT(self->___mypyc_temp__11);
-    Py_VISIT(self->___mypyc_temp__12.f0);
-    Py_VISIT(self->___mypyc_temp__12.f1);
-    Py_VISIT(self->___mypyc_temp__12.f2);
-    int rv = 0;
-    return rv;
-}
-
-static int
-brownie___connect_AsyncCursor_gen_clear(y____db___brownie___connect_AsyncCursor_genObject *self)
-{
-    Py_CLEAR(self->___mypyc_generator_attribute__self);
-    Py_CLEAR(self->___mypyc_generator_attribute__db);
-    Py_CLEAR(self->___mypyc_temp__0);
-    Py_CLEAR(self->___mypyc_temp__1);
-    Py_CLEAR(self->___mypyc_temp__3);
-    Py_CLEAR(self->___mypyc_temp__4.f0);
-    Py_CLEAR(self->___mypyc_temp__4.f1);
-    Py_CLEAR(self->___mypyc_temp__4.f2);
-    Py_CLEAR(self->___mypyc_temp__5);
-    Py_CLEAR(self->___mypyc_temp__6);
-    Py_CLEAR(self->___mypyc_temp__7.f0);
-    Py_CLEAR(self->___mypyc_temp__7.f1);
-    Py_CLEAR(self->___mypyc_temp__7.f2);
-    Py_CLEAR(self->___mypyc_temp__8.f0);
-    Py_CLEAR(self->___mypyc_temp__8.f1);
-    Py_CLEAR(self->___mypyc_temp__8.f2);
-    Py_CLEAR(self->___mypyc_temp__9);
-    Py_CLEAR(self->___mypyc_temp__10.f0);
-    Py_CLEAR(self->___mypyc_temp__10.f1);
-    Py_CLEAR(self->___mypyc_temp__10.f2);
-    Py_CLEAR(self->___mypyc_temp__11);
-    Py_CLEAR(self->___mypyc_temp__12.f0);
-    Py_CLEAR(self->___mypyc_temp__12.f1);
-    Py_CLEAR(self->___mypyc_temp__12.f2);
-    return 0;
-}
-
-static void
-brownie___connect_AsyncCursor_gen_dealloc(y____db___brownie___connect_AsyncCursor_genObject *self)
-{
-    PyObject_GC_UnTrack(self);
-    if (brownie___connect_AsyncCursor_gen_free_instance == NULL) {
-        brownie___connect_AsyncCursor_gen_free_instance = self;
+        if (!tmp)
+            return -1;
+        CPy_INCREF(tmp);
+        self->__execute = tmp;
+        return 0;
+    }
+    
+    static PyAsyncMethods brownie___connect_AsyncCursor_gen_as_async = {
+        .am_await = CPyDef_brownie___connect_AsyncCursor_gen_____await__,
+    };
+    static int
+    brownie___connect_AsyncCursor_gen_traverse(y____db___brownie___connect_AsyncCursor_genObject *self, visitproc visit, void *arg)
+    {
+        Py_VISIT(self->___mypyc_generator_attribute__self);
+        Py_VISIT(self->___mypyc_generator_attribute__db);
+        Py_VISIT(self->___mypyc_temp__0);
+        Py_VISIT(self->___mypyc_temp__1);
+        Py_VISIT(self->___mypyc_temp__3);
+        Py_VISIT(self->___mypyc_temp__4.f0);
+        Py_VISIT(self->___mypyc_temp__4.f1);
+        Py_VISIT(self->___mypyc_temp__4.f2);
+        Py_VISIT(self->___mypyc_temp__5);
+        Py_VISIT(self->___mypyc_temp__6);
+        Py_VISIT(self->___mypyc_temp__7.f0);
+        Py_VISIT(self->___mypyc_temp__7.f1);
+        Py_VISIT(self->___mypyc_temp__7.f2);
+        Py_VISIT(self->___mypyc_temp__8.f0);
+        Py_VISIT(self->___mypyc_temp__8.f1);
+        Py_VISIT(self->___mypyc_temp__8.f2);
+        Py_VISIT(self->___mypyc_temp__9);
+        Py_VISIT(self->___mypyc_temp__10.f0);
+        Py_VISIT(self->___mypyc_temp__10.f1);
+        Py_VISIT(self->___mypyc_temp__10.f2);
+        Py_VISIT(self->___mypyc_temp__11);
+        Py_VISIT(self->___mypyc_temp__12.f0);
+        Py_VISIT(self->___mypyc_temp__12.f1);
+        Py_VISIT(self->___mypyc_temp__12.f2);
+        int rv = 0;
+        return rv;
+    }
+    
+    static int
+    brownie___connect_AsyncCursor_gen_clear(y____db___brownie___connect_AsyncCursor_genObject *self)
+    {
         Py_CLEAR(self->___mypyc_generator_attribute__self);
-        self->___mypyc_next_label__ = -113;
         Py_CLEAR(self->___mypyc_generator_attribute__db);
         Py_CLEAR(self->___mypyc_temp__0);
         Py_CLEAR(self->___mypyc_temp__1);
-        self->___mypyc_temp__2 = 2;
         Py_CLEAR(self->___mypyc_temp__3);
         Py_CLEAR(self->___mypyc_temp__4.f0);
         Py_CLEAR(self->___mypyc_temp__4.f1);
@@ -452,421 +1423,391 @@ brownie___connect_AsyncCursor_gen_dealloc(y____db___brownie___connect_AsyncCurso
         Py_CLEAR(self->___mypyc_temp__12.f0);
         Py_CLEAR(self->___mypyc_temp__12.f1);
         Py_CLEAR(self->___mypyc_temp__12.f2);
-        return;
+        return 0;
     }
-    CPy_TRASHCAN_BEGIN(self, brownie___connect_AsyncCursor_gen_dealloc)
-    brownie___connect_AsyncCursor_gen_clear(self);
-    Py_TYPE(self)->tp_free((PyObject *)self);
-    CPy_TRASHCAN_END(self)
-    done: ;
-}
-
-PyObject *CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie___connect_AsyncCursor_gen(void);
-
-static PyObject *
-brownie___connect_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie___connect_AsyncCursor_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
+    
+    static void
+    brownie___connect_AsyncCursor_gen_dealloc(y____db___brownie___connect_AsyncCursor_genObject *self)
+    {
+        PyObject_GC_UnTrack(self);
+        if (brownie___connect_AsyncCursor_gen_free_instance == NULL) {
+            brownie___connect_AsyncCursor_gen_free_instance = self;
+            Py_CLEAR(self->___mypyc_generator_attribute__self);
+            self->___mypyc_next_label__ = -113;
+            Py_CLEAR(self->___mypyc_generator_attribute__db);
+            Py_CLEAR(self->___mypyc_temp__0);
+            Py_CLEAR(self->___mypyc_temp__1);
+            self->___mypyc_temp__2 = 2;
+            Py_CLEAR(self->___mypyc_temp__3);
+            Py_CLEAR(self->___mypyc_temp__4.f0);
+            Py_CLEAR(self->___mypyc_temp__4.f1);
+            Py_CLEAR(self->___mypyc_temp__4.f2);
+            Py_CLEAR(self->___mypyc_temp__5);
+            Py_CLEAR(self->___mypyc_temp__6);
+            Py_CLEAR(self->___mypyc_temp__7.f0);
+            Py_CLEAR(self->___mypyc_temp__7.f1);
+            Py_CLEAR(self->___mypyc_temp__7.f2);
+            Py_CLEAR(self->___mypyc_temp__8.f0);
+            Py_CLEAR(self->___mypyc_temp__8.f1);
+            Py_CLEAR(self->___mypyc_temp__8.f2);
+            Py_CLEAR(self->___mypyc_temp__9);
+            Py_CLEAR(self->___mypyc_temp__10.f0);
+            Py_CLEAR(self->___mypyc_temp__10.f1);
+            Py_CLEAR(self->___mypyc_temp__10.f2);
+            Py_CLEAR(self->___mypyc_temp__11);
+            Py_CLEAR(self->___mypyc_temp__12.f0);
+            Py_CLEAR(self->___mypyc_temp__12.f1);
+            Py_CLEAR(self->___mypyc_temp__12.f2);
+            return;
+        }
+        CPy_TRASHCAN_BEGIN(self, brownie___connect_AsyncCursor_gen_dealloc)
+        brownie___connect_AsyncCursor_gen_clear(self);
+        Py_TYPE(self)->tp_free((PyObject *)self);
+        CPy_TRASHCAN_END(self)
+        done: ;
     }
-    PyObject *self = CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-static CPyVTableItem brownie___connect_AsyncCursor_gen_vtable[7];
-static bool
-CPyDef_brownie___connect_AsyncCursor_gen_trait_vtable_setup(void)
-{
-    CPyVTableItem brownie___connect_AsyncCursor_gen_vtable_scratch[] = {
-        (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen_____mypyc_generator_helper__,
-        (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen_____next__,
-        (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen___send,
-        (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen_____iter__,
-        (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen___throw,
-        (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen___close,
-        (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen_____await__,
+    
+    PyObject *CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup(PyObject *cpy_r_type);
+    PyObject *CPyDef_brownie___connect_AsyncCursor_gen(void);
+    
+    static PyObject *
+    brownie___connect_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+    {
+        if (type != CPyType_brownie___connect_AsyncCursor_gen) {
+            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+            return NULL;
+        }
+        PyObject *self = CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup((PyObject*)type);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    static CPyVTableItem brownie___connect_AsyncCursor_gen_vtable[7];
+    static bool
+    CPyDef_brownie___connect_AsyncCursor_gen_trait_vtable_setup(void)
+    {
+        CPyVTableItem brownie___connect_AsyncCursor_gen_vtable_scratch[] = {
+            (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen_____mypyc_generator_helper__,
+            (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen_____next__,
+            (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen___send,
+            (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen_____iter__,
+            (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen___throw,
+            (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen___close,
+            (CPyVTableItem)CPyDef_brownie___connect_AsyncCursor_gen_____await__,
+        };
+        memcpy(brownie___connect_AsyncCursor_gen_vtable, brownie___connect_AsyncCursor_gen_vtable_scratch, sizeof(brownie___connect_AsyncCursor_gen_vtable));
+        return 1;
+    }
+    
+    static bool
+    CPyDef_brownie___connect_AsyncCursor_gen_coroutine_setup(PyObject *type)
+    {
+        return 1;
+    }
+    
+    static PyMethodDef brownie___connect_AsyncCursor_gen_methods[] = {
+        {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup, METH_O, NULL},
+        {"__next__",
+         (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen_____next__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
+        {"send",
+         (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen___send,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
+        {"__iter__",
+         (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen_____iter__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
+        {"throw",
+         (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen___throw,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
+        {"close",
+         (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen___close,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
+        {"__await__",
+         (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen_____await__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
+        {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+        {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+        {NULL}  /* Sentinel */
     };
-    memcpy(brownie___connect_AsyncCursor_gen_vtable, brownie___connect_AsyncCursor_gen_vtable_scratch, sizeof(brownie___connect_AsyncCursor_gen_vtable));
-    return 1;
-}
-
-static bool
-CPyDef_brownie___connect_AsyncCursor_gen_coroutine_setup(PyObject *type)
-{
-    return 1;
-}
-
-static PyMethodDef brownie___connect_AsyncCursor_gen_methods[] = {
-    {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup, METH_O, NULL},
-    {"__next__",
-     (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen_____next__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
-    {"send",
-     (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen___send,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
-    {"__iter__",
-     (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen_____iter__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
-    {"throw",
-     (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen___throw,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
-    {"close",
-     (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen___close,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
-    {"__await__",
-     (PyCFunction)CPyPy_brownie___connect_AsyncCursor_gen_____await__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
-    {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-    {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-    {NULL}  /* Sentinel */
-};
-
-static PyTypeObject CPyType_brownie___connect_AsyncCursor_gen_template_ = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "connect_AsyncCursor_gen",
-    .tp_new = brownie___connect_AsyncCursor_gen_new,
-    .tp_dealloc = (destructor)brownie___connect_AsyncCursor_gen_dealloc,
-    .tp_traverse = (traverseproc)brownie___connect_AsyncCursor_gen_traverse,
-    .tp_clear = (inquiry)brownie___connect_AsyncCursor_gen_clear,
-    .tp_methods = brownie___connect_AsyncCursor_gen_methods,
-    .tp_iter = CPyDef_brownie___connect_AsyncCursor_gen_____iter__,
-    .tp_iternext = CPyDef_brownie___connect_AsyncCursor_gen_____next__,
-    .tp_as_async = &brownie___connect_AsyncCursor_gen_as_async,
-    .tp_basicsize = sizeof(y____db___brownie___connect_AsyncCursor_genObject),
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = PyDoc_STR("connect_AsyncCursor_gen()\n--\n\n"),
-};
-static PyTypeObject *CPyType_brownie___connect_AsyncCursor_gen_template = &CPyType_brownie___connect_AsyncCursor_gen_template_;
-
-PyObject *CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup(PyObject *cpy_r_type)
-{
-    PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-    y____db___brownie___connect_AsyncCursor_genObject *self;
-    if (brownie___connect_AsyncCursor_gen_free_instance != NULL) {
-        self = brownie___connect_AsyncCursor_gen_free_instance;
-        brownie___connect_AsyncCursor_gen_free_instance = NULL;
-        Py_SET_REFCNT(self, 1);
-        PyObject_GC_Track(self);
+    
+    static PyTypeObject CPyType_brownie___connect_AsyncCursor_gen_template_ = {
+        PyVarObject_HEAD_INIT(NULL, 0)
+        .tp_name = "connect_AsyncCursor_gen",
+        .tp_new = brownie___connect_AsyncCursor_gen_new,
+        .tp_dealloc = (destructor)brownie___connect_AsyncCursor_gen_dealloc,
+        .tp_traverse = (traverseproc)brownie___connect_AsyncCursor_gen_traverse,
+        .tp_clear = (inquiry)brownie___connect_AsyncCursor_gen_clear,
+        .tp_methods = brownie___connect_AsyncCursor_gen_methods,
+        .tp_iter = CPyDef_brownie___connect_AsyncCursor_gen_____iter__,
+        .tp_iternext = CPyDef_brownie___connect_AsyncCursor_gen_____next__,
+        .tp_as_async = &brownie___connect_AsyncCursor_gen_as_async,
+        .tp_basicsize = sizeof(y____db___brownie___connect_AsyncCursor_genObject),
+        .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+        .tp_doc = PyDoc_STR("connect_AsyncCursor_gen()\n--\n\n"),
+    };
+    static PyTypeObject *CPyType_brownie___connect_AsyncCursor_gen_template = &CPyType_brownie___connect_AsyncCursor_gen_template_;
+    
+    PyObject *CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup(PyObject *cpy_r_type)
+    {
+        PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+        y____db___brownie___connect_AsyncCursor_genObject *self;
+        if (brownie___connect_AsyncCursor_gen_free_instance != NULL) {
+            self = brownie___connect_AsyncCursor_gen_free_instance;
+            brownie___connect_AsyncCursor_gen_free_instance = NULL;
+            Py_SET_REFCNT(self, 1);
+            PyObject_GC_Track(self);
+            return (PyObject *)self;
+        }
+        self = (y____db___brownie___connect_AsyncCursor_genObject *)type->tp_alloc(type, 0);
+        if (self == NULL)
+            return NULL;
+        self->vtable = brownie___connect_AsyncCursor_gen_vtable;
+        self->___mypyc_next_label__ = -113;
+        self->___mypyc_temp__2 = 2;
+        self->___mypyc_temp__4 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__7 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__8 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__10 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__12 = (tuple_T3OOO) { NULL, NULL, NULL };
         return (PyObject *)self;
     }
-    self = (y____db___brownie___connect_AsyncCursor_genObject *)type->tp_alloc(type, 0);
-    if (self == NULL)
-        return NULL;
-    self->vtable = brownie___connect_AsyncCursor_gen_vtable;
-    self->___mypyc_next_label__ = -113;
-    self->___mypyc_temp__2 = 2;
-    self->___mypyc_temp__4 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__7 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__8 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__10 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__12 = (tuple_T3OOO) { NULL, NULL, NULL };
-    return (PyObject *)self;
-}
-
-PyObject *CPyDef_brownie___connect_AsyncCursor_gen(void)
-{
-    PyObject *self = CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup((PyObject *)CPyType_brownie___connect_AsyncCursor_gen);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-
-static PyAsyncMethods brownie___insert_AsyncCursor_gen_as_async = {
-    .am_await = CPyDef_brownie___insert_AsyncCursor_gen_____await__,
-};
-static int
-brownie___insert_AsyncCursor_gen_traverse(y____db___brownie___insert_AsyncCursor_genObject *self, visitproc visit, void *arg)
-{
-    Py_VISIT(self->___mypyc_generator_attribute__self);
-    Py_VISIT(self->___mypyc_generator_attribute__table);
-    Py_VISIT(self->___mypyc_generator_attribute__values);
-    int rv = 0;
-    return rv;
-}
-
-static int
-brownie___insert_AsyncCursor_gen_clear(y____db___brownie___insert_AsyncCursor_genObject *self)
-{
-    Py_CLEAR(self->___mypyc_generator_attribute__self);
-    Py_CLEAR(self->___mypyc_generator_attribute__table);
-    Py_CLEAR(self->___mypyc_generator_attribute__values);
-    return 0;
-}
-
-static void
-brownie___insert_AsyncCursor_gen_dealloc(y____db___brownie___insert_AsyncCursor_genObject *self)
-{
-    PyObject_GC_UnTrack(self);
-    if (brownie___insert_AsyncCursor_gen_free_instance == NULL) {
-        brownie___insert_AsyncCursor_gen_free_instance = self;
+    
+    PyObject *CPyDef_brownie___connect_AsyncCursor_gen(void)
+    {
+        PyObject *self = CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup((PyObject *)CPyType_brownie___connect_AsyncCursor_gen);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    
+    static PyAsyncMethods brownie___insert_AsyncCursor_gen_as_async = {
+        .am_await = CPyDef_brownie___insert_AsyncCursor_gen_____await__,
+    };
+    static int
+    brownie___insert_AsyncCursor_gen_traverse(y____db___brownie___insert_AsyncCursor_genObject *self, visitproc visit, void *arg)
+    {
+        Py_VISIT(self->___mypyc_generator_attribute__self);
+        Py_VISIT(self->___mypyc_generator_attribute__table);
+        Py_VISIT(self->___mypyc_generator_attribute__values);
+        int rv = 0;
+        return rv;
+    }
+    
+    static int
+    brownie___insert_AsyncCursor_gen_clear(y____db___brownie___insert_AsyncCursor_genObject *self)
+    {
         Py_CLEAR(self->___mypyc_generator_attribute__self);
         Py_CLEAR(self->___mypyc_generator_attribute__table);
         Py_CLEAR(self->___mypyc_generator_attribute__values);
-        self->___mypyc_next_label__ = -113;
-        return;
+        return 0;
     }
-    CPy_TRASHCAN_BEGIN(self, brownie___insert_AsyncCursor_gen_dealloc)
-    brownie___insert_AsyncCursor_gen_clear(self);
-    Py_TYPE(self)->tp_free((PyObject *)self);
-    CPy_TRASHCAN_END(self)
-    done: ;
-}
-
-PyObject *CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie___insert_AsyncCursor_gen(void);
-
-static PyObject *
-brownie___insert_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie___insert_AsyncCursor_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
+    
+    static void
+    brownie___insert_AsyncCursor_gen_dealloc(y____db___brownie___insert_AsyncCursor_genObject *self)
+    {
+        PyObject_GC_UnTrack(self);
+        if (brownie___insert_AsyncCursor_gen_free_instance == NULL) {
+            brownie___insert_AsyncCursor_gen_free_instance = self;
+            Py_CLEAR(self->___mypyc_generator_attribute__self);
+            Py_CLEAR(self->___mypyc_generator_attribute__table);
+            Py_CLEAR(self->___mypyc_generator_attribute__values);
+            self->___mypyc_next_label__ = -113;
+            return;
+        }
+        CPy_TRASHCAN_BEGIN(self, brownie___insert_AsyncCursor_gen_dealloc)
+        brownie___insert_AsyncCursor_gen_clear(self);
+        Py_TYPE(self)->tp_free((PyObject *)self);
+        CPy_TRASHCAN_END(self)
+        done: ;
     }
-    PyObject *self = CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-static CPyVTableItem brownie___insert_AsyncCursor_gen_vtable[7];
-static bool
-CPyDef_brownie___insert_AsyncCursor_gen_trait_vtable_setup(void)
-{
-    CPyVTableItem brownie___insert_AsyncCursor_gen_vtable_scratch[] = {
-        (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen_____mypyc_generator_helper__,
-        (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen_____next__,
-        (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen___send,
-        (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen_____iter__,
-        (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen___throw,
-        (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen___close,
-        (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen_____await__,
+    
+    PyObject *CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup(PyObject *cpy_r_type);
+    PyObject *CPyDef_brownie___insert_AsyncCursor_gen(void);
+    
+    static PyObject *
+    brownie___insert_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+    {
+        if (type != CPyType_brownie___insert_AsyncCursor_gen) {
+            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+            return NULL;
+        }
+        PyObject *self = CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup((PyObject*)type);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    static CPyVTableItem brownie___insert_AsyncCursor_gen_vtable[7];
+    static bool
+    CPyDef_brownie___insert_AsyncCursor_gen_trait_vtable_setup(void)
+    {
+        CPyVTableItem brownie___insert_AsyncCursor_gen_vtable_scratch[] = {
+            (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen_____mypyc_generator_helper__,
+            (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen_____next__,
+            (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen___send,
+            (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen_____iter__,
+            (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen___throw,
+            (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen___close,
+            (CPyVTableItem)CPyDef_brownie___insert_AsyncCursor_gen_____await__,
+        };
+        memcpy(brownie___insert_AsyncCursor_gen_vtable, brownie___insert_AsyncCursor_gen_vtable_scratch, sizeof(brownie___insert_AsyncCursor_gen_vtable));
+        return 1;
+    }
+    
+    static bool
+    CPyDef_brownie___insert_AsyncCursor_gen_coroutine_setup(PyObject *type)
+    {
+        return 1;
+    }
+    
+    static PyMethodDef brownie___insert_AsyncCursor_gen_methods[] = {
+        {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup, METH_O, NULL},
+        {"__next__",
+         (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen_____next__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
+        {"send",
+         (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen___send,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
+        {"__iter__",
+         (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen_____iter__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
+        {"throw",
+         (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen___throw,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
+        {"close",
+         (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen___close,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
+        {"__await__",
+         (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen_____await__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
+        {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+        {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+        {NULL}  /* Sentinel */
     };
-    memcpy(brownie___insert_AsyncCursor_gen_vtable, brownie___insert_AsyncCursor_gen_vtable_scratch, sizeof(brownie___insert_AsyncCursor_gen_vtable));
-    return 1;
-}
-
-static bool
-CPyDef_brownie___insert_AsyncCursor_gen_coroutine_setup(PyObject *type)
-{
-    return 1;
-}
-
-static PyMethodDef brownie___insert_AsyncCursor_gen_methods[] = {
-    {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup, METH_O, NULL},
-    {"__next__",
-     (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen_____next__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
-    {"send",
-     (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen___send,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
-    {"__iter__",
-     (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen_____iter__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
-    {"throw",
-     (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen___throw,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
-    {"close",
-     (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen___close,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
-    {"__await__",
-     (PyCFunction)CPyPy_brownie___insert_AsyncCursor_gen_____await__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
-    {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-    {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-    {NULL}  /* Sentinel */
-};
-
-static PyTypeObject CPyType_brownie___insert_AsyncCursor_gen_template_ = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "insert_AsyncCursor_gen",
-    .tp_new = brownie___insert_AsyncCursor_gen_new,
-    .tp_dealloc = (destructor)brownie___insert_AsyncCursor_gen_dealloc,
-    .tp_traverse = (traverseproc)brownie___insert_AsyncCursor_gen_traverse,
-    .tp_clear = (inquiry)brownie___insert_AsyncCursor_gen_clear,
-    .tp_methods = brownie___insert_AsyncCursor_gen_methods,
-    .tp_iter = CPyDef_brownie___insert_AsyncCursor_gen_____iter__,
-    .tp_iternext = CPyDef_brownie___insert_AsyncCursor_gen_____next__,
-    .tp_as_async = &brownie___insert_AsyncCursor_gen_as_async,
-    .tp_basicsize = sizeof(y____db___brownie___insert_AsyncCursor_genObject),
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = PyDoc_STR("insert_AsyncCursor_gen()\n--\n\n"),
-};
-static PyTypeObject *CPyType_brownie___insert_AsyncCursor_gen_template = &CPyType_brownie___insert_AsyncCursor_gen_template_;
-
-PyObject *CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup(PyObject *cpy_r_type)
-{
-    PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-    y____db___brownie___insert_AsyncCursor_genObject *self;
-    if (brownie___insert_AsyncCursor_gen_free_instance != NULL) {
-        self = brownie___insert_AsyncCursor_gen_free_instance;
-        brownie___insert_AsyncCursor_gen_free_instance = NULL;
-        Py_SET_REFCNT(self, 1);
-        PyObject_GC_Track(self);
+    
+    static PyTypeObject CPyType_brownie___insert_AsyncCursor_gen_template_ = {
+        PyVarObject_HEAD_INIT(NULL, 0)
+        .tp_name = "insert_AsyncCursor_gen",
+        .tp_new = brownie___insert_AsyncCursor_gen_new,
+        .tp_dealloc = (destructor)brownie___insert_AsyncCursor_gen_dealloc,
+        .tp_traverse = (traverseproc)brownie___insert_AsyncCursor_gen_traverse,
+        .tp_clear = (inquiry)brownie___insert_AsyncCursor_gen_clear,
+        .tp_methods = brownie___insert_AsyncCursor_gen_methods,
+        .tp_iter = CPyDef_brownie___insert_AsyncCursor_gen_____iter__,
+        .tp_iternext = CPyDef_brownie___insert_AsyncCursor_gen_____next__,
+        .tp_as_async = &brownie___insert_AsyncCursor_gen_as_async,
+        .tp_basicsize = sizeof(y____db___brownie___insert_AsyncCursor_genObject),
+        .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+        .tp_doc = PyDoc_STR("insert_AsyncCursor_gen()\n--\n\n"),
+    };
+    static PyTypeObject *CPyType_brownie___insert_AsyncCursor_gen_template = &CPyType_brownie___insert_AsyncCursor_gen_template_;
+    
+    PyObject *CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup(PyObject *cpy_r_type)
+    {
+        PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+        y____db___brownie___insert_AsyncCursor_genObject *self;
+        if (brownie___insert_AsyncCursor_gen_free_instance != NULL) {
+            self = brownie___insert_AsyncCursor_gen_free_instance;
+            brownie___insert_AsyncCursor_gen_free_instance = NULL;
+            Py_SET_REFCNT(self, 1);
+            PyObject_GC_Track(self);
+            return (PyObject *)self;
+        }
+        self = (y____db___brownie___insert_AsyncCursor_genObject *)type->tp_alloc(type, 0);
+        if (self == NULL)
+            return NULL;
+        self->vtable = brownie___insert_AsyncCursor_gen_vtable;
+        self->___mypyc_next_label__ = -113;
         return (PyObject *)self;
     }
-    self = (y____db___brownie___insert_AsyncCursor_genObject *)type->tp_alloc(type, 0);
-    if (self == NULL)
-        return NULL;
-    self->vtable = brownie___insert_AsyncCursor_gen_vtable;
-    self->___mypyc_next_label__ = -113;
-    return (PyObject *)self;
-}
-
-PyObject *CPyDef_brownie___insert_AsyncCursor_gen(void)
-{
-    PyObject *self = CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup((PyObject *)CPyType_brownie___insert_AsyncCursor_gen);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-
-static PyAsyncMethods brownie___fetchone_AsyncCursor_gen_as_async = {
-    .am_await = CPyDef_brownie___fetchone_AsyncCursor_gen_____await__,
-};
-static int
-brownie___fetchone_AsyncCursor_gen_traverse(y____db___brownie___fetchone_AsyncCursor_genObject *self, visitproc visit, void *arg)
-{
-    Py_VISIT(self->___mypyc_generator_attribute__self);
-    Py_VISIT(self->___mypyc_generator_attribute__cmd);
-    Py_VISIT(self->___mypyc_generator_attribute__args);
-    Py_VISIT(self->___mypyc_temp__13);
-    Py_VISIT(self->___mypyc_temp__14.f0);
-    Py_VISIT(self->___mypyc_temp__14.f1);
-    Py_VISIT(self->___mypyc_temp__14.f2);
-    Py_VISIT(self->___mypyc_temp__15);
-    Py_VISIT(self->___mypyc_temp__16);
-    Py_VISIT(self->___mypyc_temp__18);
-    Py_VISIT(self->___mypyc_temp__19.f0);
-    Py_VISIT(self->___mypyc_temp__19.f1);
-    Py_VISIT(self->___mypyc_temp__19.f2);
-    Py_VISIT(self->___mypyc_generator_attribute__execute);
-    Py_VISIT(self->___mypyc_temp__20);
-    Py_VISIT(self->___mypyc_temp__21);
-    Py_VISIT(self->___mypyc_temp__23);
-    Py_VISIT(self->___mypyc_temp__24.f0);
-    Py_VISIT(self->___mypyc_temp__24.f1);
-    Py_VISIT(self->___mypyc_temp__24.f2);
-    Py_VISIT(self->___mypyc_generator_attribute__cursor);
-    Py_VISIT(self->___mypyc_temp__25);
-    Py_VISIT(self->___mypyc_temp__26.f0);
-    Py_VISIT(self->___mypyc_temp__26.f1);
-    Py_VISIT(self->___mypyc_temp__26.f2);
-    Py_VISIT(self->___mypyc_generator_attribute__row);
-    Py_VISIT(self->___mypyc_temp__27);
-    Py_VISIT(self->___mypyc_temp__28);
-    Py_VISIT(self->___mypyc_temp__29);
-    Py_VISIT(self->___mypyc_temp__30);
-    Py_VISIT(self->___mypyc_generator_attribute__i);
-    Py_VISIT(self->___mypyc_temp__31.f0);
-    Py_VISIT(self->___mypyc_temp__31.f1);
-    Py_VISIT(self->___mypyc_temp__31.f2);
-    Py_VISIT(self->___mypyc_temp__32);
-    Py_VISIT(self->___mypyc_temp__33.f0);
-    Py_VISIT(self->___mypyc_temp__33.f1);
-    Py_VISIT(self->___mypyc_temp__33.f2);
-    Py_VISIT(self->___mypyc_temp__34);
-    Py_VISIT(self->___mypyc_temp__35.f0);
-    Py_VISIT(self->___mypyc_temp__35.f1);
-    Py_VISIT(self->___mypyc_temp__35.f2);
-    Py_VISIT(self->___mypyc_temp__36);
-    Py_VISIT(self->___mypyc_temp__37.f0);
-    Py_VISIT(self->___mypyc_temp__37.f1);
-    Py_VISIT(self->___mypyc_temp__37.f2);
-    Py_VISIT(self->___mypyc_temp__38);
-    Py_VISIT(self->___mypyc_temp__39.f0);
-    Py_VISIT(self->___mypyc_temp__39.f1);
-    Py_VISIT(self->___mypyc_temp__39.f2);
-    Py_VISIT(self->___mypyc_temp__40);
-    Py_VISIT(self->___mypyc_temp__41.f0);
-    Py_VISIT(self->___mypyc_temp__41.f1);
-    Py_VISIT(self->___mypyc_temp__41.f2);
-    int rv = 0;
-    return rv;
-}
-
-static int
-brownie___fetchone_AsyncCursor_gen_clear(y____db___brownie___fetchone_AsyncCursor_genObject *self)
-{
-    Py_CLEAR(self->___mypyc_generator_attribute__self);
-    Py_CLEAR(self->___mypyc_generator_attribute__cmd);
-    Py_CLEAR(self->___mypyc_generator_attribute__args);
-    Py_CLEAR(self->___mypyc_temp__13);
-    Py_CLEAR(self->___mypyc_temp__14.f0);
-    Py_CLEAR(self->___mypyc_temp__14.f1);
-    Py_CLEAR(self->___mypyc_temp__14.f2);
-    Py_CLEAR(self->___mypyc_temp__15);
-    Py_CLEAR(self->___mypyc_temp__16);
-    Py_CLEAR(self->___mypyc_temp__18);
-    Py_CLEAR(self->___mypyc_temp__19.f0);
-    Py_CLEAR(self->___mypyc_temp__19.f1);
-    Py_CLEAR(self->___mypyc_temp__19.f2);
-    Py_CLEAR(self->___mypyc_generator_attribute__execute);
-    Py_CLEAR(self->___mypyc_temp__20);
-    Py_CLEAR(self->___mypyc_temp__21);
-    Py_CLEAR(self->___mypyc_temp__23);
-    Py_CLEAR(self->___mypyc_temp__24.f0);
-    Py_CLEAR(self->___mypyc_temp__24.f1);
-    Py_CLEAR(self->___mypyc_temp__24.f2);
-    Py_CLEAR(self->___mypyc_generator_attribute__cursor);
-    Py_CLEAR(self->___mypyc_temp__25);
-    Py_CLEAR(self->___mypyc_temp__26.f0);
-    Py_CLEAR(self->___mypyc_temp__26.f1);
-    Py_CLEAR(self->___mypyc_temp__26.f2);
-    Py_CLEAR(self->___mypyc_generator_attribute__row);
-    Py_CLEAR(self->___mypyc_temp__27);
-    Py_CLEAR(self->___mypyc_temp__28);
-    Py_CLEAR(self->___mypyc_temp__29);
-    Py_CLEAR(self->___mypyc_temp__30);
-    Py_CLEAR(self->___mypyc_generator_attribute__i);
-    Py_CLEAR(self->___mypyc_temp__31.f0);
-    Py_CLEAR(self->___mypyc_temp__31.f1);
-    Py_CLEAR(self->___mypyc_temp__31.f2);
-    Py_CLEAR(self->___mypyc_temp__32);
-    Py_CLEAR(self->___mypyc_temp__33.f0);
-    Py_CLEAR(self->___mypyc_temp__33.f1);
-    Py_CLEAR(self->___mypyc_temp__33.f2);
-    Py_CLEAR(self->___mypyc_temp__34);
-    Py_CLEAR(self->___mypyc_temp__35.f0);
-    Py_CLEAR(self->___mypyc_temp__35.f1);
-    Py_CLEAR(self->___mypyc_temp__35.f2);
-    Py_CLEAR(self->___mypyc_temp__36);
-    Py_CLEAR(self->___mypyc_temp__37.f0);
-    Py_CLEAR(self->___mypyc_temp__37.f1);
-    Py_CLEAR(self->___mypyc_temp__37.f2);
-    Py_CLEAR(self->___mypyc_temp__38);
-    Py_CLEAR(self->___mypyc_temp__39.f0);
-    Py_CLEAR(self->___mypyc_temp__39.f1);
-    Py_CLEAR(self->___mypyc_temp__39.f2);
-    Py_CLEAR(self->___mypyc_temp__40);
-    Py_CLEAR(self->___mypyc_temp__41.f0);
-    Py_CLEAR(self->___mypyc_temp__41.f1);
-    Py_CLEAR(self->___mypyc_temp__41.f2);
-    return 0;
-}
-
-static void
-brownie___fetchone_AsyncCursor_gen_dealloc(y____db___brownie___fetchone_AsyncCursor_genObject *self)
-{
-    PyObject_GC_UnTrack(self);
-    if (brownie___fetchone_AsyncCursor_gen_free_instance == NULL) {
-        brownie___fetchone_AsyncCursor_gen_free_instance = self;
+    
+    PyObject *CPyDef_brownie___insert_AsyncCursor_gen(void)
+    {
+        PyObject *self = CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup((PyObject *)CPyType_brownie___insert_AsyncCursor_gen);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    
+    static PyAsyncMethods brownie___fetchone_AsyncCursor_gen_as_async = {
+        .am_await = CPyDef_brownie___fetchone_AsyncCursor_gen_____await__,
+    };
+    static int
+    brownie___fetchone_AsyncCursor_gen_traverse(y____db___brownie___fetchone_AsyncCursor_genObject *self, visitproc visit, void *arg)
+    {
+        Py_VISIT(self->___mypyc_generator_attribute__self);
+        Py_VISIT(self->___mypyc_generator_attribute__cmd);
+        Py_VISIT(self->___mypyc_generator_attribute__args);
+        Py_VISIT(self->___mypyc_temp__13);
+        Py_VISIT(self->___mypyc_temp__14.f0);
+        Py_VISIT(self->___mypyc_temp__14.f1);
+        Py_VISIT(self->___mypyc_temp__14.f2);
+        Py_VISIT(self->___mypyc_temp__15);
+        Py_VISIT(self->___mypyc_temp__16);
+        Py_VISIT(self->___mypyc_temp__18);
+        Py_VISIT(self->___mypyc_temp__19.f0);
+        Py_VISIT(self->___mypyc_temp__19.f1);
+        Py_VISIT(self->___mypyc_temp__19.f2);
+        Py_VISIT(self->___mypyc_generator_attribute__execute);
+        Py_VISIT(self->___mypyc_temp__20);
+        Py_VISIT(self->___mypyc_temp__21);
+        Py_VISIT(self->___mypyc_temp__23);
+        Py_VISIT(self->___mypyc_temp__24.f0);
+        Py_VISIT(self->___mypyc_temp__24.f1);
+        Py_VISIT(self->___mypyc_temp__24.f2);
+        Py_VISIT(self->___mypyc_generator_attribute__cursor);
+        Py_VISIT(self->___mypyc_temp__25);
+        Py_VISIT(self->___mypyc_temp__26.f0);
+        Py_VISIT(self->___mypyc_temp__26.f1);
+        Py_VISIT(self->___mypyc_temp__26.f2);
+        Py_VISIT(self->___mypyc_generator_attribute__row);
+        Py_VISIT(self->___mypyc_temp__27);
+        Py_VISIT(self->___mypyc_temp__28);
+        Py_VISIT(self->___mypyc_temp__29);
+        Py_VISIT(self->___mypyc_temp__30);
+        Py_VISIT(self->___mypyc_generator_attribute__i);
+        Py_VISIT(self->___mypyc_temp__31.f0);
+        Py_VISIT(self->___mypyc_temp__31.f1);
+        Py_VISIT(self->___mypyc_temp__31.f2);
+        Py_VISIT(self->___mypyc_temp__32);
+        Py_VISIT(self->___mypyc_temp__33.f0);
+        Py_VISIT(self->___mypyc_temp__33.f1);
+        Py_VISIT(self->___mypyc_temp__33.f2);
+        Py_VISIT(self->___mypyc_temp__34);
+        Py_VISIT(self->___mypyc_temp__35.f0);
+        Py_VISIT(self->___mypyc_temp__35.f1);
+        Py_VISIT(self->___mypyc_temp__35.f2);
+        Py_VISIT(self->___mypyc_temp__36);
+        Py_VISIT(self->___mypyc_temp__37.f0);
+        Py_VISIT(self->___mypyc_temp__37.f1);
+        Py_VISIT(self->___mypyc_temp__37.f2);
+        Py_VISIT(self->___mypyc_temp__38);
+        Py_VISIT(self->___mypyc_temp__39.f0);
+        Py_VISIT(self->___mypyc_temp__39.f1);
+        Py_VISIT(self->___mypyc_temp__39.f2);
+        Py_VISIT(self->___mypyc_temp__40);
+        Py_VISIT(self->___mypyc_temp__41.f0);
+        Py_VISIT(self->___mypyc_temp__41.f1);
+        Py_VISIT(self->___mypyc_temp__41.f2);
+        int rv = 0;
+        return rv;
+    }
+    
+    static int
+    brownie___fetchone_AsyncCursor_gen_clear(y____db___brownie___fetchone_AsyncCursor_genObject *self)
+    {
         Py_CLEAR(self->___mypyc_generator_attribute__self);
         Py_CLEAR(self->___mypyc_generator_attribute__cmd);
         Py_CLEAR(self->___mypyc_generator_attribute__args);
-        self->___mypyc_next_label__ = -113;
         Py_CLEAR(self->___mypyc_temp__13);
         Py_CLEAR(self->___mypyc_temp__14.f0);
         Py_CLEAR(self->___mypyc_temp__14.f1);
         Py_CLEAR(self->___mypyc_temp__14.f2);
         Py_CLEAR(self->___mypyc_temp__15);
         Py_CLEAR(self->___mypyc_temp__16);
-        self->___mypyc_temp__17 = 2;
         Py_CLEAR(self->___mypyc_temp__18);
         Py_CLEAR(self->___mypyc_temp__19.f0);
         Py_CLEAR(self->___mypyc_temp__19.f1);
@@ -874,7 +1815,6 @@ brownie___fetchone_AsyncCursor_gen_dealloc(y____db___brownie___fetchone_AsyncCur
         Py_CLEAR(self->___mypyc_generator_attribute__execute);
         Py_CLEAR(self->___mypyc_temp__20);
         Py_CLEAR(self->___mypyc_temp__21);
-        self->___mypyc_temp__22 = 2;
         Py_CLEAR(self->___mypyc_temp__23);
         Py_CLEAR(self->___mypyc_temp__24.f0);
         Py_CLEAR(self->___mypyc_temp__24.f1);
@@ -913,232 +1853,253 @@ brownie___fetchone_AsyncCursor_gen_dealloc(y____db___brownie___fetchone_AsyncCur
         Py_CLEAR(self->___mypyc_temp__41.f0);
         Py_CLEAR(self->___mypyc_temp__41.f1);
         Py_CLEAR(self->___mypyc_temp__41.f2);
-        return;
+        return 0;
     }
-    CPy_TRASHCAN_BEGIN(self, brownie___fetchone_AsyncCursor_gen_dealloc)
-    brownie___fetchone_AsyncCursor_gen_clear(self);
-    Py_TYPE(self)->tp_free((PyObject *)self);
-    CPy_TRASHCAN_END(self)
-    done: ;
-}
-
-PyObject *CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen(void);
-
-static PyObject *
-brownie___fetchone_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie___fetchone_AsyncCursor_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
+    
+    static void
+    brownie___fetchone_AsyncCursor_gen_dealloc(y____db___brownie___fetchone_AsyncCursor_genObject *self)
+    {
+        PyObject_GC_UnTrack(self);
+        if (brownie___fetchone_AsyncCursor_gen_free_instance == NULL) {
+            brownie___fetchone_AsyncCursor_gen_free_instance = self;
+            Py_CLEAR(self->___mypyc_generator_attribute__self);
+            Py_CLEAR(self->___mypyc_generator_attribute__cmd);
+            Py_CLEAR(self->___mypyc_generator_attribute__args);
+            self->___mypyc_next_label__ = -113;
+            Py_CLEAR(self->___mypyc_temp__13);
+            Py_CLEAR(self->___mypyc_temp__14.f0);
+            Py_CLEAR(self->___mypyc_temp__14.f1);
+            Py_CLEAR(self->___mypyc_temp__14.f2);
+            Py_CLEAR(self->___mypyc_temp__15);
+            Py_CLEAR(self->___mypyc_temp__16);
+            self->___mypyc_temp__17 = 2;
+            Py_CLEAR(self->___mypyc_temp__18);
+            Py_CLEAR(self->___mypyc_temp__19.f0);
+            Py_CLEAR(self->___mypyc_temp__19.f1);
+            Py_CLEAR(self->___mypyc_temp__19.f2);
+            Py_CLEAR(self->___mypyc_generator_attribute__execute);
+            Py_CLEAR(self->___mypyc_temp__20);
+            Py_CLEAR(self->___mypyc_temp__21);
+            self->___mypyc_temp__22 = 2;
+            Py_CLEAR(self->___mypyc_temp__23);
+            Py_CLEAR(self->___mypyc_temp__24.f0);
+            Py_CLEAR(self->___mypyc_temp__24.f1);
+            Py_CLEAR(self->___mypyc_temp__24.f2);
+            Py_CLEAR(self->___mypyc_generator_attribute__cursor);
+            Py_CLEAR(self->___mypyc_temp__25);
+            Py_CLEAR(self->___mypyc_temp__26.f0);
+            Py_CLEAR(self->___mypyc_temp__26.f1);
+            Py_CLEAR(self->___mypyc_temp__26.f2);
+            Py_CLEAR(self->___mypyc_generator_attribute__row);
+            Py_CLEAR(self->___mypyc_temp__27);
+            Py_CLEAR(self->___mypyc_temp__28);
+            Py_CLEAR(self->___mypyc_temp__29);
+            Py_CLEAR(self->___mypyc_temp__30);
+            Py_CLEAR(self->___mypyc_generator_attribute__i);
+            Py_CLEAR(self->___mypyc_temp__31.f0);
+            Py_CLEAR(self->___mypyc_temp__31.f1);
+            Py_CLEAR(self->___mypyc_temp__31.f2);
+            Py_CLEAR(self->___mypyc_temp__32);
+            Py_CLEAR(self->___mypyc_temp__33.f0);
+            Py_CLEAR(self->___mypyc_temp__33.f1);
+            Py_CLEAR(self->___mypyc_temp__33.f2);
+            Py_CLEAR(self->___mypyc_temp__34);
+            Py_CLEAR(self->___mypyc_temp__35.f0);
+            Py_CLEAR(self->___mypyc_temp__35.f1);
+            Py_CLEAR(self->___mypyc_temp__35.f2);
+            Py_CLEAR(self->___mypyc_temp__36);
+            Py_CLEAR(self->___mypyc_temp__37.f0);
+            Py_CLEAR(self->___mypyc_temp__37.f1);
+            Py_CLEAR(self->___mypyc_temp__37.f2);
+            Py_CLEAR(self->___mypyc_temp__38);
+            Py_CLEAR(self->___mypyc_temp__39.f0);
+            Py_CLEAR(self->___mypyc_temp__39.f1);
+            Py_CLEAR(self->___mypyc_temp__39.f2);
+            Py_CLEAR(self->___mypyc_temp__40);
+            Py_CLEAR(self->___mypyc_temp__41.f0);
+            Py_CLEAR(self->___mypyc_temp__41.f1);
+            Py_CLEAR(self->___mypyc_temp__41.f2);
+            return;
+        }
+        CPy_TRASHCAN_BEGIN(self, brownie___fetchone_AsyncCursor_gen_dealloc)
+        brownie___fetchone_AsyncCursor_gen_clear(self);
+        Py_TYPE(self)->tp_free((PyObject *)self);
+        CPy_TRASHCAN_END(self)
+        done: ;
     }
-    PyObject *self = CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-static CPyVTableItem brownie___fetchone_AsyncCursor_gen_vtable[7];
-static bool
-CPyDef_brownie___fetchone_AsyncCursor_gen_trait_vtable_setup(void)
-{
-    CPyVTableItem brownie___fetchone_AsyncCursor_gen_vtable_scratch[] = {
-        (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen_____mypyc_generator_helper__,
-        (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen_____next__,
-        (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen___send,
-        (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen_____iter__,
-        (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen___throw,
-        (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen___close,
-        (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen_____await__,
+    
+    PyObject *CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup(PyObject *cpy_r_type);
+    PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen(void);
+    
+    static PyObject *
+    brownie___fetchone_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+    {
+        if (type != CPyType_brownie___fetchone_AsyncCursor_gen) {
+            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+            return NULL;
+        }
+        PyObject *self = CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup((PyObject*)type);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    static CPyVTableItem brownie___fetchone_AsyncCursor_gen_vtable[7];
+    static bool
+    CPyDef_brownie___fetchone_AsyncCursor_gen_trait_vtable_setup(void)
+    {
+        CPyVTableItem brownie___fetchone_AsyncCursor_gen_vtable_scratch[] = {
+            (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen_____mypyc_generator_helper__,
+            (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen_____next__,
+            (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen___send,
+            (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen_____iter__,
+            (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen___throw,
+            (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen___close,
+            (CPyVTableItem)CPyDef_brownie___fetchone_AsyncCursor_gen_____await__,
+        };
+        memcpy(brownie___fetchone_AsyncCursor_gen_vtable, brownie___fetchone_AsyncCursor_gen_vtable_scratch, sizeof(brownie___fetchone_AsyncCursor_gen_vtable));
+        return 1;
+    }
+    
+    static bool
+    CPyDef_brownie___fetchone_AsyncCursor_gen_coroutine_setup(PyObject *type)
+    {
+        return 1;
+    }
+    
+    static PyMethodDef brownie___fetchone_AsyncCursor_gen_methods[] = {
+        {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup, METH_O, NULL},
+        {"__next__",
+         (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen_____next__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
+        {"send",
+         (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen___send,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
+        {"__iter__",
+         (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen_____iter__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
+        {"throw",
+         (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen___throw,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
+        {"close",
+         (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen___close,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
+        {"__await__",
+         (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen_____await__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
+        {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+        {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+        {NULL}  /* Sentinel */
     };
-    memcpy(brownie___fetchone_AsyncCursor_gen_vtable, brownie___fetchone_AsyncCursor_gen_vtable_scratch, sizeof(brownie___fetchone_AsyncCursor_gen_vtable));
-    return 1;
-}
-
-static bool
-CPyDef_brownie___fetchone_AsyncCursor_gen_coroutine_setup(PyObject *type)
-{
-    return 1;
-}
-
-static PyMethodDef brownie___fetchone_AsyncCursor_gen_methods[] = {
-    {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup, METH_O, NULL},
-    {"__next__",
-     (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen_____next__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
-    {"send",
-     (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen___send,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
-    {"__iter__",
-     (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen_____iter__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
-    {"throw",
-     (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen___throw,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
-    {"close",
-     (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen___close,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
-    {"__await__",
-     (PyCFunction)CPyPy_brownie___fetchone_AsyncCursor_gen_____await__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
-    {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-    {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-    {NULL}  /* Sentinel */
-};
-
-static PyTypeObject CPyType_brownie___fetchone_AsyncCursor_gen_template_ = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "fetchone_AsyncCursor_gen",
-    .tp_new = brownie___fetchone_AsyncCursor_gen_new,
-    .tp_dealloc = (destructor)brownie___fetchone_AsyncCursor_gen_dealloc,
-    .tp_traverse = (traverseproc)brownie___fetchone_AsyncCursor_gen_traverse,
-    .tp_clear = (inquiry)brownie___fetchone_AsyncCursor_gen_clear,
-    .tp_methods = brownie___fetchone_AsyncCursor_gen_methods,
-    .tp_iter = CPyDef_brownie___fetchone_AsyncCursor_gen_____iter__,
-    .tp_iternext = CPyDef_brownie___fetchone_AsyncCursor_gen_____next__,
-    .tp_as_async = &brownie___fetchone_AsyncCursor_gen_as_async,
-    .tp_basicsize = sizeof(y____db___brownie___fetchone_AsyncCursor_genObject),
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = PyDoc_STR("fetchone_AsyncCursor_gen()\n--\n\n"),
-};
-static PyTypeObject *CPyType_brownie___fetchone_AsyncCursor_gen_template = &CPyType_brownie___fetchone_AsyncCursor_gen_template_;
-
-PyObject *CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup(PyObject *cpy_r_type)
-{
-    PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-    y____db___brownie___fetchone_AsyncCursor_genObject *self;
-    if (brownie___fetchone_AsyncCursor_gen_free_instance != NULL) {
-        self = brownie___fetchone_AsyncCursor_gen_free_instance;
-        brownie___fetchone_AsyncCursor_gen_free_instance = NULL;
-        Py_SET_REFCNT(self, 1);
-        PyObject_GC_Track(self);
+    
+    static PyTypeObject CPyType_brownie___fetchone_AsyncCursor_gen_template_ = {
+        PyVarObject_HEAD_INIT(NULL, 0)
+        .tp_name = "fetchone_AsyncCursor_gen",
+        .tp_new = brownie___fetchone_AsyncCursor_gen_new,
+        .tp_dealloc = (destructor)brownie___fetchone_AsyncCursor_gen_dealloc,
+        .tp_traverse = (traverseproc)brownie___fetchone_AsyncCursor_gen_traverse,
+        .tp_clear = (inquiry)brownie___fetchone_AsyncCursor_gen_clear,
+        .tp_methods = brownie___fetchone_AsyncCursor_gen_methods,
+        .tp_iter = CPyDef_brownie___fetchone_AsyncCursor_gen_____iter__,
+        .tp_iternext = CPyDef_brownie___fetchone_AsyncCursor_gen_____next__,
+        .tp_as_async = &brownie___fetchone_AsyncCursor_gen_as_async,
+        .tp_basicsize = sizeof(y____db___brownie___fetchone_AsyncCursor_genObject),
+        .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+        .tp_doc = PyDoc_STR("fetchone_AsyncCursor_gen()\n--\n\n"),
+    };
+    static PyTypeObject *CPyType_brownie___fetchone_AsyncCursor_gen_template = &CPyType_brownie___fetchone_AsyncCursor_gen_template_;
+    
+    PyObject *CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup(PyObject *cpy_r_type)
+    {
+        PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+        y____db___brownie___fetchone_AsyncCursor_genObject *self;
+        if (brownie___fetchone_AsyncCursor_gen_free_instance != NULL) {
+            self = brownie___fetchone_AsyncCursor_gen_free_instance;
+            brownie___fetchone_AsyncCursor_gen_free_instance = NULL;
+            Py_SET_REFCNT(self, 1);
+            PyObject_GC_Track(self);
+            return (PyObject *)self;
+        }
+        self = (y____db___brownie___fetchone_AsyncCursor_genObject *)type->tp_alloc(type, 0);
+        if (self == NULL)
+            return NULL;
+        self->vtable = brownie___fetchone_AsyncCursor_gen_vtable;
+        self->___mypyc_next_label__ = -113;
+        self->___mypyc_temp__14 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__17 = 2;
+        self->___mypyc_temp__19 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__22 = 2;
+        self->___mypyc_temp__24 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__26 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__31 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__33 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__35 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__37 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__39 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__41 = (tuple_T3OOO) { NULL, NULL, NULL };
         return (PyObject *)self;
     }
-    self = (y____db___brownie___fetchone_AsyncCursor_genObject *)type->tp_alloc(type, 0);
-    if (self == NULL)
-        return NULL;
-    self->vtable = brownie___fetchone_AsyncCursor_gen_vtable;
-    self->___mypyc_next_label__ = -113;
-    self->___mypyc_temp__14 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__17 = 2;
-    self->___mypyc_temp__19 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__22 = 2;
-    self->___mypyc_temp__24 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__26 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__31 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__33 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__35 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__37 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__39 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__41 = (tuple_T3OOO) { NULL, NULL, NULL };
-    return (PyObject *)self;
-}
-
-PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen(void)
-{
-    PyObject *self = CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup((PyObject *)CPyType_brownie___fetchone_AsyncCursor_gen);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-
-static PyAsyncMethods brownie____get_deployment_gen_as_async = {
-    .am_await = CPyDef_brownie____get_deployment_gen_____await__,
-};
-static int
-brownie____get_deployment_gen_traverse(y____db___brownie____get_deployment_genObject *self, visitproc visit, void *arg)
-{
-    Py_VISIT(self->___mypyc_generator_attribute__address);
-    Py_VISIT(self->___mypyc_generator_attribute__alias);
-    Py_VISIT(self->___mypyc_generator_attribute__skip_source_keys);
-    Py_VISIT(self->___mypyc_generator_attribute__where_clause);
-    Py_VISIT(self->___mypyc_temp__42);
-    Py_VISIT(self->___mypyc_temp__43.f0);
-    Py_VISIT(self->___mypyc_temp__43.f1);
-    Py_VISIT(self->___mypyc_temp__43.f2);
-    Py_VISIT(self->___mypyc_generator_attribute__row);
-    Py_VISIT(self->___mypyc_temp__44.f0);
-    Py_VISIT(self->___mypyc_temp__44.f1);
-    Py_VISIT(self->___mypyc_temp__44.f2);
-    Py_VISIT(self->___mypyc_generator_attribute__build_json);
-    Py_VISIT(self->___mypyc_generator_attribute__path_map);
-    Py_VISIT(self->___mypyc_temp__45);
-    Py_VISIT(self->___mypyc_temp__46);
-    Py_VISIT(self->___mypyc_temp__49);
-    Py_VISIT(self->___mypyc_generator_attribute__val);
-    Py_VISIT(self->___mypyc_generator_attribute__source_key);
-    Py_VISIT(self->___mypyc_temp__50);
-    Py_VISIT(self->___mypyc_temp__51.f0);
-    Py_VISIT(self->___mypyc_temp__51.f1);
-    Py_VISIT(self->___mypyc_temp__51.f2);
-    Py_VISIT(self->___mypyc_generator_attribute__sources);
-    Py_VISIT(self->___mypyc_temp__52);
-    Py_VISIT(self->___mypyc_temp__53);
-    Py_VISIT(self->___mypyc_temp__56);
-    Py_VISIT(self->___mypyc_generator_attribute__k);
-    Py_VISIT(self->___mypyc_generator_attribute__v);
-    Py_VISIT(self->___mypyc_generator_attribute__pc_map);
-    Py_VISIT(self->___mypyc_temp__57);
-    Py_VISIT(self->___mypyc_temp__58);
-    Py_VISIT(self->___mypyc_temp__61);
-    Py_VISIT(self->___mypyc_generator_attribute__key);
-    Py_VISIT(self->___mypyc_temp__2_0);
-    int rv = 0;
-    return rv;
-}
-
-static int
-brownie____get_deployment_gen_clear(y____db___brownie____get_deployment_genObject *self)
-{
-    Py_CLEAR(self->___mypyc_generator_attribute__address);
-    Py_CLEAR(self->___mypyc_generator_attribute__alias);
-    Py_CLEAR(self->___mypyc_generator_attribute__skip_source_keys);
-    Py_CLEAR(self->___mypyc_generator_attribute__where_clause);
-    Py_CLEAR(self->___mypyc_temp__42);
-    Py_CLEAR(self->___mypyc_temp__43.f0);
-    Py_CLEAR(self->___mypyc_temp__43.f1);
-    Py_CLEAR(self->___mypyc_temp__43.f2);
-    Py_CLEAR(self->___mypyc_generator_attribute__row);
-    Py_CLEAR(self->___mypyc_temp__44.f0);
-    Py_CLEAR(self->___mypyc_temp__44.f1);
-    Py_CLEAR(self->___mypyc_temp__44.f2);
-    Py_CLEAR(self->___mypyc_generator_attribute__build_json);
-    Py_CLEAR(self->___mypyc_generator_attribute__path_map);
-    Py_CLEAR(self->___mypyc_temp__45);
-    Py_CLEAR(self->___mypyc_temp__46);
-    Py_CLEAR(self->___mypyc_temp__49);
-    Py_CLEAR(self->___mypyc_generator_attribute__val);
-    Py_CLEAR(self->___mypyc_generator_attribute__source_key);
-    Py_CLEAR(self->___mypyc_temp__50);
-    Py_CLEAR(self->___mypyc_temp__51.f0);
-    Py_CLEAR(self->___mypyc_temp__51.f1);
-    Py_CLEAR(self->___mypyc_temp__51.f2);
-    Py_CLEAR(self->___mypyc_generator_attribute__sources);
-    Py_CLEAR(self->___mypyc_temp__52);
-    Py_CLEAR(self->___mypyc_temp__53);
-    Py_CLEAR(self->___mypyc_temp__56);
-    Py_CLEAR(self->___mypyc_generator_attribute__k);
-    Py_CLEAR(self->___mypyc_generator_attribute__v);
-    Py_CLEAR(self->___mypyc_generator_attribute__pc_map);
-    Py_CLEAR(self->___mypyc_temp__57);
-    Py_CLEAR(self->___mypyc_temp__58);
-    Py_CLEAR(self->___mypyc_temp__61);
-    Py_CLEAR(self->___mypyc_generator_attribute__key);
-    Py_CLEAR(self->___mypyc_temp__2_0);
-    return 0;
-}
-
-static void
-brownie____get_deployment_gen_dealloc(y____db___brownie____get_deployment_genObject *self)
-{
-    PyObject_GC_UnTrack(self);
-    if (brownie____get_deployment_gen_free_instance == NULL) {
-        brownie____get_deployment_gen_free_instance = self;
+    
+    PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen(void)
+    {
+        PyObject *self = CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup((PyObject *)CPyType_brownie___fetchone_AsyncCursor_gen);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    
+    static PyAsyncMethods brownie____get_deployment_gen_as_async = {
+        .am_await = CPyDef_brownie____get_deployment_gen_____await__,
+    };
+    static int
+    brownie____get_deployment_gen_traverse(y____db___brownie____get_deployment_genObject *self, visitproc visit, void *arg)
+    {
+        Py_VISIT(self->___mypyc_generator_attribute__address);
+        Py_VISIT(self->___mypyc_generator_attribute__alias);
+        Py_VISIT(self->___mypyc_generator_attribute__skip_source_keys);
+        Py_VISIT(self->___mypyc_generator_attribute__where_clause);
+        Py_VISIT(self->___mypyc_temp__42);
+        Py_VISIT(self->___mypyc_temp__43.f0);
+        Py_VISIT(self->___mypyc_temp__43.f1);
+        Py_VISIT(self->___mypyc_temp__43.f2);
+        Py_VISIT(self->___mypyc_generator_attribute__row);
+        Py_VISIT(self->___mypyc_temp__44.f0);
+        Py_VISIT(self->___mypyc_temp__44.f1);
+        Py_VISIT(self->___mypyc_temp__44.f2);
+        Py_VISIT(self->___mypyc_generator_attribute__build_json);
+        Py_VISIT(self->___mypyc_generator_attribute__path_map);
+        Py_VISIT(self->___mypyc_temp__45);
+        Py_VISIT(self->___mypyc_temp__46);
+        Py_VISIT(self->___mypyc_temp__49);
+        Py_VISIT(self->___mypyc_generator_attribute__val);
+        Py_VISIT(self->___mypyc_generator_attribute__source_key);
+        Py_VISIT(self->___mypyc_temp__50);
+        Py_VISIT(self->___mypyc_temp__51.f0);
+        Py_VISIT(self->___mypyc_temp__51.f1);
+        Py_VISIT(self->___mypyc_temp__51.f2);
+        Py_VISIT(self->___mypyc_generator_attribute__sources);
+        Py_VISIT(self->___mypyc_temp__52);
+        Py_VISIT(self->___mypyc_temp__53);
+        Py_VISIT(self->___mypyc_temp__56);
+        Py_VISIT(self->___mypyc_generator_attribute__k);
+        Py_VISIT(self->___mypyc_generator_attribute__v);
+        Py_VISIT(self->___mypyc_generator_attribute__pc_map);
+        Py_VISIT(self->___mypyc_temp__57);
+        Py_VISIT(self->___mypyc_temp__58);
+        Py_VISIT(self->___mypyc_temp__61);
+        Py_VISIT(self->___mypyc_generator_attribute__key);
+        Py_VISIT(self->___mypyc_temp__2_0);
+        int rv = 0;
+        return rv;
+    }
+    
+    static int
+    brownie____get_deployment_gen_clear(y____db___brownie____get_deployment_genObject *self)
+    {
         Py_CLEAR(self->___mypyc_generator_attribute__address);
         Py_CLEAR(self->___mypyc_generator_attribute__alias);
         Py_CLEAR(self->___mypyc_generator_attribute__skip_source_keys);
-        self->___mypyc_next_label__ = -113;
         Py_CLEAR(self->___mypyc_generator_attribute__where_clause);
         Py_CLEAR(self->___mypyc_temp__42);
         Py_CLEAR(self->___mypyc_temp__43.f0);
@@ -1152,8 +2113,6 @@ brownie____get_deployment_gen_dealloc(y____db___brownie____get_deployment_genObj
         Py_CLEAR(self->___mypyc_generator_attribute__path_map);
         Py_CLEAR(self->___mypyc_temp__45);
         Py_CLEAR(self->___mypyc_temp__46);
-        self->___mypyc_temp__47 = CPY_INT_TAG;
-        self->___mypyc_temp__48 = -113;
         Py_CLEAR(self->___mypyc_temp__49);
         Py_CLEAR(self->___mypyc_generator_attribute__val);
         Py_CLEAR(self->___mypyc_generator_attribute__source_key);
@@ -1164,480 +2123,527 @@ brownie____get_deployment_gen_dealloc(y____db___brownie____get_deployment_genObj
         Py_CLEAR(self->___mypyc_generator_attribute__sources);
         Py_CLEAR(self->___mypyc_temp__52);
         Py_CLEAR(self->___mypyc_temp__53);
-        self->___mypyc_temp__54 = CPY_INT_TAG;
-        self->___mypyc_temp__55 = -113;
         Py_CLEAR(self->___mypyc_temp__56);
         Py_CLEAR(self->___mypyc_generator_attribute__k);
         Py_CLEAR(self->___mypyc_generator_attribute__v);
         Py_CLEAR(self->___mypyc_generator_attribute__pc_map);
         Py_CLEAR(self->___mypyc_temp__57);
         Py_CLEAR(self->___mypyc_temp__58);
-        self->___mypyc_temp__59 = CPY_INT_TAG;
-        self->___mypyc_temp__60 = -113;
         Py_CLEAR(self->___mypyc_temp__61);
         Py_CLEAR(self->___mypyc_generator_attribute__key);
         Py_CLEAR(self->___mypyc_temp__2_0);
-        return;
+        return 0;
     }
-    CPy_TRASHCAN_BEGIN(self, brownie____get_deployment_gen_dealloc)
-    brownie____get_deployment_gen_clear(self);
-    Py_TYPE(self)->tp_free((PyObject *)self);
-    CPy_TRASHCAN_END(self)
-    done: ;
-}
-
-PyObject *CPyDef_brownie_____mypyc___3_get_deployment_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie____get_deployment_gen(void);
-
-static PyObject *
-brownie____get_deployment_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie____get_deployment_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
+    
+    static void
+    brownie____get_deployment_gen_dealloc(y____db___brownie____get_deployment_genObject *self)
+    {
+        PyObject_GC_UnTrack(self);
+        if (brownie____get_deployment_gen_free_instance == NULL) {
+            brownie____get_deployment_gen_free_instance = self;
+            Py_CLEAR(self->___mypyc_generator_attribute__address);
+            Py_CLEAR(self->___mypyc_generator_attribute__alias);
+            Py_CLEAR(self->___mypyc_generator_attribute__skip_source_keys);
+            self->___mypyc_next_label__ = -113;
+            Py_CLEAR(self->___mypyc_generator_attribute__where_clause);
+            Py_CLEAR(self->___mypyc_temp__42);
+            Py_CLEAR(self->___mypyc_temp__43.f0);
+            Py_CLEAR(self->___mypyc_temp__43.f1);
+            Py_CLEAR(self->___mypyc_temp__43.f2);
+            Py_CLEAR(self->___mypyc_generator_attribute__row);
+            Py_CLEAR(self->___mypyc_temp__44.f0);
+            Py_CLEAR(self->___mypyc_temp__44.f1);
+            Py_CLEAR(self->___mypyc_temp__44.f2);
+            Py_CLEAR(self->___mypyc_generator_attribute__build_json);
+            Py_CLEAR(self->___mypyc_generator_attribute__path_map);
+            Py_CLEAR(self->___mypyc_temp__45);
+            Py_CLEAR(self->___mypyc_temp__46);
+            self->___mypyc_temp__47 = CPY_INT_TAG;
+            self->___mypyc_temp__48 = -113;
+            Py_CLEAR(self->___mypyc_temp__49);
+            Py_CLEAR(self->___mypyc_generator_attribute__val);
+            Py_CLEAR(self->___mypyc_generator_attribute__source_key);
+            Py_CLEAR(self->___mypyc_temp__50);
+            Py_CLEAR(self->___mypyc_temp__51.f0);
+            Py_CLEAR(self->___mypyc_temp__51.f1);
+            Py_CLEAR(self->___mypyc_temp__51.f2);
+            Py_CLEAR(self->___mypyc_generator_attribute__sources);
+            Py_CLEAR(self->___mypyc_temp__52);
+            Py_CLEAR(self->___mypyc_temp__53);
+            self->___mypyc_temp__54 = CPY_INT_TAG;
+            self->___mypyc_temp__55 = -113;
+            Py_CLEAR(self->___mypyc_temp__56);
+            Py_CLEAR(self->___mypyc_generator_attribute__k);
+            Py_CLEAR(self->___mypyc_generator_attribute__v);
+            Py_CLEAR(self->___mypyc_generator_attribute__pc_map);
+            Py_CLEAR(self->___mypyc_temp__57);
+            Py_CLEAR(self->___mypyc_temp__58);
+            self->___mypyc_temp__59 = CPY_INT_TAG;
+            self->___mypyc_temp__60 = -113;
+            Py_CLEAR(self->___mypyc_temp__61);
+            Py_CLEAR(self->___mypyc_generator_attribute__key);
+            Py_CLEAR(self->___mypyc_temp__2_0);
+            return;
+        }
+        CPy_TRASHCAN_BEGIN(self, brownie____get_deployment_gen_dealloc)
+        brownie____get_deployment_gen_clear(self);
+        Py_TYPE(self)->tp_free((PyObject *)self);
+        CPy_TRASHCAN_END(self)
+        done: ;
     }
-    PyObject *self = CPyDef_brownie_____mypyc___3_get_deployment_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-static CPyVTableItem brownie____get_deployment_gen_vtable[7];
-static bool
-CPyDef_brownie____get_deployment_gen_trait_vtable_setup(void)
-{
-    CPyVTableItem brownie____get_deployment_gen_vtable_scratch[] = {
-        (CPyVTableItem)CPyDef_brownie____get_deployment_gen_____mypyc_generator_helper__,
-        (CPyVTableItem)CPyDef_brownie____get_deployment_gen_____next__,
-        (CPyVTableItem)CPyDef_brownie____get_deployment_gen___send,
-        (CPyVTableItem)CPyDef_brownie____get_deployment_gen_____iter__,
-        (CPyVTableItem)CPyDef_brownie____get_deployment_gen___throw,
-        (CPyVTableItem)CPyDef_brownie____get_deployment_gen___close,
-        (CPyVTableItem)CPyDef_brownie____get_deployment_gen_____await__,
+    
+    PyObject *CPyDef_brownie_____mypyc___3_get_deployment_gen_setup(PyObject *cpy_r_type);
+    PyObject *CPyDef_brownie____get_deployment_gen(void);
+    
+    static PyObject *
+    brownie____get_deployment_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+    {
+        if (type != CPyType_brownie____get_deployment_gen) {
+            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+            return NULL;
+        }
+        PyObject *self = CPyDef_brownie_____mypyc___3_get_deployment_gen_setup((PyObject*)type);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    static CPyVTableItem brownie____get_deployment_gen_vtable[7];
+    static bool
+    CPyDef_brownie____get_deployment_gen_trait_vtable_setup(void)
+    {
+        CPyVTableItem brownie____get_deployment_gen_vtable_scratch[] = {
+            (CPyVTableItem)CPyDef_brownie____get_deployment_gen_____mypyc_generator_helper__,
+            (CPyVTableItem)CPyDef_brownie____get_deployment_gen_____next__,
+            (CPyVTableItem)CPyDef_brownie____get_deployment_gen___send,
+            (CPyVTableItem)CPyDef_brownie____get_deployment_gen_____iter__,
+            (CPyVTableItem)CPyDef_brownie____get_deployment_gen___throw,
+            (CPyVTableItem)CPyDef_brownie____get_deployment_gen___close,
+            (CPyVTableItem)CPyDef_brownie____get_deployment_gen_____await__,
+        };
+        memcpy(brownie____get_deployment_gen_vtable, brownie____get_deployment_gen_vtable_scratch, sizeof(brownie____get_deployment_gen_vtable));
+        return 1;
+    }
+    
+    static bool
+    CPyDef_brownie____get_deployment_gen_coroutine_setup(PyObject *type)
+    {
+        return 1;
+    }
+    
+    static PyMethodDef brownie____get_deployment_gen_methods[] = {
+        {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc___3_get_deployment_gen_setup, METH_O, NULL},
+        {"__next__",
+         (PyCFunction)CPyPy_brownie____get_deployment_gen_____next__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
+        {"send",
+         (PyCFunction)CPyPy_brownie____get_deployment_gen___send,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
+        {"__iter__",
+         (PyCFunction)CPyPy_brownie____get_deployment_gen_____iter__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
+        {"throw",
+         (PyCFunction)CPyPy_brownie____get_deployment_gen___throw,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
+        {"close",
+         (PyCFunction)CPyPy_brownie____get_deployment_gen___close,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
+        {"__await__",
+         (PyCFunction)CPyPy_brownie____get_deployment_gen_____await__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
+        {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+        {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+        {NULL}  /* Sentinel */
     };
-    memcpy(brownie____get_deployment_gen_vtable, brownie____get_deployment_gen_vtable_scratch, sizeof(brownie____get_deployment_gen_vtable));
-    return 1;
-}
-
-static bool
-CPyDef_brownie____get_deployment_gen_coroutine_setup(PyObject *type)
-{
-    return 1;
-}
-
-static PyMethodDef brownie____get_deployment_gen_methods[] = {
-    {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc___3_get_deployment_gen_setup, METH_O, NULL},
-    {"__next__",
-     (PyCFunction)CPyPy_brownie____get_deployment_gen_____next__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
-    {"send",
-     (PyCFunction)CPyPy_brownie____get_deployment_gen___send,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
-    {"__iter__",
-     (PyCFunction)CPyPy_brownie____get_deployment_gen_____iter__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
-    {"throw",
-     (PyCFunction)CPyPy_brownie____get_deployment_gen___throw,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
-    {"close",
-     (PyCFunction)CPyPy_brownie____get_deployment_gen___close,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
-    {"__await__",
-     (PyCFunction)CPyPy_brownie____get_deployment_gen_____await__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
-    {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-    {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-    {NULL}  /* Sentinel */
-};
-
-static PyTypeObject CPyType_brownie____get_deployment_gen_template_ = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "_get_deployment_gen",
-    .tp_new = brownie____get_deployment_gen_new,
-    .tp_dealloc = (destructor)brownie____get_deployment_gen_dealloc,
-    .tp_traverse = (traverseproc)brownie____get_deployment_gen_traverse,
-    .tp_clear = (inquiry)brownie____get_deployment_gen_clear,
-    .tp_methods = brownie____get_deployment_gen_methods,
-    .tp_iter = CPyDef_brownie____get_deployment_gen_____iter__,
-    .tp_iternext = CPyDef_brownie____get_deployment_gen_____next__,
-    .tp_as_async = &brownie____get_deployment_gen_as_async,
-    .tp_basicsize = sizeof(y____db___brownie____get_deployment_genObject),
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = PyDoc_STR("_get_deployment_gen()\n--\n\n"),
-};
-static PyTypeObject *CPyType_brownie____get_deployment_gen_template = &CPyType_brownie____get_deployment_gen_template_;
-
-PyObject *CPyDef_brownie_____mypyc___3_get_deployment_gen_setup(PyObject *cpy_r_type)
-{
-    PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-    y____db___brownie____get_deployment_genObject *self;
-    if (brownie____get_deployment_gen_free_instance != NULL) {
-        self = brownie____get_deployment_gen_free_instance;
-        brownie____get_deployment_gen_free_instance = NULL;
-        Py_SET_REFCNT(self, 1);
-        PyObject_GC_Track(self);
+    
+    static PyTypeObject CPyType_brownie____get_deployment_gen_template_ = {
+        PyVarObject_HEAD_INIT(NULL, 0)
+        .tp_name = "_get_deployment_gen",
+        .tp_new = brownie____get_deployment_gen_new,
+        .tp_dealloc = (destructor)brownie____get_deployment_gen_dealloc,
+        .tp_traverse = (traverseproc)brownie____get_deployment_gen_traverse,
+        .tp_clear = (inquiry)brownie____get_deployment_gen_clear,
+        .tp_methods = brownie____get_deployment_gen_methods,
+        .tp_iter = CPyDef_brownie____get_deployment_gen_____iter__,
+        .tp_iternext = CPyDef_brownie____get_deployment_gen_____next__,
+        .tp_as_async = &brownie____get_deployment_gen_as_async,
+        .tp_basicsize = sizeof(y____db___brownie____get_deployment_genObject),
+        .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+        .tp_doc = PyDoc_STR("_get_deployment_gen()\n--\n\n"),
+    };
+    static PyTypeObject *CPyType_brownie____get_deployment_gen_template = &CPyType_brownie____get_deployment_gen_template_;
+    
+    PyObject *CPyDef_brownie_____mypyc___3_get_deployment_gen_setup(PyObject *cpy_r_type)
+    {
+        PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+        y____db___brownie____get_deployment_genObject *self;
+        if (brownie____get_deployment_gen_free_instance != NULL) {
+            self = brownie____get_deployment_gen_free_instance;
+            brownie____get_deployment_gen_free_instance = NULL;
+            Py_SET_REFCNT(self, 1);
+            PyObject_GC_Track(self);
+            return (PyObject *)self;
+        }
+        self = (y____db___brownie____get_deployment_genObject *)type->tp_alloc(type, 0);
+        if (self == NULL)
+            return NULL;
+        self->vtable = brownie____get_deployment_gen_vtable;
+        self->___mypyc_next_label__ = -113;
+        self->___mypyc_temp__43 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__44 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__47 = CPY_INT_TAG;
+        self->___mypyc_temp__48 = -113;
+        self->___mypyc_temp__51 = (tuple_T3OOO) { NULL, NULL, NULL };
+        self->___mypyc_temp__54 = CPY_INT_TAG;
+        self->___mypyc_temp__55 = -113;
+        self->___mypyc_temp__59 = CPY_INT_TAG;
+        self->___mypyc_temp__60 = -113;
         return (PyObject *)self;
     }
-    self = (y____db___brownie____get_deployment_genObject *)type->tp_alloc(type, 0);
-    if (self == NULL)
-        return NULL;
-    self->vtable = brownie____get_deployment_gen_vtable;
-    self->___mypyc_next_label__ = -113;
-    self->___mypyc_temp__43 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__44 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__47 = CPY_INT_TAG;
-    self->___mypyc_temp__48 = -113;
-    self->___mypyc_temp__51 = (tuple_T3OOO) { NULL, NULL, NULL };
-    self->___mypyc_temp__54 = CPY_INT_TAG;
-    self->___mypyc_temp__55 = -113;
-    self->___mypyc_temp__59 = CPY_INT_TAG;
-    self->___mypyc_temp__60 = -113;
-    return (PyObject *)self;
-}
-
-PyObject *CPyDef_brownie____get_deployment_gen(void)
-{
-    PyObject *self = CPyDef_brownie_____mypyc___3_get_deployment_gen_setup((PyObject *)CPyType_brownie____get_deployment_gen);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-
-static PyAsyncMethods brownie_____fetch_source_for_hash_gen_as_async = {
-    .am_await = CPyDef_brownie_____fetch_source_for_hash_gen_____await__,
-};
-static int
-brownie_____fetch_source_for_hash_gen_traverse(y____db___brownie_____fetch_source_for_hash_genObject *self, visitproc visit, void *arg)
-{
-    Py_VISIT(self->___mypyc_generator_attribute__hashval);
-    Py_VISIT(self->___mypyc_temp__62);
-    Py_VISIT(self->___mypyc_temp__63.f0);
-    Py_VISIT(self->___mypyc_temp__63.f1);
-    Py_VISIT(self->___mypyc_temp__63.f2);
-    Py_VISIT(self->___mypyc_generator_attribute__row);
-    int rv = 0;
-    return rv;
-}
-
-static int
-brownie_____fetch_source_for_hash_gen_clear(y____db___brownie_____fetch_source_for_hash_genObject *self)
-{
-    Py_CLEAR(self->___mypyc_generator_attribute__hashval);
-    Py_CLEAR(self->___mypyc_temp__62);
-    Py_CLEAR(self->___mypyc_temp__63.f0);
-    Py_CLEAR(self->___mypyc_temp__63.f1);
-    Py_CLEAR(self->___mypyc_temp__63.f2);
-    Py_CLEAR(self->___mypyc_generator_attribute__row);
-    return 0;
-}
-
-static void
-brownie_____fetch_source_for_hash_gen_dealloc(y____db___brownie_____fetch_source_for_hash_genObject *self)
-{
-    PyObject_GC_UnTrack(self);
-    if (brownie_____fetch_source_for_hash_gen_free_instance == NULL) {
-        brownie_____fetch_source_for_hash_gen_free_instance = self;
+    
+    PyObject *CPyDef_brownie____get_deployment_gen(void)
+    {
+        PyObject *self = CPyDef_brownie_____mypyc___3_get_deployment_gen_setup((PyObject *)CPyType_brownie____get_deployment_gen);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    
+    static PyAsyncMethods brownie_____fetch_source_for_hash_gen_as_async = {
+        .am_await = CPyDef_brownie_____fetch_source_for_hash_gen_____await__,
+    };
+    static int
+    brownie_____fetch_source_for_hash_gen_traverse(y____db___brownie_____fetch_source_for_hash_genObject *self, visitproc visit, void *arg)
+    {
+        Py_VISIT(self->___mypyc_generator_attribute__hashval);
+        Py_VISIT(self->___mypyc_temp__62);
+        Py_VISIT(self->___mypyc_temp__63.f0);
+        Py_VISIT(self->___mypyc_temp__63.f1);
+        Py_VISIT(self->___mypyc_temp__63.f2);
+        Py_VISIT(self->___mypyc_generator_attribute__row);
+        int rv = 0;
+        return rv;
+    }
+    
+    static int
+    brownie_____fetch_source_for_hash_gen_clear(y____db___brownie_____fetch_source_for_hash_genObject *self)
+    {
         Py_CLEAR(self->___mypyc_generator_attribute__hashval);
-        self->___mypyc_next_label__ = -113;
         Py_CLEAR(self->___mypyc_temp__62);
         Py_CLEAR(self->___mypyc_temp__63.f0);
         Py_CLEAR(self->___mypyc_temp__63.f1);
         Py_CLEAR(self->___mypyc_temp__63.f2);
         Py_CLEAR(self->___mypyc_generator_attribute__row);
-        return;
-    }
-    CPy_TRASHCAN_BEGIN(self, brownie_____fetch_source_for_hash_gen_dealloc)
-    brownie_____fetch_source_for_hash_gen_clear(self);
-    Py_TYPE(self)->tp_free((PyObject *)self);
-    CPy_TRASHCAN_END(self)
-    done: ;
-}
-
-PyObject *CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie_____fetch_source_for_hash_gen(void);
-
-static PyObject *
-brownie_____fetch_source_for_hash_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie_____fetch_source_for_hash_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
-    }
-    PyObject *self = CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-static CPyVTableItem brownie_____fetch_source_for_hash_gen_vtable[7];
-static bool
-CPyDef_brownie_____fetch_source_for_hash_gen_trait_vtable_setup(void)
-{
-    CPyVTableItem brownie_____fetch_source_for_hash_gen_vtable_scratch[] = {
-        (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen_____mypyc_generator_helper__,
-        (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen_____next__,
-        (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen___send,
-        (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen_____iter__,
-        (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen___throw,
-        (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen___close,
-        (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen_____await__,
-    };
-    memcpy(brownie_____fetch_source_for_hash_gen_vtable, brownie_____fetch_source_for_hash_gen_vtable_scratch, sizeof(brownie_____fetch_source_for_hash_gen_vtable));
-    return 1;
-}
-
-static bool
-CPyDef_brownie_____fetch_source_for_hash_gen_coroutine_setup(PyObject *type)
-{
-    return 1;
-}
-
-static PyMethodDef brownie_____fetch_source_for_hash_gen_methods[] = {
-    {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup, METH_O, NULL},
-    {"__next__",
-     (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen_____next__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
-    {"send",
-     (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen___send,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
-    {"__iter__",
-     (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen_____iter__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
-    {"throw",
-     (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen___throw,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
-    {"close",
-     (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen___close,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
-    {"__await__",
-     (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen_____await__,
-     METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
-    {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-    {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-    {NULL}  /* Sentinel */
-};
-
-static PyTypeObject CPyType_brownie_____fetch_source_for_hash_gen_template_ = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "__fetch_source_for_hash_gen",
-    .tp_new = brownie_____fetch_source_for_hash_gen_new,
-    .tp_dealloc = (destructor)brownie_____fetch_source_for_hash_gen_dealloc,
-    .tp_traverse = (traverseproc)brownie_____fetch_source_for_hash_gen_traverse,
-    .tp_clear = (inquiry)brownie_____fetch_source_for_hash_gen_clear,
-    .tp_methods = brownie_____fetch_source_for_hash_gen_methods,
-    .tp_iter = CPyDef_brownie_____fetch_source_for_hash_gen_____iter__,
-    .tp_iternext = CPyDef_brownie_____fetch_source_for_hash_gen_____next__,
-    .tp_as_async = &brownie_____fetch_source_for_hash_gen_as_async,
-    .tp_basicsize = sizeof(y____db___brownie_____fetch_source_for_hash_genObject),
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = PyDoc_STR("__fetch_source_for_hash_gen()\n--\n\n"),
-};
-static PyTypeObject *CPyType_brownie_____fetch_source_for_hash_gen_template = &CPyType_brownie_____fetch_source_for_hash_gen_template_;
-
-PyObject *CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup(PyObject *cpy_r_type)
-{
-    PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-    y____db___brownie_____fetch_source_for_hash_genObject *self;
-    if (brownie_____fetch_source_for_hash_gen_free_instance != NULL) {
-        self = brownie_____fetch_source_for_hash_gen_free_instance;
-        brownie_____fetch_source_for_hash_gen_free_instance = NULL;
-        Py_SET_REFCNT(self, 1);
-        PyObject_GC_Track(self);
-        return (PyObject *)self;
-    }
-    self = (y____db___brownie_____fetch_source_for_hash_genObject *)type->tp_alloc(type, 0);
-    if (self == NULL)
-        return NULL;
-    self->vtable = brownie_____fetch_source_for_hash_gen_vtable;
-    self->___mypyc_next_label__ = -113;
-    self->___mypyc_temp__63 = (tuple_T3OOO) { NULL, NULL, NULL };
-    return (PyObject *)self;
-}
-
-PyObject *CPyDef_brownie_____fetch_source_for_hash_gen(void)
-{
-    PyObject *self = CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup((PyObject *)CPyType_brownie_____fetch_source_for_hash_gen);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
-static PyMethodDef browniemodule_methods[] = {
-    {"_get_select_statement", (PyCFunction)CPyPy_brownie____get_select_statement, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("_get_select_statement()\n--\n\n") /* docstring */},
-    {NULL, NULL, 0, NULL}
-};
-
-int CPyExec_y____db___brownie(PyObject *module)
-{
-    intern_strings();
-    PyObject* modname = NULL;
-    modname = PyObject_GetAttrString((PyObject *)CPyModule_y____db___brownie__internal, "__name__");
-    CPyStatic_brownie___globals = PyModule_GetDict(CPyModule_y____db___brownie__internal);
-    if (unlikely(CPyStatic_brownie___globals == NULL))
-        goto fail;
-    PyObject* CPyPy_brownie____get_deployment_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "y/_db/brownie.py", "_get_deployment", (PyCFunction)CPyPy_brownie____get_deployment, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL), 147, CO_COROUTINE, false);
-    if (unlikely(!CPyPy_brownie____get_deployment_wrapper))
-        goto fail;
-    PyObject *CPyPy_brownie____get_deployment_wrapper_name = PyUnicode_FromString("_get_deployment");
-    if (unlikely(!CPyPy_brownie____get_deployment_wrapper_name))
-        goto fail;
-    if (PyDict_SetItem(CPyStatic_brownie___globals, CPyPy_brownie____get_deployment_wrapper_name, (PyObject *)CPyPy_brownie____get_deployment_wrapper) < 0)
-        goto fail;
-    PyObject* CPyPy_brownie_____fetch_source_for_hash_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "y/_db/brownie.py", "__fetch_source_for_hash", (PyCFunction)CPyPy_brownie_____fetch_source_for_hash, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__fetch_source_for_hash(hashval)\n--\n\n"), 184, CO_COROUTINE, false);
-    if (unlikely(!CPyPy_brownie_____fetch_source_for_hash_wrapper))
-        goto fail;
-    PyObject *CPyPy_brownie_____fetch_source_for_hash_wrapper_name = PyUnicode_FromString("__fetch_source_for_hash");
-    if (unlikely(!CPyPy_brownie_____fetch_source_for_hash_wrapper_name))
-        goto fail;
-    if (PyDict_SetItem(CPyStatic_brownie___globals, CPyPy_brownie_____fetch_source_for_hash_wrapper_name, (PyObject *)CPyPy_brownie_____fetch_source_for_hash_wrapper) < 0)
-        goto fail;
-    CPyType_brownie___connect_AsyncCursor_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie___connect_AsyncCursor_gen_template, NULL, modname);
-    if (unlikely(!CPyType_brownie___connect_AsyncCursor_gen))
-        goto fail;
-    CPyDef_brownie___connect_AsyncCursor_gen_trait_vtable_setup();
-    CPyType_brownie___insert_AsyncCursor_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie___insert_AsyncCursor_gen_template, NULL, modname);
-    if (unlikely(!CPyType_brownie___insert_AsyncCursor_gen))
-        goto fail;
-    CPyDef_brownie___insert_AsyncCursor_gen_trait_vtable_setup();
-    CPyType_brownie___fetchone_AsyncCursor_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie___fetchone_AsyncCursor_gen_template, NULL, modname);
-    if (unlikely(!CPyType_brownie___fetchone_AsyncCursor_gen))
-        goto fail;
-    CPyDef_brownie___fetchone_AsyncCursor_gen_trait_vtable_setup();
-    CPyType_brownie____get_deployment_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie____get_deployment_gen_template, NULL, modname);
-    if (unlikely(!CPyType_brownie____get_deployment_gen))
-        goto fail;
-    CPyDef_brownie____get_deployment_gen_trait_vtable_setup();
-    CPyType_brownie_____fetch_source_for_hash_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie_____fetch_source_for_hash_gen_template, NULL, modname);
-    if (unlikely(!CPyType_brownie_____fetch_source_for_hash_gen))
-        goto fail;
-    CPyDef_brownie_____fetch_source_for_hash_gen_trait_vtable_setup();
-    if (CPyGlobalsInit() < 0)
-        goto fail;
-    char result = CPyDef_brownie_____top_level__();
-    if (result == 2)
-        goto fail;
-    Py_DECREF(modname);
-    return 0;
-    fail:
-    Py_CLEAR(CPyModule_y____db___brownie__internal);
-    Py_CLEAR(modname);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f0);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f1);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f2);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f3);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f4);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f5);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f6);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f7);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f8);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f9);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f10);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f11);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f12);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f13);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f14);
-    CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f15);
-    CPyStatic_brownie___SOURCE_KEYS = (tuple_T16OOOOOOOOOOOOOOOO) { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-    CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f0);
-    CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f1);
-    CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f2);
-    CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f3);
-    CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f4);
-    CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f5);
-    CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f6);
-    CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f7);
-    CPyStatic_brownie___DISCARD_SOURCE_KEYS = (tuple_T8OOOOOOOO) { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-    CPy_XDECREF(CPyStatic_brownie___sha1);
-    CPyStatic_brownie___sha1 = NULL;
-    CPy_XDECREF(CPyStatic_brownie___dumps);
-    CPyStatic_brownie___dumps = NULL;
-    CPy_XDECREF(CPyStatic_brownie___loads);
-    CPyStatic_brownie___loads = NULL;
-    CPy_XDECREF(CPyStatic_brownie___sqlite_lock);
-    CPyStatic_brownie___sqlite_lock = NULL;
-    CPy_XDECREF_NO_IMM(CPyStatic_brownie___cur);
-    CPyStatic_brownie___cur = NULL;
-    CPy_XDECREF(CPyStatic_brownie___fetchone);
-    CPyStatic_brownie___fetchone = NULL;
-    CPy_XDECREF(CPyStatic_brownie___y____db___brownie____get_deployment___skip_source_keys);
-    CPyStatic_brownie___y____db___brownie____get_deployment___skip_source_keys = NULL;
-    Py_CLEAR(CPyType_brownie___AsyncCursor);
-    Py_CLEAR(CPyType_brownie___connect_AsyncCursor_gen);
-    Py_CLEAR(CPyType_brownie___insert_AsyncCursor_gen);
-    Py_CLEAR(CPyType_brownie___fetchone_AsyncCursor_gen);
-    Py_CLEAR(CPyType_brownie____get_deployment_gen);
-    Py_CLEAR(CPyType_brownie_____fetch_source_for_hash_gen);
-    return -1;
-}
-static struct PyModuleDef browniemodule = {
-    PyModuleDef_HEAD_INIT,
-    "y._db.brownie",
-    NULL, /* docstring */
-    0,       /* size of per-interpreter state of the module */
-    browniemodule_methods,
-    NULL,
-};
-
-PyObject *CPyInitOnly_y____db___brownie(void)
-{
-    if (CPyModule_y____db___brownie__internal) {
-        Py_INCREF(CPyModule_y____db___brownie__internal);
-        return CPyModule_y____db___brownie__internal;
-    }
-    CPyModule_y____db___brownie__internal = PyModule_Create(&browniemodule);
-    return CPyModule_y____db___brownie__internal;
-}
-
-PyObject *CPyInit_y____db___brownie(void)
-{
-    PyObject* modname = NULL;
-    if (CPyModule_y____db___brownie__internal) {
-        Py_INCREF(CPyModule_y____db___brownie__internal);
-        return CPyModule_y____db___brownie__internal;
-    }
-    CPyModule_y____db___brownie__internal = PyModule_Create(&browniemodule);
-    if (unlikely(CPyModule_y____db___brownie__internal == NULL))
-        goto fail;
-    modname = PyUnicode_FromString("y._db.brownie");
-    if (modname == NULL) CPyError_OutOfMemory();
-    int rv = 0;
-    PyObject *mod_dict = PyImport_GetModuleDict();
-    PyObject *shared_lib = NULL;
-    rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
-    if (rv < 0) goto fail;
-    PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
-    if (shared_lib_file == NULL) goto fail;
-    PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
-    if (ext_suffix == NULL) CPyError_OutOfMemory();
-    Py_ssize_t is_pkg = 0;
-    rv = CPyImport_SetDunderAttrs(CPyModule_y____db___brownie__internal, modname, shared_lib_file, ext_suffix, is_pkg);
-    Py_DECREF(ext_suffix);
-    Py_DECREF(shared_lib_file);
-    if (rv < 0) goto fail;
-    if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y____db___brownie__internal) < 0)
-        goto fail;
-    Py_CLEAR(modname);
-    if (CPyExec_y____db___brownie(CPyModule_y____db___brownie__internal) != 0)
-        goto fail;
-    return CPyModule_y____db___brownie__internal;
-    fail:
-    {
-            PyObject *exc_type, *exc_val, *exc_tb;
-            PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
-            if (modname == NULL) {
-                    modname = PyUnicode_FromString("y._db.brownie");
-                    if (modname == NULL) CPyError_OutOfMemory();
-                }
-                PyObject_DelItem(PyImport_GetModuleDict(), modname);
-                PyErr_Clear();
-                Py_DECREF(modname);
-                Py_CLEAR(CPyModule_y____db___brownie__internal);
-                PyErr_Restore(exc_type, exc_val, exc_tb);
-        }
-        return NULL;
+        return 0;
     }
     
+    static void
+    brownie_____fetch_source_for_hash_gen_dealloc(y____db___brownie_____fetch_source_for_hash_genObject *self)
+    {
+        PyObject_GC_UnTrack(self);
+        if (brownie_____fetch_source_for_hash_gen_free_instance == NULL) {
+            brownie_____fetch_source_for_hash_gen_free_instance = self;
+            Py_CLEAR(self->___mypyc_generator_attribute__hashval);
+            self->___mypyc_next_label__ = -113;
+            Py_CLEAR(self->___mypyc_temp__62);
+            Py_CLEAR(self->___mypyc_temp__63.f0);
+            Py_CLEAR(self->___mypyc_temp__63.f1);
+            Py_CLEAR(self->___mypyc_temp__63.f2);
+            Py_CLEAR(self->___mypyc_generator_attribute__row);
+            return;
+        }
+        CPy_TRASHCAN_BEGIN(self, brownie_____fetch_source_for_hash_gen_dealloc)
+        brownie_____fetch_source_for_hash_gen_clear(self);
+        Py_TYPE(self)->tp_free((PyObject *)self);
+        CPy_TRASHCAN_END(self)
+        done: ;
+    }
+    
+    PyObject *CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup(PyObject *cpy_r_type);
+    PyObject *CPyDef_brownie_____fetch_source_for_hash_gen(void);
+    
+    static PyObject *
+    brownie_____fetch_source_for_hash_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+    {
+        if (type != CPyType_brownie_____fetch_source_for_hash_gen) {
+            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+            return NULL;
+        }
+        PyObject *self = CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup((PyObject*)type);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    static CPyVTableItem brownie_____fetch_source_for_hash_gen_vtable[7];
+    static bool
+    CPyDef_brownie_____fetch_source_for_hash_gen_trait_vtable_setup(void)
+    {
+        CPyVTableItem brownie_____fetch_source_for_hash_gen_vtable_scratch[] = {
+            (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen_____mypyc_generator_helper__,
+            (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen_____next__,
+            (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen___send,
+            (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen_____iter__,
+            (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen___throw,
+            (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen___close,
+            (CPyVTableItem)CPyDef_brownie_____fetch_source_for_hash_gen_____await__,
+        };
+        memcpy(brownie_____fetch_source_for_hash_gen_vtable, brownie_____fetch_source_for_hash_gen_vtable_scratch, sizeof(brownie_____fetch_source_for_hash_gen_vtable));
+        return 1;
+    }
+    
+    static bool
+    CPyDef_brownie_____fetch_source_for_hash_gen_coroutine_setup(PyObject *type)
+    {
+        return 1;
+    }
+    
+    static PyMethodDef brownie_____fetch_source_for_hash_gen_methods[] = {
+        {"__internal_mypyc_setup", (PyCFunction)CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup, METH_O, NULL},
+        {"__next__",
+         (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen_____next__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__next__()\n--\n\n")},
+        {"send",
+         (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen___send,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("send($arg)\n--\n\n")},
+        {"__iter__",
+         (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen_____iter__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__iter__()\n--\n\n")},
+        {"throw",
+         (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen___throw,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL)},
+        {"close",
+         (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen___close,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("close()\n--\n\n")},
+        {"__await__",
+         (PyCFunction)CPyPy_brownie_____fetch_source_for_hash_gen_____await__,
+         METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__await__()\n--\n\n")},
+        {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+        {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+        {NULL}  /* Sentinel */
+    };
+    
+    static PyTypeObject CPyType_brownie_____fetch_source_for_hash_gen_template_ = {
+        PyVarObject_HEAD_INIT(NULL, 0)
+        .tp_name = "__fetch_source_for_hash_gen",
+        .tp_new = brownie_____fetch_source_for_hash_gen_new,
+        .tp_dealloc = (destructor)brownie_____fetch_source_for_hash_gen_dealloc,
+        .tp_traverse = (traverseproc)brownie_____fetch_source_for_hash_gen_traverse,
+        .tp_clear = (inquiry)brownie_____fetch_source_for_hash_gen_clear,
+        .tp_methods = brownie_____fetch_source_for_hash_gen_methods,
+        .tp_iter = CPyDef_brownie_____fetch_source_for_hash_gen_____iter__,
+        .tp_iternext = CPyDef_brownie_____fetch_source_for_hash_gen_____next__,
+        .tp_as_async = &brownie_____fetch_source_for_hash_gen_as_async,
+        .tp_basicsize = sizeof(y____db___brownie_____fetch_source_for_hash_genObject),
+        .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+        .tp_doc = PyDoc_STR("__fetch_source_for_hash_gen()\n--\n\n"),
+    };
+    static PyTypeObject *CPyType_brownie_____fetch_source_for_hash_gen_template = &CPyType_brownie_____fetch_source_for_hash_gen_template_;
+    
+    PyObject *CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup(PyObject *cpy_r_type)
+    {
+        PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+        y____db___brownie_____fetch_source_for_hash_genObject *self;
+        if (brownie_____fetch_source_for_hash_gen_free_instance != NULL) {
+            self = brownie_____fetch_source_for_hash_gen_free_instance;
+            brownie_____fetch_source_for_hash_gen_free_instance = NULL;
+            Py_SET_REFCNT(self, 1);
+            PyObject_GC_Track(self);
+            return (PyObject *)self;
+        }
+        self = (y____db___brownie_____fetch_source_for_hash_genObject *)type->tp_alloc(type, 0);
+        if (self == NULL)
+            return NULL;
+        self->vtable = brownie_____fetch_source_for_hash_gen_vtable;
+        self->___mypyc_next_label__ = -113;
+        self->___mypyc_temp__63 = (tuple_T3OOO) { NULL, NULL, NULL };
+        return (PyObject *)self;
+    }
+    
+    PyObject *CPyDef_brownie_____fetch_source_for_hash_gen(void)
+    {
+        PyObject *self = CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup((PyObject *)CPyType_brownie_____fetch_source_for_hash_gen);
+        if (self == NULL)
+            return NULL;
+        return self;
+    }
+    
+    static PyMethodDef browniemodule_methods[] = {
+        {"_get_select_statement", (PyCFunction)CPyPy_brownie____get_select_statement, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("_get_select_statement()\n--\n\n") /* docstring */},
+        {NULL, NULL, 0, NULL}
+    };
+    
+    int CPyExec_y____db___brownie(PyObject *module)
+    {
+        intern_strings();
+        PyObject* modname = NULL;
+        modname = PyObject_GetAttrString((PyObject *)CPyModule_y____db___brownie__internal, "__name__");
+        CPyStatic_brownie___globals = PyModule_GetDict(CPyModule_y____db___brownie__internal);
+        if (unlikely(CPyStatic_brownie___globals == NULL))
+            goto fail;
+        PyObject* CPyPy_brownie____get_deployment_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "y/_db/brownie.py", "_get_deployment", (PyCFunction)CPyPy_brownie____get_deployment, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL), 147, CO_COROUTINE, false);
+        if (unlikely(!CPyPy_brownie____get_deployment_wrapper))
+            goto fail;
+        PyObject *CPyPy_brownie____get_deployment_wrapper_name = PyUnicode_FromString("_get_deployment");
+        if (unlikely(!CPyPy_brownie____get_deployment_wrapper_name))
+            goto fail;
+        if (PyDict_SetItem(CPyStatic_brownie___globals, CPyPy_brownie____get_deployment_wrapper_name, (PyObject *)CPyPy_brownie____get_deployment_wrapper) < 0)
+            goto fail;
+        PyObject* CPyPy_brownie_____fetch_source_for_hash_wrapper = CPyFunction_New(CPyModule_y____db___brownie, "y/_db/brownie.py", "__fetch_source_for_hash", (PyCFunction)CPyPy_brownie_____fetch_source_for_hash, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__fetch_source_for_hash(hashval)\n--\n\n"), 184, CO_COROUTINE, false);
+        if (unlikely(!CPyPy_brownie_____fetch_source_for_hash_wrapper))
+            goto fail;
+        PyObject *CPyPy_brownie_____fetch_source_for_hash_wrapper_name = PyUnicode_FromString("__fetch_source_for_hash");
+        if (unlikely(!CPyPy_brownie_____fetch_source_for_hash_wrapper_name))
+            goto fail;
+        if (PyDict_SetItem(CPyStatic_brownie___globals, CPyPy_brownie_____fetch_source_for_hash_wrapper_name, (PyObject *)CPyPy_brownie_____fetch_source_for_hash_wrapper) < 0)
+            goto fail;
+        CPyType_brownie___connect_AsyncCursor_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie___connect_AsyncCursor_gen_template, NULL, modname);
+        if (unlikely(!CPyType_brownie___connect_AsyncCursor_gen))
+            goto fail;
+        CPyDef_brownie___connect_AsyncCursor_gen_trait_vtable_setup();
+        CPyType_brownie___insert_AsyncCursor_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie___insert_AsyncCursor_gen_template, NULL, modname);
+        if (unlikely(!CPyType_brownie___insert_AsyncCursor_gen))
+            goto fail;
+        CPyDef_brownie___insert_AsyncCursor_gen_trait_vtable_setup();
+        CPyType_brownie___fetchone_AsyncCursor_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie___fetchone_AsyncCursor_gen_template, NULL, modname);
+        if (unlikely(!CPyType_brownie___fetchone_AsyncCursor_gen))
+            goto fail;
+        CPyDef_brownie___fetchone_AsyncCursor_gen_trait_vtable_setup();
+        CPyType_brownie____get_deployment_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie____get_deployment_gen_template, NULL, modname);
+        if (unlikely(!CPyType_brownie____get_deployment_gen))
+            goto fail;
+        CPyDef_brownie____get_deployment_gen_trait_vtable_setup();
+        CPyType_brownie_____fetch_source_for_hash_gen = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_brownie_____fetch_source_for_hash_gen_template, NULL, modname);
+        if (unlikely(!CPyType_brownie_____fetch_source_for_hash_gen))
+            goto fail;
+        CPyDef_brownie_____fetch_source_for_hash_gen_trait_vtable_setup();
+        if (CPyGlobalsInit() < 0)
+            goto fail;
+        char result = CPyDef_brownie_____top_level__();
+        if (result == 2)
+            goto fail;
+        Py_DECREF(modname);
+        return 0;
+        fail:
+        Py_CLEAR(CPyModule_y____db___brownie__internal);
+        Py_CLEAR(modname);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f0);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f1);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f2);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f3);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f4);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f5);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f6);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f7);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f8);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f9);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f10);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f11);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f12);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f13);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f14);
+        CPy_XDECREF(CPyStatic_brownie___SOURCE_KEYS.f15);
+        CPyStatic_brownie___SOURCE_KEYS = (tuple_T16OOOOOOOOOOOOOOOO) { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f0);
+        CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f1);
+        CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f2);
+        CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f3);
+        CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f4);
+        CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f5);
+        CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f6);
+        CPy_XDECREF(CPyStatic_brownie___DISCARD_SOURCE_KEYS.f7);
+        CPyStatic_brownie___DISCARD_SOURCE_KEYS = (tuple_T8OOOOOOOO) { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+        CPy_XDECREF(CPyStatic_brownie___sha1);
+        CPyStatic_brownie___sha1 = NULL;
+        CPy_XDECREF(CPyStatic_brownie___dumps);
+        CPyStatic_brownie___dumps = NULL;
+        CPy_XDECREF(CPyStatic_brownie___loads);
+        CPyStatic_brownie___loads = NULL;
+        CPy_XDECREF(CPyStatic_brownie___sqlite_lock);
+        CPyStatic_brownie___sqlite_lock = NULL;
+        CPy_XDECREF_NO_IMM(CPyStatic_brownie___cur);
+        CPyStatic_brownie___cur = NULL;
+        CPy_XDECREF(CPyStatic_brownie___fetchone);
+        CPyStatic_brownie___fetchone = NULL;
+        CPy_XDECREF(CPyStatic_brownie___y____db___brownie____get_deployment___skip_source_keys);
+        CPyStatic_brownie___y____db___brownie____get_deployment___skip_source_keys = NULL;
+        Py_CLEAR(CPyType_brownie___AsyncCursor);
+        Py_CLEAR(CPyType_brownie___connect_AsyncCursor_gen);
+        Py_CLEAR(CPyType_brownie___insert_AsyncCursor_gen);
+        Py_CLEAR(CPyType_brownie___fetchone_AsyncCursor_gen);
+        Py_CLEAR(CPyType_brownie____get_deployment_gen);
+        Py_CLEAR(CPyType_brownie_____fetch_source_for_hash_gen);
+        return -1;
+    }
+    static struct PyModuleDef browniemodule = {
+        PyModuleDef_HEAD_INIT,
+        "y._db.brownie",
+        NULL, /* docstring */
+        0,       /* size of per-interpreter state of the module */
+        browniemodule_methods,
+        NULL,
+    };
+    
+    PyObject *CPyInitOnly_y____db___brownie(void)
+    {
+        if (CPyModule_y____db___brownie__internal) {
+            Py_INCREF(CPyModule_y____db___brownie__internal);
+            return CPyModule_y____db___brownie__internal;
+        }
+        CPyModule_y____db___brownie__internal = PyModule_Create(&browniemodule);
+        return CPyModule_y____db___brownie__internal;
+    }
+    
+    PyObject *CPyInit_y____db___brownie(void)
+    {
+        PyObject* modname = NULL;
+        if (CPyModule_y____db___brownie__internal) {
+            Py_INCREF(CPyModule_y____db___brownie__internal);
+            return CPyModule_y____db___brownie__internal;
+        }
+        CPyModule_y____db___brownie__internal = PyModule_Create(&browniemodule);
+        if (unlikely(CPyModule_y____db___brownie__internal == NULL))
+            goto fail;
+        modname = PyUnicode_FromString("y._db.brownie");
+        if (modname == NULL) CPyError_OutOfMemory();
+        int rv = 0;
+        PyObject *mod_dict = PyImport_GetModuleDict();
+        PyObject *shared_lib = NULL;
+        rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
+        if (rv < 0) goto fail;
+        PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
+        if (shared_lib_file == NULL) goto fail;
+        PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
+        if (ext_suffix == NULL) CPyError_OutOfMemory();
+        Py_ssize_t is_pkg = 0;
+        rv = CPyImport_SetDunderAttrs(CPyModule_y____db___brownie__internal, modname, shared_lib_file, ext_suffix, is_pkg);
+        Py_DECREF(ext_suffix);
+        Py_DECREF(shared_lib_file);
+        if (rv < 0) goto fail;
+        if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y____db___brownie__internal) < 0)
+            goto fail;
+        Py_CLEAR(modname);
+        if (CPyExec_y____db___brownie(CPyModule_y____db___brownie__internal) != 0)
+            goto fail;
+        return CPyModule_y____db___brownie__internal;
+        fail:
+        {
+                PyObject *exc_type, *exc_val, *exc_tb;
+                PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
+                if (modname == NULL) {
+                        modname = PyUnicode_FromString("y._db.brownie");
+                        if (modname == NULL) CPyError_OutOfMemory();
+                    }
+                    PyObject_DelItem(PyImport_GetModuleDict(), modname);
+                    PyErr_Clear();
+                    Py_DECREF(modname);
+                    Py_CLEAR(CPyModule_y____db___brownie__internal);
+                    PyErr_Restore(exc_type, exc_val, exc_tb);
+            }
+            return NULL;
+        }
+        
 char CPyDef_brownie___AsyncCursor_____init__(PyObject *cpy_r_self, PyObject *cpy_r_filename) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -1650,34 +2656,34 @@ char CPyDef_brownie___AsyncCursor_____init__(PyObject *cpy_r_self, PyObject *cpy
     ((y____db___brownie___AsyncCursorObject *)cpy_r_self)->__execute = cpy_r_r1;
     return 1;
 }
-    
-    PyObject *CPyPy_brownie___AsyncCursor_____init__(PyObject *self, PyObject *args, PyObject *kw) {
-        PyObject *obj_self = self;
-        static const char * const kwlist[] = {"filename", 0};
-        PyObject *obj_filename;
-        if (!CPyArg_ParseTupleAndKeywords(args, kw, "O", "__init__", kwlist, &obj_filename)) {
-            return NULL;
-        }
-        PyObject *arg_self;
-        if (likely(Py_TYPE(obj_self) == CPyType_brownie___AsyncCursor))
-            arg_self = obj_self;
-        else {
-            CPy_TypeError("y._db.brownie.AsyncCursor", obj_self); 
-            goto fail;
-        }
-        PyObject *arg_filename = obj_filename;
-        char retval = CPyDef_brownie___AsyncCursor_____init__(arg_self, arg_filename);
-        if (retval == 2) {
-            return NULL;
-        }
-        PyObject *retbox = Py_None;
-        CPy_INCREF(retbox);
-        return retbox;
+        
+        PyObject *CPyPy_brownie___AsyncCursor_____init__(PyObject *self, PyObject *args, PyObject *kw) {
+            PyObject *obj_self = self;
+            static const char * const kwlist[] = {"filename", 0};
+            PyObject *obj_filename;
+            if (!CPyArg_ParseTupleAndKeywords(args, kw, "O", "__init__", kwlist, &obj_filename)) {
+                return NULL;
+            }
+            PyObject *arg_self;
+            if (likely(Py_TYPE(obj_self) == CPyType_brownie___AsyncCursor))
+                arg_self = obj_self;
+            else {
+                CPy_TypeError("y._db.brownie.AsyncCursor", obj_self); 
+                goto fail;
+            }
+            PyObject *arg_filename = obj_filename;
+            char retval = CPyDef_brownie___AsyncCursor_____init__(arg_self, arg_filename);
+            if (retval == 2) {
+                return NULL;
+            }
+            PyObject *retbox = Py_None;
+            CPy_INCREF(retbox);
+            return retbox;
 fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__init__", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+            CPy_AddTraceback("y/_db/brownie.py", "__init__", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
+            return NULL;
+        }
+        
 PyObject *CPyDef_brownie___connect_AsyncCursor_gen_____mypyc_generator_helper__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg, PyObject **cpy_r_stop_iter_ptr) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3145,7 +4151,7 @@ CPyL239: ;
     CPy_XDECREF(cpy_r_r9.f2);
     goto CPyL191;
 }
-    
+        
 PyObject *CPyDef_brownie___connect_AsyncCursor_gen_____next__(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3158,28 +4164,28 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie___connect_AsyncCursor_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__next__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___connect_AsyncCursor_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__next__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen_____next__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen_____next__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___connect_AsyncCursor_gen___send(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3192,56 +4198,56 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie___connect_AsyncCursor_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"arg", 0};
-        static CPyArg_Parser parser = {"O:send", kwlist, 0};
-        PyObject *obj_arg;
-        if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+        
+        PyObject *CPyPy_brownie___connect_AsyncCursor_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"arg", 0};
+            static CPyArg_Parser parser = {"O:send", kwlist, 0};
+            PyObject *obj_arg;
+            if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_arg = obj_arg;
+            PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen___send(arg___mypyc_self__, arg_arg);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_arg = obj_arg;
-        PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen___send(arg___mypyc_self__, arg_arg);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___connect_AsyncCursor_gen_____iter__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie___connect_AsyncCursor_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__iter__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___connect_AsyncCursor_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__iter__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen_____iter__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen_____iter__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___connect_AsyncCursor_gen___throw(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3270,44 +4276,44 @@ CPyL8: ;
     CPy_INCREF(cpy_r_traceback);
     goto CPyL4;
 }
-    
-    PyObject *CPyPy_brownie___connect_AsyncCursor_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"type", "value", "traceback", 0};
-        static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
-        PyObject *obj_type;
-        PyObject *obj_value = NULL;
-        PyObject *obj_traceback = NULL;
-        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+        
+        PyObject *CPyPy_brownie___connect_AsyncCursor_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"type", "value", "traceback", 0};
+            static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
+            PyObject *obj_type;
+            PyObject *obj_value = NULL;
+            PyObject *obj_traceback = NULL;
+            if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_type = obj_type;
+            PyObject *arg_value;
+            if (obj_value == NULL) {
+                arg_value = NULL;
+            } else {
+                arg_value = obj_value; 
+            }
+            PyObject *arg_traceback;
+            if (obj_traceback == NULL) {
+                arg_traceback = NULL;
+            } else {
+                arg_traceback = obj_traceback; 
+            }
+            PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_type = obj_type;
-        PyObject *arg_value;
-        if (obj_value == NULL) {
-            arg_value = NULL;
-        } else {
-            arg_value = obj_value; 
-        }
-        PyObject *arg_traceback;
-        if (obj_traceback == NULL) {
-            arg_traceback = NULL;
-        } else {
-            arg_traceback = obj_traceback; 
-        }
-        PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___connect_AsyncCursor_gen___close(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3386,54 +4392,54 @@ CPyL13: ;
     CPy_DECREF(cpy_r_r6.f2);
     goto CPyL6;
 }
-    
-    PyObject *CPyPy_brownie___connect_AsyncCursor_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":close", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___connect_AsyncCursor_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":close", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen___close(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen___close(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___connect_AsyncCursor_gen_____await__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie___connect_AsyncCursor_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__await__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___connect_AsyncCursor_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__await__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen_____await__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___connect_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.connect_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___connect_AsyncCursor_gen_____await__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___AsyncCursor___connect(PyObject *cpy_r_self) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -3463,28 +4469,28 @@ CPyL4: ;
     CPy_DecRef(cpy_r_r0);
     goto CPyL3;
 }
-    
-    PyObject *CPyPy_brownie___AsyncCursor___connect(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj_self = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":connect", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___AsyncCursor___connect(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj_self = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":connect", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg_self;
+            if (likely(Py_TYPE(obj_self) == CPyType_brownie___AsyncCursor))
+                arg_self = obj_self;
+            else {
+                CPy_TypeError("y._db.brownie.AsyncCursor", obj_self); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___AsyncCursor___connect(arg_self);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "connect", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg_self;
-        if (likely(Py_TYPE(obj_self) == CPyType_brownie___AsyncCursor))
-            arg_self = obj_self;
-        else {
-            CPy_TypeError("y._db.brownie.AsyncCursor", obj_self); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___AsyncCursor___connect(arg_self);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "connect", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___insert_AsyncCursor_gen_____mypyc_generator_helper__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg, PyObject **cpy_r_stop_iter_ptr) {
     int32_t cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3536,7 +4542,7 @@ CPyL10: ;
     cpy_r_r8 = NULL;
     return cpy_r_r8;
 }
-    
+        
 PyObject *CPyDef_brownie___insert_AsyncCursor_gen_____next__(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3549,28 +4555,28 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie___insert_AsyncCursor_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__next__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___insert_AsyncCursor_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__next__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen_____next__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen_____next__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___insert_AsyncCursor_gen___send(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3583,56 +4589,56 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie___insert_AsyncCursor_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"arg", 0};
-        static CPyArg_Parser parser = {"O:send", kwlist, 0};
-        PyObject *obj_arg;
-        if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+        
+        PyObject *CPyPy_brownie___insert_AsyncCursor_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"arg", 0};
+            static CPyArg_Parser parser = {"O:send", kwlist, 0};
+            PyObject *obj_arg;
+            if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_arg = obj_arg;
+            PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen___send(arg___mypyc_self__, arg_arg);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_arg = obj_arg;
-        PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen___send(arg___mypyc_self__, arg_arg);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___insert_AsyncCursor_gen_____iter__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie___insert_AsyncCursor_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__iter__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___insert_AsyncCursor_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__iter__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen_____iter__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen_____iter__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___insert_AsyncCursor_gen___throw(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3661,44 +4667,44 @@ CPyL8: ;
     CPy_INCREF(cpy_r_traceback);
     goto CPyL4;
 }
-    
-    PyObject *CPyPy_brownie___insert_AsyncCursor_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"type", "value", "traceback", 0};
-        static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
-        PyObject *obj_type;
-        PyObject *obj_value = NULL;
-        PyObject *obj_traceback = NULL;
-        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+        
+        PyObject *CPyPy_brownie___insert_AsyncCursor_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"type", "value", "traceback", 0};
+            static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
+            PyObject *obj_type;
+            PyObject *obj_value = NULL;
+            PyObject *obj_traceback = NULL;
+            if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_type = obj_type;
+            PyObject *arg_value;
+            if (obj_value == NULL) {
+                arg_value = NULL;
+            } else {
+                arg_value = obj_value; 
+            }
+            PyObject *arg_traceback;
+            if (obj_traceback == NULL) {
+                arg_traceback = NULL;
+            } else {
+                arg_traceback = obj_traceback; 
+            }
+            PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_type = obj_type;
-        PyObject *arg_value;
-        if (obj_value == NULL) {
-            arg_value = NULL;
-        } else {
-            arg_value = obj_value; 
-        }
-        PyObject *arg_traceback;
-        if (obj_traceback == NULL) {
-            arg_traceback = NULL;
-        } else {
-            arg_traceback = obj_traceback; 
-        }
-        PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___insert_AsyncCursor_gen___close(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -3777,54 +4783,54 @@ CPyL13: ;
     CPy_DECREF(cpy_r_r6.f2);
     goto CPyL6;
 }
-    
-    PyObject *CPyPy_brownie___insert_AsyncCursor_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":close", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___insert_AsyncCursor_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":close", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen___close(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen___close(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___insert_AsyncCursor_gen_____await__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie___insert_AsyncCursor_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__await__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___insert_AsyncCursor_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__await__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen_____await__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___insert_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.insert_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___insert_AsyncCursor_gen_____await__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___AsyncCursor___insert(PyObject *cpy_r_self, PyObject *cpy_r_table, PyObject *cpy_r_values) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -3876,40 +4882,40 @@ CPyL6: ;
     CPy_DecRef(cpy_r_r0);
     goto CPyL5;
 }
-    
-    PyObject *CPyPy_brownie___AsyncCursor___insert(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj_self = self;
-        static const char * const kwlist[] = {"table", 0};
-        static CPyArg_Parser parser = {"%O:insert", kwlist, 0};
-        PyObject *obj_table;
-        PyObject *obj_values;
-        if (!CPyArg_ParseStackAndKeywords(args, nargs, kwnames, &parser, &obj_values, NULL, &obj_table)) {
+        
+        PyObject *CPyPy_brownie___AsyncCursor___insert(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj_self = self;
+            static const char * const kwlist[] = {"table", 0};
+            static CPyArg_Parser parser = {"%O:insert", kwlist, 0};
+            PyObject *obj_table;
+            PyObject *obj_values;
+            if (!CPyArg_ParseStackAndKeywords(args, nargs, kwnames, &parser, &obj_values, NULL, &obj_table)) {
+                return NULL;
+            }
+            PyObject *arg_self;
+            if (likely(Py_TYPE(obj_self) == CPyType_brownie___AsyncCursor))
+                arg_self = obj_self;
+            else {
+                CPy_TypeError("y._db.brownie.AsyncCursor", obj_self); 
+                goto fail;
+            }
+            PyObject *arg_table;
+            if (likely(PyUnicode_Check(obj_table)))
+                arg_table = obj_table;
+            else {
+                CPy_TypeError("str", obj_table); 
+                goto fail;
+            }
+            PyObject *arg_values = obj_values;
+            PyObject *retval = CPyDef_brownie___AsyncCursor___insert(arg_self, arg_table, arg_values);
+            CPy_DECREF(obj_values);
+            return retval;
+fail: ;
+            CPy_DECREF(obj_values);
+            CPy_AddTraceback("y/_db/brownie.py", "insert", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg_self;
-        if (likely(Py_TYPE(obj_self) == CPyType_brownie___AsyncCursor))
-            arg_self = obj_self;
-        else {
-            CPy_TypeError("y._db.brownie.AsyncCursor", obj_self); 
-            goto fail;
-        }
-        PyObject *arg_table;
-        if (likely(PyUnicode_Check(obj_table)))
-            arg_table = obj_table;
-        else {
-            CPy_TypeError("str", obj_table); 
-            goto fail;
-        }
-        PyObject *arg_values = obj_values;
-        PyObject *retval = CPyDef_brownie___AsyncCursor___insert(arg_self, arg_table, arg_values);
-        CPy_DECREF(obj_values);
-        return retval;
-fail: ;
-        CPy_DECREF(obj_values);
-        CPy_AddTraceback("y/_db/brownie.py", "insert", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen_____mypyc_generator_helper__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg, PyObject **cpy_r_stop_iter_ptr) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -6847,7 +7853,7 @@ CPyL469: ;
     CPy_XDECREF(cpy_r_r21.f2);
     goto CPyL368;
 }
-    
+        
 PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen_____next__(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -6860,28 +7866,28 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__next__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__next__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen_____next__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen_____next__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen___send(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -6894,56 +7900,56 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"arg", 0};
-        static CPyArg_Parser parser = {"O:send", kwlist, 0};
-        PyObject *obj_arg;
-        if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+        
+        PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"arg", 0};
+            static CPyArg_Parser parser = {"O:send", kwlist, 0};
+            PyObject *obj_arg;
+            if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_arg = obj_arg;
+            PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen___send(arg___mypyc_self__, arg_arg);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_arg = obj_arg;
-        PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen___send(arg___mypyc_self__, arg_arg);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen_____iter__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__iter__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__iter__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen_____iter__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen_____iter__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen___throw(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -6972,44 +7978,44 @@ CPyL8: ;
     CPy_INCREF(cpy_r_traceback);
     goto CPyL4;
 }
-    
-    PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"type", "value", "traceback", 0};
-        static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
-        PyObject *obj_type;
-        PyObject *obj_value = NULL;
-        PyObject *obj_traceback = NULL;
-        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+        
+        PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"type", "value", "traceback", 0};
+            static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
+            PyObject *obj_type;
+            PyObject *obj_value = NULL;
+            PyObject *obj_traceback = NULL;
+            if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_type = obj_type;
+            PyObject *arg_value;
+            if (obj_value == NULL) {
+                arg_value = NULL;
+            } else {
+                arg_value = obj_value; 
+            }
+            PyObject *arg_traceback;
+            if (obj_traceback == NULL) {
+                arg_traceback = NULL;
+            } else {
+                arg_traceback = obj_traceback; 
+            }
+            PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_type = obj_type;
-        PyObject *arg_value;
-        if (obj_value == NULL) {
-            arg_value = NULL;
-        } else {
-            arg_value = obj_value; 
-        }
-        PyObject *arg_traceback;
-        if (obj_traceback == NULL) {
-            arg_traceback = NULL;
-        } else {
-            arg_traceback = obj_traceback; 
-        }
-        PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen___close(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -7088,54 +8094,54 @@ CPyL13: ;
     CPy_DECREF(cpy_r_r6.f2);
     goto CPyL6;
 }
-    
-    PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":close", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":close", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen___close(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen___close(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen_____await__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__await__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie___fetchone_AsyncCursor_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__await__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen_____await__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie___fetchone_AsyncCursor_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.fetchone_AsyncCursor_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie___fetchone_AsyncCursor_gen_____await__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie___AsyncCursor___fetchone(PyObject *cpy_r_self, PyObject *cpy_r_cmd, PyObject *cpy_r_args) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -7187,40 +8193,40 @@ CPyL6: ;
     CPy_DecRef(cpy_r_r0);
     goto CPyL5;
 }
-    
-    PyObject *CPyPy_brownie___AsyncCursor___fetchone(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj_self = self;
-        static const char * const kwlist[] = {"cmd", 0};
-        static CPyArg_Parser parser = {"%O:fetchone", kwlist, 0};
-        PyObject *obj_cmd;
-        PyObject *obj_args;
-        if (!CPyArg_ParseStackAndKeywords(args, nargs, kwnames, &parser, &obj_args, NULL, &obj_cmd)) {
+        
+        PyObject *CPyPy_brownie___AsyncCursor___fetchone(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj_self = self;
+            static const char * const kwlist[] = {"cmd", 0};
+            static CPyArg_Parser parser = {"%O:fetchone", kwlist, 0};
+            PyObject *obj_cmd;
+            PyObject *obj_args;
+            if (!CPyArg_ParseStackAndKeywords(args, nargs, kwnames, &parser, &obj_args, NULL, &obj_cmd)) {
+                return NULL;
+            }
+            PyObject *arg_self;
+            if (likely(Py_TYPE(obj_self) == CPyType_brownie___AsyncCursor))
+                arg_self = obj_self;
+            else {
+                CPy_TypeError("y._db.brownie.AsyncCursor", obj_self); 
+                goto fail;
+            }
+            PyObject *arg_cmd;
+            if (likely(PyUnicode_Check(obj_cmd)))
+                arg_cmd = obj_cmd;
+            else {
+                CPy_TypeError("str", obj_cmd); 
+                goto fail;
+            }
+            PyObject *arg_args = obj_args;
+            PyObject *retval = CPyDef_brownie___AsyncCursor___fetchone(arg_self, arg_cmd, arg_args);
+            CPy_DECREF(obj_args);
+            return retval;
+fail: ;
+            CPy_DECREF(obj_args);
+            CPy_AddTraceback("y/_db/brownie.py", "fetchone", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg_self;
-        if (likely(Py_TYPE(obj_self) == CPyType_brownie___AsyncCursor))
-            arg_self = obj_self;
-        else {
-            CPy_TypeError("y._db.brownie.AsyncCursor", obj_self); 
-            goto fail;
-        }
-        PyObject *arg_cmd;
-        if (likely(PyUnicode_Check(obj_cmd)))
-            arg_cmd = obj_cmd;
-        else {
-            CPy_TypeError("str", obj_cmd); 
-            goto fail;
-        }
-        PyObject *arg_args = obj_args;
-        PyObject *retval = CPyDef_brownie___AsyncCursor___fetchone(arg_self, arg_cmd, arg_args);
-        CPy_DECREF(obj_args);
-        return retval;
-fail: ;
-        CPy_DECREF(obj_args);
-        CPy_AddTraceback("y/_db/brownie.py", "fetchone", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie____get_select_statement(void) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -7354,20 +8360,20 @@ CPyL20: ;
     CPy_DecRef(cpy_r_r11.f2);
     goto CPyL15;
 }
-    
-    PyObject *CPyPy_brownie____get_select_statement(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":_get_select_statement", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie____get_select_statement(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":_get_select_statement", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *retval = CPyDef_brownie____get_select_statement();
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *retval = CPyDef_brownie____get_select_statement();
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "_get_select_statement", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie____get_deployment_gen_____mypyc_generator_helper__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg, PyObject **cpy_r_stop_iter_ptr) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -9561,7 +10567,7 @@ CPyL319: ;
     CPy_XDECREF(cpy_r_r5);
     goto CPyL252;
 }
-    
+        
 PyObject *CPyDef_brownie____get_deployment_gen_____next__(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -9574,28 +10580,28 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie____get_deployment_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__next__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie____get_deployment_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__next__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie____get_deployment_gen_____next__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie____get_deployment_gen_____next__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie____get_deployment_gen___send(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -9608,56 +10614,56 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie____get_deployment_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"arg", 0};
-        static CPyArg_Parser parser = {"O:send", kwlist, 0};
-        PyObject *obj_arg;
-        if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+        
+        PyObject *CPyPy_brownie____get_deployment_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"arg", 0};
+            static CPyArg_Parser parser = {"O:send", kwlist, 0};
+            PyObject *obj_arg;
+            if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_arg = obj_arg;
+            PyObject *retval = CPyDef_brownie____get_deployment_gen___send(arg___mypyc_self__, arg_arg);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_arg = obj_arg;
-        PyObject *retval = CPyDef_brownie____get_deployment_gen___send(arg___mypyc_self__, arg_arg);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie____get_deployment_gen_____iter__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie____get_deployment_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__iter__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie____get_deployment_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__iter__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie____get_deployment_gen_____iter__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie____get_deployment_gen_____iter__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie____get_deployment_gen___throw(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -9686,44 +10692,44 @@ CPyL8: ;
     CPy_INCREF(cpy_r_traceback);
     goto CPyL4;
 }
-    
-    PyObject *CPyPy_brownie____get_deployment_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"type", "value", "traceback", 0};
-        static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
-        PyObject *obj_type;
-        PyObject *obj_value = NULL;
-        PyObject *obj_traceback = NULL;
-        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+        
+        PyObject *CPyPy_brownie____get_deployment_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"type", "value", "traceback", 0};
+            static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
+            PyObject *obj_type;
+            PyObject *obj_value = NULL;
+            PyObject *obj_traceback = NULL;
+            if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_type = obj_type;
+            PyObject *arg_value;
+            if (obj_value == NULL) {
+                arg_value = NULL;
+            } else {
+                arg_value = obj_value; 
+            }
+            PyObject *arg_traceback;
+            if (obj_traceback == NULL) {
+                arg_traceback = NULL;
+            } else {
+                arg_traceback = obj_traceback; 
+            }
+            PyObject *retval = CPyDef_brownie____get_deployment_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_type = obj_type;
-        PyObject *arg_value;
-        if (obj_value == NULL) {
-            arg_value = NULL;
-        } else {
-            arg_value = obj_value; 
-        }
-        PyObject *arg_traceback;
-        if (obj_traceback == NULL) {
-            arg_traceback = NULL;
-        } else {
-            arg_traceback = obj_traceback; 
-        }
-        PyObject *retval = CPyDef_brownie____get_deployment_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie____get_deployment_gen___close(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -9802,54 +10808,54 @@ CPyL13: ;
     CPy_DECREF(cpy_r_r6.f2);
     goto CPyL6;
 }
-    
-    PyObject *CPyPy_brownie____get_deployment_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":close", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie____get_deployment_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":close", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie____get_deployment_gen___close(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie____get_deployment_gen___close(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie____get_deployment_gen_____await__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie____get_deployment_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__await__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie____get_deployment_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__await__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie____get_deployment_gen_____await__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie____get_deployment_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie._get_deployment_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie____get_deployment_gen_____await__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie____get_deployment(PyObject *cpy_r_address, PyObject *cpy_r_alias, PyObject *cpy_r_skip_source_keys) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -9937,69 +10943,69 @@ CPyL18: ;
     CPy_DecRef(cpy_r_r3);
     goto CPyL11;
 }
-    
-    PyObject *CPyPy_brownie____get_deployment(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        static const char * const kwlist[] = {"address", "alias", "skip_source_keys", 0};
-        static CPyArg_Parser parser = {"|OOO:_get_deployment", kwlist, 0};
-        PyObject *obj_address = NULL;
-        PyObject *obj_alias = NULL;
-        PyObject *obj_skip_source_keys = NULL;
-        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_address, &obj_alias, &obj_skip_source_keys)) {
+        
+        PyObject *CPyPy_brownie____get_deployment(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            static const char * const kwlist[] = {"address", "alias", "skip_source_keys", 0};
+            static CPyArg_Parser parser = {"|OOO:_get_deployment", kwlist, 0};
+            PyObject *obj_address = NULL;
+            PyObject *obj_alias = NULL;
+            PyObject *obj_skip_source_keys = NULL;
+            if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_address, &obj_alias, &obj_skip_source_keys)) {
+                return NULL;
+            }
+            PyObject *arg_address;
+            if (obj_address == NULL) {
+                arg_address = NULL;
+                goto __LL41;
+            }
+            if (PyUnicode_Check(obj_address))
+                arg_address = obj_address;
+            else {
+                arg_address = NULL;
+            }
+            if (arg_address != NULL) goto __LL41;
+            if (obj_address == Py_None)
+                arg_address = obj_address;
+            else {
+                arg_address = NULL;
+            }
+            if (arg_address != NULL) goto __LL41;
+            CPy_TypeError("str or None", obj_address); 
+            goto fail;
+__LL41: ;
+            PyObject *arg_alias;
+            if (obj_alias == NULL) {
+                arg_alias = NULL;
+                goto __LL42;
+            }
+            if (PyUnicode_Check(obj_alias))
+                arg_alias = obj_alias;
+            else {
+                arg_alias = NULL;
+            }
+            if (arg_alias != NULL) goto __LL42;
+            if (obj_alias == Py_None)
+                arg_alias = obj_alias;
+            else {
+                arg_alias = NULL;
+            }
+            if (arg_alias != NULL) goto __LL42;
+            CPy_TypeError("str or None", obj_alias); 
+            goto fail;
+__LL42: ;
+            PyObject *arg_skip_source_keys;
+            if (obj_skip_source_keys == NULL) {
+                arg_skip_source_keys = NULL;
+            } else {
+                arg_skip_source_keys = obj_skip_source_keys; 
+            }
+            PyObject *retval = CPyDef_brownie____get_deployment(arg_address, arg_alias, arg_skip_source_keys);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg_address;
-        if (obj_address == NULL) {
-            arg_address = NULL;
-            goto __LL41;
-        }
-        if (PyUnicode_Check(obj_address))
-            arg_address = obj_address;
-        else {
-            arg_address = NULL;
-        }
-        if (arg_address != NULL) goto __LL41;
-        if (obj_address == Py_None)
-            arg_address = obj_address;
-        else {
-            arg_address = NULL;
-        }
-        if (arg_address != NULL) goto __LL41;
-        CPy_TypeError("str or None", obj_address); 
-        goto fail;
-__LL41: ;
-        PyObject *arg_alias;
-        if (obj_alias == NULL) {
-            arg_alias = NULL;
-            goto __LL42;
-        }
-        if (PyUnicode_Check(obj_alias))
-            arg_alias = obj_alias;
-        else {
-            arg_alias = NULL;
-        }
-        if (arg_alias != NULL) goto __LL42;
-        if (obj_alias == Py_None)
-            arg_alias = obj_alias;
-        else {
-            arg_alias = NULL;
-        }
-        if (arg_alias != NULL) goto __LL42;
-        CPy_TypeError("str or None", obj_alias); 
-        goto fail;
-__LL42: ;
-        PyObject *arg_skip_source_keys;
-        if (obj_skip_source_keys == NULL) {
-            arg_skip_source_keys = NULL;
-        } else {
-            arg_skip_source_keys = obj_skip_source_keys; 
-        }
-        PyObject *retval = CPyDef_brownie____get_deployment(arg_address, arg_alias, arg_skip_source_keys);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "_get_deployment", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie_____fetch_source_for_hash_gen_____mypyc_generator_helper__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback, PyObject *cpy_r_arg, PyObject **cpy_r_stop_iter_ptr) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -10350,7 +11356,7 @@ CPyL62: ;
     CPy_XDECREF(cpy_r_r1);
     goto CPyL49;
 }
-    
+        
 PyObject *CPyDef_brownie_____fetch_source_for_hash_gen_____next__(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -10363,28 +11369,28 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie_____fetch_source_for_hash_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__next__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie_____fetch_source_for_hash_gen_____next__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__next__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen_____next__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen_____next__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__next__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie_____fetch_source_for_hash_gen___send(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_arg) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -10397,56 +11403,56 @@ CPyL2: ;
     cpy_r_r2 = NULL;
     return cpy_r_r2;
 }
-    
-    PyObject *CPyPy_brownie_____fetch_source_for_hash_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"arg", 0};
-        static CPyArg_Parser parser = {"O:send", kwlist, 0};
-        PyObject *obj_arg;
-        if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+        
+        PyObject *CPyPy_brownie_____fetch_source_for_hash_gen___send(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"arg", 0};
+            static CPyArg_Parser parser = {"O:send", kwlist, 0};
+            PyObject *obj_arg;
+            if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_arg)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_arg = obj_arg;
+            PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen___send(arg___mypyc_self__, arg_arg);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_arg = obj_arg;
-        PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen___send(arg___mypyc_self__, arg_arg);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "send", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie_____fetch_source_for_hash_gen_____iter__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie_____fetch_source_for_hash_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__iter__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie_____fetch_source_for_hash_gen_____iter__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__iter__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen_____iter__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen_____iter__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__iter__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie_____fetch_source_for_hash_gen___throw(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_type, PyObject *cpy_r_value, PyObject *cpy_r_traceback) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -10475,44 +11481,44 @@ CPyL8: ;
     CPy_INCREF(cpy_r_traceback);
     goto CPyL4;
 }
-    
-    PyObject *CPyPy_brownie_____fetch_source_for_hash_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {"type", "value", "traceback", 0};
-        static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
-        PyObject *obj_type;
-        PyObject *obj_value = NULL;
-        PyObject *obj_traceback = NULL;
-        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+        
+        PyObject *CPyPy_brownie_____fetch_source_for_hash_gen___throw(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {"type", "value", "traceback", 0};
+            static CPyArg_Parser parser = {"O|OO:throw", kwlist, 0};
+            PyObject *obj_type;
+            PyObject *obj_value = NULL;
+            PyObject *obj_traceback = NULL;
+            if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_type, &obj_value, &obj_traceback)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *arg_type = obj_type;
+            PyObject *arg_value;
+            if (obj_value == NULL) {
+                arg_value = NULL;
+            } else {
+                arg_value = obj_value; 
+            }
+            PyObject *arg_traceback;
+            if (obj_traceback == NULL) {
+                arg_traceback = NULL;
+            } else {
+                arg_traceback = obj_traceback; 
+            }
+            PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *arg_type = obj_type;
-        PyObject *arg_value;
-        if (obj_value == NULL) {
-            arg_value = NULL;
-        } else {
-            arg_value = obj_value; 
-        }
-        PyObject *arg_traceback;
-        if (obj_traceback == NULL) {
-            arg_traceback = NULL;
-        } else {
-            arg_traceback = obj_traceback; 
-        }
-        PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen___throw(arg___mypyc_self__, arg_type, arg_value, arg_traceback);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "throw", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie_____fetch_source_for_hash_gen___close(PyObject *cpy_r___mypyc_self__) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -10591,54 +11597,54 @@ CPyL13: ;
     CPy_DECREF(cpy_r_r6.f2);
     goto CPyL6;
 }
-    
-    PyObject *CPyPy_brownie_____fetch_source_for_hash_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":close", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie_____fetch_source_for_hash_gen___close(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":close", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen___close(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen___close(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "close", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie_____fetch_source_for_hash_gen_____await__(PyObject *cpy_r___mypyc_self__) {
     CPy_INCREF_NO_IMM(cpy_r___mypyc_self__);
     return cpy_r___mypyc_self__;
 }
-    
-    PyObject *CPyPy_brownie_____fetch_source_for_hash_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        PyObject *obj___mypyc_self__ = self;
-        static const char * const kwlist[] = {0};
-        static CPyArg_Parser parser = {":__await__", kwlist, 0};
-        if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+        
+        PyObject *CPyPy_brownie_____fetch_source_for_hash_gen_____await__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            PyObject *obj___mypyc_self__ = self;
+            static const char * const kwlist[] = {0};
+            static CPyArg_Parser parser = {":__await__", kwlist, 0};
+            if (!CPyArg_ParseStackAndKeywordsNoArgs(args, nargs, kwnames, &parser)) {
+                return NULL;
+            }
+            PyObject *arg___mypyc_self__;
+            if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
+                arg___mypyc_self__ = obj___mypyc_self__;
+            else {
+                CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen_____await__(arg___mypyc_self__);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg___mypyc_self__;
-        if (likely(Py_TYPE(obj___mypyc_self__) == CPyType_brownie_____fetch_source_for_hash_gen))
-            arg___mypyc_self__ = obj___mypyc_self__;
-        else {
-            CPy_TypeError("y._db.brownie.__fetch_source_for_hash_gen", obj___mypyc_self__); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie_____fetch_source_for_hash_gen_____await__(arg___mypyc_self__);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__await__", -1, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 PyObject *CPyDef_brownie_____fetch_source_for_hash(PyObject *cpy_r_hashval) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -10668,28 +11674,28 @@ CPyL4: ;
     CPy_DecRef(cpy_r_r0);
     goto CPyL3;
 }
-    
-    PyObject *CPyPy_brownie_____fetch_source_for_hash(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-        static const char * const kwlist[] = {"hashval", 0};
-        static CPyArg_Parser parser = {"O:__fetch_source_for_hash", kwlist, 0};
-        PyObject *obj_hashval;
-        if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_hashval)) {
+        
+        PyObject *CPyPy_brownie_____fetch_source_for_hash(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+            static const char * const kwlist[] = {"hashval", 0};
+            static CPyArg_Parser parser = {"O:__fetch_source_for_hash", kwlist, 0};
+            PyObject *obj_hashval;
+            if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_hashval)) {
+                return NULL;
+            }
+            PyObject *arg_hashval;
+            if (likely(PyUnicode_Check(obj_hashval)))
+                arg_hashval = obj_hashval;
+            else {
+                CPy_TypeError("str", obj_hashval); 
+                goto fail;
+            }
+            PyObject *retval = CPyDef_brownie_____fetch_source_for_hash(arg_hashval);
+            return retval;
+fail: ;
+            CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
             return NULL;
         }
-        PyObject *arg_hashval;
-        if (likely(PyUnicode_Check(obj_hashval)))
-            arg_hashval = obj_hashval;
-        else {
-            CPy_TypeError("str", obj_hashval); 
-            goto fail;
-        }
-        PyObject *retval = CPyDef_brownie_____fetch_source_for_hash(arg_hashval);
-        return retval;
-fail: ;
-        CPy_AddTraceback("y/_db/brownie.py", "__fetch_source_for_hash", DIFFCHECK_PLACEHOLDER, CPyStatic_brownie___globals);
-        return NULL;
-    }
-    
+        
 char CPyDef_brownie_____top_level__(void) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -11765,102 +12771,102 @@ CPyL70: ;
     CPy_DecRef(cpy_r_r238);
     goto CPyL65;
 }
-    static PyMethodDef configmodule_methods[] = {
-        {NULL, NULL, 0, NULL}
-    };
-    
-    int CPyExec_y____db___config(PyObject *module)
-    {
-        intern_strings();
-        PyObject* modname = NULL;
-        modname = PyObject_GetAttrString((PyObject *)CPyModule_y____db___config__internal, "__name__");
-        CPyStatic_config___globals = PyModule_GetDict(CPyModule_y____db___config__internal);
-        if (unlikely(CPyStatic_config___globals == NULL))
-            goto fail;
-        if (CPyGlobalsInit() < 0)
-            goto fail;
-        char result = CPyDef_config_____top_level__();
-        if (result == 2)
-            goto fail;
-        Py_DECREF(modname);
-        return 0;
-        fail:
-        Py_CLEAR(CPyModule_y____db___config__internal);
-        Py_CLEAR(modname);
-        CPy_XDECREF(CPyStatic_config___DEFAULT_SQLITE_DIR);
-        CPyStatic_config___DEFAULT_SQLITE_DIR = NULL;
-        CPy_XDECREF(CPyStatic_config___db_provider);
-        CPyStatic_config___db_provider = NULL;
-        return -1;
-    }
-    static struct PyModuleDef configmodule = {
-        PyModuleDef_HEAD_INIT,
-        "y._db.config",
-        NULL, /* docstring */
-        0,       /* size of per-interpreter state of the module */
-        configmodule_methods,
-        NULL,
-    };
-    
-    PyObject *CPyInitOnly_y____db___config(void)
-    {
-        if (CPyModule_y____db___config__internal) {
-            Py_INCREF(CPyModule_y____db___config__internal);
-            return CPyModule_y____db___config__internal;
-        }
-        CPyModule_y____db___config__internal = PyModule_Create(&configmodule);
-        return CPyModule_y____db___config__internal;
-    }
-    
-    PyObject *CPyInit_y____db___config(void)
-    {
-        PyObject* modname = NULL;
-        if (CPyModule_y____db___config__internal) {
-            Py_INCREF(CPyModule_y____db___config__internal);
-            return CPyModule_y____db___config__internal;
-        }
-        CPyModule_y____db___config__internal = PyModule_Create(&configmodule);
-        if (unlikely(CPyModule_y____db___config__internal == NULL))
-            goto fail;
-        modname = PyUnicode_FromString("y._db.config");
-        if (modname == NULL) CPyError_OutOfMemory();
-        int rv = 0;
-        PyObject *mod_dict = PyImport_GetModuleDict();
-        PyObject *shared_lib = NULL;
-        rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
-        if (rv < 0) goto fail;
-        PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
-        if (shared_lib_file == NULL) goto fail;
-        PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
-        if (ext_suffix == NULL) CPyError_OutOfMemory();
-        Py_ssize_t is_pkg = 0;
-        rv = CPyImport_SetDunderAttrs(CPyModule_y____db___config__internal, modname, shared_lib_file, ext_suffix, is_pkg);
-        Py_DECREF(ext_suffix);
-        Py_DECREF(shared_lib_file);
-        if (rv < 0) goto fail;
-        if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y____db___config__internal) < 0)
-            goto fail;
-        Py_CLEAR(modname);
-        if (CPyExec_y____db___config(CPyModule_y____db___config__internal) != 0)
-            goto fail;
-        return CPyModule_y____db___config__internal;
-        fail:
+        static PyMethodDef configmodule_methods[] = {
+            {NULL, NULL, 0, NULL}
+        };
+        
+        int CPyExec_y____db___config(PyObject *module)
         {
-                PyObject *exc_type, *exc_val, *exc_tb;
-                PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
-                if (modname == NULL) {
-                        modname = PyUnicode_FromString("y._db.config");
-                        if (modname == NULL) CPyError_OutOfMemory();
-                    }
-                    PyObject_DelItem(PyImport_GetModuleDict(), modname);
-                    PyErr_Clear();
-                    Py_DECREF(modname);
-                    Py_CLEAR(CPyModule_y____db___config__internal);
-                    PyErr_Restore(exc_type, exc_val, exc_tb);
+            intern_strings();
+            PyObject* modname = NULL;
+            modname = PyObject_GetAttrString((PyObject *)CPyModule_y____db___config__internal, "__name__");
+            CPyStatic_config___globals = PyModule_GetDict(CPyModule_y____db___config__internal);
+            if (unlikely(CPyStatic_config___globals == NULL))
+                goto fail;
+            if (CPyGlobalsInit() < 0)
+                goto fail;
+            char result = CPyDef_config_____top_level__();
+            if (result == 2)
+                goto fail;
+            Py_DECREF(modname);
+            return 0;
+            fail:
+            Py_CLEAR(CPyModule_y____db___config__internal);
+            Py_CLEAR(modname);
+            CPy_XDECREF(CPyStatic_config___DEFAULT_SQLITE_DIR);
+            CPyStatic_config___DEFAULT_SQLITE_DIR = NULL;
+            CPy_XDECREF(CPyStatic_config___db_provider);
+            CPyStatic_config___db_provider = NULL;
+            return -1;
+        }
+        static struct PyModuleDef configmodule = {
+            PyModuleDef_HEAD_INIT,
+            "y._db.config",
+            NULL, /* docstring */
+            0,       /* size of per-interpreter state of the module */
+            configmodule_methods,
+            NULL,
+        };
+        
+        PyObject *CPyInitOnly_y____db___config(void)
+        {
+            if (CPyModule_y____db___config__internal) {
+                Py_INCREF(CPyModule_y____db___config__internal);
+                return CPyModule_y____db___config__internal;
             }
-            return NULL;
+            CPyModule_y____db___config__internal = PyModule_Create(&configmodule);
+            return CPyModule_y____db___config__internal;
         }
         
+        PyObject *CPyInit_y____db___config(void)
+        {
+            PyObject* modname = NULL;
+            if (CPyModule_y____db___config__internal) {
+                Py_INCREF(CPyModule_y____db___config__internal);
+                return CPyModule_y____db___config__internal;
+            }
+            CPyModule_y____db___config__internal = PyModule_Create(&configmodule);
+            if (unlikely(CPyModule_y____db___config__internal == NULL))
+                goto fail;
+            modname = PyUnicode_FromString("y._db.config");
+            if (modname == NULL) CPyError_OutOfMemory();
+            int rv = 0;
+            PyObject *mod_dict = PyImport_GetModuleDict();
+            PyObject *shared_lib = NULL;
+            rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
+            if (rv < 0) goto fail;
+            PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
+            if (shared_lib_file == NULL) goto fail;
+            PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
+            if (ext_suffix == NULL) CPyError_OutOfMemory();
+            Py_ssize_t is_pkg = 0;
+            rv = CPyImport_SetDunderAttrs(CPyModule_y____db___config__internal, modname, shared_lib_file, ext_suffix, is_pkg);
+            Py_DECREF(ext_suffix);
+            Py_DECREF(shared_lib_file);
+            if (rv < 0) goto fail;
+            if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y____db___config__internal) < 0)
+                goto fail;
+            Py_CLEAR(modname);
+            if (CPyExec_y____db___config(CPyModule_y____db___config__internal) != 0)
+                goto fail;
+            return CPyModule_y____db___config__internal;
+            fail:
+            {
+                    PyObject *exc_type, *exc_val, *exc_tb;
+                    PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
+                    if (modname == NULL) {
+                            modname = PyUnicode_FromString("y._db.config");
+                            if (modname == NULL) CPyError_OutOfMemory();
+                        }
+                        PyObject_DelItem(PyImport_GetModuleDict(), modname);
+                        PyErr_Clear();
+                        Py_DECREF(modname);
+                        Py_CLEAR(CPyModule_y____db___config__internal);
+                        PyErr_Restore(exc_type, exc_val, exc_tb);
+                }
+                return NULL;
+            }
+            
 char CPyDef_config_____top_level__(void) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -12642,862 +13648,846 @@ CPyL112: ;
     CPyTagged_DecRef(cpy_r_r157);
     goto CPyL101;
 }
-        
-        static int
-        decorators___retry_locked_env_traverse(y____db___decorators___retry_locked_envObject *self, visitproc visit, void *arg)
-        {
-            Py_VISIT(self->___mypyc_self__);
-            Py_VISIT(self->_callable);
-            Py_VISIT(self->_retry_locked_wrap);
-            int rv = 0;
-            return rv;
-        }
-        
-        static int
-        decorators___retry_locked_env_clear(y____db___decorators___retry_locked_envObject *self)
-        {
-            Py_CLEAR(self->___mypyc_self__);
-            Py_CLEAR(self->_callable);
-            Py_CLEAR(self->_retry_locked_wrap);
-            return 0;
-        }
-        
-        static void
-        decorators___retry_locked_env_dealloc(y____db___decorators___retry_locked_envObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators___retry_locked_env_free_instance == NULL) {
-                decorators___retry_locked_env_free_instance = self;
+            
+            static int
+            decorators___retry_locked_env_traverse(y____db___decorators___retry_locked_envObject *self, visitproc visit, void *arg)
+            {
+                Py_VISIT(self->___mypyc_self__);
+                Py_VISIT(self->_callable);
+                Py_VISIT(self->_retry_locked_wrap);
+                int rv = 0;
+                return rv;
+            }
+            
+            static int
+            decorators___retry_locked_env_clear(y____db___decorators___retry_locked_envObject *self)
+            {
                 Py_CLEAR(self->___mypyc_self__);
                 Py_CLEAR(self->_callable);
                 Py_CLEAR(self->_retry_locked_wrap);
-                return;
+                return 0;
             }
-            CPy_TRASHCAN_BEGIN(self, decorators___retry_locked_env_dealloc)
-            decorators___retry_locked_env_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc__retry_locked_env_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___retry_locked_env(void);
-        
-        static PyObject *
-        decorators___retry_locked_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___retry_locked_env) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
+            
+            static void
+            decorators___retry_locked_env_dealloc(y____db___decorators___retry_locked_envObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators___retry_locked_env_free_instance == NULL) {
+                    decorators___retry_locked_env_free_instance = self;
+                    Py_CLEAR(self->___mypyc_self__);
+                    Py_CLEAR(self->_callable);
+                    Py_CLEAR(self->_retry_locked_wrap);
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators___retry_locked_env_dealloc)
+                decorators___retry_locked_env_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
             }
-            PyObject *self = CPyDef_decorators_____mypyc__retry_locked_env_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators___retry_locked_env_vtable[1];
-        static bool
-        CPyDef_decorators___retry_locked_env_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators___retry_locked_env_vtable_scratch[] = {
-                NULL
+            
+            PyObject *CPyDef_decorators_____mypyc__retry_locked_env_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators___retry_locked_env(void);
+            
+            static PyObject *
+            decorators___retry_locked_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators___retry_locked_env) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc__retry_locked_env_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators___retry_locked_env_vtable[1];
+            static bool
+            CPyDef_decorators___retry_locked_env_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators___retry_locked_env_vtable_scratch[] = {
+                    NULL
+                };
+                memcpy(decorators___retry_locked_env_vtable, decorators___retry_locked_env_vtable_scratch, sizeof(decorators___retry_locked_env_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators___retry_locked_env_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            static PyMethodDef decorators___retry_locked_env_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__retry_locked_env_setup, METH_O, NULL},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
             };
-            memcpy(decorators___retry_locked_env_vtable, decorators___retry_locked_env_vtable_scratch, sizeof(decorators___retry_locked_env_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators___retry_locked_env_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        static PyMethodDef decorators___retry_locked_env_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__retry_locked_env_setup, METH_O, NULL},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators___retry_locked_env_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "retry_locked_env",
-            .tp_new = decorators___retry_locked_env_new,
-            .tp_dealloc = (destructor)decorators___retry_locked_env_dealloc,
-            .tp_traverse = (traverseproc)decorators___retry_locked_env_traverse,
-            .tp_clear = (inquiry)decorators___retry_locked_env_clear,
-            .tp_methods = decorators___retry_locked_env_methods,
-            .tp_basicsize = sizeof(y____db___decorators___retry_locked_envObject),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-            .tp_doc = PyDoc_STR("retry_locked_env()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators___retry_locked_env_template = &CPyType_decorators___retry_locked_env_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc__retry_locked_env_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators___retry_locked_envObject *self;
-            if (decorators___retry_locked_env_free_instance != NULL) {
-                self = decorators___retry_locked_env_free_instance;
-                decorators___retry_locked_env_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
+            
+            static PyTypeObject CPyType_decorators___retry_locked_env_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "retry_locked_env",
+                .tp_new = decorators___retry_locked_env_new,
+                .tp_dealloc = (destructor)decorators___retry_locked_env_dealloc,
+                .tp_traverse = (traverseproc)decorators___retry_locked_env_traverse,
+                .tp_clear = (inquiry)decorators___retry_locked_env_clear,
+                .tp_methods = decorators___retry_locked_env_methods,
+                .tp_basicsize = sizeof(y____db___decorators___retry_locked_envObject),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+                .tp_doc = PyDoc_STR("retry_locked_env()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators___retry_locked_env_template = &CPyType_decorators___retry_locked_env_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc__retry_locked_env_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators___retry_locked_envObject *self;
+                if (decorators___retry_locked_env_free_instance != NULL) {
+                    self = decorators___retry_locked_env_free_instance;
+                    decorators___retry_locked_env_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators___retry_locked_envObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators___retry_locked_env_vtable;
                 return (PyObject *)self;
             }
-            self = (y____db___decorators___retry_locked_envObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators___retry_locked_env_vtable;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators___retry_locked_env(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc__retry_locked_env_setup((PyObject *)CPyType_decorators___retry_locked_env);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        
-        static PyObject *CPyDunder___get__decorators___retry_locked_wrap_retry_locked_obj(PyObject *self, PyObject *instance, PyObject *owner) {
-            instance = instance ? instance : Py_None;
-            return CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__(self, instance, owner);
-        }
-        static int
-        decorators___retry_locked_wrap_retry_locked_obj_traverse(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, visitproc visit, void *arg)
-        {
-            Py_VISIT(self->___mypyc_env__);
-            int rv = 0;
-            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            if (rv != 0) return rv;
-            return rv;
-        }
-        
-        static int
-        decorators___retry_locked_wrap_retry_locked_obj_clear(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self)
-        {
-            Py_CLEAR(self->___mypyc_env__);
-            PyObject_ClearManagedDict((PyObject *)self);
-            return 0;
-        }
-        
-        static void
-        decorators___retry_locked_wrap_retry_locked_obj_dealloc(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators___retry_locked_wrap_retry_locked_obj_free_instance == NULL) {
-                decorators___retry_locked_wrap_retry_locked_obj_free_instance = self;
+            
+            PyObject *CPyDef_decorators___retry_locked_env(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc__retry_locked_env_setup((PyObject *)CPyType_decorators___retry_locked_env);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            
+            static PyObject *CPyDunder___get__decorators___retry_locked_wrap_retry_locked_obj(PyObject *self, PyObject *instance, PyObject *owner) {
+                instance = instance ? instance : Py_None;
+                return CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__(self, instance, owner);
+            }
+            static int
+            decorators___retry_locked_wrap_retry_locked_obj_traverse(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, visitproc visit, void *arg)
+            {
+                Py_VISIT(self->___mypyc_env__);
+                int rv = 0;
+                rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+                if (rv != 0) return rv;
+                return rv;
+            }
+            
+            static int
+            decorators___retry_locked_wrap_retry_locked_obj_clear(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self)
+            {
                 Py_CLEAR(self->___mypyc_env__);
-                return;
+                PyObject_ClearManagedDict((PyObject *)self);
+                return 0;
             }
-            CPy_TRASHCAN_BEGIN(self, decorators___retry_locked_wrap_retry_locked_obj_dealloc)
-            decorators___retry_locked_wrap_retry_locked_obj_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___retry_locked_wrap_retry_locked_obj(void);
-        
-        static PyObject *
-        decorators___retry_locked_wrap_retry_locked_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___retry_locked_wrap_retry_locked_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
+            
+            static void
+            decorators___retry_locked_wrap_retry_locked_obj_dealloc(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators___retry_locked_wrap_retry_locked_obj_free_instance == NULL) {
+                    decorators___retry_locked_wrap_retry_locked_obj_free_instance = self;
+                    Py_CLEAR(self->___mypyc_env__);
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators___retry_locked_wrap_retry_locked_obj_dealloc)
+                decorators___retry_locked_wrap_retry_locked_obj_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
             }
-            PyObject *self = CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators___retry_locked_wrap_retry_locked_obj_vtable[2];
-        static bool
-        CPyDef_decorators___retry_locked_wrap_retry_locked_obj_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators___retry_locked_wrap_retry_locked_obj_vtable_scratch[] = {
-                (CPyVTableItem)CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____call__,
-                (CPyVTableItem)CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__,
+            
+            PyObject *CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators___retry_locked_wrap_retry_locked_obj(void);
+            
+            static PyObject *
+            decorators___retry_locked_wrap_retry_locked_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators___retry_locked_wrap_retry_locked_obj) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators___retry_locked_wrap_retry_locked_obj_vtable[2];
+            static bool
+            CPyDef_decorators___retry_locked_wrap_retry_locked_obj_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators___retry_locked_wrap_retry_locked_obj_vtable_scratch[] = {
+                    (CPyVTableItem)CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____call__,
+                    (CPyVTableItem)CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__,
+                };
+                memcpy(decorators___retry_locked_wrap_retry_locked_obj_vtable, decorators___retry_locked_wrap_retry_locked_obj_vtable_scratch, sizeof(decorators___retry_locked_wrap_retry_locked_obj_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators___retry_locked_wrap_retry_locked_obj_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            static PyObject *
+            decorators___retry_locked_wrap_retry_locked_obj_get___3_mypyc_env__(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, void *closure);
+            static int
+            decorators___retry_locked_wrap_retry_locked_obj_set___3_mypyc_env__(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, PyObject *value, void *closure);
+            
+            static PyGetSetDef decorators___retry_locked_wrap_retry_locked_obj_getseters[] = {
+                {"__mypyc_env__",
+                 (getter)decorators___retry_locked_wrap_retry_locked_obj_get___3_mypyc_env__, (setter)decorators___retry_locked_wrap_retry_locked_obj_set___3_mypyc_env__,
+                 NULL, NULL},
+                {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
+                {NULL}  /* Sentinel */
             };
-            memcpy(decorators___retry_locked_wrap_retry_locked_obj_vtable, decorators___retry_locked_wrap_retry_locked_obj_vtable_scratch, sizeof(decorators___retry_locked_wrap_retry_locked_obj_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators___retry_locked_wrap_retry_locked_obj_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        static PyObject *
-        decorators___retry_locked_wrap_retry_locked_obj_get___3_mypyc_env__(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, void *closure);
-        static int
-        decorators___retry_locked_wrap_retry_locked_obj_set___3_mypyc_env__(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, PyObject *value, void *closure);
-        
-        static PyGetSetDef decorators___retry_locked_wrap_retry_locked_obj_getseters[] = {
-            {"__mypyc_env__",
-             (getter)decorators___retry_locked_wrap_retry_locked_obj_get___3_mypyc_env__, (setter)decorators___retry_locked_wrap_retry_locked_obj_set___3_mypyc_env__,
-             NULL, NULL},
-            {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyMethodDef decorators___retry_locked_wrap_retry_locked_obj_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup, METH_O, NULL},
-            {"__call__",
-             (PyCFunction)CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____call__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__(*$args, **kwargs)\n--\n\n")},
-            {"__get__",
-             (PyCFunction)CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____get__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators___retry_locked_wrap_retry_locked_obj_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "retry_locked_wrap_retry_locked_obj",
-            .tp_new = decorators___retry_locked_wrap_retry_locked_obj_new,
-            .tp_dealloc = (destructor)decorators___retry_locked_wrap_retry_locked_obj_dealloc,
-            .tp_traverse = (traverseproc)decorators___retry_locked_wrap_retry_locked_obj_traverse,
-            .tp_clear = (inquiry)decorators___retry_locked_wrap_retry_locked_obj_clear,
-            .tp_getset = decorators___retry_locked_wrap_retry_locked_obj_getseters,
-            .tp_methods = decorators___retry_locked_wrap_retry_locked_obj_methods,
-            .tp_call = PyVectorcall_Call,
-            .tp_descr_get = CPyDunder___get__decorators___retry_locked_wrap_retry_locked_obj,
-            .tp_basicsize = sizeof(y____db___decorators___retry_locked_wrap_retry_locked_objObject),
-            .tp_vectorcall_offset = offsetof(y____db___decorators___retry_locked_wrap_retry_locked_objObject, vectorcall),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
-            .tp_doc = PyDoc_STR("retry_locked_wrap_retry_locked_obj()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators___retry_locked_wrap_retry_locked_obj_template = &CPyType_decorators___retry_locked_wrap_retry_locked_obj_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators___retry_locked_wrap_retry_locked_objObject *self;
-            if (decorators___retry_locked_wrap_retry_locked_obj_free_instance != NULL) {
-                self = decorators___retry_locked_wrap_retry_locked_obj_free_instance;
-                decorators___retry_locked_wrap_retry_locked_obj_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
+            
+            static PyMethodDef decorators___retry_locked_wrap_retry_locked_obj_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup, METH_O, NULL},
+                {"__call__",
+                 (PyCFunction)CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____call__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__(*$args, **kwargs)\n--\n\n")},
+                {"__get__",
+                 (PyCFunction)CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____get__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyTypeObject CPyType_decorators___retry_locked_wrap_retry_locked_obj_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "retry_locked_wrap_retry_locked_obj",
+                .tp_new = decorators___retry_locked_wrap_retry_locked_obj_new,
+                .tp_dealloc = (destructor)decorators___retry_locked_wrap_retry_locked_obj_dealloc,
+                .tp_traverse = (traverseproc)decorators___retry_locked_wrap_retry_locked_obj_traverse,
+                .tp_clear = (inquiry)decorators___retry_locked_wrap_retry_locked_obj_clear,
+                .tp_getset = decorators___retry_locked_wrap_retry_locked_obj_getseters,
+                .tp_methods = decorators___retry_locked_wrap_retry_locked_obj_methods,
+                .tp_call = PyVectorcall_Call,
+                .tp_descr_get = CPyDunder___get__decorators___retry_locked_wrap_retry_locked_obj,
+                .tp_basicsize = sizeof(y____db___decorators___retry_locked_wrap_retry_locked_objObject),
+                .tp_vectorcall_offset = offsetof(y____db___decorators___retry_locked_wrap_retry_locked_objObject, vectorcall),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
+                .tp_doc = PyDoc_STR("retry_locked_wrap_retry_locked_obj()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators___retry_locked_wrap_retry_locked_obj_template = &CPyType_decorators___retry_locked_wrap_retry_locked_obj_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators___retry_locked_wrap_retry_locked_objObject *self;
+                if (decorators___retry_locked_wrap_retry_locked_obj_free_instance != NULL) {
+                    self = decorators___retry_locked_wrap_retry_locked_obj_free_instance;
+                    decorators___retry_locked_wrap_retry_locked_obj_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators___retry_locked_wrap_retry_locked_objObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators___retry_locked_wrap_retry_locked_obj_vtable;
+                self->vectorcall = CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____call__;
                 return (PyObject *)self;
             }
-            self = (y____db___decorators___retry_locked_wrap_retry_locked_objObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators___retry_locked_wrap_retry_locked_obj_vtable;
-            self->vectorcall = CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____call__;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators___retry_locked_wrap_retry_locked_obj(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup((PyObject *)CPyType_decorators___retry_locked_wrap_retry_locked_obj);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static PyObject *
-        decorators___retry_locked_wrap_retry_locked_obj_get___3_mypyc_env__(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, void *closure)
-        {
-            if (unlikely(self->___mypyc_env__ == NULL)) {
-                PyErr_SetString(PyExc_AttributeError,
-                    "attribute '__mypyc_env__' of 'retry_locked_wrap_retry_locked_obj' undefined");
-                return NULL;
+            
+            PyObject *CPyDef_decorators___retry_locked_wrap_retry_locked_obj(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup((PyObject *)CPyType_decorators___retry_locked_wrap_retry_locked_obj);
+                if (self == NULL)
+                    return NULL;
+                return self;
             }
-            CPy_INCREF_NO_IMM(self->___mypyc_env__);
-            PyObject *retval = self->___mypyc_env__;
-            return retval;
-        }
-        
-        static int
-        decorators___retry_locked_wrap_retry_locked_obj_set___3_mypyc_env__(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, PyObject *value, void *closure)
-        {
-            if (value == NULL) {
-                PyErr_SetString(PyExc_AttributeError,
-                    "'retry_locked_wrap_retry_locked_obj' object attribute '__mypyc_env__' cannot be deleted");
-                return -1;
+            
+            static PyObject *
+            decorators___retry_locked_wrap_retry_locked_obj_get___3_mypyc_env__(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, void *closure)
+            {
+                if (unlikely(self->___mypyc_env__ == NULL)) {
+                    PyErr_SetString(PyExc_AttributeError,
+                        "attribute '__mypyc_env__' of 'retry_locked_wrap_retry_locked_obj' undefined");
+                    return NULL;
+                }
+                CPy_INCREF_NO_IMM(self->___mypyc_env__);
+                PyObject *retval = self->___mypyc_env__;
+                return retval;
             }
-            if (self->___mypyc_env__ != NULL) {
-                CPy_DECREF_NO_IMM(self->___mypyc_env__);
+            
+            static int
+            decorators___retry_locked_wrap_retry_locked_obj_set___3_mypyc_env__(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, PyObject *value, void *closure)
+            {
+                if (value == NULL) {
+                    PyErr_SetString(PyExc_AttributeError,
+                        "'retry_locked_wrap_retry_locked_obj' object attribute '__mypyc_env__' cannot be deleted");
+                    return -1;
+                }
+                if (self->___mypyc_env__ != NULL) {
+                    CPy_DECREF_NO_IMM(self->___mypyc_env__);
+                }
+                PyObject *tmp;
+                if (likely(Py_TYPE(value) == CPyType_decorators___retry_locked_env))
+                    tmp = value;
+                else {
+                    CPy_TypeError("y._db.decorators.retry_locked_env", value); 
+                    tmp = NULL;
+                }
+                if (!tmp)
+                    return -1;
+                CPy_INCREF_NO_IMM(tmp);
+                self->___mypyc_env__ = tmp;
+                return 0;
             }
-            PyObject *tmp;
-            if (likely(Py_TYPE(value) == CPyType_decorators___retry_locked_env))
-                tmp = value;
-            else {
-                CPy_TypeError("y._db.decorators.retry_locked_env", value); 
-                tmp = NULL;
+            
+            static PyObject *CPyDunder___get__decorators_____mypyc_lambda__0_obj(PyObject *self, PyObject *instance, PyObject *owner) {
+                instance = instance ? instance : Py_None;
+                return CPyDef_decorators_____mypyc_lambda__0_obj_____get__(self, instance, owner);
             }
-            if (!tmp)
-                return -1;
-            CPy_INCREF_NO_IMM(tmp);
-            self->___mypyc_env__ = tmp;
-            return 0;
-        }
-        
-        static PyObject *CPyDunder___get__decorators_____mypyc_lambda__0_obj(PyObject *self, PyObject *instance, PyObject *owner) {
-            instance = instance ? instance : Py_None;
-            return CPyDef_decorators_____mypyc_lambda__0_obj_____get__(self, instance, owner);
-        }
-        static int
-        decorators_____mypyc_lambda__0_obj_traverse(y____db___decorators_____mypyc_lambda__0_objObject *self, visitproc visit, void *arg)
-        {
-            int rv = 0;
-            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            if (rv != 0) return rv;
-            return rv;
-        }
-        
-        static int
-        decorators_____mypyc_lambda__0_obj_clear(y____db___decorators_____mypyc_lambda__0_objObject *self)
-        {
-            PyObject_ClearManagedDict((PyObject *)self);
-            return 0;
-        }
-        
-        static void
-        decorators_____mypyc_lambda__0_obj_dealloc(y____db___decorators_____mypyc_lambda__0_objObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators_____mypyc_lambda__0_obj_free_instance == NULL) {
-                decorators_____mypyc_lambda__0_obj_free_instance = self;
-                return;
+            static int
+            decorators_____mypyc_lambda__0_obj_traverse(y____db___decorators_____mypyc_lambda__0_objObject *self, visitproc visit, void *arg)
+            {
+                int rv = 0;
+                rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+                if (rv != 0) return rv;
+                return rv;
             }
-            CPy_TRASHCAN_BEGIN(self, decorators_____mypyc_lambda__0_obj_dealloc)
-            decorators_____mypyc_lambda__0_obj_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators_____mypyc_lambda__0_obj(void);
-        
-        static PyObject *
-        decorators_____mypyc_lambda__0_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators_____mypyc_lambda__0_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
+            
+            static int
+            decorators_____mypyc_lambda__0_obj_clear(y____db___decorators_____mypyc_lambda__0_objObject *self)
+            {
+                PyObject_ClearManagedDict((PyObject *)self);
+                return 0;
             }
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators_____mypyc_lambda__0_obj_vtable[2];
-        static bool
-        CPyDef_decorators_____mypyc_lambda__0_obj_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators_____mypyc_lambda__0_obj_vtable_scratch[] = {
-                (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__0_obj_____call__,
-                (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__0_obj_____get__,
+            
+            static void
+            decorators_____mypyc_lambda__0_obj_dealloc(y____db___decorators_____mypyc_lambda__0_objObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators_____mypyc_lambda__0_obj_free_instance == NULL) {
+                    decorators_____mypyc_lambda__0_obj_free_instance = self;
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators_____mypyc_lambda__0_obj_dealloc)
+                decorators_____mypyc_lambda__0_obj_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
+            }
+            
+            PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators_____mypyc_lambda__0_obj(void);
+            
+            static PyObject *
+            decorators_____mypyc_lambda__0_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators_____mypyc_lambda__0_obj) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators_____mypyc_lambda__0_obj_vtable[2];
+            static bool
+            CPyDef_decorators_____mypyc_lambda__0_obj_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators_____mypyc_lambda__0_obj_vtable_scratch[] = {
+                    (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__0_obj_____call__,
+                    (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__0_obj_____get__,
+                };
+                memcpy(decorators_____mypyc_lambda__0_obj_vtable, decorators_____mypyc_lambda__0_obj_vtable_scratch, sizeof(decorators_____mypyc_lambda__0_obj_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators_____mypyc_lambda__0_obj_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            
+            static PyGetSetDef decorators_____mypyc_lambda__0_obj_getseters[] = {
+                {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
+                {NULL}  /* Sentinel */
             };
-            memcpy(decorators_____mypyc_lambda__0_obj_vtable, decorators_____mypyc_lambda__0_obj_vtable_scratch, sizeof(decorators_____mypyc_lambda__0_obj_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators_____mypyc_lambda__0_obj_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        
-        static PyGetSetDef decorators_____mypyc_lambda__0_obj_getseters[] = {
-            {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyMethodDef decorators_____mypyc_lambda__0_obj_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup, METH_O, NULL},
-            {"__call__",
-             (PyCFunction)CPyPy_decorators_____mypyc_lambda__0_obj_____call__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__($func)\n--\n\n")},
-            {"__get__",
-             (PyCFunction)CPyPy_decorators_____mypyc_lambda__0_obj_____get__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators_____mypyc_lambda__0_obj_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "__mypyc_lambda__0_obj",
-            .tp_new = decorators_____mypyc_lambda__0_obj_new,
-            .tp_dealloc = (destructor)decorators_____mypyc_lambda__0_obj_dealloc,
-            .tp_traverse = (traverseproc)decorators_____mypyc_lambda__0_obj_traverse,
-            .tp_clear = (inquiry)decorators_____mypyc_lambda__0_obj_clear,
-            .tp_getset = decorators_____mypyc_lambda__0_obj_getseters,
-            .tp_methods = decorators_____mypyc_lambda__0_obj_methods,
-            .tp_call = PyVectorcall_Call,
-            .tp_descr_get = CPyDunder___get__decorators_____mypyc_lambda__0_obj,
-            .tp_basicsize = sizeof(y____db___decorators_____mypyc_lambda__0_objObject),
-            .tp_vectorcall_offset = offsetof(y____db___decorators_____mypyc_lambda__0_objObject, vectorcall),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
-            .tp_doc = PyDoc_STR("__mypyc_lambda__0_obj()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators_____mypyc_lambda__0_obj_template = &CPyType_decorators_____mypyc_lambda__0_obj_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators_____mypyc_lambda__0_objObject *self;
-            if (decorators_____mypyc_lambda__0_obj_free_instance != NULL) {
-                self = decorators_____mypyc_lambda__0_obj_free_instance;
-                decorators_____mypyc_lambda__0_obj_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
+            
+            static PyMethodDef decorators_____mypyc_lambda__0_obj_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup, METH_O, NULL},
+                {"__call__",
+                 (PyCFunction)CPyPy_decorators_____mypyc_lambda__0_obj_____call__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__($func)\n--\n\n")},
+                {"__get__",
+                 (PyCFunction)CPyPy_decorators_____mypyc_lambda__0_obj_____get__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyTypeObject CPyType_decorators_____mypyc_lambda__0_obj_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "__mypyc_lambda__0_obj",
+                .tp_new = decorators_____mypyc_lambda__0_obj_new,
+                .tp_dealloc = (destructor)decorators_____mypyc_lambda__0_obj_dealloc,
+                .tp_traverse = (traverseproc)decorators_____mypyc_lambda__0_obj_traverse,
+                .tp_clear = (inquiry)decorators_____mypyc_lambda__0_obj_clear,
+                .tp_getset = decorators_____mypyc_lambda__0_obj_getseters,
+                .tp_methods = decorators_____mypyc_lambda__0_obj_methods,
+                .tp_call = PyVectorcall_Call,
+                .tp_descr_get = CPyDunder___get__decorators_____mypyc_lambda__0_obj,
+                .tp_basicsize = sizeof(y____db___decorators_____mypyc_lambda__0_objObject),
+                .tp_vectorcall_offset = offsetof(y____db___decorators_____mypyc_lambda__0_objObject, vectorcall),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
+                .tp_doc = PyDoc_STR("__mypyc_lambda__0_obj()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators_____mypyc_lambda__0_obj_template = &CPyType_decorators_____mypyc_lambda__0_obj_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators_____mypyc_lambda__0_objObject *self;
+                if (decorators_____mypyc_lambda__0_obj_free_instance != NULL) {
+                    self = decorators_____mypyc_lambda__0_obj_free_instance;
+                    decorators_____mypyc_lambda__0_obj_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators_____mypyc_lambda__0_objObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators_____mypyc_lambda__0_obj_vtable;
+                self->vectorcall = CPyPy_decorators_____mypyc_lambda__0_obj_____call__;
                 return (PyObject *)self;
             }
-            self = (y____db___decorators_____mypyc_lambda__0_objObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators_____mypyc_lambda__0_obj_vtable;
-            self->vectorcall = CPyPy_decorators_____mypyc_lambda__0_obj_____call__;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc_lambda__0_obj(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup((PyObject *)CPyType_decorators_____mypyc_lambda__0_obj);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        
-        static PyObject *CPyDunder___get__decorators_____mypyc_lambda__1_obj(PyObject *self, PyObject *instance, PyObject *owner) {
-            instance = instance ? instance : Py_None;
-            return CPyDef_decorators_____mypyc_lambda__1_obj_____get__(self, instance, owner);
-        }
-        static int
-        decorators_____mypyc_lambda__1_obj_traverse(y____db___decorators_____mypyc_lambda__1_objObject *self, visitproc visit, void *arg)
-        {
-            int rv = 0;
-            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            if (rv != 0) return rv;
-            return rv;
-        }
-        
-        static int
-        decorators_____mypyc_lambda__1_obj_clear(y____db___decorators_____mypyc_lambda__1_objObject *self)
-        {
-            PyObject_ClearManagedDict((PyObject *)self);
-            return 0;
-        }
-        
-        static void
-        decorators_____mypyc_lambda__1_obj_dealloc(y____db___decorators_____mypyc_lambda__1_objObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators_____mypyc_lambda__1_obj_free_instance == NULL) {
-                decorators_____mypyc_lambda__1_obj_free_instance = self;
-                return;
+            
+            PyObject *CPyDef_decorators_____mypyc_lambda__0_obj(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup((PyObject *)CPyType_decorators_____mypyc_lambda__0_obj);
+                if (self == NULL)
+                    return NULL;
+                return self;
             }
-            CPy_TRASHCAN_BEGIN(self, decorators_____mypyc_lambda__1_obj_dealloc)
-            decorators_____mypyc_lambda__1_obj_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators_____mypyc_lambda__1_obj(void);
-        
-        static PyObject *
-        decorators_____mypyc_lambda__1_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators_____mypyc_lambda__1_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
+            
+            
+            static PyObject *CPyDunder___get__decorators_____mypyc_lambda__1_obj(PyObject *self, PyObject *instance, PyObject *owner) {
+                instance = instance ? instance : Py_None;
+                return CPyDef_decorators_____mypyc_lambda__1_obj_____get__(self, instance, owner);
             }
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators_____mypyc_lambda__1_obj_vtable[2];
-        static bool
-        CPyDef_decorators_____mypyc_lambda__1_obj_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators_____mypyc_lambda__1_obj_vtable_scratch[] = {
-                (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__1_obj_____call__,
-                (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__1_obj_____get__,
+            static int
+            decorators_____mypyc_lambda__1_obj_traverse(y____db___decorators_____mypyc_lambda__1_objObject *self, visitproc visit, void *arg)
+            {
+                int rv = 0;
+                rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+                if (rv != 0) return rv;
+                return rv;
+            }
+            
+            static int
+            decorators_____mypyc_lambda__1_obj_clear(y____db___decorators_____mypyc_lambda__1_objObject *self)
+            {
+                PyObject_ClearManagedDict((PyObject *)self);
+                return 0;
+            }
+            
+            static void
+            decorators_____mypyc_lambda__1_obj_dealloc(y____db___decorators_____mypyc_lambda__1_objObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators_____mypyc_lambda__1_obj_free_instance == NULL) {
+                    decorators_____mypyc_lambda__1_obj_free_instance = self;
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators_____mypyc_lambda__1_obj_dealloc)
+                decorators_____mypyc_lambda__1_obj_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
+            }
+            
+            PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators_____mypyc_lambda__1_obj(void);
+            
+            static PyObject *
+            decorators_____mypyc_lambda__1_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators_____mypyc_lambda__1_obj) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators_____mypyc_lambda__1_obj_vtable[2];
+            static bool
+            CPyDef_decorators_____mypyc_lambda__1_obj_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators_____mypyc_lambda__1_obj_vtable_scratch[] = {
+                    (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__1_obj_____call__,
+                    (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__1_obj_____get__,
+                };
+                memcpy(decorators_____mypyc_lambda__1_obj_vtable, decorators_____mypyc_lambda__1_obj_vtable_scratch, sizeof(decorators_____mypyc_lambda__1_obj_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators_____mypyc_lambda__1_obj_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            
+            static PyGetSetDef decorators_____mypyc_lambda__1_obj_getseters[] = {
+                {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
+                {NULL}  /* Sentinel */
             };
-            memcpy(decorators_____mypyc_lambda__1_obj_vtable, decorators_____mypyc_lambda__1_obj_vtable_scratch, sizeof(decorators_____mypyc_lambda__1_obj_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators_____mypyc_lambda__1_obj_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        
-        static PyGetSetDef decorators_____mypyc_lambda__1_obj_getseters[] = {
-            {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyMethodDef decorators_____mypyc_lambda__1_obj_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup, METH_O, NULL},
-            {"__call__",
-             (PyCFunction)CPyPy_decorators_____mypyc_lambda__1_obj_____call__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__($fn)\n--\n\n")},
-            {"__get__",
-             (PyCFunction)CPyPy_decorators_____mypyc_lambda__1_obj_____get__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators_____mypyc_lambda__1_obj_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "__mypyc_lambda__1_obj",
-            .tp_new = decorators_____mypyc_lambda__1_obj_new,
-            .tp_dealloc = (destructor)decorators_____mypyc_lambda__1_obj_dealloc,
-            .tp_traverse = (traverseproc)decorators_____mypyc_lambda__1_obj_traverse,
-            .tp_clear = (inquiry)decorators_____mypyc_lambda__1_obj_clear,
-            .tp_getset = decorators_____mypyc_lambda__1_obj_getseters,
-            .tp_methods = decorators_____mypyc_lambda__1_obj_methods,
-            .tp_call = PyVectorcall_Call,
-            .tp_descr_get = CPyDunder___get__decorators_____mypyc_lambda__1_obj,
-            .tp_basicsize = sizeof(y____db___decorators_____mypyc_lambda__1_objObject),
-            .tp_vectorcall_offset = offsetof(y____db___decorators_____mypyc_lambda__1_objObject, vectorcall),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
-            .tp_doc = PyDoc_STR("__mypyc_lambda__1_obj()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators_____mypyc_lambda__1_obj_template = &CPyType_decorators_____mypyc_lambda__1_obj_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators_____mypyc_lambda__1_objObject *self;
-            if (decorators_____mypyc_lambda__1_obj_free_instance != NULL) {
-                self = decorators_____mypyc_lambda__1_obj_free_instance;
-                decorators_____mypyc_lambda__1_obj_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
+            
+            static PyMethodDef decorators_____mypyc_lambda__1_obj_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup, METH_O, NULL},
+                {"__call__",
+                 (PyCFunction)CPyPy_decorators_____mypyc_lambda__1_obj_____call__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__($fn)\n--\n\n")},
+                {"__get__",
+                 (PyCFunction)CPyPy_decorators_____mypyc_lambda__1_obj_____get__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyTypeObject CPyType_decorators_____mypyc_lambda__1_obj_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "__mypyc_lambda__1_obj",
+                .tp_new = decorators_____mypyc_lambda__1_obj_new,
+                .tp_dealloc = (destructor)decorators_____mypyc_lambda__1_obj_dealloc,
+                .tp_traverse = (traverseproc)decorators_____mypyc_lambda__1_obj_traverse,
+                .tp_clear = (inquiry)decorators_____mypyc_lambda__1_obj_clear,
+                .tp_getset = decorators_____mypyc_lambda__1_obj_getseters,
+                .tp_methods = decorators_____mypyc_lambda__1_obj_methods,
+                .tp_call = PyVectorcall_Call,
+                .tp_descr_get = CPyDunder___get__decorators_____mypyc_lambda__1_obj,
+                .tp_basicsize = sizeof(y____db___decorators_____mypyc_lambda__1_objObject),
+                .tp_vectorcall_offset = offsetof(y____db___decorators_____mypyc_lambda__1_objObject, vectorcall),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
+                .tp_doc = PyDoc_STR("__mypyc_lambda__1_obj()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators_____mypyc_lambda__1_obj_template = &CPyType_decorators_____mypyc_lambda__1_obj_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators_____mypyc_lambda__1_objObject *self;
+                if (decorators_____mypyc_lambda__1_obj_free_instance != NULL) {
+                    self = decorators_____mypyc_lambda__1_obj_free_instance;
+                    decorators_____mypyc_lambda__1_obj_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators_____mypyc_lambda__1_objObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators_____mypyc_lambda__1_obj_vtable;
+                self->vectorcall = CPyPy_decorators_____mypyc_lambda__1_obj_____call__;
                 return (PyObject *)self;
             }
-            self = (y____db___decorators_____mypyc_lambda__1_objObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators_____mypyc_lambda__1_obj_vtable;
-            self->vectorcall = CPyPy_decorators_____mypyc_lambda__1_obj_____call__;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc_lambda__1_obj(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup((PyObject *)CPyType_decorators_____mypyc_lambda__1_obj);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        
-        static PyObject *CPyDunder___get__decorators_____mypyc_lambda__2_obj(PyObject *self, PyObject *instance, PyObject *owner) {
-            instance = instance ? instance : Py_None;
-            return CPyDef_decorators_____mypyc_lambda__2_obj_____get__(self, instance, owner);
-        }
-        static int
-        decorators_____mypyc_lambda__2_obj_traverse(y____db___decorators_____mypyc_lambda__2_objObject *self, visitproc visit, void *arg)
-        {
-            int rv = 0;
-            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            if (rv != 0) return rv;
-            return rv;
-        }
-        
-        static int
-        decorators_____mypyc_lambda__2_obj_clear(y____db___decorators_____mypyc_lambda__2_objObject *self)
-        {
-            PyObject_ClearManagedDict((PyObject *)self);
-            return 0;
-        }
-        
-        static void
-        decorators_____mypyc_lambda__2_obj_dealloc(y____db___decorators_____mypyc_lambda__2_objObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators_____mypyc_lambda__2_obj_free_instance == NULL) {
-                decorators_____mypyc_lambda__2_obj_free_instance = self;
-                return;
+            
+            PyObject *CPyDef_decorators_____mypyc_lambda__1_obj(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup((PyObject *)CPyType_decorators_____mypyc_lambda__1_obj);
+                if (self == NULL)
+                    return NULL;
+                return self;
             }
-            CPy_TRASHCAN_BEGIN(self, decorators_____mypyc_lambda__2_obj_dealloc)
-            decorators_____mypyc_lambda__2_obj_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators_____mypyc_lambda__2_obj(void);
-        
-        static PyObject *
-        decorators_____mypyc_lambda__2_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators_____mypyc_lambda__2_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
+            
+            
+            static PyObject *CPyDunder___get__decorators_____mypyc_lambda__2_obj(PyObject *self, PyObject *instance, PyObject *owner) {
+                instance = instance ? instance : Py_None;
+                return CPyDef_decorators_____mypyc_lambda__2_obj_____get__(self, instance, owner);
             }
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators_____mypyc_lambda__2_obj_vtable[2];
-        static bool
-        CPyDef_decorators_____mypyc_lambda__2_obj_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators_____mypyc_lambda__2_obj_vtable_scratch[] = {
-                (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__2_obj_____call__,
-                (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__2_obj_____get__,
+            static int
+            decorators_____mypyc_lambda__2_obj_traverse(y____db___decorators_____mypyc_lambda__2_objObject *self, visitproc visit, void *arg)
+            {
+                int rv = 0;
+                rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+                if (rv != 0) return rv;
+                return rv;
+            }
+            
+            static int
+            decorators_____mypyc_lambda__2_obj_clear(y____db___decorators_____mypyc_lambda__2_objObject *self)
+            {
+                PyObject_ClearManagedDict((PyObject *)self);
+                return 0;
+            }
+            
+            static void
+            decorators_____mypyc_lambda__2_obj_dealloc(y____db___decorators_____mypyc_lambda__2_objObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators_____mypyc_lambda__2_obj_free_instance == NULL) {
+                    decorators_____mypyc_lambda__2_obj_free_instance = self;
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators_____mypyc_lambda__2_obj_dealloc)
+                decorators_____mypyc_lambda__2_obj_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
+            }
+            
+            PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators_____mypyc_lambda__2_obj(void);
+            
+            static PyObject *
+            decorators_____mypyc_lambda__2_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators_____mypyc_lambda__2_obj) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators_____mypyc_lambda__2_obj_vtable[2];
+            static bool
+            CPyDef_decorators_____mypyc_lambda__2_obj_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators_____mypyc_lambda__2_obj_vtable_scratch[] = {
+                    (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__2_obj_____call__,
+                    (CPyVTableItem)CPyDef_decorators_____mypyc_lambda__2_obj_____get__,
+                };
+                memcpy(decorators_____mypyc_lambda__2_obj_vtable, decorators_____mypyc_lambda__2_obj_vtable_scratch, sizeof(decorators_____mypyc_lambda__2_obj_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators_____mypyc_lambda__2_obj_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            
+            static PyGetSetDef decorators_____mypyc_lambda__2_obj_getseters[] = {
+                {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
+                {NULL}  /* Sentinel */
             };
-            memcpy(decorators_____mypyc_lambda__2_obj_vtable, decorators_____mypyc_lambda__2_obj_vtable_scratch, sizeof(decorators_____mypyc_lambda__2_obj_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators_____mypyc_lambda__2_obj_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        
-        static PyGetSetDef decorators_____mypyc_lambda__2_obj_getseters[] = {
-            {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyMethodDef decorators_____mypyc_lambda__2_obj_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup, METH_O, NULL},
-            {"__call__",
-             (PyCFunction)CPyPy_decorators_____mypyc_lambda__2_obj_____call__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__($func)\n--\n\n")},
-            {"__get__",
-             (PyCFunction)CPyPy_decorators_____mypyc_lambda__2_obj_____get__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators_____mypyc_lambda__2_obj_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "__mypyc_lambda__2_obj",
-            .tp_new = decorators_____mypyc_lambda__2_obj_new,
-            .tp_dealloc = (destructor)decorators_____mypyc_lambda__2_obj_dealloc,
-            .tp_traverse = (traverseproc)decorators_____mypyc_lambda__2_obj_traverse,
-            .tp_clear = (inquiry)decorators_____mypyc_lambda__2_obj_clear,
-            .tp_getset = decorators_____mypyc_lambda__2_obj_getseters,
-            .tp_methods = decorators_____mypyc_lambda__2_obj_methods,
-            .tp_call = PyVectorcall_Call,
-            .tp_descr_get = CPyDunder___get__decorators_____mypyc_lambda__2_obj,
-            .tp_basicsize = sizeof(y____db___decorators_____mypyc_lambda__2_objObject),
-            .tp_vectorcall_offset = offsetof(y____db___decorators_____mypyc_lambda__2_objObject, vectorcall),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
-            .tp_doc = PyDoc_STR("__mypyc_lambda__2_obj()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators_____mypyc_lambda__2_obj_template = &CPyType_decorators_____mypyc_lambda__2_obj_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators_____mypyc_lambda__2_objObject *self;
-            if (decorators_____mypyc_lambda__2_obj_free_instance != NULL) {
-                self = decorators_____mypyc_lambda__2_obj_free_instance;
-                decorators_____mypyc_lambda__2_obj_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
+            
+            static PyMethodDef decorators_____mypyc_lambda__2_obj_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup, METH_O, NULL},
+                {"__call__",
+                 (PyCFunction)CPyPy_decorators_____mypyc_lambda__2_obj_____call__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__($func)\n--\n\n")},
+                {"__get__",
+                 (PyCFunction)CPyPy_decorators_____mypyc_lambda__2_obj_____get__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyTypeObject CPyType_decorators_____mypyc_lambda__2_obj_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "__mypyc_lambda__2_obj",
+                .tp_new = decorators_____mypyc_lambda__2_obj_new,
+                .tp_dealloc = (destructor)decorators_____mypyc_lambda__2_obj_dealloc,
+                .tp_traverse = (traverseproc)decorators_____mypyc_lambda__2_obj_traverse,
+                .tp_clear = (inquiry)decorators_____mypyc_lambda__2_obj_clear,
+                .tp_getset = decorators_____mypyc_lambda__2_obj_getseters,
+                .tp_methods = decorators_____mypyc_lambda__2_obj_methods,
+                .tp_call = PyVectorcall_Call,
+                .tp_descr_get = CPyDunder___get__decorators_____mypyc_lambda__2_obj,
+                .tp_basicsize = sizeof(y____db___decorators_____mypyc_lambda__2_objObject),
+                .tp_vectorcall_offset = offsetof(y____db___decorators_____mypyc_lambda__2_objObject, vectorcall),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
+                .tp_doc = PyDoc_STR("__mypyc_lambda__2_obj()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators_____mypyc_lambda__2_obj_template = &CPyType_decorators_____mypyc_lambda__2_obj_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators_____mypyc_lambda__2_objObject *self;
+                if (decorators_____mypyc_lambda__2_obj_free_instance != NULL) {
+                    self = decorators_____mypyc_lambda__2_obj_free_instance;
+                    decorators_____mypyc_lambda__2_obj_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators_____mypyc_lambda__2_objObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators_____mypyc_lambda__2_obj_vtable;
+                self->vectorcall = CPyPy_decorators_____mypyc_lambda__2_obj_____call__;
                 return (PyObject *)self;
             }
-            self = (y____db___decorators_____mypyc_lambda__2_objObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators_____mypyc_lambda__2_obj_vtable;
-            self->vectorcall = CPyPy_decorators_____mypyc_lambda__2_obj_____call__;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc_lambda__2_obj(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup((PyObject *)CPyType_decorators_____mypyc_lambda__2_obj);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        
-        static int
-        decorators___log_result_count_env_traverse(y____db___decorators___log_result_count_envObject *self, visitproc visit, void *arg)
-        {
-            Py_VISIT(self->___mypyc_self__);
-            Py_VISIT(self->_name);
-            Py_VISIT(self->_arg_names);
-            Py_VISIT(self->_result_count_deco);
-            int rv = 0;
-            return rv;
-        }
-        
-        static int
-        decorators___log_result_count_env_clear(y____db___decorators___log_result_count_envObject *self)
-        {
-            Py_CLEAR(self->___mypyc_self__);
-            Py_CLEAR(self->_name);
-            Py_CLEAR(self->_arg_names);
-            Py_CLEAR(self->_result_count_deco);
-            return 0;
-        }
-        
-        static void
-        decorators___log_result_count_env_dealloc(y____db___decorators___log_result_count_envObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators___log_result_count_env_free_instance == NULL) {
-                decorators___log_result_count_env_free_instance = self;
+            
+            PyObject *CPyDef_decorators_____mypyc_lambda__2_obj(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup((PyObject *)CPyType_decorators_____mypyc_lambda__2_obj);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            
+            static int
+            decorators___log_result_count_env_traverse(y____db___decorators___log_result_count_envObject *self, visitproc visit, void *arg)
+            {
+                Py_VISIT(self->___mypyc_self__);
+                Py_VISIT(self->_name);
+                Py_VISIT(self->_arg_names);
+                Py_VISIT(self->_result_count_deco);
+                int rv = 0;
+                return rv;
+            }
+            
+            static int
+            decorators___log_result_count_env_clear(y____db___decorators___log_result_count_envObject *self)
+            {
                 Py_CLEAR(self->___mypyc_self__);
                 Py_CLEAR(self->_name);
                 Py_CLEAR(self->_arg_names);
                 Py_CLEAR(self->_result_count_deco);
-                return;
+                return 0;
             }
-            CPy_TRASHCAN_BEGIN(self, decorators___log_result_count_env_dealloc)
-            decorators___log_result_count_env_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc__log_result_count_env_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___log_result_count_env(void);
-        
-        static PyObject *
-        decorators___log_result_count_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___log_result_count_env) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
+            
+            static void
+            decorators___log_result_count_env_dealloc(y____db___decorators___log_result_count_envObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators___log_result_count_env_free_instance == NULL) {
+                    decorators___log_result_count_env_free_instance = self;
+                    Py_CLEAR(self->___mypyc_self__);
+                    Py_CLEAR(self->_name);
+                    Py_CLEAR(self->_arg_names);
+                    Py_CLEAR(self->_result_count_deco);
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators___log_result_count_env_dealloc)
+                decorators___log_result_count_env_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
             }
-            PyObject *self = CPyDef_decorators_____mypyc__log_result_count_env_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators___log_result_count_env_vtable[1];
-        static bool
-        CPyDef_decorators___log_result_count_env_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators___log_result_count_env_vtable_scratch[] = {
-                NULL
+            
+            PyObject *CPyDef_decorators_____mypyc__log_result_count_env_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators___log_result_count_env(void);
+            
+            static PyObject *
+            decorators___log_result_count_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators___log_result_count_env) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc__log_result_count_env_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators___log_result_count_env_vtable[1];
+            static bool
+            CPyDef_decorators___log_result_count_env_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators___log_result_count_env_vtable_scratch[] = {
+                    NULL
+                };
+                memcpy(decorators___log_result_count_env_vtable, decorators___log_result_count_env_vtable_scratch, sizeof(decorators___log_result_count_env_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators___log_result_count_env_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            static PyMethodDef decorators___log_result_count_env_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__log_result_count_env_setup, METH_O, NULL},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
             };
-            memcpy(decorators___log_result_count_env_vtable, decorators___log_result_count_env_vtable_scratch, sizeof(decorators___log_result_count_env_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators___log_result_count_env_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        static PyMethodDef decorators___log_result_count_env_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__log_result_count_env_setup, METH_O, NULL},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators___log_result_count_env_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "log_result_count_env",
-            .tp_new = decorators___log_result_count_env_new,
-            .tp_dealloc = (destructor)decorators___log_result_count_env_dealloc,
-            .tp_traverse = (traverseproc)decorators___log_result_count_env_traverse,
-            .tp_clear = (inquiry)decorators___log_result_count_env_clear,
-            .tp_methods = decorators___log_result_count_env_methods,
-            .tp_basicsize = sizeof(y____db___decorators___log_result_count_envObject),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-            .tp_doc = PyDoc_STR("log_result_count_env()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators___log_result_count_env_template = &CPyType_decorators___log_result_count_env_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc__log_result_count_env_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators___log_result_count_envObject *self;
-            if (decorators___log_result_count_env_free_instance != NULL) {
-                self = decorators___log_result_count_env_free_instance;
-                decorators___log_result_count_env_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
+            
+            static PyTypeObject CPyType_decorators___log_result_count_env_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "log_result_count_env",
+                .tp_new = decorators___log_result_count_env_new,
+                .tp_dealloc = (destructor)decorators___log_result_count_env_dealloc,
+                .tp_traverse = (traverseproc)decorators___log_result_count_env_traverse,
+                .tp_clear = (inquiry)decorators___log_result_count_env_clear,
+                .tp_methods = decorators___log_result_count_env_methods,
+                .tp_basicsize = sizeof(y____db___decorators___log_result_count_envObject),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+                .tp_doc = PyDoc_STR("log_result_count_env()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators___log_result_count_env_template = &CPyType_decorators___log_result_count_env_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc__log_result_count_env_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators___log_result_count_envObject *self;
+                if (decorators___log_result_count_env_free_instance != NULL) {
+                    self = decorators___log_result_count_env_free_instance;
+                    decorators___log_result_count_env_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators___log_result_count_envObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators___log_result_count_env_vtable;
                 return (PyObject *)self;
             }
-            self = (y____db___decorators___log_result_count_envObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators___log_result_count_env_vtable;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators___log_result_count_env(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc__log_result_count_env_setup((PyObject *)CPyType_decorators___log_result_count_env);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        
-        static int
-        decorators___result_count_deco_log_result_count_env_traverse(y____db___decorators___result_count_deco_log_result_count_envObject *self, visitproc visit, void *arg)
-        {
-            Py_VISIT(self->___mypyc_self__);
-            Py_VISIT(self->___mypyc_env__);
-            Py_VISIT(self->_fn);
-            Py_VISIT(self->_result_count_wrap);
-            Py_VISIT(self->_name);
-            Py_VISIT(self->_arg_names);
-            Py_VISIT(self->_result_count_deco);
-            int rv = 0;
-            return rv;
-        }
-        
-        static int
-        decorators___result_count_deco_log_result_count_env_clear(y____db___decorators___result_count_deco_log_result_count_envObject *self)
-        {
-            Py_CLEAR(self->___mypyc_self__);
-            Py_CLEAR(self->___mypyc_env__);
-            Py_CLEAR(self->_fn);
-            Py_CLEAR(self->_result_count_wrap);
-            Py_CLEAR(self->_name);
-            Py_CLEAR(self->_arg_names);
-            Py_CLEAR(self->_result_count_deco);
-            return 0;
-        }
-        
-        static void
-        decorators___result_count_deco_log_result_count_env_dealloc(y____db___decorators___result_count_deco_log_result_count_envObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators___result_count_deco_log_result_count_env_free_instance == NULL) {
-                decorators___result_count_deco_log_result_count_env_free_instance = self;
+            
+            PyObject *CPyDef_decorators___log_result_count_env(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc__log_result_count_env_setup((PyObject *)CPyType_decorators___log_result_count_env);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            
+            static int
+            decorators___result_count_deco_log_result_count_env_traverse(y____db___decorators___result_count_deco_log_result_count_envObject *self, visitproc visit, void *arg)
+            {
+                Py_VISIT(self->___mypyc_self__);
+                Py_VISIT(self->___mypyc_env__);
+                Py_VISIT(self->_fn);
+                Py_VISIT(self->_result_count_wrap);
+                Py_VISIT(self->_name);
+                Py_VISIT(self->_arg_names);
+                Py_VISIT(self->_result_count_deco);
+                int rv = 0;
+                return rv;
+            }
+            
+            static int
+            decorators___result_count_deco_log_result_count_env_clear(y____db___decorators___result_count_deco_log_result_count_envObject *self)
+            {
                 Py_CLEAR(self->___mypyc_self__);
                 Py_CLEAR(self->___mypyc_env__);
                 Py_CLEAR(self->_fn);
@@ -13505,624 +14495,640 @@ CPyL112: ;
                 Py_CLEAR(self->_name);
                 Py_CLEAR(self->_arg_names);
                 Py_CLEAR(self->_result_count_deco);
-                return;
-            }
-            CPy_TRASHCAN_BEGIN(self, decorators___result_count_deco_log_result_count_env_dealloc)
-            decorators___result_count_deco_log_result_count_env_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___result_count_deco_log_result_count_env(void);
-        
-        static PyObject *
-        decorators___result_count_deco_log_result_count_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___result_count_deco_log_result_count_env) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators___result_count_deco_log_result_count_env_vtable[1];
-        static bool
-        CPyDef_decorators___result_count_deco_log_result_count_env_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators___result_count_deco_log_result_count_env_vtable_scratch[] = {
-                NULL
-            };
-            memcpy(decorators___result_count_deco_log_result_count_env_vtable, decorators___result_count_deco_log_result_count_env_vtable_scratch, sizeof(decorators___result_count_deco_log_result_count_env_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators___result_count_deco_log_result_count_env_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        static PyMethodDef decorators___result_count_deco_log_result_count_env_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup, METH_O, NULL},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators___result_count_deco_log_result_count_env_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "result_count_deco_log_result_count_env",
-            .tp_new = decorators___result_count_deco_log_result_count_env_new,
-            .tp_dealloc = (destructor)decorators___result_count_deco_log_result_count_env_dealloc,
-            .tp_traverse = (traverseproc)decorators___result_count_deco_log_result_count_env_traverse,
-            .tp_clear = (inquiry)decorators___result_count_deco_log_result_count_env_clear,
-            .tp_methods = decorators___result_count_deco_log_result_count_env_methods,
-            .tp_basicsize = sizeof(y____db___decorators___result_count_deco_log_result_count_envObject),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
-            .tp_doc = PyDoc_STR("result_count_deco_log_result_count_env()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators___result_count_deco_log_result_count_env_template = &CPyType_decorators___result_count_deco_log_result_count_env_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators___result_count_deco_log_result_count_envObject *self;
-            if (decorators___result_count_deco_log_result_count_env_free_instance != NULL) {
-                self = decorators___result_count_deco_log_result_count_env_free_instance;
-                decorators___result_count_deco_log_result_count_env_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
-                return (PyObject *)self;
-            }
-            self = (y____db___decorators___result_count_deco_log_result_count_envObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators___result_count_deco_log_result_count_env_vtable;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators___result_count_deco_log_result_count_env(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup((PyObject *)CPyType_decorators___result_count_deco_log_result_count_env);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        
-        static PyObject *CPyDunder___get__decorators___result_count_deco_log_result_count_obj(PyObject *self, PyObject *instance, PyObject *owner) {
-            instance = instance ? instance : Py_None;
-            return CPyDef_decorators___result_count_deco_log_result_count_obj_____get__(self, instance, owner);
-        }
-        static int
-        decorators___result_count_deco_log_result_count_obj_traverse(y____db___decorators___result_count_deco_log_result_count_objObject *self, visitproc visit, void *arg)
-        {
-            Py_VISIT(self->___mypyc_env__);
-            int rv = 0;
-            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            if (rv != 0) return rv;
-            return rv;
-        }
-        
-        static int
-        decorators___result_count_deco_log_result_count_obj_clear(y____db___decorators___result_count_deco_log_result_count_objObject *self)
-        {
-            Py_CLEAR(self->___mypyc_env__);
-            PyObject_ClearManagedDict((PyObject *)self);
-            return 0;
-        }
-        
-        static void
-        decorators___result_count_deco_log_result_count_obj_dealloc(y____db___decorators___result_count_deco_log_result_count_objObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators___result_count_deco_log_result_count_obj_free_instance == NULL) {
-                decorators___result_count_deco_log_result_count_obj_free_instance = self;
-                Py_CLEAR(self->___mypyc_env__);
-                return;
-            }
-            CPy_TRASHCAN_BEGIN(self, decorators___result_count_deco_log_result_count_obj_dealloc)
-            decorators___result_count_deco_log_result_count_obj_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___result_count_deco_log_result_count_obj(void);
-        
-        static PyObject *
-        decorators___result_count_deco_log_result_count_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___result_count_deco_log_result_count_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators___result_count_deco_log_result_count_obj_vtable[2];
-        static bool
-        CPyDef_decorators___result_count_deco_log_result_count_obj_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators___result_count_deco_log_result_count_obj_vtable_scratch[] = {
-                (CPyVTableItem)CPyDef_decorators___result_count_deco_log_result_count_obj_____call__,
-                (CPyVTableItem)CPyDef_decorators___result_count_deco_log_result_count_obj_____get__,
-            };
-            memcpy(decorators___result_count_deco_log_result_count_obj_vtable, decorators___result_count_deco_log_result_count_obj_vtable_scratch, sizeof(decorators___result_count_deco_log_result_count_obj_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators___result_count_deco_log_result_count_obj_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        static PyObject *
-        decorators___result_count_deco_log_result_count_obj_get___3_mypyc_env__(y____db___decorators___result_count_deco_log_result_count_objObject *self, void *closure);
-        static int
-        decorators___result_count_deco_log_result_count_obj_set___3_mypyc_env__(y____db___decorators___result_count_deco_log_result_count_objObject *self, PyObject *value, void *closure);
-        
-        static PyGetSetDef decorators___result_count_deco_log_result_count_obj_getseters[] = {
-            {"__mypyc_env__",
-             (getter)decorators___result_count_deco_log_result_count_obj_get___3_mypyc_env__, (setter)decorators___result_count_deco_log_result_count_obj_set___3_mypyc_env__,
-             NULL, NULL},
-            {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyMethodDef decorators___result_count_deco_log_result_count_obj_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup, METH_O, NULL},
-            {"__call__",
-             (PyCFunction)CPyPy_decorators___result_count_deco_log_result_count_obj_____call__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__($fn)\n--\n\n")},
-            {"__get__",
-             (PyCFunction)CPyPy_decorators___result_count_deco_log_result_count_obj_____get__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators___result_count_deco_log_result_count_obj_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "result_count_deco_log_result_count_obj",
-            .tp_new = decorators___result_count_deco_log_result_count_obj_new,
-            .tp_dealloc = (destructor)decorators___result_count_deco_log_result_count_obj_dealloc,
-            .tp_traverse = (traverseproc)decorators___result_count_deco_log_result_count_obj_traverse,
-            .tp_clear = (inquiry)decorators___result_count_deco_log_result_count_obj_clear,
-            .tp_getset = decorators___result_count_deco_log_result_count_obj_getseters,
-            .tp_methods = decorators___result_count_deco_log_result_count_obj_methods,
-            .tp_call = PyVectorcall_Call,
-            .tp_descr_get = CPyDunder___get__decorators___result_count_deco_log_result_count_obj,
-            .tp_basicsize = sizeof(y____db___decorators___result_count_deco_log_result_count_objObject),
-            .tp_vectorcall_offset = offsetof(y____db___decorators___result_count_deco_log_result_count_objObject, vectorcall),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
-            .tp_doc = PyDoc_STR("result_count_deco_log_result_count_obj()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators___result_count_deco_log_result_count_obj_template = &CPyType_decorators___result_count_deco_log_result_count_obj_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators___result_count_deco_log_result_count_objObject *self;
-            if (decorators___result_count_deco_log_result_count_obj_free_instance != NULL) {
-                self = decorators___result_count_deco_log_result_count_obj_free_instance;
-                decorators___result_count_deco_log_result_count_obj_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
-                return (PyObject *)self;
-            }
-            self = (y____db___decorators___result_count_deco_log_result_count_objObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators___result_count_deco_log_result_count_obj_vtable;
-            self->vectorcall = CPyPy_decorators___result_count_deco_log_result_count_obj_____call__;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators___result_count_deco_log_result_count_obj(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup((PyObject *)CPyType_decorators___result_count_deco_log_result_count_obj);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static PyObject *
-        decorators___result_count_deco_log_result_count_obj_get___3_mypyc_env__(y____db___decorators___result_count_deco_log_result_count_objObject *self, void *closure)
-        {
-            if (unlikely(self->___mypyc_env__ == NULL)) {
-                PyErr_SetString(PyExc_AttributeError,
-                    "attribute '__mypyc_env__' of 'result_count_deco_log_result_count_obj' undefined");
-                return NULL;
-            }
-            CPy_INCREF_NO_IMM(self->___mypyc_env__);
-            PyObject *retval = self->___mypyc_env__;
-            return retval;
-        }
-        
-        static int
-        decorators___result_count_deco_log_result_count_obj_set___3_mypyc_env__(y____db___decorators___result_count_deco_log_result_count_objObject *self, PyObject *value, void *closure)
-        {
-            if (value == NULL) {
-                PyErr_SetString(PyExc_AttributeError,
-                    "'result_count_deco_log_result_count_obj' object attribute '__mypyc_env__' cannot be deleted");
-                return -1;
-            }
-            if (self->___mypyc_env__ != NULL) {
-                CPy_DECREF_NO_IMM(self->___mypyc_env__);
-            }
-            PyObject *tmp;
-            if (likely(Py_TYPE(value) == CPyType_decorators___log_result_count_env))
-                tmp = value;
-            else {
-                CPy_TypeError("y._db.decorators.log_result_count_env", value); 
-                tmp = NULL;
-            }
-            if (!tmp)
-                return -1;
-            CPy_INCREF_NO_IMM(tmp);
-            self->___mypyc_env__ = tmp;
-            return 0;
-        }
-        
-        static PyObject *CPyDunder___get__decorators___result_count_wrap_log_result_count_result_count_deco_obj(PyObject *self, PyObject *instance, PyObject *owner) {
-            instance = instance ? instance : Py_None;
-            return CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__(self, instance, owner);
-        }
-        static int
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_traverse(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, visitproc visit, void *arg)
-        {
-            Py_VISIT(self->___mypyc_env__);
-            int rv = 0;
-            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            if (rv != 0) return rv;
-            return rv;
-        }
-        
-        static int
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_clear(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self)
-        {
-            Py_CLEAR(self->___mypyc_env__);
-            PyObject_ClearManagedDict((PyObject *)self);
-            return 0;
-        }
-        
-        static void
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_dealloc(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self)
-        {
-            PyObject_GC_UnTrack(self);
-            if (decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance == NULL) {
-                decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance = self;
-                Py_CLEAR(self->___mypyc_env__);
-                return;
-            }
-            CPy_TRASHCAN_BEGIN(self, decorators___result_count_wrap_log_result_count_result_count_deco_obj_dealloc)
-            decorators___result_count_wrap_log_result_count_result_count_deco_obj_clear(self);
-            Py_TYPE(self)->tp_free((PyObject *)self);
-            CPy_TRASHCAN_END(self)
-            done: ;
-        }
-        
-        PyObject *CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj(void);
-        
-        static PyObject *
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static CPyVTableItem decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable[2];
-        static bool
-        CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_trait_vtable_setup(void)
-        {
-            CPyVTableItem decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable_scratch[] = {
-                (CPyVTableItem)CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__,
-                (CPyVTableItem)CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__,
-            };
-            memcpy(decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable, decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable_scratch, sizeof(decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable));
-            return 1;
-        }
-        
-        static bool
-        CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_coroutine_setup(PyObject *type)
-        {
-            return 1;
-        }
-        
-        static PyObject *
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_get___3_mypyc_env__(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, void *closure);
-        static int
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_set___3_mypyc_env__(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, PyObject *value, void *closure);
-        
-        static PyGetSetDef decorators___result_count_wrap_log_result_count_result_count_deco_obj_getseters[] = {
-            {"__mypyc_env__",
-             (getter)decorators___result_count_wrap_log_result_count_result_count_deco_obj_get___3_mypyc_env__, (setter)decorators___result_count_wrap_log_result_count_result_count_deco_obj_set___3_mypyc_env__,
-             NULL, NULL},
-            {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyMethodDef decorators___result_count_wrap_log_result_count_result_count_deco_obj_methods[] = {
-            {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup, METH_O, NULL},
-            {"__call__",
-             (PyCFunction)CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__(*$args, **kwargs)\n--\n\n")},
-            {"__get__",
-             (PyCFunction)CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__,
-             METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
-            {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
-            {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
-            {NULL}  /* Sentinel */
-        };
-        
-        static PyTypeObject CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj_template_ = {
-            PyVarObject_HEAD_INIT(NULL, 0)
-            .tp_name = "result_count_wrap_log_result_count_result_count_deco_obj",
-            .tp_new = decorators___result_count_wrap_log_result_count_result_count_deco_obj_new,
-            .tp_dealloc = (destructor)decorators___result_count_wrap_log_result_count_result_count_deco_obj_dealloc,
-            .tp_traverse = (traverseproc)decorators___result_count_wrap_log_result_count_result_count_deco_obj_traverse,
-            .tp_clear = (inquiry)decorators___result_count_wrap_log_result_count_result_count_deco_obj_clear,
-            .tp_getset = decorators___result_count_wrap_log_result_count_result_count_deco_obj_getseters,
-            .tp_methods = decorators___result_count_wrap_log_result_count_result_count_deco_obj_methods,
-            .tp_call = PyVectorcall_Call,
-            .tp_descr_get = CPyDunder___get__decorators___result_count_wrap_log_result_count_result_count_deco_obj,
-            .tp_basicsize = sizeof(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject),
-            .tp_vectorcall_offset = offsetof(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject, vectorcall),
-            .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
-            .tp_doc = PyDoc_STR("result_count_wrap_log_result_count_result_count_deco_obj()\n--\n\n"),
-        };
-        static PyTypeObject *CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj_template = &CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj_template_;
-        
-        PyObject *CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup(PyObject *cpy_r_type)
-        {
-            PyTypeObject *type = (PyTypeObject*)cpy_r_type;
-            y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self;
-            if (decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance != NULL) {
-                self = decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance;
-                decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance = NULL;
-                Py_SET_REFCNT(self, 1);
-                PyObject_GC_Track(self);
-                return (PyObject *)self;
-            }
-            self = (y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *)type->tp_alloc(type, 0);
-            if (self == NULL)
-                return NULL;
-            self->vtable = decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable;
-            self->vectorcall = CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__;
-            return (PyObject *)self;
-        }
-        
-        PyObject *CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj(void)
-        {
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup((PyObject *)CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
-        static PyObject *
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_get___3_mypyc_env__(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, void *closure)
-        {
-            if (unlikely(self->___mypyc_env__ == NULL)) {
-                PyErr_SetString(PyExc_AttributeError,
-                    "attribute '__mypyc_env__' of 'result_count_wrap_log_result_count_result_count_deco_obj' undefined");
-                return NULL;
-            }
-            CPy_INCREF_NO_IMM(self->___mypyc_env__);
-            PyObject *retval = self->___mypyc_env__;
-            return retval;
-        }
-        
-        static int
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_set___3_mypyc_env__(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, PyObject *value, void *closure)
-        {
-            if (value == NULL) {
-                PyErr_SetString(PyExc_AttributeError,
-                    "'result_count_wrap_log_result_count_result_count_deco_obj' object attribute '__mypyc_env__' cannot be deleted");
-                return -1;
-            }
-            if (self->___mypyc_env__ != NULL) {
-                CPy_DECREF_NO_IMM(self->___mypyc_env__);
-            }
-            PyObject *tmp;
-            if (likely(Py_TYPE(value) == CPyType_decorators___result_count_deco_log_result_count_env))
-                tmp = value;
-            else {
-                CPy_TypeError("y._db.decorators.result_count_deco_log_result_count_env", value); 
-                tmp = NULL;
-            }
-            if (!tmp)
-                return -1;
-            CPy_INCREF_NO_IMM(tmp);
-            self->___mypyc_env__ = tmp;
-            return 0;
-        }
-        static PyMethodDef decoratorsmodule_methods[] = {
-            {"retry_locked", (PyCFunction)CPyPy_decorators___retry_locked, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("retry_locked(callable)\n--\n\n") /* docstring */},
-            {"log_result_count", (PyCFunction)CPyPy_decorators___log_result_count, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL) /* docstring */},
-            {NULL, NULL, 0, NULL}
-        };
-        
-        int CPyExec_y____db___decorators(PyObject *module)
-        {
-            intern_strings();
-            PyObject* modname = NULL;
-            modname = PyObject_GetAttrString((PyObject *)CPyModule_y____db___decorators__internal, "__name__");
-            CPyStatic_decorators___globals = PyModule_GetDict(CPyModule_y____db___decorators__internal);
-            if (unlikely(CPyStatic_decorators___globals == NULL))
-                goto fail;
-            CPyType_decorators___retry_locked_env = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___retry_locked_env_template, NULL, modname);
-            if (unlikely(!CPyType_decorators___retry_locked_env))
-                goto fail;
-            CPyDef_decorators___retry_locked_env_trait_vtable_setup();
-            CPyType_decorators___retry_locked_wrap_retry_locked_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___retry_locked_wrap_retry_locked_obj_template, NULL, modname);
-            if (unlikely(!CPyType_decorators___retry_locked_wrap_retry_locked_obj))
-                goto fail;
-            CPyDef_decorators___retry_locked_wrap_retry_locked_obj_trait_vtable_setup();
-            CPyType_decorators_____mypyc_lambda__0_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators_____mypyc_lambda__0_obj_template, NULL, modname);
-            if (unlikely(!CPyType_decorators_____mypyc_lambda__0_obj))
-                goto fail;
-            CPyDef_decorators_____mypyc_lambda__0_obj_trait_vtable_setup();
-            CPyType_decorators_____mypyc_lambda__1_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators_____mypyc_lambda__1_obj_template, NULL, modname);
-            if (unlikely(!CPyType_decorators_____mypyc_lambda__1_obj))
-                goto fail;
-            CPyDef_decorators_____mypyc_lambda__1_obj_trait_vtable_setup();
-            CPyType_decorators_____mypyc_lambda__2_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators_____mypyc_lambda__2_obj_template, NULL, modname);
-            if (unlikely(!CPyType_decorators_____mypyc_lambda__2_obj))
-                goto fail;
-            CPyDef_decorators_____mypyc_lambda__2_obj_trait_vtable_setup();
-            CPyType_decorators___log_result_count_env = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___log_result_count_env_template, NULL, modname);
-            if (unlikely(!CPyType_decorators___log_result_count_env))
-                goto fail;
-            CPyDef_decorators___log_result_count_env_trait_vtable_setup();
-            CPyType_decorators___result_count_deco_log_result_count_env = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___result_count_deco_log_result_count_env_template, NULL, modname);
-            if (unlikely(!CPyType_decorators___result_count_deco_log_result_count_env))
-                goto fail;
-            CPyDef_decorators___result_count_deco_log_result_count_env_trait_vtable_setup();
-            CPyType_decorators___result_count_deco_log_result_count_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___result_count_deco_log_result_count_obj_template, NULL, modname);
-            if (unlikely(!CPyType_decorators___result_count_deco_log_result_count_obj))
-                goto fail;
-            CPyDef_decorators___result_count_deco_log_result_count_obj_trait_vtable_setup();
-            CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj_template, NULL, modname);
-            if (unlikely(!CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj))
-                goto fail;
-            CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_trait_vtable_setup();
-            if (CPyGlobalsInit() < 0)
-                goto fail;
-            char result = CPyDef_decorators_____top_level__();
-            if (result == 2)
-                goto fail;
-            Py_DECREF(modname);
-            return 0;
-            fail:
-            Py_CLEAR(CPyModule_y____db___decorators__internal);
-            Py_CLEAR(modname);
-            CPyStatic_decorators___DEBUG = CPY_INT_TAG;
-            CPy_XDECREF(CPyStatic_decorators___logger);
-            CPyStatic_decorators___logger = NULL;
-            CPy_XDECREF(CPyStatic_decorators___log_warning);
-            CPyStatic_decorators___log_warning = NULL;
-            CPy_XDECREF(CPyStatic_decorators___log_debug);
-            CPyStatic_decorators___log_debug = NULL;
-            CPy_XDECREF(CPyStatic_decorators___ydb_read_threads);
-            CPyStatic_decorators___ydb_read_threads = NULL;
-            CPy_XDECREF(CPyStatic_decorators___ydb_write_threads);
-            CPyStatic_decorators___ydb_write_threads = NULL;
-            CPy_XDECREF_NO_IMM(CPyStatic_decorators___db_session_retry_locked);
-            CPyStatic_decorators___db_session_retry_locked = NULL;
-            CPy_XDECREF_NO_IMM(CPyStatic_decorators___a_sync_read_db_session);
-            CPyStatic_decorators___a_sync_read_db_session = NULL;
-            CPy_XDECREF_NO_IMM(CPyStatic_decorators___db_session_cached);
-            CPyStatic_decorators___db_session_cached = NULL;
-            CPy_XDECREF(CPyStatic_decorators____result_count_logger);
-            CPyStatic_decorators____result_count_logger = NULL;
-            CPy_XDECREF(CPyStatic_decorators____result_count_logger_debug);
-            CPyStatic_decorators____result_count_logger_debug = NULL;
-            CPy_XDECREF(CPyStatic_decorators____result_count_logger_is_enabled_for);
-            CPyStatic_decorators____result_count_logger_is_enabled_for = NULL;
-            CPy_XDECREF(CPyStatic_decorators____CHAIN_INFO.f0);
-            CPyTagged_XDECREF(CPyStatic_decorators____CHAIN_INFO.f1);
-            CPyStatic_decorators____CHAIN_INFO = (tuple_T2OI) { NULL, CPY_INT_TAG };
-            CPy_XDECREF(CPyStatic_decorators___y____db___decorators___log_result_count___arg_names);
-            CPyStatic_decorators___y____db___decorators___log_result_count___arg_names = NULL;
-            Py_CLEAR(CPyType_decorators___retry_locked_env);
-            Py_CLEAR(CPyType_decorators___retry_locked_wrap_retry_locked_obj);
-            Py_CLEAR(CPyType_decorators_____mypyc_lambda__0_obj);
-            Py_CLEAR(CPyType_decorators_____mypyc_lambda__1_obj);
-            Py_CLEAR(CPyType_decorators_____mypyc_lambda__2_obj);
-            Py_CLEAR(CPyType_decorators___log_result_count_env);
-            Py_CLEAR(CPyType_decorators___result_count_deco_log_result_count_env);
-            Py_CLEAR(CPyType_decorators___result_count_deco_log_result_count_obj);
-            Py_CLEAR(CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj);
-            return -1;
-        }
-        static struct PyModuleDef decoratorsmodule = {
-            PyModuleDef_HEAD_INIT,
-            "y._db.decorators",
-            NULL, /* docstring */
-            0,       /* size of per-interpreter state of the module */
-            decoratorsmodule_methods,
-            NULL,
-        };
-        
-        PyObject *CPyInitOnly_y____db___decorators(void)
-        {
-            if (CPyModule_y____db___decorators__internal) {
-                Py_INCREF(CPyModule_y____db___decorators__internal);
-                return CPyModule_y____db___decorators__internal;
-            }
-            CPyModule_y____db___decorators__internal = PyModule_Create(&decoratorsmodule);
-            return CPyModule_y____db___decorators__internal;
-        }
-        
-        PyObject *CPyInit_y____db___decorators(void)
-        {
-            PyObject* modname = NULL;
-            if (CPyModule_y____db___decorators__internal) {
-                Py_INCREF(CPyModule_y____db___decorators__internal);
-                return CPyModule_y____db___decorators__internal;
-            }
-            CPyModule_y____db___decorators__internal = PyModule_Create(&decoratorsmodule);
-            if (unlikely(CPyModule_y____db___decorators__internal == NULL))
-                goto fail;
-            modname = PyUnicode_FromString("y._db.decorators");
-            if (modname == NULL) CPyError_OutOfMemory();
-            int rv = 0;
-            PyObject *mod_dict = PyImport_GetModuleDict();
-            PyObject *shared_lib = NULL;
-            rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
-            if (rv < 0) goto fail;
-            PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
-            if (shared_lib_file == NULL) goto fail;
-            PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
-            if (ext_suffix == NULL) CPyError_OutOfMemory();
-            Py_ssize_t is_pkg = 0;
-            rv = CPyImport_SetDunderAttrs(CPyModule_y____db___decorators__internal, modname, shared_lib_file, ext_suffix, is_pkg);
-            Py_DECREF(ext_suffix);
-            Py_DECREF(shared_lib_file);
-            if (rv < 0) goto fail;
-            if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y____db___decorators__internal) < 0)
-                goto fail;
-            Py_CLEAR(modname);
-            if (CPyExec_y____db___decorators(CPyModule_y____db___decorators__internal) != 0)
-                goto fail;
-            return CPyModule_y____db___decorators__internal;
-            fail:
-            {
-                    PyObject *exc_type, *exc_val, *exc_tb;
-                    PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
-                    if (modname == NULL) {
-                            modname = PyUnicode_FromString("y._db.decorators");
-                            if (modname == NULL) CPyError_OutOfMemory();
-                        }
-                        PyObject_DelItem(PyImport_GetModuleDict(), modname);
-                        PyErr_Clear();
-                        Py_DECREF(modname);
-                        Py_CLEAR(CPyModule_y____db___decorators__internal);
-                        PyErr_Restore(exc_type, exc_val, exc_tb);
-                }
-                return NULL;
+                return 0;
             }
             
+            static void
+            decorators___result_count_deco_log_result_count_env_dealloc(y____db___decorators___result_count_deco_log_result_count_envObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators___result_count_deco_log_result_count_env_free_instance == NULL) {
+                    decorators___result_count_deco_log_result_count_env_free_instance = self;
+                    Py_CLEAR(self->___mypyc_self__);
+                    Py_CLEAR(self->___mypyc_env__);
+                    Py_CLEAR(self->_fn);
+                    Py_CLEAR(self->_result_count_wrap);
+                    Py_CLEAR(self->_name);
+                    Py_CLEAR(self->_arg_names);
+                    Py_CLEAR(self->_result_count_deco);
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators___result_count_deco_log_result_count_env_dealloc)
+                decorators___result_count_deco_log_result_count_env_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
+            }
+            
+            PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators___result_count_deco_log_result_count_env(void);
+            
+            static PyObject *
+            decorators___result_count_deco_log_result_count_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators___result_count_deco_log_result_count_env) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators___result_count_deco_log_result_count_env_vtable[1];
+            static bool
+            CPyDef_decorators___result_count_deco_log_result_count_env_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators___result_count_deco_log_result_count_env_vtable_scratch[] = {
+                    NULL
+                };
+                memcpy(decorators___result_count_deco_log_result_count_env_vtable, decorators___result_count_deco_log_result_count_env_vtable_scratch, sizeof(decorators___result_count_deco_log_result_count_env_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators___result_count_deco_log_result_count_env_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            static PyMethodDef decorators___result_count_deco_log_result_count_env_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup, METH_O, NULL},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyTypeObject CPyType_decorators___result_count_deco_log_result_count_env_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "result_count_deco_log_result_count_env",
+                .tp_new = decorators___result_count_deco_log_result_count_env_new,
+                .tp_dealloc = (destructor)decorators___result_count_deco_log_result_count_env_dealloc,
+                .tp_traverse = (traverseproc)decorators___result_count_deco_log_result_count_env_traverse,
+                .tp_clear = (inquiry)decorators___result_count_deco_log_result_count_env_clear,
+                .tp_methods = decorators___result_count_deco_log_result_count_env_methods,
+                .tp_basicsize = sizeof(y____db___decorators___result_count_deco_log_result_count_envObject),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+                .tp_doc = PyDoc_STR("result_count_deco_log_result_count_env()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators___result_count_deco_log_result_count_env_template = &CPyType_decorators___result_count_deco_log_result_count_env_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators___result_count_deco_log_result_count_envObject *self;
+                if (decorators___result_count_deco_log_result_count_env_free_instance != NULL) {
+                    self = decorators___result_count_deco_log_result_count_env_free_instance;
+                    decorators___result_count_deco_log_result_count_env_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators___result_count_deco_log_result_count_envObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators___result_count_deco_log_result_count_env_vtable;
+                return (PyObject *)self;
+            }
+            
+            PyObject *CPyDef_decorators___result_count_deco_log_result_count_env(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup((PyObject *)CPyType_decorators___result_count_deco_log_result_count_env);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            
+            static PyObject *CPyDunder___get__decorators___result_count_deco_log_result_count_obj(PyObject *self, PyObject *instance, PyObject *owner) {
+                instance = instance ? instance : Py_None;
+                return CPyDef_decorators___result_count_deco_log_result_count_obj_____get__(self, instance, owner);
+            }
+            static int
+            decorators___result_count_deco_log_result_count_obj_traverse(y____db___decorators___result_count_deco_log_result_count_objObject *self, visitproc visit, void *arg)
+            {
+                Py_VISIT(self->___mypyc_env__);
+                int rv = 0;
+                rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+                if (rv != 0) return rv;
+                return rv;
+            }
+            
+            static int
+            decorators___result_count_deco_log_result_count_obj_clear(y____db___decorators___result_count_deco_log_result_count_objObject *self)
+            {
+                Py_CLEAR(self->___mypyc_env__);
+                PyObject_ClearManagedDict((PyObject *)self);
+                return 0;
+            }
+            
+            static void
+            decorators___result_count_deco_log_result_count_obj_dealloc(y____db___decorators___result_count_deco_log_result_count_objObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators___result_count_deco_log_result_count_obj_free_instance == NULL) {
+                    decorators___result_count_deco_log_result_count_obj_free_instance = self;
+                    Py_CLEAR(self->___mypyc_env__);
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators___result_count_deco_log_result_count_obj_dealloc)
+                decorators___result_count_deco_log_result_count_obj_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
+            }
+            
+            PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators___result_count_deco_log_result_count_obj(void);
+            
+            static PyObject *
+            decorators___result_count_deco_log_result_count_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators___result_count_deco_log_result_count_obj) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators___result_count_deco_log_result_count_obj_vtable[2];
+            static bool
+            CPyDef_decorators___result_count_deco_log_result_count_obj_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators___result_count_deco_log_result_count_obj_vtable_scratch[] = {
+                    (CPyVTableItem)CPyDef_decorators___result_count_deco_log_result_count_obj_____call__,
+                    (CPyVTableItem)CPyDef_decorators___result_count_deco_log_result_count_obj_____get__,
+                };
+                memcpy(decorators___result_count_deco_log_result_count_obj_vtable, decorators___result_count_deco_log_result_count_obj_vtable_scratch, sizeof(decorators___result_count_deco_log_result_count_obj_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators___result_count_deco_log_result_count_obj_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            static PyObject *
+            decorators___result_count_deco_log_result_count_obj_get___3_mypyc_env__(y____db___decorators___result_count_deco_log_result_count_objObject *self, void *closure);
+            static int
+            decorators___result_count_deco_log_result_count_obj_set___3_mypyc_env__(y____db___decorators___result_count_deco_log_result_count_objObject *self, PyObject *value, void *closure);
+            
+            static PyGetSetDef decorators___result_count_deco_log_result_count_obj_getseters[] = {
+                {"__mypyc_env__",
+                 (getter)decorators___result_count_deco_log_result_count_obj_get___3_mypyc_env__, (setter)decorators___result_count_deco_log_result_count_obj_set___3_mypyc_env__,
+                 NULL, NULL},
+                {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyMethodDef decorators___result_count_deco_log_result_count_obj_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup, METH_O, NULL},
+                {"__call__",
+                 (PyCFunction)CPyPy_decorators___result_count_deco_log_result_count_obj_____call__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__($fn)\n--\n\n")},
+                {"__get__",
+                 (PyCFunction)CPyPy_decorators___result_count_deco_log_result_count_obj_____get__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyTypeObject CPyType_decorators___result_count_deco_log_result_count_obj_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "result_count_deco_log_result_count_obj",
+                .tp_new = decorators___result_count_deco_log_result_count_obj_new,
+                .tp_dealloc = (destructor)decorators___result_count_deco_log_result_count_obj_dealloc,
+                .tp_traverse = (traverseproc)decorators___result_count_deco_log_result_count_obj_traverse,
+                .tp_clear = (inquiry)decorators___result_count_deco_log_result_count_obj_clear,
+                .tp_getset = decorators___result_count_deco_log_result_count_obj_getseters,
+                .tp_methods = decorators___result_count_deco_log_result_count_obj_methods,
+                .tp_call = PyVectorcall_Call,
+                .tp_descr_get = CPyDunder___get__decorators___result_count_deco_log_result_count_obj,
+                .tp_basicsize = sizeof(y____db___decorators___result_count_deco_log_result_count_objObject),
+                .tp_vectorcall_offset = offsetof(y____db___decorators___result_count_deco_log_result_count_objObject, vectorcall),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
+                .tp_doc = PyDoc_STR("result_count_deco_log_result_count_obj()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators___result_count_deco_log_result_count_obj_template = &CPyType_decorators___result_count_deco_log_result_count_obj_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators___result_count_deco_log_result_count_objObject *self;
+                if (decorators___result_count_deco_log_result_count_obj_free_instance != NULL) {
+                    self = decorators___result_count_deco_log_result_count_obj_free_instance;
+                    decorators___result_count_deco_log_result_count_obj_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators___result_count_deco_log_result_count_objObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators___result_count_deco_log_result_count_obj_vtable;
+                self->vectorcall = CPyPy_decorators___result_count_deco_log_result_count_obj_____call__;
+                return (PyObject *)self;
+            }
+            
+            PyObject *CPyDef_decorators___result_count_deco_log_result_count_obj(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup((PyObject *)CPyType_decorators___result_count_deco_log_result_count_obj);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static PyObject *
+            decorators___result_count_deco_log_result_count_obj_get___3_mypyc_env__(y____db___decorators___result_count_deco_log_result_count_objObject *self, void *closure)
+            {
+                if (unlikely(self->___mypyc_env__ == NULL)) {
+                    PyErr_SetString(PyExc_AttributeError,
+                        "attribute '__mypyc_env__' of 'result_count_deco_log_result_count_obj' undefined");
+                    return NULL;
+                }
+                CPy_INCREF_NO_IMM(self->___mypyc_env__);
+                PyObject *retval = self->___mypyc_env__;
+                return retval;
+            }
+            
+            static int
+            decorators___result_count_deco_log_result_count_obj_set___3_mypyc_env__(y____db___decorators___result_count_deco_log_result_count_objObject *self, PyObject *value, void *closure)
+            {
+                if (value == NULL) {
+                    PyErr_SetString(PyExc_AttributeError,
+                        "'result_count_deco_log_result_count_obj' object attribute '__mypyc_env__' cannot be deleted");
+                    return -1;
+                }
+                if (self->___mypyc_env__ != NULL) {
+                    CPy_DECREF_NO_IMM(self->___mypyc_env__);
+                }
+                PyObject *tmp;
+                if (likely(Py_TYPE(value) == CPyType_decorators___log_result_count_env))
+                    tmp = value;
+                else {
+                    CPy_TypeError("y._db.decorators.log_result_count_env", value); 
+                    tmp = NULL;
+                }
+                if (!tmp)
+                    return -1;
+                CPy_INCREF_NO_IMM(tmp);
+                self->___mypyc_env__ = tmp;
+                return 0;
+            }
+            
+            static PyObject *CPyDunder___get__decorators___result_count_wrap_log_result_count_result_count_deco_obj(PyObject *self, PyObject *instance, PyObject *owner) {
+                instance = instance ? instance : Py_None;
+                return CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__(self, instance, owner);
+            }
+            static int
+            decorators___result_count_wrap_log_result_count_result_count_deco_obj_traverse(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, visitproc visit, void *arg)
+            {
+                Py_VISIT(self->___mypyc_env__);
+                int rv = 0;
+                rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+                if (rv != 0) return rv;
+                return rv;
+            }
+            
+            static int
+            decorators___result_count_wrap_log_result_count_result_count_deco_obj_clear(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self)
+            {
+                Py_CLEAR(self->___mypyc_env__);
+                PyObject_ClearManagedDict((PyObject *)self);
+                return 0;
+            }
+            
+            static void
+            decorators___result_count_wrap_log_result_count_result_count_deco_obj_dealloc(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self)
+            {
+                PyObject_GC_UnTrack(self);
+                if (decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance == NULL) {
+                    decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance = self;
+                    Py_CLEAR(self->___mypyc_env__);
+                    return;
+                }
+                CPy_TRASHCAN_BEGIN(self, decorators___result_count_wrap_log_result_count_result_count_deco_obj_dealloc)
+                decorators___result_count_wrap_log_result_count_result_count_deco_obj_clear(self);
+                Py_TYPE(self)->tp_free((PyObject *)self);
+                CPy_TRASHCAN_END(self)
+                done: ;
+            }
+            
+            PyObject *CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup(PyObject *cpy_r_type);
+            PyObject *CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj(void);
+            
+            static PyObject *
+            decorators___result_count_wrap_log_result_count_result_count_deco_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+            {
+                if (type != CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj) {
+                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                    return NULL;
+                }
+                PyObject *self = CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup((PyObject*)type);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static CPyVTableItem decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable[2];
+            static bool
+            CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_trait_vtable_setup(void)
+            {
+                CPyVTableItem decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable_scratch[] = {
+                    (CPyVTableItem)CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__,
+                    (CPyVTableItem)CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__,
+                };
+                memcpy(decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable, decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable_scratch, sizeof(decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable));
+                return 1;
+            }
+            
+            static bool
+            CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_coroutine_setup(PyObject *type)
+            {
+                return 1;
+            }
+            
+            static PyObject *
+            decorators___result_count_wrap_log_result_count_result_count_deco_obj_get___3_mypyc_env__(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, void *closure);
+            static int
+            decorators___result_count_wrap_log_result_count_result_count_deco_obj_set___3_mypyc_env__(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, PyObject *value, void *closure);
+            
+            static PyGetSetDef decorators___result_count_wrap_log_result_count_result_count_deco_obj_getseters[] = {
+                {"__mypyc_env__",
+                 (getter)decorators___result_count_wrap_log_result_count_result_count_deco_obj_get___3_mypyc_env__, (setter)decorators___result_count_wrap_log_result_count_result_count_deco_obj_set___3_mypyc_env__,
+                 NULL, NULL},
+                {"__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyMethodDef decorators___result_count_wrap_log_result_count_result_count_deco_obj_methods[] = {
+                {"__internal_mypyc_setup", (PyCFunction)CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup, METH_O, NULL},
+                {"__call__",
+                 (PyCFunction)CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__call__(*$args, **kwargs)\n--\n\n")},
+                {"__get__",
+                 (PyCFunction)CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__,
+                 METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("__get__($instance, owner)\n--\n\n")},
+                {"__setstate__", (PyCFunction)CPyPickle_SetState, METH_O, NULL},
+                {"__getstate__", (PyCFunction)CPyPickle_GetState, METH_NOARGS, NULL},
+                {NULL}  /* Sentinel */
+            };
+            
+            static PyTypeObject CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj_template_ = {
+                PyVarObject_HEAD_INIT(NULL, 0)
+                .tp_name = "result_count_wrap_log_result_count_result_count_deco_obj",
+                .tp_new = decorators___result_count_wrap_log_result_count_result_count_deco_obj_new,
+                .tp_dealloc = (destructor)decorators___result_count_wrap_log_result_count_result_count_deco_obj_dealloc,
+                .tp_traverse = (traverseproc)decorators___result_count_wrap_log_result_count_result_count_deco_obj_traverse,
+                .tp_clear = (inquiry)decorators___result_count_wrap_log_result_count_result_count_deco_obj_clear,
+                .tp_getset = decorators___result_count_wrap_log_result_count_result_count_deco_obj_getseters,
+                .tp_methods = decorators___result_count_wrap_log_result_count_result_count_deco_obj_methods,
+                .tp_call = PyVectorcall_Call,
+                .tp_descr_get = CPyDunder___get__decorators___result_count_wrap_log_result_count_result_count_deco_obj,
+                .tp_basicsize = sizeof(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject),
+                .tp_vectorcall_offset = offsetof(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject, vectorcall),
+                .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HEAPTYPE | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC | _Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_MANAGED_DICT,
+                .tp_doc = PyDoc_STR("result_count_wrap_log_result_count_result_count_deco_obj()\n--\n\n"),
+            };
+            static PyTypeObject *CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj_template = &CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj_template_;
+            
+            PyObject *CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup(PyObject *cpy_r_type)
+            {
+                PyTypeObject *type = (PyTypeObject*)cpy_r_type;
+                y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self;
+                if (decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance != NULL) {
+                    self = decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance;
+                    decorators___result_count_wrap_log_result_count_result_count_deco_obj_free_instance = NULL;
+                    Py_SET_REFCNT(self, 1);
+                    PyObject_GC_Track(self);
+                    return (PyObject *)self;
+                }
+                self = (y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *)type->tp_alloc(type, 0);
+                if (self == NULL)
+                    return NULL;
+                self->vtable = decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable;
+                self->vectorcall = CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__;
+                return (PyObject *)self;
+            }
+            
+            PyObject *CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj(void)
+            {
+                PyObject *self = CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup((PyObject *)CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj);
+                if (self == NULL)
+                    return NULL;
+                return self;
+            }
+            
+            static PyObject *
+            decorators___result_count_wrap_log_result_count_result_count_deco_obj_get___3_mypyc_env__(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, void *closure)
+            {
+                if (unlikely(self->___mypyc_env__ == NULL)) {
+                    PyErr_SetString(PyExc_AttributeError,
+                        "attribute '__mypyc_env__' of 'result_count_wrap_log_result_count_result_count_deco_obj' undefined");
+                    return NULL;
+                }
+                CPy_INCREF_NO_IMM(self->___mypyc_env__);
+                PyObject *retval = self->___mypyc_env__;
+                return retval;
+            }
+            
+            static int
+            decorators___result_count_wrap_log_result_count_result_count_deco_obj_set___3_mypyc_env__(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, PyObject *value, void *closure)
+            {
+                if (value == NULL) {
+                    PyErr_SetString(PyExc_AttributeError,
+                        "'result_count_wrap_log_result_count_result_count_deco_obj' object attribute '__mypyc_env__' cannot be deleted");
+                    return -1;
+                }
+                if (self->___mypyc_env__ != NULL) {
+                    CPy_DECREF_NO_IMM(self->___mypyc_env__);
+                }
+                PyObject *tmp;
+                if (likely(Py_TYPE(value) == CPyType_decorators___result_count_deco_log_result_count_env))
+                    tmp = value;
+                else {
+                    CPy_TypeError("y._db.decorators.result_count_deco_log_result_count_env", value); 
+                    tmp = NULL;
+                }
+                if (!tmp)
+                    return -1;
+                CPy_INCREF_NO_IMM(tmp);
+                self->___mypyc_env__ = tmp;
+                return 0;
+            }
+            static PyMethodDef decoratorsmodule_methods[] = {
+                {"retry_locked", (PyCFunction)CPyPy_decorators___retry_locked, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("retry_locked(callable)\n--\n\n") /* docstring */},
+                {"log_result_count", (PyCFunction)CPyPy_decorators___log_result_count, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR(NULL) /* docstring */},
+                {NULL, NULL, 0, NULL}
+            };
+            
+            int CPyExec_y____db___decorators(PyObject *module)
+            {
+                intern_strings();
+                PyObject* modname = NULL;
+                modname = PyObject_GetAttrString((PyObject *)CPyModule_y____db___decorators__internal, "__name__");
+                CPyStatic_decorators___globals = PyModule_GetDict(CPyModule_y____db___decorators__internal);
+                if (unlikely(CPyStatic_decorators___globals == NULL))
+                    goto fail;
+                CPyType_decorators___retry_locked_env = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___retry_locked_env_template, NULL, modname);
+                if (unlikely(!CPyType_decorators___retry_locked_env))
+                    goto fail;
+                CPyDef_decorators___retry_locked_env_trait_vtable_setup();
+                CPyType_decorators___retry_locked_wrap_retry_locked_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___retry_locked_wrap_retry_locked_obj_template, NULL, modname);
+                if (unlikely(!CPyType_decorators___retry_locked_wrap_retry_locked_obj))
+                    goto fail;
+                CPyDef_decorators___retry_locked_wrap_retry_locked_obj_trait_vtable_setup();
+                CPyType_decorators_____mypyc_lambda__0_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators_____mypyc_lambda__0_obj_template, NULL, modname);
+                if (unlikely(!CPyType_decorators_____mypyc_lambda__0_obj))
+                    goto fail;
+                CPyDef_decorators_____mypyc_lambda__0_obj_trait_vtable_setup();
+                CPyType_decorators_____mypyc_lambda__1_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators_____mypyc_lambda__1_obj_template, NULL, modname);
+                if (unlikely(!CPyType_decorators_____mypyc_lambda__1_obj))
+                    goto fail;
+                CPyDef_decorators_____mypyc_lambda__1_obj_trait_vtable_setup();
+                CPyType_decorators_____mypyc_lambda__2_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators_____mypyc_lambda__2_obj_template, NULL, modname);
+                if (unlikely(!CPyType_decorators_____mypyc_lambda__2_obj))
+                    goto fail;
+                CPyDef_decorators_____mypyc_lambda__2_obj_trait_vtable_setup();
+                CPyType_decorators___log_result_count_env = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___log_result_count_env_template, NULL, modname);
+                if (unlikely(!CPyType_decorators___log_result_count_env))
+                    goto fail;
+                CPyDef_decorators___log_result_count_env_trait_vtable_setup();
+                CPyType_decorators___result_count_deco_log_result_count_env = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___result_count_deco_log_result_count_env_template, NULL, modname);
+                if (unlikely(!CPyType_decorators___result_count_deco_log_result_count_env))
+                    goto fail;
+                CPyDef_decorators___result_count_deco_log_result_count_env_trait_vtable_setup();
+                CPyType_decorators___result_count_deco_log_result_count_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___result_count_deco_log_result_count_obj_template, NULL, modname);
+                if (unlikely(!CPyType_decorators___result_count_deco_log_result_count_obj))
+                    goto fail;
+                CPyDef_decorators___result_count_deco_log_result_count_obj_trait_vtable_setup();
+                CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj = (PyTypeObject *)CPyType_FromTemplate((PyObject *)CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj_template, NULL, modname);
+                if (unlikely(!CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj))
+                    goto fail;
+                CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_trait_vtable_setup();
+                if (CPyGlobalsInit() < 0)
+                    goto fail;
+                char result = CPyDef_decorators_____top_level__();
+                if (result == 2)
+                    goto fail;
+                Py_DECREF(modname);
+                return 0;
+                fail:
+                Py_CLEAR(CPyModule_y____db___decorators__internal);
+                Py_CLEAR(modname);
+                CPyStatic_decorators___DEBUG = CPY_INT_TAG;
+                CPy_XDECREF(CPyStatic_decorators___logger);
+                CPyStatic_decorators___logger = NULL;
+                CPy_XDECREF(CPyStatic_decorators___log_warning);
+                CPyStatic_decorators___log_warning = NULL;
+                CPy_XDECREF(CPyStatic_decorators___log_debug);
+                CPyStatic_decorators___log_debug = NULL;
+                CPy_XDECREF(CPyStatic_decorators___ydb_read_threads);
+                CPyStatic_decorators___ydb_read_threads = NULL;
+                CPy_XDECREF(CPyStatic_decorators___ydb_write_threads);
+                CPyStatic_decorators___ydb_write_threads = NULL;
+                CPy_XDECREF_NO_IMM(CPyStatic_decorators___db_session_retry_locked);
+                CPyStatic_decorators___db_session_retry_locked = NULL;
+                CPy_XDECREF_NO_IMM(CPyStatic_decorators___a_sync_read_db_session);
+                CPyStatic_decorators___a_sync_read_db_session = NULL;
+                CPy_XDECREF_NO_IMM(CPyStatic_decorators___db_session_cached);
+                CPyStatic_decorators___db_session_cached = NULL;
+                CPy_XDECREF(CPyStatic_decorators____result_count_logger);
+                CPyStatic_decorators____result_count_logger = NULL;
+                CPy_XDECREF(CPyStatic_decorators____result_count_logger_debug);
+                CPyStatic_decorators____result_count_logger_debug = NULL;
+                CPy_XDECREF(CPyStatic_decorators____result_count_logger_is_enabled_for);
+                CPyStatic_decorators____result_count_logger_is_enabled_for = NULL;
+                CPy_XDECREF(CPyStatic_decorators____CHAIN_INFO.f0);
+                CPyTagged_XDECREF(CPyStatic_decorators____CHAIN_INFO.f1);
+                CPyStatic_decorators____CHAIN_INFO = (tuple_T2OI) { NULL, CPY_INT_TAG };
+                CPy_XDECREF(CPyStatic_decorators___y____db___decorators___log_result_count___arg_names);
+                CPyStatic_decorators___y____db___decorators___log_result_count___arg_names = NULL;
+                Py_CLEAR(CPyType_decorators___retry_locked_env);
+                Py_CLEAR(CPyType_decorators___retry_locked_wrap_retry_locked_obj);
+                Py_CLEAR(CPyType_decorators_____mypyc_lambda__0_obj);
+                Py_CLEAR(CPyType_decorators_____mypyc_lambda__1_obj);
+                Py_CLEAR(CPyType_decorators_____mypyc_lambda__2_obj);
+                Py_CLEAR(CPyType_decorators___log_result_count_env);
+                Py_CLEAR(CPyType_decorators___result_count_deco_log_result_count_env);
+                Py_CLEAR(CPyType_decorators___result_count_deco_log_result_count_obj);
+                Py_CLEAR(CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj);
+                return -1;
+            }
+            static struct PyModuleDef decoratorsmodule = {
+                PyModuleDef_HEAD_INIT,
+                "y._db.decorators",
+                NULL, /* docstring */
+                0,       /* size of per-interpreter state of the module */
+                decoratorsmodule_methods,
+                NULL,
+            };
+            
+            PyObject *CPyInitOnly_y____db___decorators(void)
+            {
+                if (CPyModule_y____db___decorators__internal) {
+                    Py_INCREF(CPyModule_y____db___decorators__internal);
+                    return CPyModule_y____db___decorators__internal;
+                }
+                CPyModule_y____db___decorators__internal = PyModule_Create(&decoratorsmodule);
+                return CPyModule_y____db___decorators__internal;
+            }
+            
+            PyObject *CPyInit_y____db___decorators(void)
+            {
+                PyObject* modname = NULL;
+                if (CPyModule_y____db___decorators__internal) {
+                    Py_INCREF(CPyModule_y____db___decorators__internal);
+                    return CPyModule_y____db___decorators__internal;
+                }
+                CPyModule_y____db___decorators__internal = PyModule_Create(&decoratorsmodule);
+                if (unlikely(CPyModule_y____db___decorators__internal == NULL))
+                    goto fail;
+                modname = PyUnicode_FromString("y._db.decorators");
+                if (modname == NULL) CPyError_OutOfMemory();
+                int rv = 0;
+                PyObject *mod_dict = PyImport_GetModuleDict();
+                PyObject *shared_lib = NULL;
+                rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
+                if (rv < 0) goto fail;
+                PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
+                if (shared_lib_file == NULL) goto fail;
+                PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
+                if (ext_suffix == NULL) CPyError_OutOfMemory();
+                Py_ssize_t is_pkg = 0;
+                rv = CPyImport_SetDunderAttrs(CPyModule_y____db___decorators__internal, modname, shared_lib_file, ext_suffix, is_pkg);
+                Py_DECREF(ext_suffix);
+                Py_DECREF(shared_lib_file);
+                if (rv < 0) goto fail;
+                if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y____db___decorators__internal) < 0)
+                    goto fail;
+                Py_CLEAR(modname);
+                if (CPyExec_y____db___decorators(CPyModule_y____db___decorators__internal) != 0)
+                    goto fail;
+                return CPyModule_y____db___decorators__internal;
+                fail:
+                {
+                        PyObject *exc_type, *exc_val, *exc_tb;
+                        PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
+                        if (modname == NULL) {
+                                modname = PyUnicode_FromString("y._db.decorators");
+                                if (modname == NULL) CPyError_OutOfMemory();
+                            }
+                            PyObject_DelItem(PyImport_GetModuleDict(), modname);
+                            PyErr_Clear();
+                            Py_DECREF(modname);
+                            Py_CLEAR(CPyModule_y____db___decorators__internal);
+                            PyErr_Restore(exc_type, exc_val, exc_tb);
+                    }
+                    return NULL;
+                }
+                
 PyObject *CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -14141,26 +15147,26 @@ CPyL4: ;
     cpy_r_r3 = NULL;
     return cpy_r_r3;
 }
-            
-            PyObject *CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"instance", "owner", 0};
-                static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
-                PyObject *obj_instance;
-                PyObject *obj_owner;
-                if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                
+                PyObject *CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"instance", "owner", 0};
+                    static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
+                    PyObject *obj_instance;
+                    PyObject *obj_owner;
+                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_instance = obj_instance;
+                    PyObject *arg_owner = obj_owner;
+                    PyObject *retval = CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_instance = obj_instance;
-                PyObject *arg_owner = obj_owner;
-                PyObject *retval = CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____call__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_args, PyObject *cpy_r_kwargs) {
     PyObject *cpy_r_r0;
     double cpy_r_sleep;
@@ -14776,30 +15782,30 @@ CPyL95: ;
     CPy_DecRef(cpy_r_r8.f2);
     goto CPyL57;
 }
-            
-            PyObject *CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {0};
-                static CPyArg_Parser parser = {"%:__call__", kwlist, 0};
-                PyObject *obj_args;
-                PyObject *obj_kwargs;
-                if (!CPyArg_ParseStackAndKeywords(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_args, &obj_kwargs)) {
+                
+                PyObject *CPyPy_decorators___retry_locked_wrap_retry_locked_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {0};
+                    static CPyArg_Parser parser = {"%:__call__", kwlist, 0};
+                    PyObject *obj_args;
+                    PyObject *obj_kwargs;
+                    if (!CPyArg_ParseStackAndKeywords(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_args, &obj_kwargs)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_args = obj_args;
+                    PyObject *arg_kwargs = obj_kwargs;
+                    PyObject *retval = CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____call__(arg___mypyc_self__, arg_args, arg_kwargs);
+                    CPy_DECREF(obj_args);
+                    CPy_DECREF(obj_kwargs);
+                    return retval;
+fail: ;
+                    CPy_DECREF(obj_args);
+                    CPy_DECREF(obj_kwargs);
+                    CPy_AddTraceback("y/_db/decorators.py", "retry_locked_wrap", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_args = obj_args;
-                PyObject *arg_kwargs = obj_kwargs;
-                PyObject *retval = CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____call__(arg___mypyc_self__, arg_args, arg_kwargs);
-                CPy_DECREF(obj_args);
-                CPy_DECREF(obj_kwargs);
-                return retval;
-fail: ;
-                CPy_DECREF(obj_args);
-                CPy_DECREF(obj_kwargs);
-                CPy_AddTraceback("y/_db/decorators.py", "retry_locked_wrap", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators___retry_locked(PyObject *cpy_r_callable) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -14917,22 +15923,22 @@ CPyL15: ;
     CPy_DecRef(cpy_r_r13);
     goto CPyL10;
 }
-            
-            PyObject *CPyPy_decorators___retry_locked(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                static const char * const kwlist[] = {"callable", 0};
-                static CPyArg_Parser parser = {"O:retry_locked", kwlist, 0};
-                PyObject *obj_callable;
-                if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_callable)) {
+                
+                PyObject *CPyPy_decorators___retry_locked(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    static const char * const kwlist[] = {"callable", 0};
+                    static CPyArg_Parser parser = {"O:retry_locked", kwlist, 0};
+                    PyObject *obj_callable;
+                    if (!CPyArg_ParseStackAndKeywordsOneArg(args, nargs, kwnames, &parser, &obj_callable)) {
+                        return NULL;
+                    }
+                    PyObject *arg_callable = obj_callable;
+                    PyObject *retval = CPyDef_decorators___retry_locked(arg_callable);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "retry_locked", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg_callable = obj_callable;
-                PyObject *retval = CPyDef_decorators___retry_locked(arg_callable);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "retry_locked", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators_____mypyc_lambda__0_obj_____get__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -14951,26 +15957,26 @@ CPyL4: ;
     cpy_r_r3 = NULL;
     return cpy_r_r3;
 }
-            
-            PyObject *CPyPy_decorators_____mypyc_lambda__0_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"instance", "owner", 0};
-                static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
-                PyObject *obj_instance;
-                PyObject *obj_owner;
-                if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                
+                PyObject *CPyPy_decorators_____mypyc_lambda__0_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"instance", "owner", 0};
+                    static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
+                    PyObject *obj_instance;
+                    PyObject *obj_owner;
+                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_instance = obj_instance;
+                    PyObject *arg_owner = obj_owner;
+                    PyObject *retval = CPyDef_decorators_____mypyc_lambda__0_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_instance = obj_instance;
-                PyObject *arg_owner = obj_owner;
-                PyObject *retval = CPyDef_decorators_____mypyc_lambda__0_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators_____mypyc_lambda__0_obj_____call__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_func) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -15015,24 +16021,24 @@ CPyL6: ;
     CPy_DecRef(cpy_r_r0);
     goto CPyL5;
 }
-            
-            PyObject *CPyPy_decorators_____mypyc_lambda__0_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"func", 0};
-                static CPyArg_Parser parser = {"O:__call__", kwlist, 0};
-                PyObject *obj_func;
-                if (!CPyArg_ParseStackAndKeywordsOneArg(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_func)) {
+                
+                PyObject *CPyPy_decorators_____mypyc_lambda__0_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"func", 0};
+                    static CPyArg_Parser parser = {"O:__call__", kwlist, 0};
+                    PyObject *obj_func;
+                    if (!CPyArg_ParseStackAndKeywordsOneArg(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_func)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_func = obj_func;
+                    PyObject *retval = CPyDef_decorators_____mypyc_lambda__0_obj_____call__(arg___mypyc_self__, arg_func);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "<lambda>", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_func = obj_func;
-                PyObject *retval = CPyDef_decorators_____mypyc_lambda__0_obj_____call__(arg___mypyc_self__, arg_func);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "<lambda>", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators_____mypyc_lambda__1_obj_____get__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -15051,26 +16057,26 @@ CPyL4: ;
     cpy_r_r3 = NULL;
     return cpy_r_r3;
 }
-            
-            PyObject *CPyPy_decorators_____mypyc_lambda__1_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"instance", "owner", 0};
-                static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
-                PyObject *obj_instance;
-                PyObject *obj_owner;
-                if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                
+                PyObject *CPyPy_decorators_____mypyc_lambda__1_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"instance", "owner", 0};
+                    static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
+                    PyObject *obj_instance;
+                    PyObject *obj_owner;
+                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_instance = obj_instance;
+                    PyObject *arg_owner = obj_owner;
+                    PyObject *retval = CPyDef_decorators_____mypyc_lambda__1_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_instance = obj_instance;
-                PyObject *arg_owner = obj_owner;
-                PyObject *retval = CPyDef_decorators_____mypyc_lambda__1_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators_____mypyc_lambda__1_obj_____call__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_fn) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -15159,24 +16165,24 @@ CPyL14: ;
     CPy_DecRef(cpy_r_r14);
     goto CPyL11;
 }
-            
-            PyObject *CPyPy_decorators_____mypyc_lambda__1_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"fn", 0};
-                static CPyArg_Parser parser = {"O:__call__", kwlist, 0};
-                PyObject *obj_fn;
-                if (!CPyArg_ParseStackAndKeywordsOneArg(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_fn)) {
+                
+                PyObject *CPyPy_decorators_____mypyc_lambda__1_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"fn", 0};
+                    static CPyArg_Parser parser = {"O:__call__", kwlist, 0};
+                    PyObject *obj_fn;
+                    if (!CPyArg_ParseStackAndKeywordsOneArg(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_fn)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_fn = obj_fn;
+                    PyObject *retval = CPyDef_decorators_____mypyc_lambda__1_obj_____call__(arg___mypyc_self__, arg_fn);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "<lambda>", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_fn = obj_fn;
-                PyObject *retval = CPyDef_decorators_____mypyc_lambda__1_obj_____call__(arg___mypyc_self__, arg_fn);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "<lambda>", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators_____mypyc_lambda__2_obj_____get__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -15195,26 +16201,26 @@ CPyL4: ;
     cpy_r_r3 = NULL;
     return cpy_r_r3;
 }
-            
-            PyObject *CPyPy_decorators_____mypyc_lambda__2_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"instance", "owner", 0};
-                static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
-                PyObject *obj_instance;
-                PyObject *obj_owner;
-                if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                
+                PyObject *CPyPy_decorators_____mypyc_lambda__2_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"instance", "owner", 0};
+                    static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
+                    PyObject *obj_instance;
+                    PyObject *obj_owner;
+                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_instance = obj_instance;
+                    PyObject *arg_owner = obj_owner;
+                    PyObject *retval = CPyDef_decorators_____mypyc_lambda__2_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_instance = obj_instance;
-                PyObject *arg_owner = obj_owner;
-                PyObject *retval = CPyDef_decorators_____mypyc_lambda__2_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators_____mypyc_lambda__2_obj_____call__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_func) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -15301,24 +16307,24 @@ CPyL11: ;
     CPy_DecRef(cpy_r_r14);
     goto CPyL8;
 }
-            
-            PyObject *CPyPy_decorators_____mypyc_lambda__2_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"func", 0};
-                static CPyArg_Parser parser = {"O:__call__", kwlist, 0};
-                PyObject *obj_func;
-                if (!CPyArg_ParseStackAndKeywordsOneArg(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_func)) {
+                
+                PyObject *CPyPy_decorators_____mypyc_lambda__2_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"func", 0};
+                    static CPyArg_Parser parser = {"O:__call__", kwlist, 0};
+                    PyObject *obj_func;
+                    if (!CPyArg_ParseStackAndKeywordsOneArg(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_func)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_func = obj_func;
+                    PyObject *retval = CPyDef_decorators_____mypyc_lambda__2_obj_____call__(arg___mypyc_self__, arg_func);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "<lambda>", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_func = obj_func;
-                PyObject *retval = CPyDef_decorators_____mypyc_lambda__2_obj_____call__(arg___mypyc_self__, arg_func);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "<lambda>", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -15337,26 +16343,26 @@ CPyL4: ;
     cpy_r_r3 = NULL;
     return cpy_r_r3;
 }
-            
-            PyObject *CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"instance", "owner", 0};
-                static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
-                PyObject *obj_instance;
-                PyObject *obj_owner;
-                if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                
+                PyObject *CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"instance", "owner", 0};
+                    static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
+                    PyObject *obj_instance;
+                    PyObject *obj_owner;
+                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_instance = obj_instance;
+                    PyObject *arg_owner = obj_owner;
+                    PyObject *retval = CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_instance = obj_instance;
-                PyObject *arg_owner = obj_owner;
-                PyObject *retval = CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_args, PyObject *cpy_r_kwargs) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -15795,30 +16801,30 @@ CPyL62: ;
     CPy_DECREF(cpy_r_r52);
     goto CPyL38;
 }
-            
-            PyObject *CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {0};
-                static CPyArg_Parser parser = {"%:__call__", kwlist, 0};
-                PyObject *obj_args;
-                PyObject *obj_kwargs;
-                if (!CPyArg_ParseStackAndKeywords(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_args, &obj_kwargs)) {
+                
+                PyObject *CPyPy_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {0};
+                    static CPyArg_Parser parser = {"%:__call__", kwlist, 0};
+                    PyObject *obj_args;
+                    PyObject *obj_kwargs;
+                    if (!CPyArg_ParseStackAndKeywords(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_args, &obj_kwargs)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_args = obj_args;
+                    PyObject *arg_kwargs = obj_kwargs;
+                    PyObject *retval = CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__(arg___mypyc_self__, arg_args, arg_kwargs);
+                    CPy_DECREF(obj_args);
+                    CPy_DECREF(obj_kwargs);
+                    return retval;
+fail: ;
+                    CPy_DECREF(obj_args);
+                    CPy_DECREF(obj_kwargs);
+                    CPy_AddTraceback("y/_db/decorators.py", "result_count_wrap", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_args = obj_args;
-                PyObject *arg_kwargs = obj_kwargs;
-                PyObject *retval = CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____call__(arg___mypyc_self__, arg_args, arg_kwargs);
-                CPy_DECREF(obj_args);
-                CPy_DECREF(obj_kwargs);
-                return retval;
-fail: ;
-                CPy_DECREF(obj_args);
-                CPy_DECREF(obj_kwargs);
-                CPy_AddTraceback("y/_db/decorators.py", "result_count_wrap", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators___result_count_deco_log_result_count_obj_____get__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_instance, PyObject *cpy_r_owner) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -15837,26 +16843,26 @@ CPyL4: ;
     cpy_r_r3 = NULL;
     return cpy_r_r3;
 }
-            
-            PyObject *CPyPy_decorators___result_count_deco_log_result_count_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"instance", "owner", 0};
-                static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
-                PyObject *obj_instance;
-                PyObject *obj_owner;
-                if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                
+                PyObject *CPyPy_decorators___result_count_deco_log_result_count_obj_____get__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"instance", "owner", 0};
+                    static CPyArg_Parser parser = {"OO:__get__", kwlist, 0};
+                    PyObject *obj_instance;
+                    PyObject *obj_owner;
+                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_instance, &obj_owner)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_instance = obj_instance;
+                    PyObject *arg_owner = obj_owner;
+                    PyObject *retval = CPyDef_decorators___result_count_deco_log_result_count_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_instance = obj_instance;
-                PyObject *arg_owner = obj_owner;
-                PyObject *retval = CPyDef_decorators___result_count_deco_log_result_count_obj_____get__(arg___mypyc_self__, arg_instance, arg_owner);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "__get__", -1, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators___result_count_deco_log_result_count_obj_____call__(PyObject *cpy_r___mypyc_self__, PyObject *cpy_r_fn) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -15995,24 +17001,24 @@ CPyL18: ;
     CPy_DecRef(cpy_r_r15);
     goto CPyL12;
 }
-            
-            PyObject *CPyPy_decorators___result_count_deco_log_result_count_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                PyObject *obj___mypyc_self__ = self;
-                static const char * const kwlist[] = {"fn", 0};
-                static CPyArg_Parser parser = {"O:__call__", kwlist, 0};
-                PyObject *obj_fn;
-                if (!CPyArg_ParseStackAndKeywordsOneArg(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_fn)) {
+                
+                PyObject *CPyPy_decorators___result_count_deco_log_result_count_obj_____call__(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    PyObject *obj___mypyc_self__ = self;
+                    static const char * const kwlist[] = {"fn", 0};
+                    static CPyArg_Parser parser = {"O:__call__", kwlist, 0};
+                    PyObject *obj_fn;
+                    if (!CPyArg_ParseStackAndKeywordsOneArg(args, PyVectorcall_NARGS(nargs), kwnames, &parser, &obj_fn)) {
+                        return NULL;
+                    }
+                    PyObject *arg___mypyc_self__ = obj___mypyc_self__;
+                    PyObject *arg_fn = obj_fn;
+                    PyObject *retval = CPyDef_decorators___result_count_deco_log_result_count_obj_____call__(arg___mypyc_self__, arg_fn);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "result_count_deco", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg___mypyc_self__ = obj___mypyc_self__;
-                PyObject *arg_fn = obj_fn;
-                PyObject *retval = CPyDef_decorators___result_count_deco_log_result_count_obj_____call__(arg___mypyc_self__, arg_fn);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "result_count_deco", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 PyObject *CPyDef_decorators___log_result_count(PyObject *cpy_r_name, PyObject *cpy_r_arg_names) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -16087,35 +17093,35 @@ CPyL13: ;
     CPy_DecRef(cpy_r_r4);
     goto CPyL8;
 }
-            
-            PyObject *CPyPy_decorators___log_result_count(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                static const char * const kwlist[] = {"name", "arg_names", 0};
-                static CPyArg_Parser parser = {"O|O:log_result_count", kwlist, 0};
-                PyObject *obj_name;
-                PyObject *obj_arg_names = NULL;
-                if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_name, &obj_arg_names)) {
+                
+                PyObject *CPyPy_decorators___log_result_count(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                    static const char * const kwlist[] = {"name", "arg_names", 0};
+                    static CPyArg_Parser parser = {"O|O:log_result_count", kwlist, 0};
+                    PyObject *obj_name;
+                    PyObject *obj_arg_names = NULL;
+                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_name, &obj_arg_names)) {
+                        return NULL;
+                    }
+                    PyObject *arg_name;
+                    if (likely(PyUnicode_Check(obj_name)))
+                        arg_name = obj_name;
+                    else {
+                        CPy_TypeError("str", obj_name); 
+                        goto fail;
+                    }
+                    PyObject *arg_arg_names;
+                    if (obj_arg_names == NULL) {
+                        arg_arg_names = NULL;
+                    } else {
+                        arg_arg_names = obj_arg_names; 
+                    }
+                    PyObject *retval = CPyDef_decorators___log_result_count(arg_name, arg_arg_names);
+                    return retval;
+fail: ;
+                    CPy_AddTraceback("y/_db/decorators.py", "log_result_count", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
                     return NULL;
                 }
-                PyObject *arg_name;
-                if (likely(PyUnicode_Check(obj_name)))
-                    arg_name = obj_name;
-                else {
-                    CPy_TypeError("str", obj_name); 
-                    goto fail;
-                }
-                PyObject *arg_arg_names;
-                if (obj_arg_names == NULL) {
-                    arg_arg_names = NULL;
-                } else {
-                    arg_arg_names = obj_arg_names; 
-                }
-                PyObject *retval = CPyDef_decorators___log_result_count(arg_name, arg_arg_names);
-                return retval;
-fail: ;
-                CPy_AddTraceback("y/_db/decorators.py", "log_result_count", DIFFCHECK_PLACEHOLDER, CPyStatic_decorators___globals);
-                return NULL;
-            }
-            
+                
 char CPyDef_decorators_____top_level__(void) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -17051,107 +18057,107 @@ CPyL102: ;
     CPy_DecRef(cpy_r_r197);
     goto CPyL95;
 }
-            static PyMethodDef stringifymodule_methods[] = {
-                {"stringify_column_value", (PyCFunction)CPyPy_stringify___stringify_column_value, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("stringify_column_value(value, provider)\n--\n\n") /* docstring */},
-                {"build_row", (PyCFunction)CPyPy_stringify___build_row, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("build_row(row, provider)\n--\n\n") /* docstring */},
-                {"build_query", (PyCFunction)CPyPy_stringify___build_query, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("build_query(provider_name, entity_name, columns, items)\n--\n\n") /* docstring */},
-                {NULL, NULL, 0, NULL}
-            };
-            
-            int CPyExec_y____db___utils___stringify(PyObject *module)
-            {
-                intern_strings();
-                PyObject* modname = NULL;
-                modname = PyObject_GetAttrString((PyObject *)CPyModule_y____db___utils___stringify__internal, "__name__");
-                CPyStatic_stringify___globals = PyModule_GetDict(CPyModule_y____db___utils___stringify__internal);
-                if (unlikely(CPyStatic_stringify___globals == NULL))
-                    goto fail;
-                if (CPyGlobalsInit() < 0)
-                    goto fail;
-                char result = CPyDef_stringify_____top_level__();
-                if (result == 2)
-                    goto fail;
-                Py_DECREF(modname);
-                return 0;
-                fail:
-                Py_CLEAR(CPyModule_y____db___utils___stringify__internal);
-                Py_CLEAR(modname);
-                CPy_XDECREF(CPyStatic_stringify___UTC);
-                CPyStatic_stringify___UTC = NULL;
-                CPy_XDECREF(CPyStatic_stringify___astimezone);
-                CPyStatic_stringify___astimezone = NULL;
-                CPy_XDECREF(CPyStatic_stringify___isoformat);
-                CPyStatic_stringify___isoformat = NULL;
-                return -1;
-            }
-            static struct PyModuleDef stringifymodule = {
-                PyModuleDef_HEAD_INIT,
-                "y._db.utils.stringify",
-                NULL, /* docstring */
-                0,       /* size of per-interpreter state of the module */
-                stringifymodule_methods,
-                NULL,
-            };
-            
-            PyObject *CPyInitOnly_y____db___utils___stringify(void)
-            {
-                if (CPyModule_y____db___utils___stringify__internal) {
-                    Py_INCREF(CPyModule_y____db___utils___stringify__internal);
-                    return CPyModule_y____db___utils___stringify__internal;
-                }
-                CPyModule_y____db___utils___stringify__internal = PyModule_Create(&stringifymodule);
-                return CPyModule_y____db___utils___stringify__internal;
-            }
-            
-            PyObject *CPyInit_y____db___utils___stringify(void)
-            {
-                PyObject* modname = NULL;
-                if (CPyModule_y____db___utils___stringify__internal) {
-                    Py_INCREF(CPyModule_y____db___utils___stringify__internal);
-                    return CPyModule_y____db___utils___stringify__internal;
-                }
-                CPyModule_y____db___utils___stringify__internal = PyModule_Create(&stringifymodule);
-                if (unlikely(CPyModule_y____db___utils___stringify__internal == NULL))
-                    goto fail;
-                modname = PyUnicode_FromString("y._db.utils.stringify");
-                if (modname == NULL) CPyError_OutOfMemory();
-                int rv = 0;
-                PyObject *mod_dict = PyImport_GetModuleDict();
-                PyObject *shared_lib = NULL;
-                rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
-                if (rv < 0) goto fail;
-                PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
-                if (shared_lib_file == NULL) goto fail;
-                PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
-                if (ext_suffix == NULL) CPyError_OutOfMemory();
-                Py_ssize_t is_pkg = 0;
-                rv = CPyImport_SetDunderAttrs(CPyModule_y____db___utils___stringify__internal, modname, shared_lib_file, ext_suffix, is_pkg);
-                Py_DECREF(ext_suffix);
-                Py_DECREF(shared_lib_file);
-                if (rv < 0) goto fail;
-                if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y____db___utils___stringify__internal) < 0)
-                    goto fail;
-                Py_CLEAR(modname);
-                if (CPyExec_y____db___utils___stringify(CPyModule_y____db___utils___stringify__internal) != 0)
-                    goto fail;
-                return CPyModule_y____db___utils___stringify__internal;
-                fail:
+                static PyMethodDef stringifymodule_methods[] = {
+                    {"stringify_column_value", (PyCFunction)CPyPy_stringify___stringify_column_value, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("stringify_column_value(value, provider)\n--\n\n") /* docstring */},
+                    {"build_row", (PyCFunction)CPyPy_stringify___build_row, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("build_row(row, provider)\n--\n\n") /* docstring */},
+                    {"build_query", (PyCFunction)CPyPy_stringify___build_query, METH_FASTCALL | METH_KEYWORDS, PyDoc_STR("build_query(provider_name, entity_name, columns, items)\n--\n\n") /* docstring */},
+                    {NULL, NULL, 0, NULL}
+                };
+                
+                int CPyExec_y____db___utils___stringify(PyObject *module)
                 {
-                        PyObject *exc_type, *exc_val, *exc_tb;
-                        PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
-                        if (modname == NULL) {
-                                modname = PyUnicode_FromString("y._db.utils.stringify");
-                                if (modname == NULL) CPyError_OutOfMemory();
-                            }
-                            PyObject_DelItem(PyImport_GetModuleDict(), modname);
-                            PyErr_Clear();
-                            Py_DECREF(modname);
-                            Py_CLEAR(CPyModule_y____db___utils___stringify__internal);
-                            PyErr_Restore(exc_type, exc_val, exc_tb);
+                    intern_strings();
+                    PyObject* modname = NULL;
+                    modname = PyObject_GetAttrString((PyObject *)CPyModule_y____db___utils___stringify__internal, "__name__");
+                    CPyStatic_stringify___globals = PyModule_GetDict(CPyModule_y____db___utils___stringify__internal);
+                    if (unlikely(CPyStatic_stringify___globals == NULL))
+                        goto fail;
+                    if (CPyGlobalsInit() < 0)
+                        goto fail;
+                    char result = CPyDef_stringify_____top_level__();
+                    if (result == 2)
+                        goto fail;
+                    Py_DECREF(modname);
+                    return 0;
+                    fail:
+                    Py_CLEAR(CPyModule_y____db___utils___stringify__internal);
+                    Py_CLEAR(modname);
+                    CPy_XDECREF(CPyStatic_stringify___UTC);
+                    CPyStatic_stringify___UTC = NULL;
+                    CPy_XDECREF(CPyStatic_stringify___astimezone);
+                    CPyStatic_stringify___astimezone = NULL;
+                    CPy_XDECREF(CPyStatic_stringify___isoformat);
+                    CPyStatic_stringify___isoformat = NULL;
+                    return -1;
+                }
+                static struct PyModuleDef stringifymodule = {
+                    PyModuleDef_HEAD_INIT,
+                    "y._db.utils.stringify",
+                    NULL, /* docstring */
+                    0,       /* size of per-interpreter state of the module */
+                    stringifymodule_methods,
+                    NULL,
+                };
+                
+                PyObject *CPyInitOnly_y____db___utils___stringify(void)
+                {
+                    if (CPyModule_y____db___utils___stringify__internal) {
+                        Py_INCREF(CPyModule_y____db___utils___stringify__internal);
+                        return CPyModule_y____db___utils___stringify__internal;
                     }
-                    return NULL;
+                    CPyModule_y____db___utils___stringify__internal = PyModule_Create(&stringifymodule);
+                    return CPyModule_y____db___utils___stringify__internal;
                 }
                 
+                PyObject *CPyInit_y____db___utils___stringify(void)
+                {
+                    PyObject* modname = NULL;
+                    if (CPyModule_y____db___utils___stringify__internal) {
+                        Py_INCREF(CPyModule_y____db___utils___stringify__internal);
+                        return CPyModule_y____db___utils___stringify__internal;
+                    }
+                    CPyModule_y____db___utils___stringify__internal = PyModule_Create(&stringifymodule);
+                    if (unlikely(CPyModule_y____db___utils___stringify__internal == NULL))
+                        goto fail;
+                    modname = PyUnicode_FromString("y._db.utils.stringify");
+                    if (modname == NULL) CPyError_OutOfMemory();
+                    int rv = 0;
+                    PyObject *mod_dict = PyImport_GetModuleDict();
+                    PyObject *shared_lib = NULL;
+                    rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
+                    if (rv < 0) goto fail;
+                    PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
+                    if (shared_lib_file == NULL) goto fail;
+                    PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
+                    if (ext_suffix == NULL) CPyError_OutOfMemory();
+                    Py_ssize_t is_pkg = 0;
+                    rv = CPyImport_SetDunderAttrs(CPyModule_y____db___utils___stringify__internal, modname, shared_lib_file, ext_suffix, is_pkg);
+                    Py_DECREF(ext_suffix);
+                    Py_DECREF(shared_lib_file);
+                    if (rv < 0) goto fail;
+                    if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y____db___utils___stringify__internal) < 0)
+                        goto fail;
+                    Py_CLEAR(modname);
+                    if (CPyExec_y____db___utils___stringify(CPyModule_y____db___utils___stringify__internal) != 0)
+                        goto fail;
+                    return CPyModule_y____db___utils___stringify__internal;
+                    fail:
+                    {
+                            PyObject *exc_type, *exc_val, *exc_tb;
+                            PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
+                            if (modname == NULL) {
+                                    modname = PyUnicode_FromString("y._db.utils.stringify");
+                                    if (modname == NULL) CPyError_OutOfMemory();
+                                }
+                                PyObject_DelItem(PyImport_GetModuleDict(), modname);
+                                PyErr_Clear();
+                                Py_DECREF(modname);
+                                Py_CLEAR(CPyModule_y____db___utils___stringify__internal);
+                                PyErr_Restore(exc_type, exc_val, exc_tb);
+                        }
+                        return NULL;
+                    }
+                    
 PyObject *CPyDef_stringify___stringify_column_value(PyObject *cpy_r_value, PyObject *cpy_r_provider) {
     PyObject *cpy_r_r0;
     char cpy_r_r1;
@@ -17488,30 +18494,30 @@ CPyL52: ;
     CPy_DecRef(cpy_r_r65);
     goto CPyL48;
 }
-                
-                PyObject *CPyPy_stringify___stringify_column_value(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                    static const char * const kwlist[] = {"value", "provider", 0};
-                    static CPyArg_Parser parser = {"OO:stringify_column_value", kwlist, 0};
-                    PyObject *obj_value;
-                    PyObject *obj_provider;
-                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_value, &obj_provider)) {
+                    
+                    PyObject *CPyPy_stringify___stringify_column_value(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                        static const char * const kwlist[] = {"value", "provider", 0};
+                        static CPyArg_Parser parser = {"OO:stringify_column_value", kwlist, 0};
+                        PyObject *obj_value;
+                        PyObject *obj_provider;
+                        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_value, &obj_provider)) {
+                            return NULL;
+                        }
+                        PyObject *arg_value = obj_value;
+                        PyObject *arg_provider;
+                        if (likely(PyUnicode_Check(obj_provider)))
+                            arg_provider = obj_provider;
+                        else {
+                            CPy_TypeError("str", obj_provider); 
+                            goto fail;
+                        }
+                        PyObject *retval = CPyDef_stringify___stringify_column_value(arg_value, arg_provider);
+                        return retval;
+fail: ;
+                        CPy_AddTraceback("y/_db/utils/stringify.py", "stringify_column_value", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
                         return NULL;
                     }
-                    PyObject *arg_value = obj_value;
-                    PyObject *arg_provider;
-                    if (likely(PyUnicode_Check(obj_provider)))
-                        arg_provider = obj_provider;
-                    else {
-                        CPy_TypeError("str", obj_provider); 
-                        goto fail;
-                    }
-                    PyObject *retval = CPyDef_stringify___stringify_column_value(arg_value, arg_provider);
-                    return retval;
-fail: ;
-                    CPy_AddTraceback("y/_db/utils/stringify.py", "stringify_column_value", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-                    return NULL;
-                }
-                
+                    
 PyObject *CPyDef_stringify___build_row(PyObject *cpy_r_row, PyObject *cpy_r_provider) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -17589,30 +18595,30 @@ CPyL12: ;
     CPy_DecRef(cpy_r_r3);
     goto CPyL9;
 }
-                
-                PyObject *CPyPy_stringify___build_row(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                    static const char * const kwlist[] = {"row", "provider", 0};
-                    static CPyArg_Parser parser = {"OO:build_row", kwlist, 0};
-                    PyObject *obj_row;
-                    PyObject *obj_provider;
-                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_row, &obj_provider)) {
+                    
+                    PyObject *CPyPy_stringify___build_row(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                        static const char * const kwlist[] = {"row", "provider", 0};
+                        static CPyArg_Parser parser = {"OO:build_row", kwlist, 0};
+                        PyObject *obj_row;
+                        PyObject *obj_provider;
+                        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_row, &obj_provider)) {
+                            return NULL;
+                        }
+                        PyObject *arg_row = obj_row;
+                        PyObject *arg_provider;
+                        if (likely(PyUnicode_Check(obj_provider)))
+                            arg_provider = obj_provider;
+                        else {
+                            CPy_TypeError("str", obj_provider); 
+                            goto fail;
+                        }
+                        PyObject *retval = CPyDef_stringify___build_row(arg_row, arg_provider);
+                        return retval;
+fail: ;
+                        CPy_AddTraceback("y/_db/utils/stringify.py", "build_row", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
                         return NULL;
                     }
-                    PyObject *arg_row = obj_row;
-                    PyObject *arg_provider;
-                    if (likely(PyUnicode_Check(obj_provider)))
-                        arg_provider = obj_provider;
-                    else {
-                        CPy_TypeError("str", obj_provider); 
-                        goto fail;
-                    }
-                    PyObject *retval = CPyDef_stringify___build_row(arg_row, arg_provider);
-                    return retval;
-fail: ;
-                    CPy_AddTraceback("y/_db/utils/stringify.py", "build_row", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-                    return NULL;
-                }
-                
+                    
 PyObject *CPyDef_stringify___build_query(PyObject *cpy_r_provider_name, PyObject *cpy_r_entity_name, PyObject *cpy_r_columns, PyObject *cpy_r_items) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -17771,40 +18777,40 @@ CPyL24: ;
     CPy_DECREF(cpy_r_r8);
     goto CPyL15;
 }
-                
-                PyObject *CPyPy_stringify___build_query(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
-                    static const char * const kwlist[] = {"provider_name", "entity_name", "columns", "items", 0};
-                    static CPyArg_Parser parser = {"OOOO:build_query", kwlist, 0};
-                    PyObject *obj_provider_name;
-                    PyObject *obj_entity_name;
-                    PyObject *obj_columns;
-                    PyObject *obj_items;
-                    if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_provider_name, &obj_entity_name, &obj_columns, &obj_items)) {
+                    
+                    PyObject *CPyPy_stringify___build_query(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames) {
+                        static const char * const kwlist[] = {"provider_name", "entity_name", "columns", "items", 0};
+                        static CPyArg_Parser parser = {"OOOO:build_query", kwlist, 0};
+                        PyObject *obj_provider_name;
+                        PyObject *obj_entity_name;
+                        PyObject *obj_columns;
+                        PyObject *obj_items;
+                        if (!CPyArg_ParseStackAndKeywordsSimple(args, nargs, kwnames, &parser, &obj_provider_name, &obj_entity_name, &obj_columns, &obj_items)) {
+                            return NULL;
+                        }
+                        PyObject *arg_provider_name;
+                        if (likely(PyUnicode_Check(obj_provider_name)))
+                            arg_provider_name = obj_provider_name;
+                        else {
+                            CPy_TypeError("str", obj_provider_name); 
+                            goto fail;
+                        }
+                        PyObject *arg_entity_name;
+                        if (likely(PyUnicode_Check(obj_entity_name)))
+                            arg_entity_name = obj_entity_name;
+                        else {
+                            CPy_TypeError("str", obj_entity_name); 
+                            goto fail;
+                        }
+                        PyObject *arg_columns = obj_columns;
+                        PyObject *arg_items = obj_items;
+                        PyObject *retval = CPyDef_stringify___build_query(arg_provider_name, arg_entity_name, arg_columns, arg_items);
+                        return retval;
+fail: ;
+                        CPy_AddTraceback("y/_db/utils/stringify.py", "build_query", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
                         return NULL;
                     }
-                    PyObject *arg_provider_name;
-                    if (likely(PyUnicode_Check(obj_provider_name)))
-                        arg_provider_name = obj_provider_name;
-                    else {
-                        CPy_TypeError("str", obj_provider_name); 
-                        goto fail;
-                    }
-                    PyObject *arg_entity_name;
-                    if (likely(PyUnicode_Check(obj_entity_name)))
-                        arg_entity_name = obj_entity_name;
-                    else {
-                        CPy_TypeError("str", obj_entity_name); 
-                        goto fail;
-                    }
-                    PyObject *arg_columns = obj_columns;
-                    PyObject *arg_items = obj_items;
-                    PyObject *retval = CPyDef_stringify___build_query(arg_provider_name, arg_entity_name, arg_columns, arg_items);
-                    return retval;
-fail: ;
-                    CPy_AddTraceback("y/_db/utils/stringify.py", "build_query", DIFFCHECK_PLACEHOLDER, CPyStatic_stringify___globals);
-                    return NULL;
-                }
-                
+                    
 char CPyDef_stringify_____top_level__(void) {
     PyObject *cpy_r_r0;
     PyObject *cpy_r_r1;
@@ -17992,1012 +18998,6 @@ CPyL3: ;
 CPyL17: ;
     cpy_r_r48 = 2;
     return cpy_r_r48;
-}
-                static PyMethodDef ENVIRONMENT_VARIABLESmodule_methods[] = {
-                    {NULL, NULL, 0, NULL}
-                };
-                
-                int CPyExec_y___ENVIRONMENT_VARIABLES(PyObject *module)
-                {
-                    intern_strings();
-                    PyObject* modname = NULL;
-                    modname = PyObject_GetAttrString((PyObject *)CPyModule_y___ENVIRONMENT_VARIABLES__internal, "__name__");
-                    CPyStatic_ENVIRONMENT_VARIABLES___globals = PyModule_GetDict(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
-                    if (unlikely(CPyStatic_ENVIRONMENT_VARIABLES___globals == NULL))
-                        goto fail;
-                    if (CPyGlobalsInit() < 0)
-                        goto fail;
-                    char result = CPyDef_ENVIRONMENT_VARIABLES_____top_level__();
-                    if (result == 2)
-                        goto fail;
-                    Py_DECREF(modname);
-                    return 0;
-                    fail:
-                    Py_CLEAR(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
-                    Py_CLEAR(modname);
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES____envs);
-                    CPyStatic_ENVIRONMENT_VARIABLES____envs = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL);
-                    CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL);
-                    CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE);
-                    CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP);
-                    CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE);
-                    CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER);
-                    CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH);
-                    CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST);
-                    CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT);
-                    CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_USER);
-                    CPyStatic_ENVIRONMENT_VARIABLES___DB_USER = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD);
-                    CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE);
-                    CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE);
-                    CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI);
-                    CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = NULL;
-                    CPy_XDECREF(CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE);
-                    CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = NULL;
-                    return -1;
-                }
-                static struct PyModuleDef ENVIRONMENT_VARIABLESmodule = {
-                    PyModuleDef_HEAD_INIT,
-                    "y.ENVIRONMENT_VARIABLES",
-                    NULL, /* docstring */
-                    0,       /* size of per-interpreter state of the module */
-                    ENVIRONMENT_VARIABLESmodule_methods,
-                    NULL,
-                };
-                
-                PyObject *CPyInitOnly_y___ENVIRONMENT_VARIABLES(void)
-                {
-                    if (CPyModule_y___ENVIRONMENT_VARIABLES__internal) {
-                        Py_INCREF(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
-                        return CPyModule_y___ENVIRONMENT_VARIABLES__internal;
-                    }
-                    CPyModule_y___ENVIRONMENT_VARIABLES__internal = PyModule_Create(&ENVIRONMENT_VARIABLESmodule);
-                    return CPyModule_y___ENVIRONMENT_VARIABLES__internal;
-                }
-                
-                PyObject *CPyInit_y___ENVIRONMENT_VARIABLES(void)
-                {
-                    PyObject* modname = NULL;
-                    if (CPyModule_y___ENVIRONMENT_VARIABLES__internal) {
-                        Py_INCREF(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
-                        return CPyModule_y___ENVIRONMENT_VARIABLES__internal;
-                    }
-                    CPyModule_y___ENVIRONMENT_VARIABLES__internal = PyModule_Create(&ENVIRONMENT_VARIABLESmodule);
-                    if (unlikely(CPyModule_y___ENVIRONMENT_VARIABLES__internal == NULL))
-                        goto fail;
-                    modname = PyUnicode_FromString("y.ENVIRONMENT_VARIABLES");
-                    if (modname == NULL) CPyError_OutOfMemory();
-                    int rv = 0;
-                    PyObject *mod_dict = PyImport_GetModuleDict();
-                    PyObject *shared_lib = NULL;
-                    rv = PyDict_GetItemStringRef(mod_dict, "ypricemagic__mypyc", &shared_lib);
-                    if (rv < 0) goto fail;
-                    PyObject *shared_lib_file = PyObject_GetAttrString(shared_lib, "__file__");
-                    if (shared_lib_file == NULL) goto fail;
-                    PyObject *ext_suffix = PyUnicode_FromString(".cpython-313-x86_64-linux-gnu.so");
-                    if (ext_suffix == NULL) CPyError_OutOfMemory();
-                    Py_ssize_t is_pkg = 0;
-                    rv = CPyImport_SetDunderAttrs(CPyModule_y___ENVIRONMENT_VARIABLES__internal, modname, shared_lib_file, ext_suffix, is_pkg);
-                    Py_DECREF(ext_suffix);
-                    Py_DECREF(shared_lib_file);
-                    if (rv < 0) goto fail;
-                    if (PyObject_SetItem(PyImport_GetModuleDict(), modname, CPyModule_y___ENVIRONMENT_VARIABLES__internal) < 0)
-                        goto fail;
-                    Py_CLEAR(modname);
-                    if (CPyExec_y___ENVIRONMENT_VARIABLES(CPyModule_y___ENVIRONMENT_VARIABLES__internal) != 0)
-                        goto fail;
-                    return CPyModule_y___ENVIRONMENT_VARIABLES__internal;
-                    fail:
-                    {
-                            PyObject *exc_type, *exc_val, *exc_tb;
-                            PyErr_Fetch(&exc_type, &exc_val, &exc_tb);
-                            if (modname == NULL) {
-                                    modname = PyUnicode_FromString("y.ENVIRONMENT_VARIABLES");
-                                    if (modname == NULL) CPyError_OutOfMemory();
-                                }
-                                PyObject_DelItem(PyImport_GetModuleDict(), modname);
-                                PyErr_Clear();
-                                Py_DECREF(modname);
-                                Py_CLEAR(CPyModule_y___ENVIRONMENT_VARIABLES__internal);
-                                PyErr_Restore(exc_type, exc_val, exc_tb);
-                        }
-                        return NULL;
-                    }
-                    
-char CPyDef_ENVIRONMENT_VARIABLES_____top_level__(void) {
-    PyObject *cpy_r_r0;
-    PyObject *cpy_r_r1;
-    char cpy_r_r2;
-    PyObject *cpy_r_r3;
-    PyObject *cpy_r_r4;
-    PyObject *cpy_r_r5;
-    PyObject *cpy_r_r6;
-    PyObject *cpy_r_r7;
-    PyObject *cpy_r_r8;
-    PyObject *cpy_r_r9;
-    PyObject *cpy_r_r10;
-    PyObject *cpy_r_r11;
-    PyObject *cpy_r_r12;
-    PyObject *cpy_r_r13;
-    PyObject *cpy_r_r14;
-    PyObject *cpy_r_r15;
-    PyObject *cpy_r_r16;
-    PyObject *cpy_r_r17;
-    PyObject *cpy_r_r18;
-    PyObject *cpy_r_r19;
-    PyObject *cpy_r_r20;
-    PyObject **cpy_r_r22;
-    PyObject *cpy_r_r23;
-    PyObject *cpy_r_r24;
-    PyObject *cpy_r_r25;
-    int32_t cpy_r_r26;
-    char cpy_r_r27;
-    PyObject *cpy_r_r28;
-    char cpy_r_r29;
-    PyObject *cpy_r_r30;
-    PyObject *cpy_r_r31;
-    PyObject *cpy_r_r32;
-    PyObject *cpy_r_r33;
-    PyObject *cpy_r_r34;
-    PyObject **cpy_r_r36;
-    PyObject *cpy_r_r37;
-    PyObject *cpy_r_r38;
-    PyObject *cpy_r_r39;
-    PyObject *cpy_r_r40;
-    int32_t cpy_r_r41;
-    char cpy_r_r42;
-    PyObject *cpy_r_r43;
-    char cpy_r_r44;
-    PyObject *cpy_r_r45;
-    PyObject *cpy_r_r46;
-    PyObject *cpy_r_r47;
-    char cpy_r_r48;
-    PyObject *cpy_r_r49;
-    PyObject *cpy_r_r50;
-    PyObject **cpy_r_r52;
-    PyObject *cpy_r_r53;
-    PyObject *cpy_r_r54;
-    PyObject *cpy_r_r55;
-    PyObject *cpy_r_r56;
-    int32_t cpy_r_r57;
-    char cpy_r_r58;
-    PyObject *cpy_r_r59;
-    char cpy_r_r60;
-    PyObject *cpy_r_r61;
-    PyObject *cpy_r_r62;
-    PyObject *cpy_r_r63;
-    PyObject *cpy_r_r64;
-    PyObject **cpy_r_r66;
-    PyObject *cpy_r_r67;
-    PyObject *cpy_r_r68;
-    PyObject *cpy_r_r69;
-    PyObject *cpy_r_r70;
-    int32_t cpy_r_r71;
-    char cpy_r_r72;
-    PyObject *cpy_r_r73;
-    char cpy_r_r74;
-    PyObject *cpy_r_r75;
-    PyObject *cpy_r_r76;
-    PyObject *cpy_r_r77;
-    PyObject *cpy_r_r78;
-    PyObject *cpy_r_r79;
-    PyObject **cpy_r_r81;
-    PyObject *cpy_r_r82;
-    PyObject *cpy_r_r83;
-    PyObject *cpy_r_r84;
-    PyObject *cpy_r_r85;
-    int32_t cpy_r_r86;
-    char cpy_r_r87;
-    PyObject *cpy_r_r88;
-    char cpy_r_r89;
-    PyObject *cpy_r_r90;
-    PyObject *cpy_r_r91;
-    PyObject *cpy_r_r92;
-    PyObject *cpy_r_r93;
-    PyObject *cpy_r_r94;
-    PyObject **cpy_r_r96;
-    PyObject *cpy_r_r97;
-    PyObject *cpy_r_r98;
-    PyObject *cpy_r_r99;
-    PyObject *cpy_r_r100;
-    int32_t cpy_r_r101;
-    char cpy_r_r102;
-    PyObject *cpy_r_r103;
-    char cpy_r_r104;
-    PyObject *cpy_r_r105;
-    PyObject *cpy_r_r106;
-    PyObject *cpy_r_r107;
-    PyObject *cpy_r_r108;
-    PyObject *cpy_r_r109;
-    PyObject **cpy_r_r111;
-    PyObject *cpy_r_r112;
-    PyObject *cpy_r_r113;
-    PyObject *cpy_r_r114;
-    PyObject *cpy_r_r115;
-    int32_t cpy_r_r116;
-    char cpy_r_r117;
-    PyObject *cpy_r_r118;
-    char cpy_r_r119;
-    PyObject *cpy_r_r120;
-    PyObject *cpy_r_r121;
-    PyObject *cpy_r_r122;
-    PyObject *cpy_r_r123;
-    PyObject *cpy_r_r124;
-    PyObject *cpy_r_r125;
-    PyObject *cpy_r_r126;
-    PyObject *cpy_r_r127;
-    PyObject **cpy_r_r129;
-    PyObject *cpy_r_r130;
-    PyObject *cpy_r_r131;
-    PyObject *cpy_r_r132;
-    PyObject *cpy_r_r133;
-    PyObject *cpy_r_r134;
-    PyObject *cpy_r_r135;
-    PyObject **cpy_r_r137;
-    PyObject *cpy_r_r138;
-    PyObject *cpy_r_r139;
-    PyObject *cpy_r_r140;
-    PyObject *cpy_r_r141;
-    int32_t cpy_r_r142;
-    char cpy_r_r143;
-    PyObject *cpy_r_r144;
-    char cpy_r_r145;
-    PyObject *cpy_r_r146;
-    PyObject *cpy_r_r147;
-    PyObject *cpy_r_r148;
-    PyObject *cpy_r_r149;
-    PyObject *cpy_r_r150;
-    PyObject **cpy_r_r152;
-    PyObject *cpy_r_r153;
-    PyObject *cpy_r_r154;
-    PyObject *cpy_r_r155;
-    PyObject *cpy_r_r156;
-    int32_t cpy_r_r157;
-    char cpy_r_r158;
-    PyObject *cpy_r_r159;
-    char cpy_r_r160;
-    PyObject *cpy_r_r161;
-    PyObject *cpy_r_r162;
-    PyObject *cpy_r_r163;
-    PyObject *cpy_r_r164;
-    PyObject *cpy_r_r165;
-    PyObject **cpy_r_r167;
-    PyObject *cpy_r_r168;
-    PyObject *cpy_r_r169;
-    PyObject *cpy_r_r170;
-    PyObject *cpy_r_r171;
-    int32_t cpy_r_r172;
-    char cpy_r_r173;
-    PyObject *cpy_r_r174;
-    char cpy_r_r175;
-    PyObject *cpy_r_r176;
-    PyObject *cpy_r_r177;
-    PyObject *cpy_r_r178;
-    PyObject *cpy_r_r179;
-    PyObject *cpy_r_r180;
-    PyObject **cpy_r_r182;
-    PyObject *cpy_r_r183;
-    PyObject *cpy_r_r184;
-    PyObject *cpy_r_r185;
-    PyObject *cpy_r_r186;
-    int32_t cpy_r_r187;
-    char cpy_r_r188;
-    PyObject *cpy_r_r189;
-    char cpy_r_r190;
-    PyObject *cpy_r_r191;
-    PyObject *cpy_r_r192;
-    PyObject *cpy_r_r193;
-    PyObject *cpy_r_r194;
-    PyObject *cpy_r_r195;
-    PyObject **cpy_r_r197;
-    PyObject *cpy_r_r198;
-    PyObject *cpy_r_r199;
-    PyObject *cpy_r_r200;
-    PyObject *cpy_r_r201;
-    int32_t cpy_r_r202;
-    char cpy_r_r203;
-    PyObject *cpy_r_r204;
-    char cpy_r_r205;
-    PyObject *cpy_r_r206;
-    PyObject *cpy_r_r207;
-    PyObject *cpy_r_r208;
-    PyObject *cpy_r_r209;
-    PyObject *cpy_r_r210;
-    PyObject **cpy_r_r212;
-    PyObject *cpy_r_r213;
-    PyObject *cpy_r_r214;
-    PyObject *cpy_r_r215;
-    PyObject *cpy_r_r216;
-    int32_t cpy_r_r217;
-    char cpy_r_r218;
-    PyObject *cpy_r_r219;
-    char cpy_r_r220;
-    PyObject *cpy_r_r221;
-    PyObject *cpy_r_r222;
-    PyObject *cpy_r_r223;
-    PyObject *cpy_r_r224;
-    PyObject *cpy_r_r225;
-    PyObject **cpy_r_r227;
-    PyObject *cpy_r_r228;
-    PyObject *cpy_r_r229;
-    PyObject *cpy_r_r230;
-    PyObject *cpy_r_r231;
-    int32_t cpy_r_r232;
-    char cpy_r_r233;
-    PyObject *cpy_r_r234;
-    PyObject *cpy_r_r235;
-    PyObject *cpy_r_r236;
-    PyObject *cpy_r_r237;
-    PyObject *cpy_r_r238;
-    PyObject *cpy_r_r239;
-    PyObject *cpy_r_r240;
-    PyObject **cpy_r_r242;
-    PyObject *cpy_r_r243;
-    PyObject *cpy_r_r244;
-    PyObject *cpy_r_r245;
-    PyObject *cpy_r_r246;
-    int32_t cpy_r_r247;
-    char cpy_r_r248;
-    PyObject *cpy_r_r249;
-    char cpy_r_r250;
-    PyObject *cpy_r_r251;
-    PyObject *cpy_r_r252;
-    PyObject *cpy_r_r253;
-    PyObject *cpy_r_r254;
-    PyObject *cpy_r_r255;
-    PyObject **cpy_r_r257;
-    PyObject *cpy_r_r258;
-    PyObject *cpy_r_r259;
-    PyObject *cpy_r_r260;
-    PyObject *cpy_r_r261;
-    int32_t cpy_r_r262;
-    char cpy_r_r263;
-    char cpy_r_r264;
-    cpy_r_r0 = CPyModule_builtins;
-    cpy_r_r1 = (PyObject *)&_Py_NoneStruct;
-    cpy_r_r2 = cpy_r_r0 != cpy_r_r1;
-    if (cpy_r_r2) goto CPyL3;
-    cpy_r_r3 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'builtins' */
-    cpy_r_r4 = PyImport_Import(cpy_r_r3);
-    if (unlikely(cpy_r_r4 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyModule_builtins = cpy_r_r4;
-    CPy_INCREF(CPyModule_builtins);
-    CPy_DECREF(cpy_r_r4);
-CPyL3: ;
-    cpy_r_r5 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('path',) */
-    cpy_r_r6 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'os' */
-    cpy_r_r7 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r8 = CPyImport_ImportFromMany(cpy_r_r6, cpy_r_r5, cpy_r_r5, cpy_r_r7);
-    if (unlikely(cpy_r_r8 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyModule_os = cpy_r_r8;
-    CPy_INCREF(CPyModule_os);
-    CPy_DECREF(cpy_r_r8);
-    cpy_r_r9 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('Final',) */
-    cpy_r_r10 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typing' */
-    cpy_r_r11 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r12 = CPyImport_ImportFromMany(cpy_r_r10, cpy_r_r9, cpy_r_r9, cpy_r_r11);
-    if (unlikely(cpy_r_r12 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyModule_typing = cpy_r_r12;
-    CPy_INCREF(CPyModule_typing);
-    CPy_DECREF(cpy_r_r12);
-    cpy_r_r13 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('EnvVarFactory', 'create_env') */
-    cpy_r_r14 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'typed_envs' */
-    cpy_r_r15 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r16 = CPyImport_ImportFromMany(cpy_r_r14, cpy_r_r13, cpy_r_r13, cpy_r_r15);
-    if (unlikely(cpy_r_r16 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyModule_typed_envs = cpy_r_r16;
-    CPy_INCREF(CPyModule_typed_envs);
-    CPy_DECREF(cpy_r_r16);
-    cpy_r_r17 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'YPRICEMAGIC' */
-    cpy_r_r18 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r19 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'EnvVarFactory' */
-    cpy_r_r20 = CPyDict_GetItem(cpy_r_r18, cpy_r_r19);
-    if (unlikely(cpy_r_r20 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    PyObject *cpy_r_r21[1] = {cpy_r_r17};
-    cpy_r_r22 = (PyObject **)&cpy_r_r21;
-    cpy_r_r23 = PyObject_Vectorcall(cpy_r_r20, cpy_r_r22, 1, 0);
-    CPy_DECREF(cpy_r_r20);
-    if (unlikely(cpy_r_r23 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES____envs = cpy_r_r23;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES____envs);
-    cpy_r_r24 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r25 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '_envs' */
-    cpy_r_r26 = CPyDict_SetItem(cpy_r_r24, cpy_r_r25, cpy_r_r23);
-    CPy_DECREF(cpy_r_r23);
-    cpy_r_r27 = cpy_r_r26 >= 0;
-    if (unlikely(!cpy_r_r27)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r28 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r28 != NULL)) goto CPyL12;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r29 = 0;
-    if (unlikely(!cpy_r_r29)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL12: ;
-    cpy_r_r30 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CACHE_TTL' */
-    cpy_r_r31 = (PyObject *)&PyLong_Type;
-    cpy_r_r32 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r33 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 3600 */
-    cpy_r_r34 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r35[5] = {cpy_r_r28, cpy_r_r30, cpy_r_r31, cpy_r_r33, cpy_r_r34};
-    cpy_r_r36 = (PyObject **)&cpy_r_r35;
-    cpy_r_r37 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r38 = PyObject_VectorcallMethod(cpy_r_r32, cpy_r_r36, 9223372036854775811ULL, cpy_r_r37);
-    if (unlikely(cpy_r_r38 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL = cpy_r_r38;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL);
-    cpy_r_r39 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r40 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CACHE_TTL' */
-    cpy_r_r41 = CPyDict_SetItem(cpy_r_r39, cpy_r_r40, cpy_r_r38);
-    CPy_DECREF(cpy_r_r38);
-    cpy_r_r42 = cpy_r_r41 >= 0;
-    if (unlikely(!cpy_r_r42)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r43 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r43 != NULL)) goto CPyL17;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r44 = 0;
-    if (unlikely(!cpy_r_r44)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL17: ;
-    cpy_r_r45 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CONTRACT_CACHE_TTL' */
-    cpy_r_r46 = (PyObject *)&PyLong_Type;
-    cpy_r_r47 = CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL;
-    if (likely(cpy_r_r47 != NULL)) goto CPyL20;
-    PyErr_SetString(PyExc_NameError, "value for final name \"CACHE_TTL\" was not set");
-    cpy_r_r48 = 0;
-    if (unlikely(!cpy_r_r48)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL20: ;
-    cpy_r_r49 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r50 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r51[5] = {cpy_r_r43, cpy_r_r45, cpy_r_r46, cpy_r_r47, cpy_r_r50};
-    cpy_r_r52 = (PyObject **)&cpy_r_r51;
-    cpy_r_r53 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r54 = PyObject_VectorcallMethod(cpy_r_r49, cpy_r_r52, 9223372036854775811ULL, cpy_r_r53);
-    if (unlikely(cpy_r_r54 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL = cpy_r_r54;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL);
-    cpy_r_r55 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r56 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CONTRACT_CACHE_TTL' */
-    cpy_r_r57 = CPyDict_SetItem(cpy_r_r55, cpy_r_r56, cpy_r_r54);
-    CPy_DECREF(cpy_r_r54);
-    cpy_r_r58 = cpy_r_r57 >= 0;
-    if (unlikely(!cpy_r_r58)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r59 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r59 != NULL)) goto CPyL25;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r60 = 0;
-    if (unlikely(!cpy_r_r60)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL25: ;
-    cpy_r_r61 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'GETLOGS_BATCH_SIZE' */
-    cpy_r_r62 = (PyObject *)&PyLong_Type;
-    cpy_r_r63 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r64 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 0 */
-    PyObject *cpy_r_r65[4] = {cpy_r_r59, cpy_r_r61, cpy_r_r62, cpy_r_r64};
-    cpy_r_r66 = (PyObject **)&cpy_r_r65;
-    cpy_r_r67 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default',) */
-    cpy_r_r68 = PyObject_VectorcallMethod(cpy_r_r63, cpy_r_r66, 9223372036854775811ULL, cpy_r_r67);
-    if (unlikely(cpy_r_r68 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE = cpy_r_r68;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE);
-    cpy_r_r69 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r70 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'GETLOGS_BATCH_SIZE' */
-    cpy_r_r71 = CPyDict_SetItem(cpy_r_r69, cpy_r_r70, cpy_r_r68);
-    CPy_DECREF(cpy_r_r68);
-    cpy_r_r72 = cpy_r_r71 >= 0;
-    if (unlikely(!cpy_r_r72)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r73 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r73 != NULL)) goto CPyL30;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r74 = 0;
-    if (unlikely(!cpy_r_r74)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL30: ;
-    cpy_r_r75 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'GETLOGS_DOP' */
-    cpy_r_r76 = (PyObject *)&PyLong_Type;
-    cpy_r_r77 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r78 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 32 */
-    cpy_r_r79 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r80[5] = {cpy_r_r73, cpy_r_r75, cpy_r_r76, cpy_r_r78, cpy_r_r79};
-    cpy_r_r81 = (PyObject **)&cpy_r_r80;
-    cpy_r_r82 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r83 = PyObject_VectorcallMethod(cpy_r_r77, cpy_r_r81, 9223372036854775811ULL, cpy_r_r82);
-    if (unlikely(cpy_r_r83 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP = cpy_r_r83;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP);
-    cpy_r_r84 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r85 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'GETLOGS_DOP' */
-    cpy_r_r86 = CPyDict_SetItem(cpy_r_r84, cpy_r_r85, cpy_r_r83);
-    CPy_DECREF(cpy_r_r83);
-    cpy_r_r87 = cpy_r_r86 >= 0;
-    if (unlikely(!cpy_r_r87)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r88 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r88 != NULL)) goto CPyL35;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r89 = 0;
-    if (unlikely(!cpy_r_r89)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL35: ;
-    cpy_r_r90 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CHECKSUM_CACHE_MAXSIZE' */
-    cpy_r_r91 = (PyObject *)&PyLong_Type;
-    cpy_r_r92 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r93 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 100000 */
-    cpy_r_r94 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r95[5] = {cpy_r_r88, cpy_r_r90, cpy_r_r91, cpy_r_r93, cpy_r_r94};
-    cpy_r_r96 = (PyObject **)&cpy_r_r95;
-    cpy_r_r97 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r98 = PyObject_VectorcallMethod(cpy_r_r92, cpy_r_r96, 9223372036854775811ULL, cpy_r_r97);
-    if (unlikely(cpy_r_r98 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE = cpy_r_r98;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE);
-    cpy_r_r99 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r100 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'CHECKSUM_CACHE_MAXSIZE' */
-    cpy_r_r101 = CPyDict_SetItem(cpy_r_r99, cpy_r_r100, cpy_r_r98);
-    CPy_DECREF(cpy_r_r98);
-    cpy_r_r102 = cpy_r_r101 >= 0;
-    if (unlikely(!cpy_r_r102)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r103 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r103 != NULL)) goto CPyL40;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r104 = 0;
-    if (unlikely(!cpy_r_r104)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL40: ;
-    cpy_r_r105 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PROVIDER' */
-    cpy_r_r106 = (PyObject *)&PyUnicode_Type;
-    cpy_r_r107 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'sqlite' */
-    cpy_r_r108 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r109 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r110[5] = {cpy_r_r103, cpy_r_r105, cpy_r_r106, cpy_r_r107, cpy_r_r109};
-    cpy_r_r111 = (PyObject **)&cpy_r_r110;
-    cpy_r_r112 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r113 = PyObject_VectorcallMethod(cpy_r_r108, cpy_r_r111, 9223372036854775811ULL, cpy_r_r112);
-    if (unlikely(cpy_r_r113 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER = cpy_r_r113;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER);
-    cpy_r_r114 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r115 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PROVIDER' */
-    cpy_r_r116 = CPyDict_SetItem(cpy_r_r114, cpy_r_r115, cpy_r_r113);
-    CPy_DECREF(cpy_r_r113);
-    cpy_r_r117 = cpy_r_r116 >= 0;
-    if (unlikely(!cpy_r_r117)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r118 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r118 != NULL)) goto CPyL45;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r119 = 0;
-    if (unlikely(!cpy_r_r119)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL45: ;
-    cpy_r_r120 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SQLITE_PATH' */
-    cpy_r_r121 = (PyObject *)&PyUnicode_Type;
-    cpy_r_r122 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '~' */
-    cpy_r_r123 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r124 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'path' */
-    cpy_r_r125 = CPyDict_GetItem(cpy_r_r123, cpy_r_r124);
-    if (unlikely(cpy_r_r125 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r126 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'expanduser' */
-    cpy_r_r127 = CPyObject_GetAttr(cpy_r_r125, cpy_r_r126);
-    CPy_DECREF(cpy_r_r125);
-    if (unlikely(cpy_r_r127 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    PyObject *cpy_r_r128[1] = {cpy_r_r122};
-    cpy_r_r129 = (PyObject **)&cpy_r_r128;
-    cpy_r_r130 = PyObject_Vectorcall(cpy_r_r127, cpy_r_r129, 1, 0);
-    CPy_DECREF(cpy_r_r127);
-    if (unlikely(cpy_r_r130 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    if (likely(PyUnicode_Check(cpy_r_r130)))
-        cpy_r_r131 = cpy_r_r130;
-    else {
-        CPy_TypeErrorTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", 33, CPyStatic_ENVIRONMENT_VARIABLES___globals, "str", cpy_r_r130);
-        goto CPyL91;
-    }
-    cpy_r_r132 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '/.ypricemagic/ypricemagic.sqlite' */
-    cpy_r_r133 = CPyStr_Build(2, cpy_r_r131, cpy_r_r132);
-    CPy_DECREF(cpy_r_r131);
-    if (unlikely(cpy_r_r133 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r134 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r135 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r136[5] = {cpy_r_r118, cpy_r_r120, cpy_r_r121, cpy_r_r133, cpy_r_r135};
-    cpy_r_r137 = (PyObject **)&cpy_r_r136;
-    cpy_r_r138 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r139 = PyObject_VectorcallMethod(cpy_r_r134, cpy_r_r137, 9223372036854775811ULL, cpy_r_r138);
-    if (unlikely(cpy_r_r139 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL92;
-    }
-    CPy_DECREF(cpy_r_r133);
-    CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH = cpy_r_r139;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH);
-    cpy_r_r140 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r141 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SQLITE_PATH' */
-    cpy_r_r142 = CPyDict_SetItem(cpy_r_r140, cpy_r_r141, cpy_r_r139);
-    CPy_DECREF(cpy_r_r139);
-    cpy_r_r143 = cpy_r_r142 >= 0;
-    if (unlikely(!cpy_r_r143)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r144 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r144 != NULL)) goto CPyL55;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r145 = 0;
-    if (unlikely(!cpy_r_r145)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL55: ;
-    cpy_r_r146 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_HOST' */
-    cpy_r_r147 = (PyObject *)&PyUnicode_Type;
-    cpy_r_r148 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
-    cpy_r_r149 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r150 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r151[5] = {cpy_r_r144, cpy_r_r146, cpy_r_r147, cpy_r_r148, cpy_r_r150};
-    cpy_r_r152 = (PyObject **)&cpy_r_r151;
-    cpy_r_r153 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r154 = PyObject_VectorcallMethod(cpy_r_r149, cpy_r_r152, 9223372036854775811ULL, cpy_r_r153);
-    if (unlikely(cpy_r_r154 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST = cpy_r_r154;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST);
-    cpy_r_r155 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r156 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_HOST' */
-    cpy_r_r157 = CPyDict_SetItem(cpy_r_r155, cpy_r_r156, cpy_r_r154);
-    CPy_DECREF(cpy_r_r154);
-    cpy_r_r158 = cpy_r_r157 >= 0;
-    if (unlikely(!cpy_r_r158)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r159 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r159 != NULL)) goto CPyL60;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r160 = 0;
-    if (unlikely(!cpy_r_r160)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL60: ;
-    cpy_r_r161 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PORT' */
-    cpy_r_r162 = (PyObject *)&PyUnicode_Type;
-    cpy_r_r163 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
-    cpy_r_r164 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r165 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r166[5] = {cpy_r_r159, cpy_r_r161, cpy_r_r162, cpy_r_r163, cpy_r_r165};
-    cpy_r_r167 = (PyObject **)&cpy_r_r166;
-    cpy_r_r168 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r169 = PyObject_VectorcallMethod(cpy_r_r164, cpy_r_r167, 9223372036854775811ULL, cpy_r_r168);
-    if (unlikely(cpy_r_r169 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT = cpy_r_r169;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT);
-    cpy_r_r170 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r171 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PORT' */
-    cpy_r_r172 = CPyDict_SetItem(cpy_r_r170, cpy_r_r171, cpy_r_r169);
-    CPy_DECREF(cpy_r_r169);
-    cpy_r_r173 = cpy_r_r172 >= 0;
-    if (unlikely(!cpy_r_r173)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r174 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r174 != NULL)) goto CPyL65;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r175 = 0;
-    if (unlikely(!cpy_r_r175)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL65: ;
-    cpy_r_r176 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_USER' */
-    cpy_r_r177 = (PyObject *)&PyUnicode_Type;
-    cpy_r_r178 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
-    cpy_r_r179 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r180 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r181[5] = {cpy_r_r174, cpy_r_r176, cpy_r_r177, cpy_r_r178, cpy_r_r180};
-    cpy_r_r182 = (PyObject **)&cpy_r_r181;
-    cpy_r_r183 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r184 = PyObject_VectorcallMethod(cpy_r_r179, cpy_r_r182, 9223372036854775811ULL, cpy_r_r183);
-    if (unlikely(cpy_r_r184 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___DB_USER = cpy_r_r184;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_USER);
-    cpy_r_r185 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r186 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_USER' */
-    cpy_r_r187 = CPyDict_SetItem(cpy_r_r185, cpy_r_r186, cpy_r_r184);
-    CPy_DECREF(cpy_r_r184);
-    cpy_r_r188 = cpy_r_r187 >= 0;
-    if (unlikely(!cpy_r_r188)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r189 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r189 != NULL)) goto CPyL70;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r190 = 0;
-    if (unlikely(!cpy_r_r190)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL70: ;
-    cpy_r_r191 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PASSWORD' */
-    cpy_r_r192 = (PyObject *)&PyUnicode_Type;
-    cpy_r_r193 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
-    cpy_r_r194 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r195 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r196[5] = {cpy_r_r189, cpy_r_r191, cpy_r_r192, cpy_r_r193, cpy_r_r195};
-    cpy_r_r197 = (PyObject **)&cpy_r_r196;
-    cpy_r_r198 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r199 = PyObject_VectorcallMethod(cpy_r_r194, cpy_r_r197, 9223372036854775811ULL, cpy_r_r198);
-    if (unlikely(cpy_r_r199 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD = cpy_r_r199;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD);
-    cpy_r_r200 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r201 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_PASSWORD' */
-    cpy_r_r202 = CPyDict_SetItem(cpy_r_r200, cpy_r_r201, cpy_r_r199);
-    CPy_DECREF(cpy_r_r199);
-    cpy_r_r203 = cpy_r_r202 >= 0;
-    if (unlikely(!cpy_r_r203)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r204 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r204 != NULL)) goto CPyL75;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r205 = 0;
-    if (unlikely(!cpy_r_r205)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL75: ;
-    cpy_r_r206 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_DATABASE' */
-    cpy_r_r207 = (PyObject *)&PyUnicode_Type;
-    cpy_r_r208 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'ypricemagic' */
-    cpy_r_r209 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r210 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r211[5] = {cpy_r_r204, cpy_r_r206, cpy_r_r207, cpy_r_r208, cpy_r_r210};
-    cpy_r_r212 = (PyObject **)&cpy_r_r211;
-    cpy_r_r213 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r214 = PyObject_VectorcallMethod(cpy_r_r209, cpy_r_r212, 9223372036854775811ULL, cpy_r_r213);
-    if (unlikely(cpy_r_r214 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE = cpy_r_r214;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE);
-    cpy_r_r215 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r216 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'DB_DATABASE' */
-    cpy_r_r217 = CPyDict_SetItem(cpy_r_r215, cpy_r_r216, cpy_r_r214);
-    CPy_DECREF(cpy_r_r214);
-    cpy_r_r218 = cpy_r_r217 >= 0;
-    if (unlikely(!cpy_r_r218)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r219 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r219 != NULL)) goto CPyL80;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r220 = 0;
-    if (unlikely(!cpy_r_r220)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL80: ;
-    cpy_r_r221 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_CACHE' */
-    cpy_r_r222 = (PyObject *)&PyBool_Type;
-    cpy_r_r223 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r224 = 0 ? Py_True : Py_False;
-    cpy_r_r225 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r226[5] = {cpy_r_r219, cpy_r_r221, cpy_r_r222, cpy_r_r224, cpy_r_r225};
-    cpy_r_r227 = (PyObject **)&cpy_r_r226;
-    cpy_r_r228 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r229 = PyObject_VectorcallMethod(cpy_r_r223, cpy_r_r227, 9223372036854775811ULL, cpy_r_r228);
-    if (unlikely(cpy_r_r229 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = cpy_r_r229;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE);
-    cpy_r_r230 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r231 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_CACHE' */
-    cpy_r_r232 = CPyDict_SetItem(cpy_r_r230, cpy_r_r231, cpy_r_r229);
-    CPy_DECREF(cpy_r_r229);
-    cpy_r_r233 = cpy_r_r232 >= 0;
-    if (unlikely(!cpy_r_r233)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r234 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_YPRICEAPI' */
-    cpy_r_r235 = (PyObject *)&PyBool_Type;
-    cpy_r_r236 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r237 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r238 = CPyDict_GetItem(cpy_r_r236, cpy_r_r237);
-    if (unlikely(cpy_r_r238 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r239 = 0 ? Py_True : Py_False;
-    cpy_r_r240 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r241[4] = {cpy_r_r234, cpy_r_r235, cpy_r_r239, cpy_r_r240};
-    cpy_r_r242 = (PyObject **)&cpy_r_r241;
-    cpy_r_r243 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r244 = PyObject_Vectorcall(cpy_r_r238, cpy_r_r242, 2, cpy_r_r243);
-    CPy_DECREF(cpy_r_r238);
-    if (unlikely(cpy_r_r244 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = cpy_r_r244;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI);
-    cpy_r_r245 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r246 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SKIP_YPRICEAPI' */
-    cpy_r_r247 = CPyDict_SetItem(cpy_r_r245, cpy_r_r246, cpy_r_r244);
-    CPy_DECREF(cpy_r_r244);
-    cpy_r_r248 = cpy_r_r247 >= 0;
-    if (unlikely(!cpy_r_r248)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    cpy_r_r249 = CPyStatic_ENVIRONMENT_VARIABLES____envs;
-    if (likely(cpy_r_r249 != NULL)) goto CPyL88;
-    PyErr_SetString(PyExc_NameError, "value for final name \"_envs\" was not set");
-    cpy_r_r250 = 0;
-    if (unlikely(!cpy_r_r250)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPy_Unreachable();
-CPyL88: ;
-    cpy_r_r251 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SENSE_CHECK_FILE' */
-    cpy_r_r252 = (PyObject *)&PyUnicode_Type;
-    cpy_r_r253 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* '' */
-    cpy_r_r254 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'create_env' */
-    cpy_r_r255 = 0 ? Py_True : Py_False;
-    PyObject *cpy_r_r256[5] = {cpy_r_r249, cpy_r_r251, cpy_r_r252, cpy_r_r253, cpy_r_r255};
-    cpy_r_r257 = (PyObject **)&cpy_r_r256;
-    cpy_r_r258 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* ('default', 'verbose') */
-    cpy_r_r259 = PyObject_VectorcallMethod(cpy_r_r254, cpy_r_r257, 9223372036854775811ULL, cpy_r_r258);
-    if (unlikely(cpy_r_r259 == NULL)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = cpy_r_r259;
-    CPy_INCREF(CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE);
-    cpy_r_r260 = CPyStatic_ENVIRONMENT_VARIABLES___globals;
-    cpy_r_r261 = CPyStatics[DIFFCHECK_PLACEHOLDER]; /* 'SENSE_CHECK_FILE' */
-    cpy_r_r262 = CPyDict_SetItem(cpy_r_r260, cpy_r_r261, cpy_r_r259);
-    CPy_DECREF(cpy_r_r259);
-    cpy_r_r263 = cpy_r_r262 >= 0;
-    if (unlikely(!cpy_r_r263)) {
-        CPy_AddTraceback("y/ENVIRONMENT_VARIABLES.py", "<module>", DIFFCHECK_PLACEHOLDER, CPyStatic_ENVIRONMENT_VARIABLES___globals);
-        goto CPyL91;
-    }
-    return 1;
-CPyL91: ;
-    cpy_r_r264 = 2;
-    return cpy_r_r264;
-CPyL92: ;
-    CPy_DecRef(cpy_r_r133);
-    goto CPyL91;
 }
                     
                     static PyAsyncMethods convert___to_address_async_gen_as_async = {
@@ -42547,6 +42547,11 @@ CPyL22: ;
                                             if (is_initialized) return 0;
                                             
                                             CPy_Init();
+                                            CPyModule_y___ENVIRONMENT_VARIABLES = Py_None;
+                                            CPyModule_builtins = Py_None;
+                                            CPyModule_os = Py_None;
+                                            CPyModule_typing = Py_None;
+                                            CPyModule_typed_envs = Py_None;
                                             CPyModule_y____db___brownie = Py_None;
                                             CPyModule_builtins = Py_None;
                                             CPyModule_hashlib = Py_None;
@@ -42590,11 +42595,6 @@ CPyL22: ;
                                             CPyModule_datetime = Py_None;
                                             CPyModule_decimal = Py_None;
                                             CPyModule_typing = Py_None;
-                                            CPyModule_y___ENVIRONMENT_VARIABLES = Py_None;
-                                            CPyModule_builtins = Py_None;
-                                            CPyModule_os = Py_None;
-                                            CPyModule_typing = Py_None;
-                                            CPyModule_typed_envs = Py_None;
                                             CPyModule_y___convert = Py_None;
                                             CPyModule_builtins = Py_None;
                                             CPyModule_functools = Py_None;
@@ -42659,53 +42659,53 @@ CPyL22: ;
                                         
                                         PyObject *CPyStatics[DIFFCHECK_PLACEHOLDER];
                                         const char * const CPyLit_Str[] = {
-    "\005\021already connected\fRuntimeError\t__aexit__\n__aenter__\aconnect",
-    "\004\017isolation_level\aexecute\rGeneratorExit\rStopIteration",
-    "\006\023NotImplementedError\bfetchone\001[\001{\023SELECT * FROM chain\006CONFIG",
-    "\003\016active_network\achainid\bKeyError",
+    "\b\bbuiltins\004path\002os\005Final\006typing\rEnvVarFactory\ncreate_env\ntyped_envs",
+    "\006\vYPRICEMAGIC\005_envs\tCACHE_TTL\adefault\averbose\022CONTRACT_CACHE_TTL",
+    "\004\022GETLOGS_BATCH_SIZE\vGETLOGS_DOP\026CHECKSUM_CACHE_MAXSIZE\vDB_PROVIDER",
+    "\005\006sqlite\vSQLITE_PATH\001~\nexpanduser /.ypricemagic/ypricemagic.sqlite",
+    "\a\aDB_HOST\000\aDB_PORT\aDB_USER\vDB_PASSWORD\vDB_DATABASE\vypricemagic",
+    "\004\nSKIP_CACHE\016SKIP_YPRICEAPI\020SENSE_CHECK_FILE\021already connected",
+    "\006\fRuntimeError\t__aexit__\n__aenter__\aconnect\017isolation_level\aexecute",
+    "\006\rGeneratorExit\rStopIteration\023NotImplementedError\bfetchone\001[\001{",
+    "\005\023SELECT * FROM chain\006CONFIG\016active_network\achainid\bKeyError",
     "\0010Functionality not available in local environment",
     "\001\027BrownieEnvironmentError",
     "\0029Passed both params address and alias, should be only one!\nValueError",
     "\004\020_resolve_address\020 WHERE address=\'\001\'\016 WHERE alias=\'",
     "\006\025_get_select_statement\020OperationalError\003zip\005paths\003pop\016allSourcePaths",
-    "\005\005pcMap\'SELECT source FROM sources WHERE hash=\?\bbuiltins\ahashlib\004json",
+    "\004\005pcMap\'SELECT source FROM sources WHERE hash=\?\ahashlib\004json",
     "\006\020y/_db/brownie.py\b<module>\004Lock\aasyncio\bCallable\tContainer",
-    "\b\017collections.abc\tlru_cache\tfunctools\004Path\apathlib\asqlite3\003Any\005Final",
-    "\a\aLiteral\004cast\005final\006typing\taiosqlite\024SmartProcessingQueue\006a_sync",
-    "\004\006Result\021aiosqlite.context\020_get_data_folder\017brownie._config",
-    "\006\022brownie.exceptions\030brownie.network.contract\aaddress\005alias\003abi\003ast",
-    "\005\bbytecode\bcompiler\fcontractName\020deployedBytecode\021deployedSourceMap",
-    "\b\blanguage\anatspec\aopcodes\tsourceMap\004type\tSourceKey\tBuildJson\aSources",
-    "\006\vSOURCE_KEYS\vcoverageMap\023DISCARD_SOURCE_KEYS\004sha1\005dumps\005loads",
-    "\006\vsqlite_lock\ry._db.brownie\017__mypyc_attrs__\t_filename\003_db\n_connected",
-    "\a\b_execute\vAsyncCursor\016deployments.db\bjoinpath\003cur\vnum_workers\amaxsize",
-    "\a\005errno\017y/_db/config.py\005mkdir\004path\002os\022ypricemagic__mypyc\b__file__",
-    "\004 .cpython-313-x86_64-linux-gnu.so\027y.ENVIRONMENT_VARIABLES\004ENVS\001~",
-    "\005\nexpanduser\r/.ypricemagic\022DEFAULT_SQLITE_DIR\vdb_provider\006sqlite",
-    "\a\016_using_default\aOSError\001e\006EEXIST\bprovider\bfilename\tcreate_db",
-    "\a\023connection_settings\004host\004user\bpassword\bdatabase\004port\006commit",
-    "\004\017CommitException\017UnexpectedError\020%s.%s got %s: %s\n__module__",
-    "\004\022database is locked\021deadlock detected\005sleep\020TransactionError",
+    "\b\017collections.abc\tlru_cache\tfunctools\004Path\apathlib\asqlite3\003Any\aLiteral",
+    "\006\004cast\005final\taiosqlite\024SmartProcessingQueue\006a_sync\006Result",
+    "\004\021aiosqlite.context\020_get_data_folder\017brownie._config\022brownie.exceptions",
+    "\a\030brownie.network.contract\aaddress\005alias\003abi\003ast\bbytecode\bcompiler",
+    "\005\fcontractName\020deployedBytecode\021deployedSourceMap\blanguage\anatspec",
+    "\a\aopcodes\tsourceMap\004type\tSourceKey\tBuildJson\aSources\vSOURCE_KEYS",
+    "\006\vcoverageMap\023DISCARD_SOURCE_KEYS\004sha1\005dumps\005loads\vsqlite_lock",
+    "\006\ry._db.brownie\017__mypyc_attrs__\t_filename\003_db\n_connected\b_execute",
+    "\a\vAsyncCursor\016deployments.db\bjoinpath\003cur\vnum_workers\amaxsize\005errno",
+    "\004\017y/_db/config.py\005mkdir\022ypricemagic__mypyc\b__file__",
+    "\003 .cpython-313-x86_64-linux-gnu.so\027y.ENVIRONMENT_VARIABLES\004ENVS",
+    "\006\r/.ypricemagic\022DEFAULT_SQLITE_DIR\vdb_provider\016_using_default\aOSError\001e",
+    "\a\006EEXIST\bprovider\bfilename\tcreate_db\023connection_settings\004host\004user",
+    "\006\bpassword\bdatabase\004port\006commit\017CommitException\017UnexpectedError",
+    "\004\020%s.%s got %s: %s\n__module__\022database is locked\021deadlock detected",
+    "\002\005sleep\020TransactionError",
     "\002=An attempt to mix objects belonging to different transactions\005wraps",
-    "\006\021retry_locked_wrap\ndb_session\005async\adefault\bexecutor\001 ",
-    "\004\023loaded %s %s for %s\021result_count_wrap\alogging\004time",
-    "\005\023y/_db/decorators.py\bIterable\005Sized\aTypeVar\031PruningThreadPoolExecutor",
-    "\006\rASyncFunction\ra_sync.a_sync\005chain\abrownie\bpony.orm\tParamSpec",
-    "\t\021typing_extensions\002_T\002_S\005bound\002_P\005DEBUG\b__name__\tgetLogger\006logger",
-    "\006\awarning\vlog_warning\005debug\tlog_debug\bpostgres\020ydb read threads",
-    "\003\020ydb_read_threads\021ydb write threads\021ydb_write_threads",
-    "\003\027db_session_retry_locked\026a_sync_read_db_session\021db_session_cached",
-    "\003\r.result_count\024_result_count_logger\032_result_count_logger_debug",
-    "\005\fisEnabledFor#_result_count_logger_is_enabled_for\002id\v_CHAIN_INFO\004null",
-    "\n\b\'::bytea\002X\'\003hex\aDecimal\bdatetime\001(\001,\001)\026insert or ignore into \002 (",
-    "\006\t) values \finsert into \027 on conflict do nothing\btimezone\adecimal\003utc",
-    "\006\003UTC\nastimezone\tisoformat\rEnvVarFactory\ncreate_env\ntyped_envs",
-    "\005\vYPRICEMAGIC\005_envs\tCACHE_TTL\averbose\022CONTRACT_CACHE_TTL",
-    "\004\022GETLOGS_BATCH_SIZE\vGETLOGS_DOP\026CHECKSUM_CACHE_MAXSIZE\vDB_PROVIDER",
-    "\006\vSQLITE_PATH /.ypricemagic/ypricemagic.sqlite\aDB_HOST\000\aDB_PORT\aDB_USER",
-    "\005\vDB_PASSWORD\vDB_DATABASE\vypricemagic\nSKIP_CACHE\016SKIP_YPRICEAPI",
-    "\005\020SENSE_CHECK_FILE\033 is not a valid ETH address\bchecksum\003run\nissubclass",
-    "\a\bHexBytes\0010\0020x\tcchecksum\bhexbytes\fy/convert.py\nAnyAddress",
+    "\006\021retry_locked_wrap\ndb_session\005async\bexecutor\001 \023loaded %s %s for %s",
+    "\006\021result_count_wrap\alogging\004time\023y/_db/decorators.py\bIterable\005Sized",
+    "\005\aTypeVar\031PruningThreadPoolExecutor\rASyncFunction\ra_sync.a_sync\005chain",
+    "\t\abrownie\bpony.orm\tParamSpec\021typing_extensions\002_T\002_S\005bound\002_P\005DEBUG",
+    "\a\b__name__\tgetLogger\006logger\awarning\vlog_warning\005debug\tlog_debug",
+    "\004\bpostgres\020ydb read threads\020ydb_read_threads\021ydb write threads",
+    "\003\021ydb_write_threads\027db_session_retry_locked\026a_sync_read_db_session",
+    "\003\021db_session_cached\r.result_count\024_result_count_logger",
+    "\002\032_result_count_logger_debug\fisEnabledFor",
+    "\006#_result_count_logger_is_enabled_for\002id\v_CHAIN_INFO\004null\b\'::bytea\002X\'",
+    "\t\003hex\aDecimal\bdatetime\001(\001,\001)\026insert or ignore into \002 (\t) values ",
+    "\006\finsert into \027 on conflict do nothing\btimezone\adecimal\003utc\003UTC",
+    "\005\nastimezone\tisoformat\033 is not a valid ETH address\bchecksum\003run",
+    "\b\nissubclass\bHexBytes\0010\0020x\tcchecksum\bhexbytes\fy/convert.py\nAnyAddress",
     "\005\017ChecksumAddress\nHexAddress\neth_typing\016AnyAddressType\vy.datatypes",
     "\003\023to_checksum_address\022ThreadPoolExecutor\020_checksum_thread",
     "\006\017_is_checksummed\023_is_not_checksummed\005token\005block\texception\t__class__",
@@ -42885,33 +42885,42 @@ CPyL22: ;
     "",
 };
                                         const char * const CPyLit_Int[] = {
-    "\0221\00032\00010\0003600\0000\000100000\00025\00056\00066\000100\000128\000137\000250\0001285\0008453\00042161\00043114\0001666600000",
+    "\0223600\0000\00032\000100000\0001\00010\00025\00056\00066\000100\000128\000137\000250\0001285\0008453\00042161\00043114\0001666600000",
     "\0061313161554\000747474\00080094\0001000\0004\00030",
     "",
 };
                                         const double CPyLit_Float[] = {0};
                                         const double CPyLit_Complex[] = {0};
                                         const int CPyLit_Tuple[] = {
-    83, 1, 8, 3, 38, 38, 38, 3, 39, 39, 39, 2, 593, 594, 1, 42, 2, 44,
-    45, 1, 47, 1, 49, 1, 30, 5, 52, 53, 54, 55, 56, 3, 58, 58, 58, 1, 602,
-    1, 59, 1, 61, 2, 17, 63, 1, 22, 1, 25, 1, 101, 1, 102, 3, 103, 103,
-    103, 1, 611, 2, 105, 106, 1, 53, 2, 146, 147, 3, 151, 151, 151, 3,
-    152, 152, 152, 2, 616, 617, 3, 44, 154, 155, 2, 47, 142, 2, 53, 156,
-    2, 157, 60, 1, 158, 1, 160, 6, 133, 30, 140, 134, 132, 144, 1, 163, 1,
-    167, 1, 154, 2, 197, 206, 1, 196, 2, 52, 53, 1, 106, 2, 212, 213, 2,
-    146, 218, 1, 146, 2, 53, 55, 3, 60, 60, 60, 3, 243, 243, 243, 3, 244,
-    244, 244, 3, 637, 638, 639, 3, 246, 247, 248, 1, 250, 1, 261, 1, 281,
-    1, 616, 1, 295, 4, 297, 52, 53, 56, 1, 298, 1, 271, 1, 273, 2, 299,
-    247, 1, 285, 1, 360, 2, 53, 56, 1, 377, 1, 386, 2, 196, 375, 1, 637,
-    1, 376, 4, 362, 373, 407, 408, 1, 306, 1, 396, 1, 399, 1, 390, 1, 385,
-    1, 404, 2, 419, 420, 2, 258, 558, 1, 560, 1, 558, 1, 561, 3, 562, 562,
-    562, 2, 637, 672, 1, 564
+    83, 1, 4, 1, 6, 2, 8, 9, 2, 14, 15, 1, 14, 1, 41, 3, 70, 70, 70, 3,
+    71, 71, 71, 2, 598, 599, 1, 74, 2, 76, 77, 1, 79, 1, 81, 1, 63, 5, 84,
+    6, 85, 86, 87, 3, 88, 88, 88, 1, 607, 1, 89, 1, 91, 2, 50, 93, 1, 55,
+    1, 58, 1, 131, 1, 132, 3, 133, 133, 133, 1, 616, 2, 135, 4, 2, 14,
+    171, 3, 175, 175, 175, 3, 176, 176, 176, 2, 620, 621, 3, 76, 178, 179,
+    2, 79, 167, 2, 6, 180, 2, 181, 90, 1, 182, 1, 184, 6, 158, 63, 165,
+    159, 157, 169, 1, 187, 1, 191, 1, 178, 2, 221, 230, 1, 220, 2, 84, 6,
+    2, 6, 86, 3, 90, 90, 90, 3, 243, 243, 243, 3, 244, 244, 244, 3, 637,
+    638, 639, 3, 246, 247, 248, 1, 250, 1, 261, 1, 281, 1, 620, 1, 295, 4,
+    297, 84, 6, 87, 1, 298, 1, 271, 1, 273, 2, 299, 247, 1, 285, 1, 360,
+    2, 6, 87, 1, 377, 1, 386, 2, 220, 375, 1, 637, 1, 376, 4, 362, 373,
+    407, 408, 1, 306, 1, 396, 1, 399, 1, 390, 1, 385, 1, 404, 2, 419, 420,
+    2, 258, 558, 1, 560, 1, 558, 1, 561, 3, 562, 562, 562, 2, 637, 672, 1,
+    564
 };
                                         const int CPyLit_FrozenSet[] = {0};
+                                        CPyModule *CPyModule_y___ENVIRONMENT_VARIABLES__internal = NULL;
+                                        CPyModule *CPyModule_y___ENVIRONMENT_VARIABLES;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___globals;
+                                        CPyModule *CPyModule_builtins;
+                                        CPyModule *CPyModule_os;
+                                        CPyModule *CPyModule_typing;
+                                        CPyModule *CPyModule_typed_envs;
+                                        int CPyExec_y___ENVIRONMENT_VARIABLES(PyObject *module);
+                                        PyObject *CPyInit_y___ENVIRONMENT_VARIABLES(void);
+                                        PyObject *CPyInitOnly_y___ENVIRONMENT_VARIABLES(void);
                                         CPyModule *CPyModule_y____db___brownie__internal = NULL;
                                         CPyModule *CPyModule_y____db___brownie;
                                         PyObject *CPyStatic_brownie___globals;
-                                        CPyModule *CPyModule_builtins;
                                         CPyModule *CPyModule_hashlib;
                                         CPyModule *CPyModule_json;
                                         CPyModule *CPyModule_asyncio;
@@ -42919,7 +42928,6 @@ CPyL22: ;
                                         CPyModule *CPyModule_functools;
                                         CPyModule *CPyModule_pathlib;
                                         CPyModule *CPyModule_sqlite3;
-                                        CPyModule *CPyModule_typing;
                                         CPyModule *CPyModule_aiosqlite;
                                         CPyModule *CPyModule_a_sync;
                                         CPyModule *CPyModule_aiosqlite___context;
@@ -42933,10 +42941,7 @@ CPyL22: ;
                                         CPyModule *CPyModule_y____db___config;
                                         PyObject *CPyStatic_config___globals;
                                         CPyModule *CPyModule_errno;
-                                        CPyModule *CPyModule_os;
                                         CPyModule *CPyModule_y;
-                                        CPyModule *CPyModule_y___ENVIRONMENT_VARIABLES__internal = NULL;
-                                        CPyModule *CPyModule_y___ENVIRONMENT_VARIABLES;
                                         int CPyExec_y____db___config(PyObject *module);
                                         PyObject *CPyInit_y____db___config(void);
                                         PyObject *CPyInitOnly_y____db___config(void);
@@ -42960,11 +42965,6 @@ CPyL22: ;
                                         int CPyExec_y____db___utils___stringify(PyObject *module);
                                         PyObject *CPyInit_y____db___utils___stringify(void);
                                         PyObject *CPyInitOnly_y____db___utils___stringify(void);
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___globals;
-                                        CPyModule *CPyModule_typed_envs;
-                                        int CPyExec_y___ENVIRONMENT_VARIABLES(PyObject *module);
-                                        PyObject *CPyInit_y___ENVIRONMENT_VARIABLES(void);
-                                        PyObject *CPyInitOnly_y___ENVIRONMENT_VARIABLES(void);
                                         CPyModule *CPyModule_y___convert__internal = NULL;
                                         CPyModule *CPyModule_y___convert;
                                         PyObject *CPyStatic_convert___globals;
@@ -43013,6 +43013,23 @@ CPyL22: ;
                                         int CPyExec_y___utils___gather(PyObject *module);
                                         PyObject *CPyInit_y___utils___gather(void);
                                         PyObject *CPyInitOnly_y___utils___gather(void);
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES____envs = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_USER = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = NULL;
+                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = NULL;
+                                        char CPyDef_ENVIRONMENT_VARIABLES_____top_level__(void);
                                         tuple_T16OOOOOOOOOOOOOOOO CPyStatic_brownie___SOURCE_KEYS = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
                                         tuple_T8OOOOOOOO CPyStatic_brownie___DISCARD_SOURCE_KEYS = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
                                         PyObject *CPyStatic_brownie___sha1 = NULL;
@@ -43202,23 +43219,6 @@ CPyL22: ;
                                         PyObject *CPyDef_stringify___build_query(PyObject *cpy_r_provider_name, PyObject *cpy_r_entity_name, PyObject *cpy_r_columns, PyObject *cpy_r_items);
                                         PyObject *CPyPy_stringify___build_query(PyObject *self, PyObject *const *args, size_t nargs, PyObject *kwnames);
                                         char CPyDef_stringify_____top_level__(void);
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES____envs = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___CACHE_TTL = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___CONTRACT_CACHE_TTL = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_BATCH_SIZE = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___GETLOGS_DOP = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___CHECKSUM_CACHE_MAXSIZE = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_PROVIDER = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SQLITE_PATH = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_HOST = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_PORT = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_USER = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_PASSWORD = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___DB_DATABASE = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SKIP_CACHE = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SKIP_YPRICEAPI = NULL;
-                                        PyObject *CPyStatic_ENVIRONMENT_VARIABLES___SENSE_CHECK_FILE = NULL;
-                                        char CPyDef_ENVIRONMENT_VARIABLES_____top_level__(void);
                                         PyObject *CPyStatic_convert___HexBytes = NULL;
                                         PyObject *CPyStatic_convert___to_checksum_address = NULL;
                                         PyObject *CPyStatic_convert____checksum_thread = NULL;
@@ -43460,6 +43460,17 @@ CPyL22: ;
                                             PyObject *capsule;
                                             PyObject *tmp;
                                             
+                                            extern PyObject *CPyInit_y___ENVIRONMENT_VARIABLES(void);
+                                            capsule = PyCapsule_New((void *)CPyInit_y___ENVIRONMENT_VARIABLES, "ypricemagic__mypyc.init_y___ENVIRONMENT_VARIABLES", NULL);
+                                            if (!capsule) {
+                                                goto fail;
+                                            }
+                                            res = PyObject_SetAttrString(module, "init_y___ENVIRONMENT_VARIABLES", capsule);
+                                            Py_DECREF(capsule);
+                                            if (res < 0) {
+                                                goto fail;
+                                            }
+                                            
                                             extern PyObject *CPyInit_y____db___brownie(void);
                                             capsule = PyCapsule_New((void *)CPyInit_y____db___brownie, "ypricemagic__mypyc.init_y____db___brownie", NULL);
                                             if (!capsule) {
@@ -43499,17 +43510,6 @@ CPyL22: ;
                                                 goto fail;
                                             }
                                             res = PyObject_SetAttrString(module, "init_y____db___utils___stringify", capsule);
-                                            Py_DECREF(capsule);
-                                            if (res < 0) {
-                                                goto fail;
-                                            }
-                                            
-                                            extern PyObject *CPyInit_y___ENVIRONMENT_VARIABLES(void);
-                                            capsule = PyCapsule_New((void *)CPyInit_y___ENVIRONMENT_VARIABLES, "ypricemagic__mypyc.init_y___ENVIRONMENT_VARIABLES", NULL);
-                                            if (!capsule) {
-                                                goto fail;
-                                            }
-                                            res = PyObject_SetAttrString(module, "init_y___ENVIRONMENT_VARIABLES", capsule);
                                             Py_DECREF(capsule);
                                             if (res < 0) {
                                                 goto fail;
@@ -43593,6 +43593,7 @@ CPyL22: ;
                                             }
                                             if (exec_ypricemagic__mypyc(module) < 0) {
                                                 Py_DECREF(module);
+                                                module = NULL;
                                                 return NULL;
                                             }
                                             return module;
