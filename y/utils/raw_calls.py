@@ -470,11 +470,9 @@ def prepare_data(
     ]:
         return method + prepare_input(inputs)
 
-    raise CalldataPreparationError(
-        f"""
+    raise CalldataPreparationError(f"""
         Supported types are: Union[None, bytes, int, str, Address, EthAddress, brownie.Contract, y.Contract]
-        You passed {type(inputs)} {inputs}"""
-    )
+        You passed {type(inputs)} {inputs}""")
 
     # these don't work yet, wip
     """
@@ -550,11 +548,9 @@ def prepare_input(
     if input_type in [str, Address, EthAddress, brownie.Contract, Contract]:
         return f"000000000000000000000000{to_address(input)[2:]}"
 
-    raise CalldataPreparationError(
-        f"""
+    raise CalldataPreparationError(f"""
         Supported input types are
         uint: int, 
         address: Union[str, Address, brownie.Contract, y.Contract]
         you passed input: {input!r} type: {input_type}
-        """
-    )
+        """)

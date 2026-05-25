@@ -1025,11 +1025,9 @@ def _resolve_proxy(address) -> tuple[str, list]:
 
     # Just leave this code where it is for a helpful debugger as needed.
     if address == "":
-        raise Exception(
-            f"""implementation: {implementation!r}
+        raise Exception(f"""implementation: {implementation!r}
             implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967!r}
-            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}"""
-        )
+            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}""")
 
     if len(implementation_eip1967) > 0 and int(implementation_eip1967.hex(), 16):
         as_proxy_for = _resolve_address(implementation_eip1967[-20:])
@@ -1227,11 +1225,9 @@ async def _resolve_proxy_async(address) -> tuple[str, list]:
 
     # Just leave this code where it is for a helpful debugger as needed.
     if address == "":
-        raise Exception(
-            f"""implementation: {implementation!r}
+        raise Exception(f"""implementation: {implementation!r}
             implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967!r}
-            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}"""
-        )
+            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822!r}""")
 
     if len(implementation_eip1967) > 0 and int(implementation_eip1967.hex(), 16):
         as_proxy_for = _resolve_address(implementation_eip1967[-20:])
