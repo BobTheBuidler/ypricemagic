@@ -25,32 +25,14 @@ brownie___AsyncCursor_init(PyObject *self, PyObject *args, PyObject *kwds)
 {
     return 0;
 }
-PyObject *CPyDef_brownie_____mypyc__AsyncCursor_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie___AsyncCursor(PyObject *cpy_r_filename);
-
-static PyObject *
-brownie___AsyncCursor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie___AsyncCursor) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
-    }
-    PyObject *self = CPyDef_brownie_____mypyc__AsyncCursor_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    PyObject *ret = CPyPy_brownie___AsyncCursor_____init__(self, args, kwds);
-    if (ret == NULL)
-        return NULL;
-    return self;
-}
-
 static int
 brownie___AsyncCursor_traverse(y____db___brownie___AsyncCursorObject *self, visitproc visit, void *arg)
 {
     Py_VISIT(self->__filename);
     Py_VISIT(self->__db);
     Py_VISIT(self->__execute);
-    return 0;
+    int rv = 0;
+    return rv;
 }
 
 static int
@@ -71,6 +53,28 @@ brownie___AsyncCursor_dealloc(y____db___brownie___AsyncCursorObject *self)
     Py_TYPE(self)->tp_free((PyObject *)self);
     CPy_TRASHCAN_END(self)
     done: ;
+}
+
+PyObject *CPyDef_brownie_____mypyc__AsyncCursor_setup(PyObject *cpy_r_type);
+PyObject *CPyDef_brownie___AsyncCursor(PyObject *cpy_r_filename);
+
+static PyObject *
+brownie___AsyncCursor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type != CPyType_brownie___AsyncCursor) {
+        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+        return NULL;
+    }
+    PyObject *self = CPyDef_brownie_____mypyc__AsyncCursor_setup((PyObject*)type);
+    if (self == NULL)
+        return NULL;
+    PyObject *ret = CPyPy_brownie___AsyncCursor_____init__(self, args, kwds);
+    if (ret == NULL) {
+            Py_DECREF(self);
+            return NULL;
+    }
+    Py_DECREF(ret);
+    return self;
 }
 
 static CPyVTableItem brownie___AsyncCursor_vtable[4];
@@ -355,22 +359,6 @@ __LL2: ;
 static PyAsyncMethods brownie___connect_AsyncCursor_gen_as_async = {
     .am_await = CPyDef_brownie___connect_AsyncCursor_gen_____await__,
 };
-PyObject *CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie___connect_AsyncCursor_gen(void);
-
-static PyObject *
-brownie___connect_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie___connect_AsyncCursor_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
-    }
-    PyObject *self = CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
 static int
 brownie___connect_AsyncCursor_gen_traverse(y____db___brownie___connect_AsyncCursor_genObject *self, visitproc visit, void *arg)
 {
@@ -398,7 +386,8 @@ brownie___connect_AsyncCursor_gen_traverse(y____db___brownie___connect_AsyncCurs
     Py_VISIT(self->___mypyc_temp__12.f0);
     Py_VISIT(self->___mypyc_temp__12.f1);
     Py_VISIT(self->___mypyc_temp__12.f2);
-    return 0;
+    int rv = 0;
+    return rv;
 }
 
 static int
@@ -470,6 +459,22 @@ brownie___connect_AsyncCursor_gen_dealloc(y____db___brownie___connect_AsyncCurso
     Py_TYPE(self)->tp_free((PyObject *)self);
     CPy_TRASHCAN_END(self)
     done: ;
+}
+
+PyObject *CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup(PyObject *cpy_r_type);
+PyObject *CPyDef_brownie___connect_AsyncCursor_gen(void);
+
+static PyObject *
+brownie___connect_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type != CPyType_brownie___connect_AsyncCursor_gen) {
+        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+        return NULL;
+    }
+    PyObject *self = CPyDef_brownie_____mypyc__connect_AsyncCursor_gen_setup((PyObject*)type);
+    if (self == NULL)
+        return NULL;
+    return self;
 }
 
 static CPyVTableItem brownie___connect_AsyncCursor_gen_vtable[7];
@@ -574,29 +579,14 @@ PyObject *CPyDef_brownie___connect_AsyncCursor_gen(void)
 static PyAsyncMethods brownie___insert_AsyncCursor_gen_as_async = {
     .am_await = CPyDef_brownie___insert_AsyncCursor_gen_____await__,
 };
-PyObject *CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie___insert_AsyncCursor_gen(void);
-
-static PyObject *
-brownie___insert_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie___insert_AsyncCursor_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
-    }
-    PyObject *self = CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
 static int
 brownie___insert_AsyncCursor_gen_traverse(y____db___brownie___insert_AsyncCursor_genObject *self, visitproc visit, void *arg)
 {
     Py_VISIT(self->___mypyc_generator_attribute__self);
     Py_VISIT(self->___mypyc_generator_attribute__table);
     Py_VISIT(self->___mypyc_generator_attribute__values);
-    return 0;
+    int rv = 0;
+    return rv;
 }
 
 static int
@@ -625,6 +615,22 @@ brownie___insert_AsyncCursor_gen_dealloc(y____db___brownie___insert_AsyncCursor_
     Py_TYPE(self)->tp_free((PyObject *)self);
     CPy_TRASHCAN_END(self)
     done: ;
+}
+
+PyObject *CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup(PyObject *cpy_r_type);
+PyObject *CPyDef_brownie___insert_AsyncCursor_gen(void);
+
+static PyObject *
+brownie___insert_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type != CPyType_brownie___insert_AsyncCursor_gen) {
+        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+        return NULL;
+    }
+    PyObject *self = CPyDef_brownie_____mypyc__insert_AsyncCursor_gen_setup((PyObject*)type);
+    if (self == NULL)
+        return NULL;
+    return self;
 }
 
 static CPyVTableItem brownie___insert_AsyncCursor_gen_vtable[7];
@@ -723,22 +729,6 @@ PyObject *CPyDef_brownie___insert_AsyncCursor_gen(void)
 static PyAsyncMethods brownie___fetchone_AsyncCursor_gen_as_async = {
     .am_await = CPyDef_brownie___fetchone_AsyncCursor_gen_____await__,
 };
-PyObject *CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen(void);
-
-static PyObject *
-brownie___fetchone_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie___fetchone_AsyncCursor_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
-    }
-    PyObject *self = CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
 static int
 brownie___fetchone_AsyncCursor_gen_traverse(y____db___brownie___fetchone_AsyncCursor_genObject *self, visitproc visit, void *arg)
 {
@@ -796,7 +786,8 @@ brownie___fetchone_AsyncCursor_gen_traverse(y____db___brownie___fetchone_AsyncCu
     Py_VISIT(self->___mypyc_temp__41.f0);
     Py_VISIT(self->___mypyc_temp__41.f1);
     Py_VISIT(self->___mypyc_temp__41.f2);
-    return 0;
+    int rv = 0;
+    return rv;
 }
 
 static int
@@ -931,6 +922,22 @@ brownie___fetchone_AsyncCursor_gen_dealloc(y____db___brownie___fetchone_AsyncCur
     done: ;
 }
 
+PyObject *CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup(PyObject *cpy_r_type);
+PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen(void);
+
+static PyObject *
+brownie___fetchone_AsyncCursor_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type != CPyType_brownie___fetchone_AsyncCursor_gen) {
+        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+        return NULL;
+    }
+    PyObject *self = CPyDef_brownie_____mypyc__fetchone_AsyncCursor_gen_setup((PyObject*)type);
+    if (self == NULL)
+        return NULL;
+    return self;
+}
+
 static CPyVTableItem brownie___fetchone_AsyncCursor_gen_vtable[7];
 static bool
 CPyDef_brownie___fetchone_AsyncCursor_gen_trait_vtable_setup(void)
@@ -1039,22 +1046,6 @@ PyObject *CPyDef_brownie___fetchone_AsyncCursor_gen(void)
 static PyAsyncMethods brownie____get_deployment_gen_as_async = {
     .am_await = CPyDef_brownie____get_deployment_gen_____await__,
 };
-PyObject *CPyDef_brownie_____mypyc___3_get_deployment_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie____get_deployment_gen(void);
-
-static PyObject *
-brownie____get_deployment_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie____get_deployment_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
-    }
-    PyObject *self = CPyDef_brownie_____mypyc___3_get_deployment_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
 static int
 brownie____get_deployment_gen_traverse(y____db___brownie____get_deployment_genObject *self, visitproc visit, void *arg)
 {
@@ -1093,7 +1084,8 @@ brownie____get_deployment_gen_traverse(y____db___brownie____get_deployment_genOb
     Py_VISIT(self->___mypyc_temp__61);
     Py_VISIT(self->___mypyc_generator_attribute__key);
     Py_VISIT(self->___mypyc_temp__2_0);
-    return 0;
+    int rv = 0;
+    return rv;
 }
 
 static int
@@ -1192,6 +1184,22 @@ brownie____get_deployment_gen_dealloc(y____db___brownie____get_deployment_genObj
     Py_TYPE(self)->tp_free((PyObject *)self);
     CPy_TRASHCAN_END(self)
     done: ;
+}
+
+PyObject *CPyDef_brownie_____mypyc___3_get_deployment_gen_setup(PyObject *cpy_r_type);
+PyObject *CPyDef_brownie____get_deployment_gen(void);
+
+static PyObject *
+brownie____get_deployment_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type != CPyType_brownie____get_deployment_gen) {
+        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+        return NULL;
+    }
+    PyObject *self = CPyDef_brownie_____mypyc___3_get_deployment_gen_setup((PyObject*)type);
+    if (self == NULL)
+        return NULL;
+    return self;
 }
 
 static CPyVTableItem brownie____get_deployment_gen_vtable[7];
@@ -1299,22 +1307,6 @@ PyObject *CPyDef_brownie____get_deployment_gen(void)
 static PyAsyncMethods brownie_____fetch_source_for_hash_gen_as_async = {
     .am_await = CPyDef_brownie_____fetch_source_for_hash_gen_____await__,
 };
-PyObject *CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup(PyObject *cpy_r_type);
-PyObject *CPyDef_brownie_____fetch_source_for_hash_gen(void);
-
-static PyObject *
-brownie_____fetch_source_for_hash_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    if (type != CPyType_brownie_____fetch_source_for_hash_gen) {
-        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-        return NULL;
-    }
-    PyObject *self = CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup((PyObject*)type);
-    if (self == NULL)
-        return NULL;
-    return self;
-}
-
 static int
 brownie_____fetch_source_for_hash_gen_traverse(y____db___brownie_____fetch_source_for_hash_genObject *self, visitproc visit, void *arg)
 {
@@ -1324,7 +1316,8 @@ brownie_____fetch_source_for_hash_gen_traverse(y____db___brownie_____fetch_sourc
     Py_VISIT(self->___mypyc_temp__63.f1);
     Py_VISIT(self->___mypyc_temp__63.f2);
     Py_VISIT(self->___mypyc_generator_attribute__row);
-    return 0;
+    int rv = 0;
+    return rv;
 }
 
 static int
@@ -1359,6 +1352,22 @@ brownie_____fetch_source_for_hash_gen_dealloc(y____db___brownie_____fetch_source
     Py_TYPE(self)->tp_free((PyObject *)self);
     CPy_TRASHCAN_END(self)
     done: ;
+}
+
+PyObject *CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup(PyObject *cpy_r_type);
+PyObject *CPyDef_brownie_____fetch_source_for_hash_gen(void);
+
+static PyObject *
+brownie_____fetch_source_for_hash_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    if (type != CPyType_brownie_____fetch_source_for_hash_gen) {
+        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+        return NULL;
+    }
+    PyObject *self = CPyDef_brownie_____mypyc___3__fetch_source_for_hash_gen_setup((PyObject*)type);
+    if (self == NULL)
+        return NULL;
+    return self;
 }
 
 static CPyVTableItem brownie_____fetch_source_for_hash_gen_vtable[7];
@@ -12634,29 +12643,14 @@ CPyL112: ;
     goto CPyL101;
 }
         
-        PyObject *CPyDef_decorators_____mypyc__retry_locked_env_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___retry_locked_env(void);
-        
-        static PyObject *
-        decorators___retry_locked_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___retry_locked_env) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__retry_locked_env_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators___retry_locked_env_traverse(y____db___decorators___retry_locked_envObject *self, visitproc visit, void *arg)
         {
             Py_VISIT(self->___mypyc_self__);
             Py_VISIT(self->_callable);
             Py_VISIT(self->_retry_locked_wrap);
-            return 0;
+            int rv = 0;
+            return rv;
         }
         
         static int
@@ -12684,6 +12678,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc__retry_locked_env_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators___retry_locked_env(void);
+        
+        static PyObject *
+        decorators___retry_locked_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators___retry_locked_env) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc__retry_locked_env_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators___retry_locked_env_vtable[1];
@@ -12755,28 +12765,14 @@ CPyL112: ;
             instance = instance ? instance : Py_None;
             return CPyDef_decorators___retry_locked_wrap_retry_locked_obj_____get__(self, instance, owner);
         }
-        PyObject *CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___retry_locked_wrap_retry_locked_obj(void);
-        
-        static PyObject *
-        decorators___retry_locked_wrap_retry_locked_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___retry_locked_wrap_retry_locked_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators___retry_locked_wrap_retry_locked_obj_traverse(y____db___decorators___retry_locked_wrap_retry_locked_objObject *self, visitproc visit, void *arg)
         {
             Py_VISIT(self->___mypyc_env__);
-            PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            return 0;
+            int rv = 0;
+            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+            if (rv != 0) return rv;
+            return rv;
         }
         
         static int
@@ -12801,6 +12797,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators___retry_locked_wrap_retry_locked_obj(void);
+        
+        static PyObject *
+        decorators___retry_locked_wrap_retry_locked_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators___retry_locked_wrap_retry_locked_obj) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc__retry_locked_wrap_retry_locked_obj_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators___retry_locked_wrap_retry_locked_obj_vtable[2];
@@ -12934,27 +12946,13 @@ CPyL112: ;
             instance = instance ? instance : Py_None;
             return CPyDef_decorators_____mypyc_lambda__0_obj_____get__(self, instance, owner);
         }
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators_____mypyc_lambda__0_obj(void);
-        
-        static PyObject *
-        decorators_____mypyc_lambda__0_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators_____mypyc_lambda__0_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators_____mypyc_lambda__0_obj_traverse(y____db___decorators_____mypyc_lambda__0_objObject *self, visitproc visit, void *arg)
         {
-            PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            return 0;
+            int rv = 0;
+            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+            if (rv != 0) return rv;
+            return rv;
         }
         
         static int
@@ -12977,6 +12975,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators_____mypyc_lambda__0_obj(void);
+        
+        static PyObject *
+        decorators_____mypyc_lambda__0_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators_____mypyc_lambda__0_obj) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__0_obj_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators_____mypyc_lambda__0_obj_vtable[2];
@@ -13066,27 +13080,13 @@ CPyL112: ;
             instance = instance ? instance : Py_None;
             return CPyDef_decorators_____mypyc_lambda__1_obj_____get__(self, instance, owner);
         }
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators_____mypyc_lambda__1_obj(void);
-        
-        static PyObject *
-        decorators_____mypyc_lambda__1_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators_____mypyc_lambda__1_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators_____mypyc_lambda__1_obj_traverse(y____db___decorators_____mypyc_lambda__1_objObject *self, visitproc visit, void *arg)
         {
-            PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            return 0;
+            int rv = 0;
+            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+            if (rv != 0) return rv;
+            return rv;
         }
         
         static int
@@ -13109,6 +13109,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators_____mypyc_lambda__1_obj(void);
+        
+        static PyObject *
+        decorators_____mypyc_lambda__1_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators_____mypyc_lambda__1_obj) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__1_obj_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators_____mypyc_lambda__1_obj_vtable[2];
@@ -13198,27 +13214,13 @@ CPyL112: ;
             instance = instance ? instance : Py_None;
             return CPyDef_decorators_____mypyc_lambda__2_obj_____get__(self, instance, owner);
         }
-        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators_____mypyc_lambda__2_obj(void);
-        
-        static PyObject *
-        decorators_____mypyc_lambda__2_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators_____mypyc_lambda__2_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators_____mypyc_lambda__2_obj_traverse(y____db___decorators_____mypyc_lambda__2_objObject *self, visitproc visit, void *arg)
         {
-            PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            return 0;
+            int rv = 0;
+            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+            if (rv != 0) return rv;
+            return rv;
         }
         
         static int
@@ -13241,6 +13243,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators_____mypyc_lambda__2_obj(void);
+        
+        static PyObject *
+        decorators_____mypyc_lambda__2_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators_____mypyc_lambda__2_obj) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc___3__mypyc_lambda__2_obj_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators_____mypyc_lambda__2_obj_vtable[2];
@@ -13326,22 +13344,6 @@ CPyL112: ;
         }
         
         
-        PyObject *CPyDef_decorators_____mypyc__log_result_count_env_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___log_result_count_env(void);
-        
-        static PyObject *
-        decorators___log_result_count_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___log_result_count_env) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__log_result_count_env_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators___log_result_count_env_traverse(y____db___decorators___log_result_count_envObject *self, visitproc visit, void *arg)
         {
@@ -13349,7 +13351,8 @@ CPyL112: ;
             Py_VISIT(self->_name);
             Py_VISIT(self->_arg_names);
             Py_VISIT(self->_result_count_deco);
-            return 0;
+            int rv = 0;
+            return rv;
         }
         
         static int
@@ -13379,6 +13382,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc__log_result_count_env_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators___log_result_count_env(void);
+        
+        static PyObject *
+        decorators___log_result_count_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators___log_result_count_env) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc__log_result_count_env_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators___log_result_count_env_vtable[1];
@@ -13446,22 +13465,6 @@ CPyL112: ;
         }
         
         
-        PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___result_count_deco_log_result_count_env(void);
-        
-        static PyObject *
-        decorators___result_count_deco_log_result_count_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___result_count_deco_log_result_count_env) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators___result_count_deco_log_result_count_env_traverse(y____db___decorators___result_count_deco_log_result_count_envObject *self, visitproc visit, void *arg)
         {
@@ -13472,7 +13475,8 @@ CPyL112: ;
             Py_VISIT(self->_name);
             Py_VISIT(self->_arg_names);
             Py_VISIT(self->_result_count_deco);
-            return 0;
+            int rv = 0;
+            return rv;
         }
         
         static int
@@ -13508,6 +13512,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators___result_count_deco_log_result_count_env(void);
+        
+        static PyObject *
+        decorators___result_count_deco_log_result_count_env_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators___result_count_deco_log_result_count_env) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_env_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators___result_count_deco_log_result_count_env_vtable[1];
@@ -13579,28 +13599,14 @@ CPyL112: ;
             instance = instance ? instance : Py_None;
             return CPyDef_decorators___result_count_deco_log_result_count_obj_____get__(self, instance, owner);
         }
-        PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___result_count_deco_log_result_count_obj(void);
-        
-        static PyObject *
-        decorators___result_count_deco_log_result_count_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___result_count_deco_log_result_count_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators___result_count_deco_log_result_count_obj_traverse(y____db___decorators___result_count_deco_log_result_count_objObject *self, visitproc visit, void *arg)
         {
             Py_VISIT(self->___mypyc_env__);
-            PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            return 0;
+            int rv = 0;
+            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+            if (rv != 0) return rv;
+            return rv;
         }
         
         static int
@@ -13625,6 +13631,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators___result_count_deco_log_result_count_obj(void);
+        
+        static PyObject *
+        decorators___result_count_deco_log_result_count_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators___result_count_deco_log_result_count_obj) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc__result_count_deco_log_result_count_obj_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators___result_count_deco_log_result_count_obj_vtable[2];
@@ -13758,28 +13780,14 @@ CPyL112: ;
             instance = instance ? instance : Py_None;
             return CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj_____get__(self, instance, owner);
         }
-        PyObject *CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup(PyObject *cpy_r_type);
-        PyObject *CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj(void);
-        
-        static PyObject *
-        decorators___result_count_wrap_log_result_count_result_count_deco_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-        {
-            if (type != CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj) {
-                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                return NULL;
-            }
-            PyObject *self = CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup((PyObject*)type);
-            if (self == NULL)
-                return NULL;
-            return self;
-        }
-        
         static int
         decorators___result_count_wrap_log_result_count_result_count_deco_obj_traverse(y____db___decorators___result_count_wrap_log_result_count_result_count_deco_objObject *self, visitproc visit, void *arg)
         {
             Py_VISIT(self->___mypyc_env__);
-            PyObject_VisitManagedDict((PyObject *)self, visit, arg);
-            return 0;
+            int rv = 0;
+            rv = PyObject_VisitManagedDict((PyObject *)self, visit, arg);
+            if (rv != 0) return rv;
+            return rv;
         }
         
         static int
@@ -13804,6 +13812,22 @@ CPyL112: ;
             Py_TYPE(self)->tp_free((PyObject *)self);
             CPy_TRASHCAN_END(self)
             done: ;
+        }
+        
+        PyObject *CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup(PyObject *cpy_r_type);
+        PyObject *CPyDef_decorators___result_count_wrap_log_result_count_result_count_deco_obj(void);
+        
+        static PyObject *
+        decorators___result_count_wrap_log_result_count_result_count_deco_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+        {
+            if (type != CPyType_decorators___result_count_wrap_log_result_count_result_count_deco_obj) {
+                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                return NULL;
+            }
+            PyObject *self = CPyDef_decorators_____mypyc__result_count_wrap_log_result_count_result_count_deco_obj_setup((PyObject*)type);
+            if (self == NULL)
+                return NULL;
+            return self;
         }
         
         static CPyVTableItem decorators___result_count_wrap_log_result_count_result_count_deco_obj_vtable[2];
@@ -18979,22 +19003,6 @@ CPyL92: ;
                     static PyAsyncMethods convert___to_address_async_gen_as_async = {
                         .am_await = CPyDef_convert___to_address_async_gen_____await__,
                     };
-                    PyObject *CPyDef_convert_____mypyc__to_address_async_gen_setup(PyObject *cpy_r_type);
-                    PyObject *CPyDef_convert___to_address_async_gen(void);
-                    
-                    static PyObject *
-                    convert___to_address_async_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                    {
-                        if (type != CPyType_convert___to_address_async_gen) {
-                            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                            return NULL;
-                        }
-                        PyObject *self = CPyDef_convert_____mypyc__to_address_async_gen_setup((PyObject*)type);
-                        if (self == NULL)
-                            return NULL;
-                        return self;
-                    }
-                    
                     static int
                     convert___to_address_async_gen_traverse(y___convert___to_address_async_genObject *self, visitproc visit, void *arg)
                     {
@@ -19006,7 +19014,8 @@ CPyL92: ;
                         Py_VISIT(self->___mypyc_temp__1.f1);
                         Py_VISIT(self->___mypyc_temp__1.f2);
                         Py_VISIT(self->___mypyc_generator_attribute__checksummed);
-                        return 0;
+                        int rv = 0;
+                        return rv;
                     }
                     
                     static int
@@ -19045,6 +19054,22 @@ CPyL92: ;
                         Py_TYPE(self)->tp_free((PyObject *)self);
                         CPy_TRASHCAN_END(self)
                         done: ;
+                    }
+                    
+                    PyObject *CPyDef_convert_____mypyc__to_address_async_gen_setup(PyObject *cpy_r_type);
+                    PyObject *CPyDef_convert___to_address_async_gen(void);
+                    
+                    static PyObject *
+                    convert___to_address_async_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                    {
+                        if (type != CPyType_convert___to_address_async_gen) {
+                            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                            return NULL;
+                        }
+                        PyObject *self = CPyDef_convert_____mypyc__to_address_async_gen_setup((PyObject*)type);
+                        if (self == NULL)
+                            return NULL;
+                        return self;
                     }
                     
                     static CPyVTableItem convert___to_address_async_gen_vtable[7];
@@ -21957,22 +21982,6 @@ CPyL41: ;
                         static PyTypeObject *CPyType_exceptions___NodeNotSynced_template = &CPyType_exceptions___NodeNotSynced_template_;
                         
                         
-                        PyObject *CPyDef_exceptions_____mypyc__reraise_excs_with_extra_context_gen_setup(PyObject *cpy_r_type);
-                        PyObject *CPyDef_exceptions___reraise_excs_with_extra_context_gen(void);
-                        
-                        static PyObject *
-                        exceptions___reraise_excs_with_extra_context_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                        {
-                            if (type != CPyType_exceptions___reraise_excs_with_extra_context_gen) {
-                                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                return NULL;
-                            }
-                            PyObject *self = CPyDef_exceptions_____mypyc__reraise_excs_with_extra_context_gen_setup((PyObject*)type);
-                            if (self == NULL)
-                                return NULL;
-                            return self;
-                        }
-                        
                         static int
                         exceptions___reraise_excs_with_extra_context_gen_traverse(y___exceptions___reraise_excs_with_extra_context_genObject *self, visitproc visit, void *arg)
                         {
@@ -21981,7 +21990,8 @@ CPyL41: ;
                             Py_VISIT(self->___mypyc_temp__0.f1);
                             Py_VISIT(self->___mypyc_temp__0.f2);
                             Py_VISIT(self->___mypyc_generator_attribute__e);
-                            return 0;
+                            int rv = 0;
+                            return rv;
                         }
                         
                         static int
@@ -22015,6 +22025,22 @@ CPyL41: ;
                             Py_TYPE(self)->tp_free((PyObject *)self);
                             CPy_TRASHCAN_END(self)
                             done: ;
+                        }
+                        
+                        PyObject *CPyDef_exceptions_____mypyc__reraise_excs_with_extra_context_gen_setup(PyObject *cpy_r_type);
+                        PyObject *CPyDef_exceptions___reraise_excs_with_extra_context_gen(void);
+                        
+                        static PyObject *
+                        exceptions___reraise_excs_with_extra_context_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                        {
+                            if (type != CPyType_exceptions___reraise_excs_with_extra_context_gen) {
+                                PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                return NULL;
+                            }
+                            PyObject *self = CPyDef_exceptions_____mypyc__reraise_excs_with_extra_context_gen_setup((PyObject*)type);
+                            if (self == NULL)
+                                return NULL;
+                            return self;
                         }
                         
                         static CPyVTableItem exceptions___reraise_excs_with_extra_context_gen_vtable[6];
@@ -26089,26 +26115,11 @@ CPyL167: ;
                                 instance = instance ? instance : Py_None;
                                 return CPyDef_networks___label_Network_obj_____get__(self, instance, owner);
                             }
-                            PyObject *CPyDef_networks_____mypyc__label_Network_obj_setup(PyObject *cpy_r_type);
-                            PyObject *CPyDef_networks___label_Network_obj(void);
-                            
-                            static PyObject *
-                            networks___label_Network_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                            {
-                                if (type != CPyType_networks___label_Network_obj) {
-                                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                    return NULL;
-                                }
-                                PyObject *self = CPyDef_networks_____mypyc__label_Network_obj_setup((PyObject*)type);
-                                if (self == NULL)
-                                    return NULL;
-                                return self;
-                            }
-                            
                             static int
                             networks___label_Network_obj_traverse(y___networks___label_Network_objObject *self, visitproc visit, void *arg)
                             {
-                                return 0;
+                                int rv = 0;
+                                return rv;
                             }
                             
                             static int
@@ -26130,6 +26141,22 @@ CPyL167: ;
                                 Py_TYPE(self)->tp_free((PyObject *)self);
                                 CPy_TRASHCAN_END(self)
                                 done: ;
+                            }
+                            
+                            PyObject *CPyDef_networks_____mypyc__label_Network_obj_setup(PyObject *cpy_r_type);
+                            PyObject *CPyDef_networks___label_Network_obj(void);
+                            
+                            static PyObject *
+                            networks___label_Network_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                            {
+                                if (type != CPyType_networks___label_Network_obj) {
+                                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                    return NULL;
+                                }
+                                PyObject *self = CPyDef_networks_____mypyc__label_Network_obj_setup((PyObject*)type);
+                                if (self == NULL)
+                                    return NULL;
+                                return self;
                             }
                             
                             static CPyVTableItem networks___label_Network_obj_vtable[2];
@@ -26212,26 +26239,11 @@ CPyL167: ;
                                 instance = instance ? instance : Py_None;
                                 return CPyDef_networks___name_Network_obj_____get__(self, instance, owner);
                             }
-                            PyObject *CPyDef_networks_____mypyc__name_Network_obj_setup(PyObject *cpy_r_type);
-                            PyObject *CPyDef_networks___name_Network_obj(void);
-                            
-                            static PyObject *
-                            networks___name_Network_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                            {
-                                if (type != CPyType_networks___name_Network_obj) {
-                                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                    return NULL;
-                                }
-                                PyObject *self = CPyDef_networks_____mypyc__name_Network_obj_setup((PyObject*)type);
-                                if (self == NULL)
-                                    return NULL;
-                                return self;
-                            }
-                            
                             static int
                             networks___name_Network_obj_traverse(y___networks___name_Network_objObject *self, visitproc visit, void *arg)
                             {
-                                return 0;
+                                int rv = 0;
+                                return rv;
                             }
                             
                             static int
@@ -26253,6 +26265,22 @@ CPyL167: ;
                                 Py_TYPE(self)->tp_free((PyObject *)self);
                                 CPy_TRASHCAN_END(self)
                                 done: ;
+                            }
+                            
+                            PyObject *CPyDef_networks_____mypyc__name_Network_obj_setup(PyObject *cpy_r_type);
+                            PyObject *CPyDef_networks___name_Network_obj(void);
+                            
+                            static PyObject *
+                            networks___name_Network_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                            {
+                                if (type != CPyType_networks___name_Network_obj) {
+                                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                    return NULL;
+                                }
+                                PyObject *self = CPyDef_networks_____mypyc__name_Network_obj_setup((PyObject*)type);
+                                if (self == NULL)
+                                    return NULL;
+                                return self;
                             }
                             
                             static CPyVTableItem networks___name_Network_obj_vtable[2];
@@ -26335,26 +26363,11 @@ CPyL167: ;
                                 instance = instance ? instance : Py_None;
                                 return CPyDef_networks___printable_Network_obj_____get__(self, instance, owner);
                             }
-                            PyObject *CPyDef_networks_____mypyc__printable_Network_obj_setup(PyObject *cpy_r_type);
-                            PyObject *CPyDef_networks___printable_Network_obj(void);
-                            
-                            static PyObject *
-                            networks___printable_Network_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                            {
-                                if (type != CPyType_networks___printable_Network_obj) {
-                                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                    return NULL;
-                                }
-                                PyObject *self = CPyDef_networks_____mypyc__printable_Network_obj_setup((PyObject*)type);
-                                if (self == NULL)
-                                    return NULL;
-                                return self;
-                            }
-                            
                             static int
                             networks___printable_Network_obj_traverse(y___networks___printable_Network_objObject *self, visitproc visit, void *arg)
                             {
-                                return 0;
+                                int rv = 0;
+                                return rv;
                             }
                             
                             static int
@@ -26376,6 +26389,22 @@ CPyL167: ;
                                 Py_TYPE(self)->tp_free((PyObject *)self);
                                 CPy_TRASHCAN_END(self)
                                 done: ;
+                            }
+                            
+                            PyObject *CPyDef_networks_____mypyc__printable_Network_obj_setup(PyObject *cpy_r_type);
+                            PyObject *CPyDef_networks___printable_Network_obj(void);
+                            
+                            static PyObject *
+                            networks___printable_Network_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                            {
+                                if (type != CPyType_networks___printable_Network_obj) {
+                                    PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                    return NULL;
+                                }
+                                PyObject *self = CPyDef_networks_____mypyc__printable_Network_obj_setup((PyObject*)type);
+                                if (self == NULL)
+                                    return NULL;
+                                return self;
                             }
                             
                             static CPyVTableItem networks___printable_Network_obj_vtable[2];
@@ -30403,22 +30432,6 @@ CPyL105: ;
                                 static PyAsyncMethods sense_check___sense_check_gen_as_async = {
                                     .am_await = CPyDef_sense_check___sense_check_gen_____await__,
                                 };
-                                PyObject *CPyDef_sense_check_____mypyc__sense_check_gen_setup(PyObject *cpy_r_type);
-                                PyObject *CPyDef_sense_check___sense_check_gen(void);
-                                
-                                static PyObject *
-                                sense_check___sense_check_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                                {
-                                    if (type != CPyType_sense_check___sense_check_gen) {
-                                        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                        return NULL;
-                                    }
-                                    PyObject *self = CPyDef_sense_check_____mypyc__sense_check_gen_setup((PyObject*)type);
-                                    if (self == NULL)
-                                        return NULL;
-                                    return self;
-                                }
-                                
                                 static int
                                 sense_check___sense_check_gen_traverse(y___prices___utils___sense_check___sense_check_genObject *self, visitproc visit, void *arg)
                                 {
@@ -30442,7 +30455,8 @@ CPyL105: ;
                                     Py_VISIT(self->___mypyc_temp__5.f1);
                                     Py_VISIT(self->___mypyc_temp__5.f2);
                                     Py_VISIT(self->___mypyc_generator_attribute__msg);
-                                    return 0;
+                                    int rv = 0;
+                                    return rv;
                                 }
                                 
                                 static int
@@ -30505,6 +30519,22 @@ CPyL105: ;
                                     Py_TYPE(self)->tp_free((PyObject *)self);
                                     CPy_TRASHCAN_END(self)
                                     done: ;
+                                }
+                                
+                                PyObject *CPyDef_sense_check_____mypyc__sense_check_gen_setup(PyObject *cpy_r_type);
+                                PyObject *CPyDef_sense_check___sense_check_gen(void);
+                                
+                                static PyObject *
+                                sense_check___sense_check_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                                {
+                                    if (type != CPyType_sense_check___sense_check_gen) {
+                                        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                        return NULL;
+                                    }
+                                    PyObject *self = CPyDef_sense_check_____mypyc__sense_check_gen_setup((PyObject*)type);
+                                    if (self == NULL)
+                                        return NULL;
+                                    return self;
                                 }
                                 
                                 static CPyVTableItem sense_check___sense_check_gen_vtable[7];
@@ -30607,22 +30637,6 @@ CPyL105: ;
                                 static PyAsyncMethods sense_check____exit_sense_check_gen_as_async = {
                                     .am_await = CPyDef_sense_check____exit_sense_check_gen_____await__,
                                 };
-                                PyObject *CPyDef_sense_check_____mypyc___3_exit_sense_check_gen_setup(PyObject *cpy_r_type);
-                                PyObject *CPyDef_sense_check____exit_sense_check_gen(void);
-                                
-                                static PyObject *
-                                sense_check____exit_sense_check_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                                {
-                                    if (type != CPyType_sense_check____exit_sense_check_gen) {
-                                        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                        return NULL;
-                                    }
-                                    PyObject *self = CPyDef_sense_check_____mypyc___3_exit_sense_check_gen_setup((PyObject*)type);
-                                    if (self == NULL)
-                                        return NULL;
-                                    return self;
-                                }
-                                
                                 static int
                                 sense_check____exit_sense_check_gen_traverse(y___prices___utils___sense_check____exit_sense_check_genObject *self, visitproc visit, void *arg)
                                 {
@@ -30673,7 +30687,8 @@ CPyL105: ;
                                     Py_VISIT(self->___mypyc_temp__26.f0);
                                     Py_VISIT(self->___mypyc_temp__26.f1);
                                     Py_VISIT(self->___mypyc_temp__26.f2);
-                                    return 0;
+                                    int rv = 0;
+                                    return rv;
                                 }
                                 
                                 static int
@@ -30790,6 +30805,22 @@ CPyL105: ;
                                     Py_TYPE(self)->tp_free((PyObject *)self);
                                     CPy_TRASHCAN_END(self)
                                     done: ;
+                                }
+                                
+                                PyObject *CPyDef_sense_check_____mypyc___3_exit_sense_check_gen_setup(PyObject *cpy_r_type);
+                                PyObject *CPyDef_sense_check____exit_sense_check_gen(void);
+                                
+                                static PyObject *
+                                sense_check____exit_sense_check_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                                {
+                                    if (type != CPyType_sense_check____exit_sense_check_gen) {
+                                        PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                        return NULL;
+                                    }
+                                    PyObject *self = CPyDef_sense_check_____mypyc___3_exit_sense_check_gen_setup((PyObject*)type);
+                                    if (self == NULL)
+                                        return NULL;
+                                    return self;
                                 }
                                 
                                 static CPyVTableItem sense_check____exit_sense_check_gen_vtable[7];
@@ -38301,22 +38332,6 @@ CPyL269: ;
                                     static PyAsyncMethods gather___gather_methods_gen_as_async = {
                                         .am_await = CPyDef_gather___gather_methods_gen_____await__,
                                     };
-                                    PyObject *CPyDef_gather_____mypyc__gather_methods_gen_setup(PyObject *cpy_r_type);
-                                    PyObject *CPyDef_gather___gather_methods_gen(void);
-                                    
-                                    static PyObject *
-                                    gather___gather_methods_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                                    {
-                                        if (type != CPyType_gather___gather_methods_gen) {
-                                            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                            return NULL;
-                                        }
-                                        PyObject *self = CPyDef_gather_____mypyc__gather_methods_gen_setup((PyObject*)type);
-                                        if (self == NULL)
-                                            return NULL;
-                                        return self;
-                                    }
-                                    
                                     static int
                                     gather___gather_methods_gen_traverse(y___utils___gather___gather_methods_genObject *self, visitproc visit, void *arg)
                                     {
@@ -38331,7 +38346,8 @@ CPyL269: ;
                                         Py_VISIT(self->___mypyc_temp__3.f0);
                                         Py_VISIT(self->___mypyc_temp__3.f1);
                                         Py_VISIT(self->___mypyc_temp__3.f2);
-                                        return 0;
+                                        int rv = 0;
+                                        return rv;
                                     }
                                     
                                     static int
@@ -38377,6 +38393,22 @@ CPyL269: ;
                                         Py_TYPE(self)->tp_free((PyObject *)self);
                                         CPy_TRASHCAN_END(self)
                                         done: ;
+                                    }
+                                    
+                                    PyObject *CPyDef_gather_____mypyc__gather_methods_gen_setup(PyObject *cpy_r_type);
+                                    PyObject *CPyDef_gather___gather_methods_gen(void);
+                                    
+                                    static PyObject *
+                                    gather___gather_methods_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                                    {
+                                        if (type != CPyType_gather___gather_methods_gen) {
+                                            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                            return NULL;
+                                        }
+                                        PyObject *self = CPyDef_gather_____mypyc__gather_methods_gen_setup((PyObject*)type);
+                                        if (self == NULL)
+                                            return NULL;
+                                        return self;
                                     }
                                     
                                     static CPyVTableItem gather___gather_methods_gen_vtable[7];
@@ -38478,22 +38510,6 @@ CPyL269: ;
                                     static PyAsyncMethods gather____gather_methods_brownie_gen_as_async = {
                                         .am_await = CPyDef_gather____gather_methods_brownie_gen_____await__,
                                     };
-                                    PyObject *CPyDef_gather_____mypyc___3_gather_methods_brownie_gen_setup(PyObject *cpy_r_type);
-                                    PyObject *CPyDef_gather____gather_methods_brownie_gen(void);
-                                    
-                                    static PyObject *
-                                    gather____gather_methods_brownie_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                                    {
-                                        if (type != CPyType_gather____gather_methods_brownie_gen) {
-                                            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                            return NULL;
-                                        }
-                                        PyObject *self = CPyDef_gather_____mypyc___3_gather_methods_brownie_gen_setup((PyObject*)type);
-                                        if (self == NULL)
-                                            return NULL;
-                                        return self;
-                                    }
-                                    
                                     static int
                                     gather____gather_methods_brownie_gen_traverse(y___utils___gather____gather_methods_brownie_genObject *self, visitproc visit, void *arg)
                                     {
@@ -38511,7 +38527,8 @@ CPyL269: ;
                                         Py_VISIT(self->___mypyc_temp__10.f0);
                                         Py_VISIT(self->___mypyc_temp__10.f1);
                                         Py_VISIT(self->___mypyc_temp__10.f2);
-                                        return 0;
+                                        int rv = 0;
+                                        return rv;
                                     }
                                     
                                     static int
@@ -38565,6 +38582,22 @@ CPyL269: ;
                                         Py_TYPE(self)->tp_free((PyObject *)self);
                                         CPy_TRASHCAN_END(self)
                                         done: ;
+                                    }
+                                    
+                                    PyObject *CPyDef_gather_____mypyc___3_gather_methods_brownie_gen_setup(PyObject *cpy_r_type);
+                                    PyObject *CPyDef_gather____gather_methods_brownie_gen(void);
+                                    
+                                    static PyObject *
+                                    gather____gather_methods_brownie_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                                    {
+                                        if (type != CPyType_gather____gather_methods_brownie_gen) {
+                                            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                            return NULL;
+                                        }
+                                        PyObject *self = CPyDef_gather_____mypyc___3_gather_methods_brownie_gen_setup((PyObject*)type);
+                                        if (self == NULL)
+                                            return NULL;
+                                        return self;
                                     }
                                     
                                     static CPyVTableItem gather____gather_methods_brownie_gen_vtable[7];
@@ -38668,22 +38701,6 @@ CPyL269: ;
                                     static PyAsyncMethods gather____gather_methods_raw_gen_as_async = {
                                         .am_await = CPyDef_gather____gather_methods_raw_gen_____await__,
                                     };
-                                    PyObject *CPyDef_gather_____mypyc___3_gather_methods_raw_gen_setup(PyObject *cpy_r_type);
-                                    PyObject *CPyDef_gather____gather_methods_raw_gen(void);
-                                    
-                                    static PyObject *
-                                    gather____gather_methods_raw_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-                                    {
-                                        if (type != CPyType_gather____gather_methods_raw_gen) {
-                                            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
-                                            return NULL;
-                                        }
-                                        PyObject *self = CPyDef_gather_____mypyc___3_gather_methods_raw_gen_setup((PyObject*)type);
-                                        if (self == NULL)
-                                            return NULL;
-                                        return self;
-                                    }
-                                    
                                     static int
                                     gather____gather_methods_raw_gen_traverse(y___utils___gather____gather_methods_raw_genObject *self, visitproc visit, void *arg)
                                     {
@@ -38696,7 +38713,8 @@ CPyL269: ;
                                         Py_VISIT(self->___mypyc_temp__15.f0);
                                         Py_VISIT(self->___mypyc_temp__15.f1);
                                         Py_VISIT(self->___mypyc_temp__15.f2);
-                                        return 0;
+                                        int rv = 0;
+                                        return rv;
                                     }
                                     
                                     static int
@@ -38740,6 +38758,22 @@ CPyL269: ;
                                         Py_TYPE(self)->tp_free((PyObject *)self);
                                         CPy_TRASHCAN_END(self)
                                         done: ;
+                                    }
+                                    
+                                    PyObject *CPyDef_gather_____mypyc___3_gather_methods_raw_gen_setup(PyObject *cpy_r_type);
+                                    PyObject *CPyDef_gather____gather_methods_raw_gen(void);
+                                    
+                                    static PyObject *
+                                    gather____gather_methods_raw_gen_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+                                    {
+                                        if (type != CPyType_gather____gather_methods_raw_gen) {
+                                            PyErr_SetString(PyExc_TypeError, "interpreted classes cannot inherit from compiled");
+                                            return NULL;
+                                        }
+                                        PyObject *self = CPyDef_gather_____mypyc___3_gather_methods_raw_gen_setup((PyObject*)type);
+                                        if (self == NULL)
+                                            return NULL;
+                                        return self;
                                     }
                                     
                                     static CPyVTableItem gather____gather_methods_raw_gen_vtable[7];
