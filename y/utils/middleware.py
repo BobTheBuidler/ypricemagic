@@ -6,12 +6,9 @@ import eth_retry
 from brownie import chain, web3
 from requests import Session
 from requests.adapters import HTTPAdapter
-from web3 import HTTPProvider, Web3
-
-try:
-    from web3.middleware.geth_poa import geth_poa_middleware as _poa_middleware
-except ImportError:
-    from web3.middleware import ExtraDataToPOAMiddleware as _poa_middleware
+from web3 import HTTPProvider
+from web3.middleware import ExtraDataToPOAMiddleware
+from web3.middleware import Web3Middleware
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.networks import Network
@@ -93,49 +90,44 @@ def should_cache(method: str, params: Any) -> bool:
     return method == "eth_getCode" and params[1] == "latest"
 
 
-def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
+class GetCodeCacheMiddleware(Web3Middleware):
     """
     Middleware for caching eth_getCode calls.
-
-    Args:
-        make_request: The original request function.
-        web3: The Web3 instance.
-
-    Returns:
-        A middleware function that caches eth_getCode calls.
 
     Examples:
         >>> from web3 import Web3
         >>> w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
-        >>> middleware = getcode_cache_middleware(w3.manager.request_blocking, w3)
-        >>> w3.middleware_onion.add(middleware)
+        >>> w3.middleware_onion.add(GetCodeCacheMiddleware)
 
     See Also:
         - :func:`should_cache`
     """
 
-    @memory.cache
-    def make_request_cached(method: str, params: Any) -> Any:
-        return make_request(method, params)
-
-    if logger.isEnabledFor(DEBUG):
-
-        @eth_retry.auto_retry
-        def middleware(method: str, params: Any) -> Any:
-            logger._log(DEBUG, "%s %s", (method, params))
-            if should_cache(method, params):
-                return make_request_cached(method, params)
+    def wrap_make_request(
+        self, make_request: Callable[[Any, Any], Any]
+    ) -> Callable[[Any, Any], Any]:
+        @memory.cache
+        def make_request_cached(method: str, params: Any) -> Any:
             return make_request(method, params)
 
-    else:
+        if logger.isEnabledFor(DEBUG):
 
-        @eth_retry.auto_retry
-        def middleware(method: str, params: Any) -> Any:
-            if should_cache(method, params):
-                return make_request_cached(method, params)
-            return make_request(method, params)
+            @eth_retry.auto_retry
+            def middleware(method: Any, params: Any) -> Any:
+                logger._log(DEBUG, "%s %s", (method, params))
+                if should_cache(method, params):
+                    return make_request_cached(method, params)
+                return make_request(method, params)
 
-    return middleware
+        else:
+
+            @eth_retry.auto_retry
+            def middleware(method: Any, params: Any) -> Any:
+                if should_cache(method, params):
+                    return make_request_cached(method, params)
+                return make_request(method, params)
+
+        return middleware
 
 
 def setup_getcode_cache_middleware() -> None:
@@ -150,7 +142,7 @@ def setup_getcode_cache_middleware() -> None:
         >>> setup_getcode_cache_middleware()
 
     See Also:
-        - :func:`getcode_cache_middleware`
+        - :class:`GetCodeCacheMiddleware`
     """
     # patch web3 provider with more connections and higher timeout
     if web3.provider:
@@ -167,7 +159,7 @@ def setup_getcode_cache_middleware() -> None:
             if "'IPCProvider' object has no attribute 'endpoint_uri'" not in str(e):
                 raise
 
-    web3.middleware_onion.add(getcode_cache_middleware)
+    web3.middleware_onion.add(GetCodeCacheMiddleware)
 
 
 def setup_geth_poa_middleware() -> None:
@@ -178,11 +170,10 @@ def setup_geth_poa_middleware() -> None:
         >>> setup_geth_poa_middleware()
 
     See Also:
-        - :func:`web3.middleware.geth_poa.geth_poa_middleware`
         - :class:`web3.middleware.ExtraDataToPOAMiddleware`
     """
     try:
-        web3.middleware_onion.inject(_poa_middleware, layer=0)
+        web3.middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
     except ValueError as e:
         if str(e) != "You can't add the same un-named instance twice":
             raise
