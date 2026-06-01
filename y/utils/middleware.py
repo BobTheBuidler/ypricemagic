@@ -7,8 +7,7 @@ from brownie import chain, web3
 from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider
-from web3.middleware import ExtraDataToPOAMiddleware
-from web3.middleware import Web3Middleware
+from web3.middleware import ExtraDataToPOAMiddleware, Web3Middleware
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.networks import Network
