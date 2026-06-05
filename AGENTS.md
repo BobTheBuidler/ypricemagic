@@ -2,6 +2,8 @@
 
 All agents must follow these rules:
 
+ypricemagic is always compiled. PyPI wheels are compiled, setup compiles the project, and tests/CI must validate compiled extensions. Do not invent or reason from an interpreted `.py` runtime path; tracked `.py` files are mypyc source inputs.
+
 1) Fully test your changes before submitting a PR (run the full suite or all relevant tests).
 2) PR titles must be descriptive and follow Conventional Commits-style prefixes:
    - Common: `feat:`, `fix:`, `chore:`, `refactor:`, `docs:`, `test:`, `perf:`
