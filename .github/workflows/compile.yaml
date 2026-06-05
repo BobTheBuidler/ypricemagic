@@ -7,6 +7,7 @@ on:
     paths-ignore:
       - '.github/workflows/**'
       - '!.github/workflows/compile.yaml'
+      - '*.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
