@@ -313,7 +313,7 @@ class CompilerError(Exception):
 _add_deployment = eth_retry.auto_retry(_add_deployment)
 
 
-class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
+class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta["Contract"]):
     """
     A :class:`~dank_mids.Contract` object with several modifications for enhanced functionality.
 

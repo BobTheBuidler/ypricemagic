@@ -24,7 +24,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
     for each context.
 
     Examples:
-        >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta):
+        >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta["MySingleton"]):
         ...     def __init__(self, address, asynchronous=False):
         ...         self.address = address
         ...         self.asynchronous = asynchronous
@@ -86,7 +86,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
 
         Examples:
             Correct usage:
-                >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta):
+                >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta["MySingleton"]):
                 ...     def __init__(self, address, asynchronous=False):
                 ...         self.address = address
                 ...         self.asynchronous = asynchronous
@@ -96,7 +96,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
                 >>> assert instance1 is instance2
 
             Incorrect initialization:
-                >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta):
+                >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta["MySingleton"]):
                 ...     def __init__(self, address, asynchronous=False):
                 ...         self.address = address
                 ...         self.asynchronous = asynchronous
