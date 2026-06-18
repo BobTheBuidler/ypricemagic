@@ -23,7 +23,7 @@ jobs:
         pyversion: [ "3.10", "3.11", "3.12" ]
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0
         
