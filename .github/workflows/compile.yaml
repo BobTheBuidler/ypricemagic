@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Checkout code
         id: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Check out the PR branch
           ref: ${{ github.head_ref }}
