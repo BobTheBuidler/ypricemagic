@@ -3,12 +3,12 @@ asyncpg>=0.31,<0.32
 bobs_lazy_logging==0.0.5
 cchecksum>=0.0.3,<1
 checksum_dict>=2.1.9,<3
-dank_mids==4.20.212
-eth-brownie==1.22.1
+dank_mids==4.20.213
+eth-brownie==1.22.2
 eth_retry>=0.2.1
 evmspec>=0.3.4
 ez-a-sync>=0.34.0,<1
-faster-eth-abi>=5.2.27,<6
+faster-eth-abi>=5.2.30,<6
 faster-eth-utils
 inflection>=0.1,<0.6
 joblib>=1.0.1
