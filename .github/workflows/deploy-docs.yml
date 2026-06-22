@@ -41,7 +41,7 @@ jobs:
 
       - name: Mypycify
         id: mypycify
-        uses: BobTheBuidler/mypycify@v0.4.1
+        uses: BobTheBuidler/mypycify@v0.5.0
         with:
           python-version: "3.12"
           hash-key: |
