@@ -7,6 +7,7 @@ from brownie import chain, web3
 from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider
+from web3.exceptions import Web3ValueError
 from web3.middleware import ExtraDataToPOAMiddleware
 from web3.middleware import Web3Middleware
 
@@ -172,11 +173,16 @@ def setup_geth_poa_middleware() -> None:
     See Also:
         - :class:`web3.middleware.ExtraDataToPOAMiddleware`
     """
+    middleware_onion = web3.middleware_onion
+    if ExtraDataToPOAMiddleware in middleware_onion.as_tuple_of_middleware():
+        return
+
     try:
-        web3.middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
-    except ValueError as e:
-        if str(e) != "You can't add the same un-named instance twice":
-            raise
+        middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
+    except (ValueError, Web3ValueError):
+        if ExtraDataToPOAMiddleware in middleware_onion.as_tuple_of_middleware():
+            return
+        raise
 
 
 def remove_legacy_poa_middleware() -> None:
