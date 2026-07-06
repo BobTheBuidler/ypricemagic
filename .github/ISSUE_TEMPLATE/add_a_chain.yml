@@ -29,13 +29,12 @@ body:
         For each file, check off when the main work is done.  
         **Subtasks for each file are shown as Markdown for reference.**
       options:
-          
         - label: "Add network details to `./y/networks.py`"
           description: |
             - [ ] Add the chainid to the `Network` enum
             - [ ] Add a short label for the chain to `Network.label`
             - [ ] Add the network name to `Network.name`
-          
+
         - label: "Add contract addresses for common tokens to `./y/constants.py`"
           description: |
             Define the Contract for each of the tokens below. If the new blockchain does not have one of the tokens, simply assign `None`. Follow the same format as the others.
@@ -51,7 +50,7 @@ body:
         - label: "Add chainlink feeds to `./y/prices/chainlink.py`"
           description: |
             - [ ] Map any tokens with all chainlink feeds from https://docs.chain.link/data-feeds/price-feeds/addresses that show a green indicator
-            
+
         - label: "Update `./y/classes/common.py`"
           description: |
             - [ ] Add the symbol for the wrapped form of the network's gas token. For example, on Ethereum, Optimism, and Arbitrum it would be "WETH" but on Polygon it is "WMATIC"
@@ -75,7 +74,7 @@ body:
         - label: "Add Balancer V2 and any forks to `./y/prices/dex/balancer/v2.py`"
           description: |
             - [ ] Add the Vault address for Balancer V2 and all known direct forks, if applicable
-            
+
         - label: "Add multicall address to `./y/utils/multicall.py`"
           description: |
             - [ ] Add the multicall3 address for the new chain. This will typically be `0xcA11bde05977b3631167028862bE2a173976CA11`
