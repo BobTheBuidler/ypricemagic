@@ -270,6 +270,9 @@ class YearnInspiredVault(ERC20):
             except ContractNotVerified:
                 pass
             else:
+                # ERC-4626 conversion methods are estimates, not price oracles.
+                # For vbTokens we should use them only as solvency checks and
+                # still price by the underlying asset.
                 for method in ("convertToAssets", "getSharesToUnderlying"):
                     if contract_call := getattr(contract, method, None):
 
