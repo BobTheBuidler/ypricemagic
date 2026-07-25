@@ -12,6 +12,7 @@ from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN
 from y.prices.utils.buckets import check_bucket
 
 STARGATE_LPS = ("0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56",)
+VBTOKENS = ("0x31A5684983EeE865d943A696AAC155363bA024f9",)
 
 # @pytest.mark.parametrize('token',ATOKENS)
 # def test_check_bucket_aave(token):
@@ -65,3 +66,10 @@ async def test_check_bucket_synthetix(token):
 @pytest.mark.asyncio_cooperative
 async def test_check_bucket_stargate(token):
     assert await check_bucket(token, sync=False) == "stargate lp"
+
+
+@mainnet_only
+@pytest.mark.parametrize("token", VBTOKENS)
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_vbtoken(token):
+    assert await check_bucket(token, sync=False) == "vbtoken"
