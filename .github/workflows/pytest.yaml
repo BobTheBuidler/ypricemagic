@@ -110,6 +110,12 @@ jobs:
           OPTISCAN_TOKEN: ${{ secrets.OPTISCAN_TOKEN }}
         run: make test
         timeout-minutes: 180
+
+      - name: Vaccuum ydb
+        if: always()
+        env:
+          BROWNIE_NETWORK_ID: ${{ matrix.network }}
+        run: ypricemagic db vaccuum && sleep 5
       
       - name: Save ydb cache
         if: always()
