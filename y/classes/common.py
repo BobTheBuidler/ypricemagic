@@ -32,6 +32,10 @@ from y.utils import _erc20, logging, raw_calls
 if TYPE_CHECKING:
     from y.utils.events import Events
 
+
+TContract = TypeVar("TContract", bound="ContractBase")
+
+
 logger = getLogger(__name__)
 
 
@@ -51,7 +55,7 @@ def hex_to_string(h: HexString) -> str:
     return bytes.fromhex(h).decode("utf-8")
 
 
-class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
+class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta[TContract]):
     # defaults are stored as class vars to keep instance dicts smaller
 
     asynchronous: bool = False
